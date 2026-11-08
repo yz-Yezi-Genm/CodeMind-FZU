@@ -179,7 +179,7 @@
 <text x="960" y="1209" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  Draw.io / SVG / PNG 由同一场景模型生成</text>
 <rect x="1410" y="24" width="410" height="130" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1426" y="51" font-size="17" font-weight="700" fill="#172033">业务范围</text>
 <text x="1426" y="77" font-size="14" fill="#5B6578">1 政策事务 · 2 升学就业</text>
-<text x="1426" y="98" font-size="14" fill="#5B6578">3 学院资源 · 4 竞赛科研</text>
+<text x="1426" y="98" font-size="14" fill="#5B6578">3 竞赛科研 · 4 学院资源</text>
 <text x="1426" y="119" font-size="14" fill="#5B6578">5 成长规划：后续迭代</text>
 <text x="1426" y="140" font-size="14" fill="#5B6578">测试任务数量 ≠ 业务方向数量</text>
 </svg>

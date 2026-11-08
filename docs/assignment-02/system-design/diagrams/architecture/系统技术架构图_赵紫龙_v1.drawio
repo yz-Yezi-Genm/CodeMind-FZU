@@ -71,7 +71,7 @@
         <mxCell id="label_0" value="CodeMind-FZU 系统技术架构图" style="text;html=1;align=center;verticalAlign=middle;fontColor=#172033;fontSize=34;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="552.0" y="3.5" width="816" height="61" as="geometry"/></mxCell>
         <mxCell id="label_1" value="基于 2026-10-24 开题答辩方案 · 本地知识优先 · 可追溯回答" style="text;html=1;align=center;verticalAlign=middle;fontColor=#5B6578;fontSize=20;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="516.0" y="53.0" width="888" height="44" as="geometry"/></mxCell>
         <mxCell id="label_2" value="编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  Draw.io / SVG / PNG 由同一场景模型生成" style="text;html=1;align=center;verticalAlign=middle;fontColor=#5B6578;fontSize=16;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="288.0" y="1181.0" width="1344" height="44" as="geometry"/></mxCell>
-        <mxCell id="legend_0" value="业务范围&lt;br&gt;1 政策事务 · 2 升学就业&lt;br&gt;3 学院资源 · 4 竞赛科研&lt;br&gt;5 成长规划：后续迭代&lt;br&gt;测试任务数量 ≠ 业务方向数量" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#FFFFFF;strokeColor=#EDF1F6;fontFamily=Microsoft YaHei;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1410" y="24" width="410" height="130" as="geometry"/></mxCell>
+        <mxCell id="legend_0" value="业务范围&lt;br&gt;1 政策事务 · 2 升学就业&lt;br&gt;3 竞赛科研 · 4 学院资源&lt;br&gt;5 成长规划：后续迭代&lt;br&gt;测试任务数量 ≠ 业务方向数量" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#FFFFFF;strokeColor=#EDF1F6;fontFamily=Microsoft YaHei;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1410" y="24" width="410" height="130" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
