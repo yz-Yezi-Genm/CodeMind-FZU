@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000">
+  <rect width="1600" height="1000" fill="#ffffff"/>
+  <text x="800" y="40" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="24" font-weight="bold" fill="#333333">CodeMind-FZU 系统功能结构图</text>
+  <rect x="500" y="60" width="600" height="70" rx="10" fill="#1a73e8" stroke="#0d47a1" stroke-width="2"/>
+  <text x="800" y="90" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">面向福州大学计算机与大数据学院学生的</text>
+  <text x="800" y="115" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">校园事务与发展信息 Agent</text>
+  <line x1="800" y1="130" x2="240" y2="220" stroke="#666666" stroke-width="2"/>
+  <line x1="800" y1="130" x2="800" y2="220" stroke="#666666" stroke-width="2"/>
+  <line x1="800" y1="130" x2="1360" y2="220" stroke="#666666" stroke-width="2"/>
+  <rect x="120" y="220" width="240" height="55" rx="8" fill="#34a853" stroke="#1b5e20" stroke-width="2"/>
+  <text x="240" y="255" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">学生端服务</text>
+  <rect x="680" y="220" width="240" height="55" rx="8" fill="#f9ab00" stroke="#e65100" stroke-width="2"/>
+  <text x="800" y="255" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">后台管理端</text>
+  <rect x="1240" y="220" width="240" height="55" rx="8" fill="#9c27b0" stroke="#4a148c" stroke-width="2"/>
+  <text x="1360" y="255" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">Agent 核心服务</text>
+  <rect x="20" y="310" width="200" height="45" rx="6" fill="#e8f5e9" stroke="#34a853" stroke-width="1.5"/>
+  <text x="120" y="338" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">政策与事务办理</text>
+  <rect x="20" y="375" width="200" height="45" rx="6" fill="#e8f5e9" stroke="#34a853" stroke-width="1.5"/>
+  <text x="120" y="403" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">升学与就业发展</text>
+  <rect x="20" y="440" width="200" height="45" rx="6" fill="#e8f5e9" stroke="#34a853" stroke-width="1.5"/>
+  <text x="120" y="468" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">学院资源导航</text>
+  <rect x="20" y="505" width="200" height="45" rx="6" fill="#e8f5e9" stroke="#34a853" stroke-width="1.5"/>
+  <text x="120" y="533" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">竞赛与科研信息</text>
+  <rect x="20" y="570" width="200" height="45" rx="6" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <text x="120" y="598" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#757575">个人成长档案与长期规划</text>
+  <line x1="240" y1="275" x2="120" y2="310" stroke="#34a853" stroke-width="1.5"/>
+  <line x1="240" y1="275" x2="120" y2="375" stroke="#34a853" stroke-width="1.5"/>
+  <line x1="240" y1="275" x2="120" y2="440" stroke="#34a853" stroke-width="1.5"/>
+  <line x1="240" y1="275" x2="120" y2="505" stroke="#34a853" stroke-width="1.5"/>
+  <line x1="240" y1="275" x2="120" y2="570" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <rect x="560" y="310" width="240" height="50" rx="6" fill="#fff8e1" stroke="#f9ab00" stroke-width="1.5"/>
+  <text x="680" y="332" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">知识库管理</text>
+  <text x="680" y="350" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">（首版：脚本+人工维护）</text>
+  <rect x="560" y="385" width="240" height="50" rx="6" fill="#fff8e1" stroke="#f9ab00" stroke-width="1.5"/>
+  <text x="680" y="407" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">元数据管理</text>
+  <text x="680" y="425" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">（首版：脚本+人工维护）</text>
+  <rect x="560" y="460" width="240" height="50" rx="6" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <text x="680" y="482" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#757575">完整后台 Web 界面</text>
+  <text x="680" y="500" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#999999">（后续扩展）</text>
+  <line x1="800" y1="275" x2="680" y2="310" stroke="#f9ab00" stroke-width="1.5"/>
+  <line x1="800" y1="275" x2="680" y2="385" stroke="#f9ab00" stroke-width="1.5"/>
+  <line x1="800" y1="275" x2="680" y2="460" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <rect x="1160" y="300" width="240" height="40" rx="6" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1.5"/>
+  <text x="1280" y="325" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#333333">意图识别与追问澄清</text>
+  <rect x="1160" y="360" width="240" height="40" rx="6" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1.5"/>
+  <text x="1280" y="385" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#333333">知识检索与证据检查</text>
+  <rect x="1160" y="420" width="240" height="40" rx="6" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1.5"/>
+  <text x="1280" y="445" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#333333">回答生成与溯源</text>
+  <rect x="1160" y="480" width="240" height="50" rx="6" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1.5"/>
+  <text x="1280" y="502" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#333333">对话管理</text>
+  <text x="1280" y="520" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">（首版：会话上下文、追问状态）</text>
+  <line x1="1360" y1="275" x2="1280" y2="300" stroke="#9c27b0" stroke-width="1.5"/>
+  <line x1="1360" y1="275" x2="1280" y2="360" stroke="#9c27b0" stroke-width="1.5"/>
+  <line x1="1360" y1="275" x2="1280" y2="420" stroke="#9c27b0" stroke-width="1.5"/>
+  <line x1="1360" y1="275" x2="1280" y2="480" stroke="#9c27b0" stroke-width="1.5"/>
+  <text x="800" y="650" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#666666">编制：林世颖 | 日期：2026-11-08 | 注：灰色虚线框为后续扩展功能</text>
+</svg>
