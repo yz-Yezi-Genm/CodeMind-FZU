@@ -1,29 +1,195 @@
 erDiagram
-    knowledge_categories ||--o{ knowledge_documents : classifies
-    knowledge_documents ||--o{ document_versions : has
-    document_versions ||--o{ document_files : stores
-    document_versions ||--o{ applicability_rules : limits
-    applicability_rules ||--o{ applicability_rule_values : includes
-    document_versions ||--o{ knowledge_chunks : contains
-    document_files ||--o{ knowledge_chunks : produces
-    knowledge_documents ||--o{ document_business_directions : tagged
-    business_directions ||--o{ document_business_directions : maps
-    document_versions ||--o{ verification_records : checked
-    document_versions ||--o{ verification_tasks : pending
-    users o|--o{ conversation_sessions : owns
-    conversation_sessions ||--o{ interaction_messages : records
-    interaction_messages ||--o{ agent_tasks : triggers
-    agent_tasks ||--o{ task_results : produces
-    task_results ||--o{ result_citations : cites
-    document_versions ||--o{ result_citations : supports
-    knowledge_chunks o|--o{ result_citations : locates
-    document_versions ||--o{ document_version_relations : active
-    document_versions ||--o{ document_version_relations : target
-    interaction_messages ||--o{ answer_feedback : feedback
-    answer_feedback ||--o{ feedback_review_links : creates
-    verification_tasks ||--o{ feedback_review_links : handles
-    document_versions ||--o{ document_milestones : schedules
-    document_files ||--o{ document_file_sources : derived
-    document_files ||--o{ document_file_sources : source
-    interaction_messages ||--o{ message_result_links : displays
-    task_results ||--o{ message_result_links : used
+    %% v1.2审核基线：23表。列出主外键、唯一键字段及部分说明性字段，完整类型和索引见详细设计。
+    %% 关系标签为子表外键字段组合；同一条复合外键不可拆为多个独立外键。
+    %% 1对0..N；o|表示该外键可空。所有图示外键删除规则均为RESTRICT。
+    knowledge_categories {
+        uuid id PK "not_null"
+        string name UK "not_null"
+    }
+    knowledge_documents {
+        uuid id PK "not_null"
+        uuid category_id FK "not_null"
+        string title "not_null"
+    }
+    document_versions {
+        uuid id PK "not_null"
+        uuid document_id FK "not_null"
+        string record_code UK "not_null"
+        string version_no "not_null"
+        string source_url "not_null"
+        string source_verification_status "not_null"
+        string timeliness_verification_status "not_null"
+        string extraction_status "not_null"
+        string retrieval_status "not_null"
+    }
+    %% UNIQUE document_versions(document_id, version_no)
+    document_files {
+        uuid id PK "not_null"
+        uuid version_id FK "not_null"
+        string file_role "not_null"
+        string storage_key UK "not_null"
+    }
+    %% UNIQUE document_files(id, version_id)
+    applicability_rules {
+        uuid id PK "not_null"
+        uuid version_id FK "not_null"
+        string purpose "not_null"
+        string enrollment_mode "not_null"
+        string graduation_mode "not_null"
+        string major_mode "not_null"
+        string student_type_mode "not_null"
+    }
+    applicability_rule_values {
+        uuid rule_id PK,FK "not_null"
+        string dimension PK "not_null"
+        string value PK "not_null"
+    }
+    knowledge_chunks {
+        uuid id PK "not_null"
+        uuid version_id FK "not_null"
+        uuid file_id FK "not_null"
+        integer chunk_no "not_null"
+        string content "not_null"
+        string locator "nullable"
+        uuid original_file_id FK "nullable"
+        string original_locator "nullable"
+        string index_status "not_null"
+    }
+    %% UNIQUE knowledge_chunks(file_id, chunk_no)
+    %% UNIQUE knowledge_chunks(id, version_id)
+    business_directions {
+        uuid id PK "not_null"
+        string code UK "not_null"
+        string name UK "not_null"
+        string delivery_stage "not_null"
+    }
+    document_business_directions {
+        uuid document_id PK,FK "not_null"
+        uuid direction_id PK,FK "not_null"
+    }
+    verification_records {
+        uuid id PK "not_null"
+        uuid version_id FK "not_null"
+        uuid file_id FK "nullable"
+    }
+    %% UNIQUE verification_records(id, version_id)
+    %% UNIQUE verification_records(id, version_id, file_id)
+    verification_tasks {
+        uuid id PK "not_null"
+        uuid version_id FK "not_null"
+        uuid file_id FK "nullable"
+        uuid completion_record_id FK "nullable"
+    }
+    %% UNIQUE verification_tasks(id, version_id)
+    users {
+        uuid id PK "not_null"
+        string external_subject UK "nullable"
+    }
+    conversation_sessions {
+        uuid id PK "not_null"
+        uuid user_id FK "nullable"
+    }
+    interaction_messages {
+        uuid id PK "not_null"
+        uuid session_id FK "not_null"
+        integer sequence_no "not_null"
+        string role "not_null"
+    }
+    %% UNIQUE interaction_messages(id, session_id, role)
+    %% UNIQUE interaction_messages(session_id, sequence_no)
+    agent_tasks {
+        uuid id PK "not_null"
+        uuid request_message_id FK "not_null"
+        uuid session_id FK "not_null"
+        string request_role FK "not_null"
+    }
+    %% UNIQUE agent_tasks(id, session_id)
+    task_results {
+        uuid id PK "not_null"
+        uuid task_id FK "not_null"
+        uuid session_id FK "not_null"
+        integer result_no "not_null"
+    }
+    %% UNIQUE task_results(id, session_id)
+    %% UNIQUE task_results(task_id, result_no)
+    result_citations {
+        uuid id PK "not_null"
+        uuid result_id FK "not_null"
+        integer citation_no "not_null"
+        uuid version_id FK "not_null"
+        uuid chunk_id FK "nullable"
+    }
+    %% UNIQUE result_citations(result_id, citation_no)
+    document_milestones {
+        uuid id PK "not_null"
+        uuid version_id FK "not_null"
+    }
+    document_file_sources {
+        uuid file_id PK,FK "not_null"
+        uuid source_file_id PK,FK "not_null"
+        uuid version_id FK "not_null"
+    }
+    message_result_links {
+        uuid message_id PK,FK "not_null"
+        uuid result_id PK,FK "not_null"
+        uuid session_id FK "not_null"
+        string message_role FK "not_null"
+    }
+    document_version_relations {
+        uuid from_version_id PK,FK "not_null"
+        uuid to_version_id PK,FK "not_null"
+        string relation_type PK "not_null"
+    }
+    answer_feedback {
+        uuid id PK "not_null"
+        uuid message_id FK "not_null"
+        uuid session_id FK "not_null"
+        string message_role FK "not_null"
+        uuid version_id FK "nullable"
+    }
+    %% UNIQUE answer_feedback(id, version_id)
+    feedback_review_links {
+        uuid feedback_id PK,FK "not_null"
+        uuid verification_task_id PK,FK "not_null"
+        uuid version_id FK "not_null"
+    }
+    knowledge_categories ||--o{ knowledge_documents : category_id
+    knowledge_documents ||--o{ document_versions : document_id
+    document_versions ||--o{ document_files : version_id
+    document_versions ||--o{ applicability_rules : version_id
+    applicability_rules ||--o{ applicability_rule_values : rule_id
+    document_files ||--o{ knowledge_chunks : file_id_version_id
+    document_files o|--o{ knowledge_chunks : original_file_id_version_id
+    document_versions ||--o{ knowledge_chunks : version_id
+    business_directions ||--o{ document_business_directions : direction_id
+    knowledge_documents ||--o{ document_business_directions : document_id
+    document_files o|--o{ verification_records : file_id_version_id
+    document_versions ||--o{ verification_records : version_id
+    verification_records o|--o{ verification_tasks : completion_record_id_version_id
+    verification_records o|--o{ verification_tasks : completion_record_id_version_id_file_id
+    document_files o|--o{ verification_tasks : file_id_version_id
+    document_versions ||--o{ verification_tasks : version_id
+    users o|--o{ conversation_sessions : user_id
+    conversation_sessions ||--o{ interaction_messages : session_id
+    interaction_messages ||--o{ agent_tasks : request_message_id_session_id_request_role
+    conversation_sessions ||--o{ agent_tasks : session_id
+    conversation_sessions ||--o{ task_results : session_id
+    agent_tasks ||--o{ task_results : task_id_session_id
+    knowledge_chunks o|--o{ result_citations : chunk_id_version_id
+    task_results ||--o{ result_citations : result_id
+    document_versions ||--o{ result_citations : version_id
+    document_versions ||--o{ document_milestones : version_id
+    document_files ||--o{ document_file_sources : file_id_version_id
+    document_files ||--o{ document_file_sources : source_file_id_version_id
+    document_versions ||--o{ document_file_sources : version_id
+    interaction_messages ||--o{ message_result_links : message_id_session_id_message_role
+    task_results ||--o{ message_result_links : result_id_session_id
+    conversation_sessions ||--o{ message_result_links : session_id
+    document_versions ||--o{ document_version_relations : from_version_id
+    document_versions ||--o{ document_version_relations : to_version_id
+    interaction_messages ||--o{ answer_feedback : message_id_session_id_message_role
+    conversation_sessions ||--o{ answer_feedback : session_id
+    document_versions o|--o{ answer_feedback : version_id
+    answer_feedback ||--o{ feedback_review_links : feedback_id_version_id
+    verification_tasks ||--o{ feedback_review_links : verification_task_id_version_id
+    document_versions ||--o{ feedback_review_links : version_id
