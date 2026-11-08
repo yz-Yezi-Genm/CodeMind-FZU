@@ -1,0 +1,81 @@
+{
+  "修正内容": "从DIRECTIONS源常量调整第三、第四方向，并用原生成器重新生成SQL与JSON",
+  "生成输入": "v1.2 JSON内的44条原37列快照；149个文件从本地知识库只读校验；不使用后来扩展的46列索引替换原输入",
+  "最终方向": [
+    {
+      "id": "1c0fe3df-94e0-569b-8a52-39e51354a15b",
+      "code": "POLICY_AFFAIRS",
+      "name": "政策与事务办理",
+      "delivery_stage": "v1",
+      "sort_order": 1
+    },
+    {
+      "id": "297b5f7e-bfce-516c-b48c-0a66eb21e0d6",
+      "code": "EDUCATION_CAREER",
+      "name": "升学与就业发展",
+      "delivery_stage": "v1",
+      "sort_order": 2
+    },
+    {
+      "id": "9f8f7b64-af21-5c63-aab1-70e8b11310c4",
+      "code": "COMPETITION_RESEARCH",
+      "name": "竞赛与科研信息",
+      "delivery_stage": "v1",
+      "sort_order": 3
+    },
+    {
+      "id": "057ba57f-e84e-570b-833c-565708ed8c61",
+      "code": "COLLEGE_RESOURCES",
+      "name": "学院资源导航",
+      "delivery_stage": "v1",
+      "sort_order": 4
+    },
+    {
+      "id": "6fb9364c-3f49-54a6-b134-e0e33e5c95c0",
+      "code": "GROWTH_PLANNING",
+      "name": "个人成长档案与长期规划",
+      "delivery_stage": "future",
+      "sort_order": 5
+    }
+  ],
+  "核对结果": {
+    "SQL语法解析": "通过",
+    "SQL与JSON方向顺序一致": true,
+    "sort_order连续1到5": true,
+    "阶段为前四v1第五future": true,
+    "五条方向id代码名称不变": true,
+    "JSON其余22表逐项不变": true,
+    "SQL非方向INSERT逐行不变": true,
+    "文档版本记录": 44,
+    "原登记文件记录": 149,
+    "文档方向关联记录": 53,
+    "所有检索状态仍blocked": true
+  },
+  "状态": "本地审核包重新生成核对通过，已在PR请求王智洋确认采纳，收到回复前不视为其工作副本已同步",
+  "文件": [
+    {
+      "path": "knowledge-base/入库预览_44条.json",
+      "原sha256": "e049ad108ad121a28ca3e2742b0d31162ae1a2b49b9c1cb01e39f23ca1bd08fb",
+      "修正sha256": "e5ad0921832bb36c8a5a12af57862a112ef865a3c68708da16f9e6d2b4325db1",
+      "bytes": 322582
+    },
+    {
+      "path": "knowledge-base/首版资料覆盖清单_v1.2.md",
+      "原sha256": "7b2f9789b0570a0df81ef48605e754fdfa3588dfef4ede21fca90de3103634a4",
+      "修正sha256": "71b04f5a49fab3f53867b0eb398446d0e4f7df156d94983737856ec69006fb8d",
+      "bytes": 14869
+    },
+    {
+      "path": "source/build_deliverables.py",
+      "原sha256": "82cc5000a5b685343019fd2a800a7a958b975c9cd8a9195c133a66404133b7a3",
+      "修正sha256": "a27609a491d4abf646ed930f0e17c431bfd47ba5bccf9e7fbd0bbd413f42030b",
+      "bytes": 18349
+    },
+    {
+      "path": "sql/02_review_seed_44.sql",
+      "原sha256": "fe44a1fe30ebbe2acc5d34151080edf17df2ecbfd08c75d64d26b743a3b1a498",
+      "修正sha256": "133d39beef620084696fd307c8a924cabb3061fe6205c32ea659e8f9d44f14b8",
+      "bytes": 286475
+    }
+  ]
+}
