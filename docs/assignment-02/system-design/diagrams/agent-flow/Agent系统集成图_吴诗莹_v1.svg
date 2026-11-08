@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1600" viewBox="0 0 2000 1600">
+<rect width="100%" height="100%" fill="white"/>
+<text x="48" y="43.480000000000004" text-anchor="start" font-family="Microsoft YaHei" font-size="18" font-weight="700" fill="#087E82">CODEMIND-FZU  /  AGENT DESIGN</text>
+<text x="48" y="93.24" text-anchor="start" font-family="Microsoft YaHei" font-size="34" font-weight="700" fill="#182D45">Agent 与软件系统集成</text>
+<text x="48" y="130.34" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">v1.0 采用单体 FastAPI：前端不直连模型、索引或联网工具。</text>
+<polyline points="48,155 1952,155" fill="none" stroke="#B7C5D6" stroke-width="2"/>
+<rect x="48" y="185" width="360" height="1300" rx="14" fill="#F3F6FA" stroke="#53677F" stroke-width="1.6"/>
+<text x="64" y="214.2" text-anchor="start" font-family="Microsoft YaHei" font-size="20" font-weight="700" fill="#53677F">用户与 Web 入口</text>
+<rect x="438" y="185" width="920" height="1300" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="454" y="214.2" text-anchor="start" font-family="Microsoft YaHei" font-size="20" font-weight="700" fill="#087E82">单体 FastAPI 应用边界</text>
+<rect x="1388" y="185" width="564" height="1300" rx="14" fill="#F3F6FA" stroke="#53677F" stroke-width="1.6"/>
+<text x="1404" y="214.2" text-anchor="start" font-family="Microsoft YaHei" font-size="20" font-weight="700" fill="#53677F">本地与外部能力</text>
+<rect x="88" y="285" width="280" height="105" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="228.0" y="330.15" text-anchor="middle" font-family="Microsoft YaHei" font-size="21" font-weight="400" fill="#182D45">学生用户</text>
+<text x="228.0" y="359.96999999999997" text-anchor="middle" font-family="Microsoft YaHei" font-size="21" font-weight="400" fill="#182D45">提交问题 / 查看回答</text>
+<rect x="88" y="485" width="280" height="115" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="228.0" y="521.3000000000001" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">HTML / CSS / JS</text>
+<text x="228.0" y="549.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Web 前端</text>
+<text x="228.0" y="578.1" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">保留上下文并重新提交</text>
+<rect x="515" y="260" width="350" height="115" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="690.0" y="296.3" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Ask API  /api/ask</text>
+<text x="690.0" y="324.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">参数校验、异常处理</text>
+<text x="690.0" y="353.1" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">返回 answerStatus</text>
+<rect x="940" y="260" width="330" height="115" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1105.0" y="296.3" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">TaskRouter + Clarifier</text>
+<text x="1105.0" y="324.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">任务识别、策略路由</text>
+<text x="1105.0" y="353.1" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">必要时主动追问</text>
+<rect x="650" y="500" width="440" height="135" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="870.0" y="544.18" text-anchor="middle" font-family="Microsoft YaHei" font-size="22" font-weight="400" fill="#182D45">AgentOrchestrator</text>
+<text x="870.0" y="575.42" text-anchor="middle" font-family="Microsoft YaHei" font-size="22" font-weight="400" fill="#182D45">受控任务编排</text>
+<text x="870.0" y="606.66" text-anchor="middle" font-family="Microsoft YaHei" font-size="22" font-weight="400" fill="#182D45">不作为独立微服务</text>
+<rect x="515" y="760" width="350" height="125" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="690.0" y="801.3000000000001" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">HybridRetriever</text>
+<text x="690.0" y="829.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Chroma + BM25 + RRF</text>
+<text x="690.0" y="858.1" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">本地资料优先</text>
+<rect x="940" y="760" width="330" height="125" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="1105.0" y="802.36" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">EvidenceVerifier</text>
+<text x="1105.0" y="829.34" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">生成前证据筛选</text>
+<text x="1105.0" y="856.32" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">输出核验证据与政策状态</text>
+<rect x="515" y="1030" width="350" height="125" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="690.0" y="1072.36" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">AnswerVerifier</text>
+<text x="690.0" y="1099.34" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">生成后复核回答、引用</text>
+<text x="690.0" y="1126.32" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">与 policyStatus</text>
+<rect x="940" y="1030" width="330" height="125" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="1105.0" y="1072.36" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">AnswerComposer</text>
+<text x="1105.0" y="1099.34" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">组织答案、来源、限制</text>
+<text x="1105.0" y="1126.32" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">和下一步建议</text>
+<rect x="1450" y="330" width="440" height="135" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1670.0" y="376.3" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">本地知识资产与索引</text>
+<text x="1670.0" y="404.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">官方原文 / 整理稿 / CSV</text>
+<text x="1670.0" y="433.1" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Chroma + BM25（统一版本）</text>
+<rect x="1450" y="680" width="440" height="115" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="1670.0" y="716.3000000000001" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">LLMAdapter / Qwen API</text>
+<text x="1670.0" y="744.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">只基于已核验证据</text>
+<text x="1670.0" y="773.1" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">生成回答草稿</text>
+<rect x="1450" y="970" width="440" height="125" rx="14" fill="#FFF5E5" stroke="#A96712" stroke-width="1.6"/>
+<text x="1670.0" y="1011.3000000000001" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Tavily（候选能力）</text>
+<text x="1670.0" y="1039.7" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">仅由 EvidenceVerifier 按需调用</text>
+<text x="1670.0" y="1068.1000000000001" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">结果回到核验流程</text>
+<rect x="1450" y="1240" width="440" height="105" rx="14" fill="#FFFFFF" stroke="#B7C5D6" stroke-width="1.6"/>
+<text x="1670.0" y="1272.36" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">质量保障</text>
+<text x="1670.0" y="1299.34" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">离线测试、失败降级</text>
+<text x="1670.0" y="1326.32" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">调用日志与资料更新记录</text>
+<polyline points="228.0,390 228.0,485" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="228.0,485 233.0,473.0 223.0,473.0" fill="#53677F"/>
+<polyline points="368,542.5 515,317.5" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="515,317.5 504.250785991796,324.81125148013876 512.6224479919549,330.2807373202425" fill="#53677F"/>
+<rect x="391.25" y="402.0" width="100.5" height="26" fill="white"/>
+<text x="441.5" y="420.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">请求 / 响应</text>
+<polyline points="865,317.5 940,317.5" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="940,317.5 928.0,312.5 928.0,322.5" fill="#53677F"/>
+<polyline points="1105.0,375 870.0,500" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="870.0,500 882.9425335352831,498.77900627025633 878.2464038054997,489.9502823782635" fill="#53677F"/>
+<polyline points="870.0,635 870,690 690,690 690.0,760" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="690.0,760 695.0,748.0 685.0,748.0" fill="#53677F"/>
+<rect x="730.0" y="662.0" width="100.0" height="26" fill="white"/>
+<text x="780.0" y="680.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">策略与查询</text>
+<polyline points="865,822.5 900,822 900,930 1380,930 1380,397 1450,397.5" fill="none" stroke="#285FC7" stroke-width="2"/>
+<polygon points="1450,397.5 1438.036019485406,392.4144154469308 1437.9645927360652,402.41416035465113" fill="#285FC7"/>
+<rect x="1176.0" y="897.0" width="118.0" height="26" fill="white"/>
+<text x="1235" y="915.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#285FC7">读取活动版本</text>
+<polyline points="865,822.5 940,822.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="940,822.5 928.0,817.5 928.0,827.5" fill="#087E82"/>
+<rect x="860.0" y="794.5" width="85.0" height="26" fill="white"/>
+<text x="902.5" y="812.98" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">RRF 候选</text>
+<polyline points="1270,822.5 1380,822 1380,1032 1450,1032.5" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1450,1032.5 1438.036019485406,1027.4144154469307 1437.9645927360652,1037.4141603546511" fill="#A96712"/>
+<rect x="1321.0" y="907.0" width="118.0" height="26" fill="white"/>
+<text x="1380" y="925.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">按需双向核验</text>
+<polyline points="1105.0,760 1105,690 1135,690 1135,568 1090,567.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="1090,567.5 1101.9437072013216,572.6330164902423 1102.0548114543572,562.6336337170429" fill="#087E82"/>
+<rect x="1165.0" y="632.0" width="150.0" height="26" fill="white"/>
+<text x="1240" y="650.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">verifiedEvidence</text>
+<rect x="1128.50390625" y="657.56" width="222.9921875" height="26" fill="white"/>
+<text x="1240" y="676.04" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">citationIds / policyStatus</text>
+<polyline points="1090,567.5 1375,568 1375,737 1450,737.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="1450,737.5 1438.0335992503954,732.4201128851261 1437.966934065161,742.419890670311" fill="#087E82"/>
+<rect x="1161.25" y="539.75" width="142.5" height="26" fill="white"/>
+<text x="1232.5" y="558.23" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">问题 + 核验证据</text>
+<polyline points="1450,737.5 1325,737 1325,1210 690,1210 690.0,1155" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="690.0,1155 685.0,1167.0 695.0,1167.0" fill="#087E82"/>
+<rect x="969.0" y="1177.0" width="82.0" height="26" fill="white"/>
+<text x="1010" y="1195.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">回答草稿</text>
+<polyline points="865,1092.5 940,1092.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="940,1092.5 928.0,1087.5 928.0,1097.5" fill="#087E82"/>
+<rect x="852.5" y="1064.5" width="100.0" height="26" fill="white"/>
+<text x="902.5" y="1082.98" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">复核后结果</text>
+<polyline points="1105.0,1030 1310,1030 1310,430 690,430 690.0,375" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="690.0,375 685.0,387.0 695.0,387.0" fill="#087E82"/>
+<rect x="999.0" y="397.0" width="82.0" height="26" fill="white"/>
+<text x="1040" y="415.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">最终响应</text>
+<text x="480" y="1393.06" text-anchor="start" font-family="Microsoft YaHei" font-size="21" font-weight="700" fill="#087E82">集成原则</text>
+<text x="480" y="1434.34" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">前端只调用 FastAPI；Agent 决定流程但不直接采信工具结果；</text>
+<text x="480" y="1461.32" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">EvidenceVerifier 约束生成输入，AnswerVerifier 约束生成输出。</text>
+<text x="48" y="1571.76" text-anchor="start" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#53677F">吴诗莹  ·  对齐赵紫龙技术架构 v1.0  ·  2026-11-09</text>
+<text x="48" y="1576" font-family="Microsoft YaHei" font-size="16" fill="#53677F">吴诗莹  ·  对齐赵紫龙技术架构 v1.0  ·  2026-11-09</text>
+</svg>
