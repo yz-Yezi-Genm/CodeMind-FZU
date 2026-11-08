@@ -54,7 +54,7 @@ rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as Syst
   ' ---- 抽象基用例（统一查询目标） ----
   usecase "查询校园事务信息" as UC_Query
 
-  ' ---- 四大核心场景 + 培养方案（用户目标层） ----
+  ' ---- 查询类用例（用户目标层） ----
   usecase "查询竞赛认定信息" as UC_Competition
   usecase "查询奖学金申请信息" as UC_Scholarship
   usecase "查询保研推免条件" as UC_Postgrad
@@ -97,6 +97,8 @@ legend bottom right
   | 泛化 △ 场景查询是「查询校园事务信息」的特例 |
   | <<extend>> 可选扩展交互 |
   | <<include>> 必然包含的用例 |
+  | 竞赛认定 / 奖学金 / 保研 = 代表性测试任务 |
+  | 交换与出国 = 资料不足，非首版确定交付 |
 endlegend
 
 @enduml
