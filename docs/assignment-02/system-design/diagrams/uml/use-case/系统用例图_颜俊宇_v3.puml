@@ -1,9 +1,10 @@
 @startuml 系统用例图
 ' ============================================
 ' CodeMind-FZU 系统用例图
-' 负责人：颜俊宇  版本：v3.0
+' 负责人：颜俊宇  版本：v3.1
 ' 建模原则：先定边界 → 再定参与者(角色) → 用例=用户目标 → 关系能少则少
-' 作业要求：覆盖四大场景 + 体现补充信息/查看依据/知识库管理等交互
+' 业务范围：五大业务方向，首版优先支持前四个方向的有资料依据查询与导航；
+'           竞赛认定/奖学金/保研为三个代表性测试任务；交换与出国资料不足、非首版确定交付
 ' ============================================
 
 skinparam backgroundColor #FFFFFF
@@ -20,12 +21,13 @@ skinparam package {
   FontSize 20
 }
 
-skinparam rectangle {
+skinparam actor {
   BackgroundColor #E8EAF6
   BorderColor #3949AB
   BorderThickness 2
   FontColor #1A237E
   FontStyle bold
+  FontSize 15
 }
 
 skinparam usecase {
@@ -44,9 +46,9 @@ skinparam ArrowThickness 1.5
 hide empty members
 left to right direction
 
-' ============ 参与者（角色） ============
-rectangle "学生\n（查询者）" as Student <<actor>>
-rectangle "知识库管理员\n（内容维护者）" as KbAdmin <<actor>>
+' ============ 参与者（角色，标准 actor 符号） ============
+actor "学生\n（查询者）" as Student
+actor "知识库管理员\n（内容维护者）" as KbAdmin
 
 ' ============ 系统边界 ============
 rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as System {
@@ -70,9 +72,9 @@ rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as Syst
   usecase "核验资料时效与来源" as UC_Verify
 }
 
-' ============ 关联 ============
-Student --> UC_Query
-KbAdmin --> UC_KB
+' ============ 关联（普通实线，无箭头） ============
+Student -- UC_Query
+KbAdmin -- UC_KB
 
 ' ============ 布局约束：学生拉到左侧 ============
 Student -[hidden]down- UC_Competition
@@ -93,7 +95,7 @@ UC_KB ..> UC_Verify : <<include>>
 
 legend bottom right
   | 关系图例 |
-  | 关联 —— 参与者与用例交互 |
+  | 关联 —— 参与者与用例交互（实线无箭头） |
   | 泛化 △ 场景查询是「查询校园事务信息」的特例 |
   | <<extend>> 可选扩展交互 |
   | <<include>> 必然包含的用例 |
