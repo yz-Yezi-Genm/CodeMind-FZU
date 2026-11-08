@@ -1,0 +1,102 @@
+@startuml 系统用例图
+' ============================================
+' CodeMind-FZU 系统用例图
+' 负责人：颜俊宇  版本：v3.0
+' 建模原则：先定边界 → 再定参与者(角色) → 用例=用户目标 → 关系能少则少
+' 作业要求：覆盖四大场景 + 体现补充信息/查看依据/知识库管理等交互
+' ============================================
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName "Microsoft YaHei"
+skinparam packageStyle rectangle
+
+skinparam package {
+  BackgroundColor #F7F9FC
+  BorderColor #3949AB
+  BorderThickness 2
+  FontColor #1A237E
+  FontStyle bold
+  FontSize 20
+}
+
+skinparam rectangle {
+  BackgroundColor #E8EAF6
+  BorderColor #3949AB
+  BorderThickness 2
+  FontColor #1A237E
+  FontStyle bold
+}
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #5C6BC0
+  BorderThickness 2
+  FontColor #212121
+  FontSize 15
+}
+
+skinparam ArrowColor #78909C
+skinparam ArrowFontColor #78909C
+skinparam ArrowFontSize 12
+skinparam ArrowThickness 1.5
+
+hide empty members
+left to right direction
+
+' ============ 参与者（角色） ============
+rectangle "学生\n（查询者）" as Student <<actor>>
+rectangle "知识库管理员\n（内容维护者）" as KbAdmin <<actor>>
+
+' ============ 系统边界 ============
+rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as System {
+
+  ' ---- 抽象基用例（统一查询目标） ----
+  usecase "查询校园事务信息" as UC_Query
+
+  ' ---- 四大核心场景 + 培养方案（用户目标层） ----
+  usecase "查询竞赛认定信息" as UC_Competition
+  usecase "查询奖学金申请信息" as UC_Scholarship
+  usecase "查询保研推免条件" as UC_Postgrad
+  usecase "查询交换与出国项目信息" as UC_Exchange
+  usecase "查询培养方案与选课信息" as UC_Curriculum
+
+  ' ---- 扩展交互（作业要求体现的交互） ----
+  usecase "补充信息追问" as UC_Followup
+  usecase "查看回答依据" as UC_Evidence
+
+  ' ---- 知识库管理员目标 ----
+  usecase "维护知识库资料" as UC_KB
+  usecase "核验资料时效与来源" as UC_Verify
+}
+
+' ============ 关联 ============
+Student --> UC_Query
+KbAdmin --> UC_KB
+
+' ============ 布局约束：学生拉到左侧 ============
+Student -[hidden]down- UC_Competition
+
+' ============ 泛化：场景查询是「查询校园事务信息」的特例 ============
+UC_Competition --|> UC_Query
+UC_Scholarship --|> UC_Query
+UC_Postgrad --|> UC_Query
+UC_Exchange --|> UC_Query
+UC_Curriculum --|> UC_Query
+
+' ============ extend：可选交互扩展自查询 ============
+UC_Followup ..> UC_Query : <<extend>>
+UC_Evidence ..> UC_Query : <<extend>>
+
+' ============ include：维护必然包含核验 ============
+UC_KB ..> UC_Verify : <<include>>
+
+legend bottom right
+  | 关系图例 |
+  | 关联 —— 参与者与用例交互 |
+  | 泛化 △ 场景查询是「查询校园事务信息」的特例 |
+  | <<extend>> 可选扩展交互 |
+  | <<include>> 必然包含的用例 |
+endlegend
+
+@enduml
