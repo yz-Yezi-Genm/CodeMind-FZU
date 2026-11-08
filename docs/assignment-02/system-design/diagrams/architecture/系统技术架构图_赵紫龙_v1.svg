@@ -50,24 +50,26 @@
 <text x="820" y="694" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2a 候选</text>
 <polyline points="1005,720 1005,705 1045,705 1045,720" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="940" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2b 候选</text>
-<polyline points="1315,777 1355,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1300" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8 融合结果</text>
+<polyline points="1315,777 1330,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1322" y="871" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8 融合结果</text>
 <polyline points="1470,835 1288,935" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="1450" y="916" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8.1 查询请求</text>
 <polyline points="1310,935 1480,835" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="1440" y="891" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8.2 返回结果</text>
+<polyline points="1390,720 1390,650 1265,650 1265,615" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1370" y="676" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 核验证据返回</text>
 <polyline points="1140,590 1140,650 1030,650 1030,900 965,935" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1015" y="881" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">9 问题 + 证据</text>
-<polyline points="1105,980 1120,980 1120,900 1400,900 1400,835" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1200" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">9.1 回答草稿</text>
-<polyline points="1650,720 1650,615" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1720" y="674" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 核验后结果</text>
+<text x="1015" y="881" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10 问题 + 验证证据</text>
+<polyline points="965,1050 965,1085 1835,1085 1835,835 1810,835" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1500" y="1101" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.1 回答草稿</text>
+<polyline points="1700,720 1700,615" fill="none" stroke="#B93C4F" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1750" y="674" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">11 复核后结果</text>
 <polyline points="1550,500 1460,500 1460,440 820,440 820,403" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1200" y="446" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">11 响应</text>
+<text x="1200" y="446" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 响应</text>
 <polyline points="490,346 440,346" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="500" y="276" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 返回 Frontend</text>
+<text x="500" y="276" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">13 返回 Frontend</text>
 <polyline points="310,325 310,237" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="400" y="316" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">13 展示回答</text>
+<text x="400" y="316" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">14 展示回答</text>
 <polyline points="465,992 505,992" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="485" y="1091" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">建立向量索引</text>
 <polyline points="645,935 565,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
@@ -108,8 +110,8 @@
 <text x="245.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">年级、专业、年份、用途</text>
 <rect x="430" y="500" width="290" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
 <text x="575.0" y="543" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">策略选择与路由</text>
-<text x="575.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">三类首版场景</text>
-<text x="575.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">交换出国不纳入首版交付</text>
+<text x="575.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">覆盖五大业务方向</text>
+<text x="575.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">前四优先 / 第五后续</text>
 <rect x="760" y="500" width="290" height="115" rx="16" fill="#FCEBEF" stroke="#B93C4F" stroke-width="2"/>
 <text x="905.0" y="543" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">主动追问</text>
 <text x="905.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">缺关键信息时返回前端</text>
@@ -138,10 +140,14 @@
 <text x="1180.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">RRF 融合排序</text>
 <text x="1180.0" y="795" text-anchor="middle" font-size="16" fill="#5B6578">融合两路候选</text>
 <text x="1180.0" y="822" text-anchor="middle" font-size="16" fill="#5B6578">去重并保留召回依据</text>
-<rect x="1355" y="720" width="460" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
-<text x="1585.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">证据核验</text>
-<text x="1585.0" y="795" text-anchor="middle" font-size="16" fill="#5B6578">来源 / 日期 / 适用范围 / 时效</text>
-<text x="1585.0" y="822" text-anchor="middle" font-size="16" fill="#5B6578">无依据或冲突时拒绝确定结论</text>
+<rect x="1330" y="720" width="250" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
+<text x="1455.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">生成前证据核验</text>
+<text x="1455.0" y="795" text-anchor="middle" font-size="16" fill="#5B6578">来源 / 日期 / 适用范围 / 时效</text>
+<text x="1455.0" y="822" text-anchor="middle" font-size="16" fill="#5B6578">无依据或冲突时拒绝</text>
+<rect x="1590" y="720" width="220" height="115" rx="16" fill="#FFFFFF" stroke="#B93C4F" stroke-width="2"/>
+<text x="1700.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">生成后回答复核</text>
+<text x="1700.0" y="795" text-anchor="middle" font-size="16" fill="#5B6578">回答 / 引用 / 状态一致性</text>
+<text x="1700.0" y="822" text-anchor="middle" font-size="16" fill="#5B6578">复核不通过则不返回</text>
 <rect x="95" y="935" width="370" height="115" rx="16" fill="#FFFFFF" stroke="#C46A12" stroke-width="2"/>
 <text x="280.0" y="978" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">本地知识资产</text>
 <text x="280.0" y="1010" text-anchor="middle" font-size="16" fill="#5B6578">原始资料 + 中文整理稿</text>
@@ -171,8 +177,9 @@
 <text x="960" y="40" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">CodeMind-FZU 系统技术架构图</text>
 <text x="960" y="81" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">基于 2026-10-24 开题答辩方案 · 本地知识优先 · 可追溯回答</text>
 <text x="960" y="1209" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  Draw.io / SVG / PNG 由同一场景模型生成</text>
-<rect x="1440" y="32" width="380" height="98" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1456" y="59" font-size="17" font-weight="700" fill="#172033">版本边界</text>
-<text x="1456" y="85" font-size="14" fill="#5B6578">v1.0：竞赛、奖学金、推免查询</text>
-<text x="1456" y="106" font-size="14" fill="#5B6578">交换出国：资料缺口，不作首版交付</text>
-<text x="1456" y="127" font-size="14" fill="#5B6578">候选：Tavily 联网核验，非硬依赖</text>
+<rect x="1410" y="24" width="410" height="130" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1426" y="51" font-size="17" font-weight="700" fill="#172033">业务范围</text>
+<text x="1426" y="77" font-size="14" fill="#5B6578">1 政策事务 · 2 升学就业</text>
+<text x="1426" y="98" font-size="14" fill="#5B6578">3 学院资源 · 4 竞赛科研</text>
+<text x="1426" y="119" font-size="14" fill="#5B6578">5 成长规划：后续迭代</text>
+<text x="1426" y="140" font-size="14" fill="#5B6578">测试任务数量 ≠ 业务方向数量</text>
 </svg>
