@@ -1,10 +1,10 @@
 @startuml 系统用例图
 ' ============================================
 ' CodeMind-FZU 系统用例图
-' 负责人：颜俊宇  版本：v3.1
+' 负责人：颜俊宇  版本：v3.2
 ' 建模原则：先定边界 → 再定参与者(角色) → 用例=用户目标 → 关系能少则少
-' 业务范围：五大业务方向，首版优先支持前四个方向的有资料依据查询与导航；
-'           竞赛认定/奖学金/保研为三个代表性测试任务；交换与出国资料不足、非首版确定交付
+' 业务范围：对齐整体功能蓝图五大方向，首版优先支持前四个方向的有资料依据查询与导航；
+'           竞赛认定/奖学金申请/推免基本条件为三个代表性测试任务
 ' ============================================
 
 skinparam backgroundColor #FFFFFF
@@ -56,12 +56,11 @@ rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as Syst
   ' ---- 抽象基用例（统一查询目标） ----
   usecase "查询校园事务信息" as UC_Query
 
-  ' ---- 查询类用例（用户目标层） ----
+  ' ---- 查询类用例（对齐蓝图前四方向） ----
   usecase "查询竞赛认定信息" as UC_Competition
   usecase "查询奖学金申请信息" as UC_Scholarship
-  usecase "查询保研推免条件" as UC_Postgrad
-  usecase "查询交换与出国项目信息" as UC_Exchange
-  usecase "查询培养方案与选课信息" as UC_Curriculum
+  usecase "查询推免条件" as UC_Postgrad
+  usecase "查询学院资源信息" as UC_Resource
 
   ' ---- 扩展交互（作业要求体现的交互） ----
   usecase "补充信息追问" as UC_Followup
@@ -83,8 +82,7 @@ Student -[hidden]down- UC_Competition
 UC_Competition --|> UC_Query
 UC_Scholarship --|> UC_Query
 UC_Postgrad --|> UC_Query
-UC_Exchange --|> UC_Query
-UC_Curriculum --|> UC_Query
+UC_Resource --|> UC_Query
 
 ' ============ extend：可选交互扩展自查询 ============
 UC_Followup ..> UC_Query : <<extend>>
@@ -99,8 +97,7 @@ legend bottom right
   | 泛化 △ 场景查询是「查询校园事务信息」的特例 |
   | <<extend>> 可选扩展交互 |
   | <<include>> 必然包含的用例 |
-  | 竞赛认定 / 奖学金 / 保研 = 代表性测试任务 |
-  | 交换与出国 = 资料不足，非首版确定交付 |
+  | 竞赛认定 / 奖学金 / 推免 = 代表性测试任务 |
 endlegend
 
 @enduml
