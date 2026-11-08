@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3400" height="1730" viewBox="0 0 3400 1730">
+<rect width="100%" height="100%" fill="white"/>
+<text x="60" y="24" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="46" font-weight="700">图1  领域知识子模型（关键属性；完整字段见说明书）</text>
+<rect x="80" y="160" width="800" height="440" rx="16" fill="white" stroke="black" stroke-width="4"/>
+<text x="102" y="176" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700">知识分类</text>
+<text x="102" y="225" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">knowledge_categories</text>
+<polyline points="80,269 880,269" fill="none" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+<text x="102" y="292" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">id [PK]</text>
+<text x="102" y="334" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">name [UQ]</text>
+<text x="102" y="376" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">description</text>
+<text x="102" y="418" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">sort_order</text>
+<rect x="1260" y="160" width="800" height="440" rx="16" fill="white" stroke="black" stroke-width="4"/>
+<text x="1282" y="176" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700">知识文档</text>
+<text x="1282" y="225" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">knowledge_documents</text>
+<polyline points="1260,269 2060,269" fill="none" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+<text x="1282" y="292" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">id [PK]</text>
+<text x="1282" y="334" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">category_id [FK]</text>
+<text x="1282" y="376" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">title</text>
+<text x="1282" y="418" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">document_type</text>
+<rect x="2440" y="160" width="800" height="440" rx="16" fill="white" stroke="black" stroke-width="4"/>
+<text x="2462" y="176" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700">文档版本</text>
+<text x="2462" y="225" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">document_versions</text>
+<polyline points="2440,269 3240,269" fill="none" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+<text x="2462" y="292" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">id [PK]</text>
+<text x="2462" y="334" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">document_id [FK]</text>
+<text x="2462" y="376" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">version_no</text>
+<text x="2462" y="418" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">source_url</text>
+<text x="2462" y="460" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">verification_status</text>
+<text x="2462" y="502" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">UQ: (document_id, version_no)</text>
+<rect x="80" y="1000" width="800" height="440" rx="16" fill="white" stroke="black" stroke-width="4"/>
+<text x="102" y="1016" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700">知识片段</text>
+<text x="102" y="1065" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">knowledge_chunks</text>
+<polyline points="80,1109 880,1109" fill="none" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+<text x="102" y="1132" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">id [PK]</text>
+<text x="102" y="1174" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">version_id [FK]</text>
+<text x="102" y="1216" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">file_id [FK]</text>
+<text x="102" y="1258" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">content</text>
+<text x="102" y="1300" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">locator</text>
+<text x="102" y="1342" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">index_status</text>
+<rect x="1260" y="1000" width="800" height="440" rx="16" fill="white" stroke="black" stroke-width="4"/>
+<text x="1282" y="1016" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700">适用规则</text>
+<text x="1282" y="1065" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">applicability_rules</text>
+<polyline points="1260,1109 2060,1109" fill="none" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+<text x="1282" y="1132" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">id [PK]</text>
+<text x="1282" y="1174" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">version_id [FK]</text>
+<text x="1282" y="1216" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">purpose</text>
+<text x="1282" y="1258" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">enrollment_mode / graduation_mode</text>
+<text x="1282" y="1300" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">major_mode / student_type_mode</text>
+<rect x="2440" y="1000" width="800" height="440" rx="16" fill="white" stroke="black" stroke-width="4"/>
+<text x="2462" y="1016" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700">文档文件</text>
+<text x="2462" y="1065" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">document_files</text>
+<polyline points="2440,1109 3240,1109" fill="none" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+<text x="2462" y="1132" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">id [PK]</text>
+<text x="2462" y="1174" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">version_id [FK]</text>
+<text x="2462" y="1216" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">file_role</text>
+<text x="2462" y="1258" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">storage_key [UQ]</text>
+<text x="2462" y="1300" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">sha256</text>
+<text x="2462" y="1342" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="400">processing_status</text>
+<polyline points="880,380 1260,380" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="1260,380 1236,368 1236,392" fill="black"/>
+<text x="970" y="324" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">1 : N</text>
+<polyline points="2060,380 2440,380" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="2440,380 2416,368 2416,392" fill="black"/>
+<text x="2150" y="324" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">1 : N</text>
+<polyline points="2580,600 2580,730 480,730 480,1000" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="480,1000 468,976 492,976" fill="black"/>
+<text x="1230" y="678" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">版本包含片段：1 : N</text>
+<polyline points="2840,600 2840,850 1660,850 1660,1000" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="1660,1000 1648,976 1672,976" fill="black"/>
+<text x="1970" y="796" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">版本限定适用范围：1 : N</text>
+<polyline points="3100,600 3100,1000" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="3100,1000 3088,976 3112,976" fill="black"/>
+<text x="3130" y="778" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">1 : N</text>
+<polyline points="2840,1440 2840,1530 480,1530 480,1440" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="480,1440 468,1464 492,1464" fill="black"/>
+<text x="1280" y="1478" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">文件产生片段：1 : N</text>
+<text x="60" y="1605" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">PK：主键；FK：外键；UQ：唯一约束。箭头从被引用实体指向持有外键的实体。</text>
+<text x="60" y="1660" dominant-baseline="text-before-edge" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="29" font-weight="400">1 : N表示一对多关系；外键是否必填以字段说明为准。片段与文件须属于同一版本。</text>
+</svg>
