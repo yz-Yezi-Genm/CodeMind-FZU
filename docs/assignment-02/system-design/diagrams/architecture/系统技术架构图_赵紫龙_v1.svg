@@ -12,64 +12,68 @@
 <text x="72" y="711" font-size="20" font-weight="700" fill="#1F5EFF">04  本地知识、混合检索与证据核验</text>
 <rect x="50" y="900" width="1820" height="190" rx="22" fill="#FFF1DF" stroke="#EDF1F6" stroke-width="2"/>
 <text x="72" y="931" font-size="20" font-weight="700" fill="#1F5EFF">05  外部模型、可选联网工具与验证资产</text>
-<rect x="50" y="1120" width="1820" height="60" rx="22" fill="#EDF1F6" stroke="#EDF1F6" stroke-width="2"/>
-<text x="72" y="1151" font-size="20" font-weight="700" fill="#1F5EFF">06  可信性、离线评测与运行日志</text>
-<polyline points="275,237 275,325" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="325" y="288" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">1 提问</text>
-<polyline points="655,237 335,935" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="495" y="756" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">资料维护</text>
-<polyline points="1065,237 280,935" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="650" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">官方原文</text>
+<rect x="50" y="1105" width="1820" height="85" rx="22" fill="#EDF1F6" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="1136" font-size="20" font-weight="700" fill="#1F5EFF">06  可信性、离线评测与运行日志</text>
+<polyline points="250,237 250,325" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="300" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">1 提问</text>
+<polyline points="490,200 460,200 460,430 60,430 60,900 335,900" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="720" y="656" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">资料维护</text>
+<polyline points="1065,237 1065,275 1860,275 1860,880 280,880 280,935" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="760" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">官方原文</text>
 <polyline points="440,364 490,364" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="465" y="352" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">2 请求</text>
+<text x="465" y="436" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">2 请求</text>
 <polyline points="655,403 655,500" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="705" y="461" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">3 分类</text>
+<text x="700" y="426" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">3 分类</text>
 <polyline points="390,557 430,557" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="410" y="545" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">4</text>
 <polyline points="720,557 760,557" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="740" y="545" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4a 缺信息</text>
-<polyline points="805,500 805,445 275,445 275,403" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="520" y="434" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4b 返回追问</text>
-<polyline points="185,237 185,325" fill="none" stroke="#1F5EFF" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="135" y="288" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">4c 补充后重提</text>
-<polyline points="430,385 490,385" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="460" y="374" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">4d 重新提交</text>
-<polyline points="720,557 1090,557" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="905" y="545" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">5 路由</text>
+<text x="740" y="486" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4a 缺信息</text>
+<polyline points="805,500 805,465 655,465 655,403" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="720" y="451" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4b 返回 FastAPI</text>
+<polyline points="570,403 570,380 465,380 440,364" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="570" y="444" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4c 返回 Frontend</text>
+<polyline points="220,325 220,237" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="170" y="288" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4d 展示追问</text>
+<polyline points="320,237 320,325" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="360" y="286" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">5 补充信息</text>
+<polyline points="430,394 490,394" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="445" y="471" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">5.1 重新提交</text>
+<polyline points="575,615 575,650 1265,650 1265,615" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="920" y="674" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">6 路由</text>
 <polyline points="1120,615 240,720" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="730" y="682" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6 检索计划</text>
+<text x="730" y="682" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7 检索计划</text>
 <polyline points="385,777 425,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="405" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6.1a</text>
-<polyline points="240,720 240,690 875,690 875,720" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="555" y="679" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6.1b</text>
-<polyline points="705,777 1045,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="875" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6.2a 候选</text>
-<polyline points="1005,777 1045,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1025" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6.2b 候选</text>
+<text x="405" y="871" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.1a</text>
+<polyline points="240,835 240,860 875,860 875,835" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="650" y="884" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.1b</text>
+<polyline points="565,720 565,700 1180,700 1180,720" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="820" y="694" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2a 候选</text>
+<polyline points="1005,720 1005,705 1045,705 1045,720" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="940" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2b 候选</text>
 <polyline points="1315,777 1355,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1335" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7 融合结果</text>
+<text x="1300" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8 融合结果</text>
 <polyline points="1470,835 1288,935" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1390" y="894" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8a 查询请求</text>
+<text x="1450" y="916" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8.1 查询请求</text>
 <polyline points="1310,935 1480,835" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1425" y="926" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8b 返回结果</text>
-<polyline points="1180,615 965,935" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1080" y="786" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">9 问题 + 证据</text>
-<polyline points="1105,980 1400,835" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1260" y="901" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">9.1 回答草稿</text>
+<text x="1440" y="891" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8.2 返回结果</text>
+<polyline points="1140,590 1140,650 1030,650 1030,900 965,935" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1015" y="881" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">9 问题 + 证据</text>
+<polyline points="1105,980 1120,980 1120,900 1400,900 1400,835" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1200" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">9.1 回答草稿</text>
 <polyline points="1650,720 1650,615" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1720" y="674" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 核验后结果</text>
-<polyline points="1550,615 820,388" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1200" y="476" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">11 响应</text>
-<polyline points="490,364 440,364" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="465" y="461" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 返回</text>
-<polyline points="275,325 275,237" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="225" y="288" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">13 展示回答</text>
+<polyline points="1550,500 1460,500 1460,440 820,440 820,403" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1200" y="446" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">11 响应</text>
+<polyline points="490,346 440,346" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="500" y="276" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 返回 Frontend</text>
+<polyline points="310,325 310,237" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="400" y="316" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">13 展示回答</text>
 <polyline points="465,992 505,992" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="485" y="981" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">建立向量索引</text>
+<text x="485" y="1091" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">建立向量索引</text>
 <polyline points="645,935 565,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="610" y="891" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">写向量</text>
-<polyline points="465,1005 875,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="660" y="936" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">建立关键词索引</text>
+<text x="560" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">写向量</text>
+<polyline points="465,1005 465,1090 805,1090 805,835 875,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="900" y="1091" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">建立关键词索引</text>
 <rect x="110" y="165" width="330" height="72" rx="16" fill="#FFFFFF" stroke="#1F5EFF" stroke-width="2"/>
 <text x="275.0" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">学生用户</text>
 <text x="275.0" y="220" text-anchor="middle" font-size="14" fill="#5B6578">统一提问 · 查看引用 · 补充信息</text>
@@ -104,8 +108,8 @@
 <text x="245.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">年级、专业、年份、用途</text>
 <rect x="430" y="500" width="290" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
 <text x="575.0" y="543" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">策略选择与路由</text>
-<text x="575.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">四类官方依据查询</text>
-<text x="575.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">v1.0 聚焦可靠问答</text>
+<text x="575.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">三类首版场景</text>
+<text x="575.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">交换出国不纳入首版交付</text>
 <rect x="760" y="500" width="290" height="115" rx="16" fill="#FCEBEF" stroke="#B93C4F" stroke-width="2"/>
 <text x="905.0" y="543" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">主动追问</text>
 <text x="905.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">缺关键信息时返回前端</text>
@@ -158,17 +162,17 @@
 <text x="1642.5" y="978" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">离线 PoC 与评测</text>
 <text x="1642.5" y="1010" text-anchor="middle" font-size="16" fill="#5B6578">来源追溯 / 事实正确性</text>
 <text x="1642.5" y="1037" text-anchor="middle" font-size="16" fill="#5B6578">任务适应 / 无依据处理</text>
-<rect x="95" y="1142" width="500" height="30" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
-<text x="345.0" y="1185" text-anchor="middle" font-size="18" font-weight="700" fill="#172033">离线测试 · 失败降级 · 调用日志 · 资料更新记录</text>
-<rect x="625" y="1142" width="530" height="30" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
-<text x="890.0" y="1185" text-anchor="middle" font-size="18" font-weight="700" fill="#172033">不采集成绩、密码、统一认证凭据或无关个人数据</text>
-<rect x="1185" y="1142" width="630" height="30" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
-<text x="1500.0" y="1185" text-anchor="middle" font-size="18" font-weight="700" fill="#172033">数据库仅作为后续设计议题，需与数据库负责人确认首版范围</text>
+<rect x="95" y="1128" width="520" height="42" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
+<text x="355.0" y="1171" text-anchor="middle" font-size="17" font-weight="700" fill="#172033">离线测试 · 失败降级 · 调用日志</text>
+<rect x="655" y="1128" width="520" height="42" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
+<text x="915.0" y="1171" text-anchor="middle" font-size="17" font-weight="700" fill="#172033">不采集成绩、密码或统一认证凭据</text>
+<rect x="1215" y="1128" width="600" height="42" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
+<text x="1515.0" y="1171" text-anchor="middle" font-size="17" font-weight="700" fill="#172033">数据库首版范围待数据库负责人确认</text>
 <text x="960" y="40" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">CodeMind-FZU 系统技术架构图</text>
 <text x="960" y="81" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">基于 2026-10-24 开题答辩方案 · 本地知识优先 · 可追溯回答</text>
 <text x="960" y="1209" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  Draw.io / SVG / PNG 由同一场景模型生成</text>
 <rect x="1440" y="32" width="380" height="98" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1456" y="59" font-size="17" font-weight="700" fill="#172033">版本边界</text>
-<text x="1456" y="85" font-size="14" fill="#5B6578">v1.0：四类官方资料查询与引用</text>
-<text x="1456" y="106" font-size="14" fill="#5B6578">候选：Tavily 联网核验，非硬依赖</text>
-<text x="1456" y="127" font-size="14" fill="#5B6578">数据库是否部署：待数据库负责人确认</text>
+<text x="1456" y="85" font-size="14" fill="#5B6578">v1.0：竞赛、奖学金、推免查询</text>
+<text x="1456" y="106" font-size="14" fill="#5B6578">交换出国：资料缺口，不作首版交付</text>
+<text x="1456" y="127" font-size="14" fill="#5B6578">候选：Tavily 联网核验，非硬依赖</text>
 </svg>

@@ -16,3 +16,5 @@
 > 说明：问答链路采用开题稿确定的 Chroma + BM25 + RRF + Qwen 方案。当前真实模型调用与混合检索联调仍待验证；数据库与完整 Web 管理端属于后续设计。
 
 Draw.io、SVG 和 PNG 均由 [`../../../source/tools/generate_zhaozilong_diagrams.py`](../../../source/tools/generate_zhaozilong_diagrams.py) 的同一场景模型生成，避免三种格式的消息连接漂移。
+
+知识维护流程在测试通过后由 `IndexPublisher` 激活新索引，并通过 `AgentQueryGateway` 向 Agent 暴露当前活动版本。首版范围以团队产品规划为准：竞赛认定、奖学金申请、推免基本条件三个场景确定交付；交换出国当前资料不足，不纳入首版。

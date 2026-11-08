@@ -106,7 +106,7 @@ def draw_scene(scene: dict, svg_path: Path, png_path: Path) -> None:
             radius=22, fill=color(band["fill"]), outline=color(band.get("stroke", "gray_soft")),
             width=2,
         )
-        text(draw, (band["x"] + 22, band["y"] + 23), band["label"], 20,
+        text(draw, (band["x"] + 22, band["y"] + 23), band["label"], band.get("size", 20),
              band.get("text", "blue"), True, "lm")
 
     for line in scene.get("messages", []):
@@ -202,7 +202,7 @@ def write_svg(scene: dict, path: Path) -> None:
             f'stroke="{color(band.get("stroke","gray_soft"))}" stroke-width="2"/>'
         )
         out.append(
-            f'<text x="{band["x"] + 22}" y="{band["y"] + 31}" font-size="20" '
+            f'<text x="{band["x"] + 22}" y="{band["y"] + 31}" font-size="{band.get("size",20)}" '
             f'font-weight="700" fill="{color(band.get("text","blue"))}">'
             f'{escape(band["label"])}</text>'
         )
@@ -279,7 +279,7 @@ def write_drawio(scene: dict) -> None:
             f'<mxCell id="band_{idx}" value="{escape(band["label"])}" '
             f'style="rounded=1;whiteSpace=wrap;html=1;fillColor={color(band["fill"])};'
             f'strokeColor={color(band.get("stroke","gray_soft"))};fontColor={color(band.get("text","blue"))};'
-            'fontSize=20;fontStyle=1;align=left;spacingLeft=18;" vertex="1" parent="1">'
+            f'fontSize={band.get("size",20)};fontStyle=1;align=left;spacingLeft=18;" vertex="1" parent="1">'
             f'<mxGeometry x="{band["x"]}" y="{band["y"]}" width="{band["w"]}" '
             f'height="{band["h"]}" as="geometry"/></mxCell>'
         )
@@ -305,17 +305,23 @@ def write_drawio(scene: dict) -> None:
             f'<mxCell id="{line["id"]}" value="{value}" '
             f'style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=1;html=1;'
             f'endArrow=block;strokeColor={color(line["stroke"])};strokeWidth={line.get("width",3)};'
-            f'{dash}fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" '
+            f'{dash}fontFamily=Microsoft YaHei;fontSize=16;" edge="1" parent="1" '
             f'source="{line["source"]}" target="{line["target"]}">'
             f'<mxGeometry relative="1" as="geometry">{waypoint_xml}</mxGeometry></mxCell>'
         )
     for idx, item in enumerate(scene.get("labels", [])):
+        label_width = item.get(
+            "w",
+            max(400, min(1500, int(len(item["text"]) * item.get("size", 18) * 1.2))),
+        )
+        label_height = item.get("h", max(44, int(item.get("size", 18) * 1.8)))
         cells.append(
             f'<mxCell id="label_{idx}" value="{escape(item["text"], {chr(34): "&quot;"})}" '
             f'style="text;html=1;align=center;verticalAlign=middle;fontColor={color(item.get("fill","ink"))};'
             f'fontSize={item.get("size",18)};fontStyle={1 if item.get("bold") else 0};" '
-            f'vertex="1" parent="1"><mxGeometry x="{item["xy"][0]-150}" y="{item["xy"][1]-15}" '
-            'width="300" height="30" as="geometry"/></mxCell>'
+            f'vertex="1" parent="1"><mxGeometry x="{item["xy"][0] - label_width / 2}" '
+            f'y="{item["xy"][1] - label_height / 2}" width="{label_width}" '
+            f'height="{label_height}" as="geometry"/></mxCell>'
         )
     for idx, legend in enumerate(scene.get("legends", [])):
         value = escape(legend["title"] + "\n" + "\n".join(legend["lines"]))
@@ -356,7 +362,7 @@ def architecture_scene() -> dict:
         node("poc", 870, 325, 390, 78, "现有原型与离线 PoC", ["Figma 原型已有", "9 项测试通过 · 非真实模型联调"], "orange_soft", "orange"),
         node("reserved", 1310, 325, 450, 78, "响应与追踪", ["requestId / citations", "answerStatus / limitations"], "white", "cyan"),
         node("classify", 100, 500, 290, 115, "任务识别", ["事务 / 机会 / 规划", "年级、专业、年份、用途"], "white", "purple"),
-        node("route", 430, 500, 290, 115, "策略选择与路由", ["四类官方依据查询", "v1.0 聚焦可靠问答"], "white", "purple"),
+        node("route", 430, 500, 290, 115, "策略选择与路由", ["三类首版场景", "交换出国不纳入首版交付"], "white", "purple"),
         node("clarify", 760, 500, 290, 115, "主动追问", ["缺关键信息时返回前端", "用户补充后重新提交"], "red_soft", "red"),
         node("agent", 1090, 500, 350, 115, "Agent 编排器", ["组织问题、证据与工具调用", "控制完整回答流程"], "white", "purple"),
         node("composer", 1480, 500, 335, 115, "回答组织", ["解释 / 引用 / 下一步建议", "冲突与不确定性提示"], "white", "purple"),
@@ -370,39 +376,41 @@ def architecture_scene() -> dict:
         node("qwen", 825, 935, 280, 115, "Qwen API", ["接收问题 + 证据", "返回回答草稿"], "white", "orange"),
         node("tavilyTool", 1145, 935, 285, 115, "Tavily（可选）", ["接收查询请求", "返回核验结果"], "white", "orange"),
         node("eval", 1470, 935, 345, 115, "离线 PoC 与评测", ["来源追溯 / 事实正确性", "任务适应 / 无依据处理"], "white", "orange"),
-        node("ops1", 95, 1142, 500, 30, "离线测试 · 失败降级 · 调用日志 · 资料更新记录", [], "white", "line", title_size=18),
-        node("ops2", 625, 1142, 530, 30, "不采集成绩、密码、统一认证凭据或无关个人数据", [], "white", "line", title_size=18),
-        node("ops3", 1185, 1142, 630, 30, "数据库仅作为后续设计议题，需与数据库负责人确认首版范围", [], "white", "line", title_size=18),
+        node("ops1", 95, 1128, 520, 42, "离线测试 · 失败降级 · 调用日志", [], "white", "line", title_size=17),
+        node("ops2", 655, 1128, 520, 42, "不采集成绩、密码或统一认证凭据", [], "white", "line", title_size=17),
+        node("ops3", 1215, 1128, 600, 42, "数据库首版范围待数据库负责人确认", [], "white", "line", title_size=17),
     ]
     flows = [
-        message("a01", "user", "web", [(275, 237), (275, 325)], "blue", "1 提问", (325, 282)),
-        message("a02", "maintainer", "local", [(655, 237), (335, 935)], "orange", "资料维护", (495, 750)),
-        message("a03", "sources", "local", [(1065, 237), (280, 935)], "blue", "官方原文", (650, 890)),
-        message("a04", "web", "api", [(440, 364), (490, 364)], "cyan", "2 请求", (465, 346)),
-        message("a05", "api", "classify", [(655, 403), (655, 500)], "purple", "3 分类", (705, 455)),
+        message("a01", "user", "web", [(250, 237), (250, 325)], "blue", "1 提问", (300, 250)),
+        message("a02", "maintainer", "local", [(490, 200), (460, 200), (460, 430), (60, 430), (60, 900), (335, 900)], "orange", "资料维护", (720, 650)),
+        message("a03", "sources", "local", [(1065, 237), (1065, 275), (1860, 275), (1860, 880), (280, 880), (280, 935)], "blue", "官方原文", (760, 890)),
+        message("a04", "web", "api", [(440, 364), (490, 364)], "cyan", "2 请求", (465, 430)),
+        message("a05", "api", "classify", [(655, 403), (655, 500)], "purple", "3 分类", (700, 420)),
         message("a06", "classify", "route", [(390, 557), (430, 557)], "purple", "4", (410, 539)),
-        message("a07", "route", "clarify", [(720, 557), (760, 557)], "red", "4a 缺信息", (740, 539), dashed=True),
-        message("a08", "clarify", "web", [(805, 500), (805, 445), (275, 445), (275, 403)], "red", "4b 返回追问", (520, 428), dashed=True),
-        message("a09", "user", "web", [(185, 237), (185, 325)], "blue", "4c 补充后重提", (135, 282), dashed=True),
-        message("a10", "web", "api", [(430, 385), (490, 385)], "cyan", "4d 重新提交", (460, 368)),
-        message("a11", "route", "agent", [(720, 557), (1090, 557)], "purple", "5 路由", (905, 539)),
-        message("a12", "agent", "hybrid", [(1120, 615), (240, 720)], "green", "6 检索计划", (730, 676)),
-        message("a13", "hybrid", "chroma", [(385, 777), (425, 777)], "green", "6.1a", (405, 759)),
-        message("a14", "hybrid", "bm25", [(240, 720), (240, 690), (875, 690), (875, 720)], "green", "6.1b", (555, 673)),
-        message("a15", "chroma", "rrf", [(705, 777), (1045, 777)], "green", "6.2a 候选", (875, 759)),
-        message("a16", "bm25", "rrf", [(1005, 777), (1045, 777)], "green", "6.2b 候选", (1025, 759)),
-        message("a17", "rrf", "verify", [(1315, 777), (1355, 777)], "green", "7 融合结果", (1335, 759)),
-        message("a18", "verify", "tavilyTool", [(1470, 835), (1288, 935)], "orange", "8a 查询请求", (1390, 888), dashed=True),
-        message("a19", "tavilyTool", "verify", [(1310, 935), (1480, 835)], "orange", "8b 返回结果", (1425, 920), dashed=True),
-        message("a20", "agent", "qwen", [(1180, 615), (965, 935)], "purple", "9 问题 + 证据", (1080, 780)),
-        message("a21", "qwen", "verify", [(1105, 980), (1400, 835)], "purple", "9.1 回答草稿", (1260, 895)),
-        message("a22", "verify", "composer", [(1650, 720), (1650, 615)], "green", "10 核验后结果", (1720, 668)),
-        message("a23", "composer", "api", [(1550, 615), (820, 388)], "cyan", "11 响应", (1200, 470)),
-        message("a24", "api", "web", [(490, 364), (440, 364)], "cyan", "12 返回", (465, 455)),
-        message("a25", "web", "user", [(275, 325), (275, 237)], "blue", "13 展示回答", (225, 282)),
-        message("a26", "local", "embedding", [(465, 992), (505, 992)], "orange", "建立向量索引", (485, 975)),
-        message("a27", "embedding", "chroma", [(645, 935), (565, 835)], "orange", "写向量", (610, 885)),
-        message("a28", "local", "bm25", [(465, 1005), (875, 835)], "orange", "建立关键词索引", (660, 930)),
+        message("a07", "route", "clarify", [(720, 557), (760, 557)], "red", "4a 缺信息", (740, 480), dashed=True),
+        message("a08", "clarify", "api", [(805, 500), (805, 465), (655, 465), (655, 403)], "red", "4b 返回 FastAPI", (720, 445), dashed=True),
+        message("a09", "api", "web", [(570, 403), (570, 380), (465, 380), (440, 364)], "red", "4c 返回 Frontend", (570, 438), dashed=True),
+        message("a10", "web", "user", [(220, 325), (220, 237)], "red", "4d 展示追问", (170, 282), dashed=True),
+        message("a11", "user", "web", [(320, 237), (320, 325)], "blue", "5 补充信息", (360, 280)),
+        message("a12", "web", "api", [(430, 394), (490, 394)], "cyan", "5.1 重新提交", (445, 465)),
+        message("a13", "route", "agent", [(575, 615), (575, 650), (1265, 650), (1265, 615)], "purple", "6 路由", (920, 668)),
+        message("a14", "agent", "hybrid", [(1120, 615), (240, 720)], "green", "7 检索计划", (730, 676)),
+        message("a15", "hybrid", "chroma", [(385, 777), (425, 777)], "green", "7.1a", (405, 865)),
+        message("a16", "hybrid", "bm25", [(240, 835), (240, 860), (875, 860), (875, 835)], "green", "7.1b", (650, 878)),
+        message("a17", "chroma", "rrf", [(565, 720), (565, 700), (1180, 700), (1180, 720)], "green", "7.2a 候选", (820, 688)),
+        message("a18", "bm25", "rrf", [(1005, 720), (1005, 705), (1045, 705), (1045, 720)], "green", "7.2b 候选", (940, 850)),
+        message("a19", "rrf", "verify", [(1315, 777), (1355, 777)], "green", "8 融合结果", (1300, 850)),
+        message("a20", "verify", "tavilyTool", [(1470, 835), (1288, 935)], "orange", "8.1 查询请求", (1450, 910), dashed=True),
+        message("a21", "tavilyTool", "verify", [(1310, 935), (1480, 835)], "orange", "8.2 返回结果", (1440, 885), dashed=True),
+        message("a22", "agent", "qwen", [(1140, 590), (1140, 650), (1030, 650), (1030, 900), (965, 935)], "purple", "9 问题 + 证据", (1015, 875)),
+        message("a23", "qwen", "verify", [(1105, 980), (1120, 980), (1120, 900), (1400, 900), (1400, 835)], "purple", "9.1 回答草稿", (1200, 900)),
+        message("a24", "verify", "composer", [(1650, 720), (1650, 615)], "green", "10 核验后结果", (1720, 668)),
+        message("a25", "composer", "api", [(1550, 500), (1460, 500), (1460, 440), (820, 440), (820, 403)], "cyan", "11 响应", (1200, 440)),
+        message("a26", "api", "web", [(490, 346), (440, 346)], "cyan", "12 返回 Frontend", (500, 270)),
+        message("a27", "web", "user", [(310, 325), (310, 237)], "blue", "13 展示回答", (400, 310)),
+        message("a28", "local", "embedding", [(465, 992), (505, 992)], "orange", "建立向量索引", (485, 1085)),
+        message("a29", "embedding", "chroma", [(645, 935), (565, 835)], "orange", "写向量", (560, 890)),
+        message("a30", "local", "bm25", [(465, 1005), (465, 1090), (805, 1090), (805, 835), (875, 835)], "orange", "建立关键词索引", (900, 1085)),
     ]
     return {
         "kind": "architecture",
@@ -415,7 +423,7 @@ def architecture_scene() -> dict:
             {"x": 50, "y": 460, "w": 1820, "h": 190, "label": "03  Agent 任务理解、策略选择与编排", "fill": "purple_soft"},
             {"x": 50, "y": 680, "w": 1820, "h": 190, "label": "04  本地知识、混合检索与证据核验", "fill": "green_soft"},
             {"x": 50, "y": 900, "w": 1820, "h": 190, "label": "05  外部模型、可选联网工具与验证资产", "fill": "orange_soft"},
-            {"x": 50, "y": 1120, "w": 1820, "h": 60, "label": "06  可信性、离线评测与运行日志", "fill": "gray_soft"},
+            {"x": 50, "y": 1105, "w": 1820, "h": 85, "label": "06  可信性、离线评测与运行日志", "fill": "gray_soft"},
         ],
         "nodes": nodes,
         "messages": flows,
@@ -426,9 +434,9 @@ def architecture_scene() -> dict:
         ],
         "legends": [
             {"xy": (1440, 32), "w": 380, "h": 98, "title": "版本边界", "lines": [
-                "v1.0：四类官方资料查询与引用",
+                "v1.0：竞赛、奖学金、推免查询",
+                "交换出国：资料缺口，不作首版交付",
                 "候选：Tavily 联网核验，非硬依赖",
-                "数据库是否部署：待数据库负责人确认",
             ]},
         ],
     }
@@ -436,59 +444,64 @@ def architecture_scene() -> dict:
 
 def comm_qa_scene() -> dict:
     nodes = [
-        node("browser", 70, 240, 230, 90, ":学生浏览器", ["Browser"], "blue_soft", "blue"),
-        node("frontend", 350, 205, 240, 95, ":Web 用户入口", ["Frontend"], "cyan_soft", "cyan"),
-        node("api", 590, 520, 250, 95, ":FastAPI 后端", ["AskController"], "cyan_soft", "cyan"),
-        node("router", 900, 180, 250, 95, ":任务识别", ["TaskRouter"], "purple_soft", "purple"),
-        node("clarify", 1240, 210, 245, 90, ":主动追问", ["Clarifier"], "red_soft", "red"),
-        node("agent", 900, 470, 270, 105, ":Agent 编排器", ["AgentOrchestrator"], "purple_soft", "purple"),
-        node("retriever", 600, 735, 270, 100, ":混合检索器", ["HybridRetriever"], "green_soft", "green"),
-        node("chroma", 280, 770, 230, 90, ":Chroma 向量索引", ["ChromaIndex"], "orange_soft", "orange"),
-        node("bm25", 280, 970, 230, 90, ":BM25 索引", ["BM25Index"], "orange_soft", "orange"),
-        node("rrf", 600, 980, 270, 90, ":RRF 融合", ["RRFRanker"], "green_soft", "green"),
-        node("verify", 950, 815, 270, 100, ":证据核验", ["EvidenceVerifier"], "green_soft", "green"),
-        node("tavily", 1300, 700, 250, 90, ":Tavily（可选）", ["OnlineCheck"], "orange_soft", "orange"),
-        node("qwen", 1300, 980, 250, 95, ":Qwen API", ["LLMAdapter"], "purple_soft", "purple"),
-        node("composer", 1470, 390, 260, 100, ":回答组织", ["AnswerComposer"], "cyan_soft", "cyan"),
+        node("browser", 90, 245, 260, 100, ":学生浏览器", ["Browser"], "blue_soft", "blue"),
+        node("frontend", 410, 225, 300, 110, ":Web 用户入口", ["Frontend"], "cyan_soft", "cyan"),
+        node("api", 760, 520, 300, 110, ":FastAPI 后端", ["AskController"], "cyan_soft", "cyan"),
+        node("router", 1130, 210, 280, 110, ":任务识别", ["TaskRouter"], "purple_soft", "purple"),
+        node("clarify", 1500, 210, 280, 100, ":主动追问", ["Clarifier"], "red_soft", "red"),
+        node("agent", 1130, 470, 300, 120, ":Agent 编排器", ["AgentOrchestrator"], "purple_soft", "purple"),
+        node("composer", 1780, 380, 300, 110, ":回答组织", ["AnswerComposer"], "cyan_soft", "cyan"),
+        node("retriever", 760, 820, 300, 110, ":混合检索器", ["HybridRetriever"], "green_soft", "green"),
+        node("chroma", 300, 840, 260, 100, ":Chroma 向量索引", ["ChromaIndex"], "orange_soft", "orange"),
+        node("bm25", 300, 1080, 260, 100, ":BM25 索引", ["BM25Index"], "orange_soft", "orange"),
+        node("rrf", 760, 1080, 300, 100, ":RRF 融合", ["RRFRanker"], "green_soft", "green"),
+        node("verify", 1180, 835, 300, 110, ":证据核验", ["EvidenceVerifier"], "green_soft", "green"),
+        node("tavily", 1600, 1000, 260, 100, ":Tavily（可选）", ["OnlineCheck"], "orange_soft", "orange"),
+        node("qwen", 1600, 760, 260, 100, ":Qwen API", ["LLMAdapter"], "purple_soft", "purple"),
     ]
     flows = [
-        message("q01", "browser", "frontend", [(300, 285), (350, 255)], "blue", "1 提交", (325, 252)),
-        message("q02", "frontend", "api", [(465, 300), (660, 520)], "cyan", "2 / 5.1 提交", (540, 410)),
-        message("q03", "api", "router", [(715, 520), (900, 275)], "cyan", "3 校验分类", (805, 395)),
-        message("q04", "router", "clarify", [(1150, 230), (1240, 250)], "red", "4a 缺信息", (1195, 228), dashed=True),
-        message("q05", "clarify", "api", [(1240, 245), (1120, 245), (1120, 560), (840, 560)], "red", "4b 追问请求", (980, 492), dashed=True),
-        message("q06", "api", "frontend", [(590, 555), (540, 555), (540, 325), (475, 300)], "red", "4c 返回追问", (540, 380), dashed=True),
-        message("q07", "frontend", "browser", [(390, 205), (390, 170), (250, 170), (250, 240)], "red", "4d 展示追问", (320, 163), dashed=True),
-        message("q08", "browser", "frontend", [(300, 315), (370, 330)], "blue", "5 补充重提", (330, 340)),
-        message("q09", "router", "agent", [(1025, 275), (1025, 470)], "purple", "6 路由", (1075, 380)),
-        message("q10", "agent", "retriever", [(950, 575), (735, 735)], "green", "7 检索", (830, 655)),
-        message("q11", "retriever", "chroma", [(600, 795), (510, 815)], "orange", "7.1a 语义", (555, 770)),
-        message("q12", "retriever", "bm25", [(600, 825), (510, 1010)], "orange", "7.1b 关键词", (550, 925)),
-        message("q13", "chroma", "rrf", [(510, 815), (600, 1010)], "green", "7.2a 候选", (555, 940)),
-        message("q14", "bm25", "rrf", [(510, 1015), (600, 1015)], "green", "7.2b 候选", (555, 1000)),
-        message("q15", "rrf", "verify", [(870, 1015), (1040, 915)], "green", "8 融合证据", (955, 960)),
-        message("q16", "verify", "tavily", [(1220, 855), (1300, 770)], "orange", "8.1 查询请求", (1260, 780), dashed=True),
-        message("q17", "tavily", "verify", [(1300, 765), (1220, 835)], "orange", "8.2 返回结果", (1265, 830), dashed=True),
-        message("q18", "agent", "qwen", [(1140, 575), (1350, 980)], "purple", "9 问题 + 证据", (1245, 800)),
-        message("q19", "qwen", "verify", [(1300, 995), (1220, 915)], "purple", "9.1 返回草稿", (1245, 1000)),
-        message("q20", "verify", "composer", [(1100, 815), (1470, 490)], "green", "10 可信结果", (1270, 665)),
-        message("q21", "composer", "api", [(1470, 470), (840, 540)], "cyan", "11 最终响应", (1135, 525)),
-        message("q22", "api", "frontend", [(590, 540), (590, 300)], "cyan", "12 返回前端", (540, 425)),
-        message("q23", "frontend", "browser", [(350, 285), (300, 315)], "blue", "13 展示结果", (280, 375), dashed=True),
+        message("q01", "browser", "frontend", [(350, 295), (410, 270)], "blue", "1 提交", (380, 250)),
+        message("q02", "frontend", "api", [(655, 335), (820, 520)], "cyan", "2 / 5.1 提交", (770, 410)),
+        message("q03", "api", "router", [(1060, 550), (1130, 290)], "cyan", "3 校验分类", (1090, 410)),
+        message("q04", "router", "clarify", [(1410, 250), (1500, 250)], "red", "4a 缺信息", (1455, 228), dashed=True),
+        message("q05", "clarify", "api", [(1500, 240), (1430, 240), (1430, 640), (1060, 640)], "red", "4b 追问请求", (1260, 625), dashed=True),
+        message("q06", "api", "frontend", [(760, 550), (700, 550), (700, 330), (710, 300)], "red", "4c 返回追问", (650, 460), dashed=True),
+        message("q07", "frontend", "browser", [(410, 245), (360, 200), (230, 200), (230, 245)], "red", "4d 展示追问", (310, 183), dashed=True),
+        message("q08", "browser", "frontend", [(350, 330), (420, 350)], "blue", "5 补充重提", (385, 375)),
+        message("q09", "router", "agent", [(1270, 320), (1270, 470)], "purple", "6 路由", (1320, 395)),
+        message("q10", "agent", "retriever", [(1180, 590), (950, 820)], "green", "7 检索", (1065, 705)),
+        message("q11", "retriever", "chroma", [(760, 870), (560, 890)], "orange", "7.1a 语义", (660, 850)),
+        message("q12", "retriever", "bm25", [(760, 900), (560, 1110)], "orange", "7.1b 关键词", (650, 1010)),
+        message("q13", "chroma", "rrf", [(560, 890), (760, 1100)], "green", "7.2a 候选", (660, 1055)),
+        message("q14", "bm25", "rrf", [(560, 1130), (760, 1130)], "green", "7.2b 候选", (660, 1110)),
+        message("q15", "rrf", "verify", [(1060, 1110), (1260, 945)], "green", "8 融合证据", (1160, 1020)),
+        message("q16", "verify", "tavily", [(1480, 890), (1600, 1040)], "orange", "8.1 查询请求", (1540, 940), dashed=True),
+        message("q17", "tavily", "verify", [(1600, 1020), (1480, 915)], "orange", "8.2 返回结果", (1540, 1090), dashed=True),
+        message("q18", "agent", "qwen", [(1430, 570), (1670, 760)], "purple", "9 问题 + 证据", (1550, 680)),
+        message("q19", "qwen", "verify", [(1600, 800), (1480, 860)], "purple", "9.1 草稿", (1560, 800)),
+        message("q20", "verify", "composer", [(1330, 835), (1780, 490)], "green", "10 可信结果", (1555, 650)),
+        message("q21", "composer", "api", [(1780, 405), (1720, 405), (1720, 640), (1060, 640)], "cyan", "11 最终响应", (1540, 620)),
+        message("q22", "api", "frontend", [(760, 535), (690, 535), (690, 335)], "cyan", "12 返回前端", (610, 360)),
+        message("q23", "frontend", "browser", [(410, 290), (350, 315)], "blue", "13 展示结果", (320, 415), dashed=True),
     ]
     return {
         "kind": "communication",
         "title": "UML 通信图 · 官方资料问答",
         "drawio_name": "UML通信图_智能问答_赵紫龙_v1.drawio",
-        "width": 1860, "height": 1240, "bg": "bg",
+        "width": 2300, "height": 1420, "bg": "bg",
+        "bands": [
+            {"x": 50, "y": 150, "w": 2200, "h": 510, "label": "交互、请求分类与 Agent 编排", "fill": "blue_soft"},
+            {"x": 50, "y": 700, "w": 2200, "h": 640, "label": "混合检索、可选联网、证据核验与回答", "fill": "green_soft"},
+            {"x": 50, "y": 1365, "w": 2200, "h": 35, "label": "消息 4a—4d 保证追问闭环；8.1/8.2 保证 Tavily 双向；12/13 保证最终响应返回浏览器", "fill": "white", "text": "muted", "size": 16},
+        ],
         "nodes": nodes, "messages": flows,
         "labels": [
-            {"xy": (930, 35), "text": "UML 通信图 · 官方资料问答", "size": 34, "bold": True},
-            {"xy": (930, 76), "text": "标准路径：任务识别 → 混合检索 → 证据核验 → Qwen 草稿 → 证据复核 → 返回", "size": 20, "fill": "muted"},
-            {"xy": (930, 1198), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  消息编号与通信设计说明逐项一致", "size": 16, "fill": "muted"},
+            {"xy": (1150, 35), "text": "UML 通信图 · 官方资料问答", "size": 34, "bold": True},
+            {"xy": (1150, 76), "text": "标准路径：任务识别 → 混合检索 → 证据核验 → Qwen 草稿 → 证据复核 → 返回", "size": 20, "fill": "muted"},
+            {"xy": (1150, 1345), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  消息编号与通信设计说明逐项一致", "size": 16, "fill": "muted"},
         ],
         "legends": [
-            {"xy": (70, 70), "w": 600, "h": 120, "title": "关键约束", "lines": [
+            {"xy": (70, 55), "w": 650, "h": 120, "title": "关键约束", "lines": [
                 "4a—4d：追问返回浏览器；5/5.1：用户补充后重新提交",
                 "8.1/8.2：Tavily 请求与结果双向；9.1：Qwen 返回草稿",
                 "12/13：AskController 经 Frontend 返回浏览器",
@@ -499,52 +512,64 @@ def comm_qa_scene() -> dict:
 
 def comm_ingestion_scene() -> dict:
     nodes = [
-        node("maintainer", 70, 230, 235, 90, ":知识库维护者", ["Maintainer"], "blue_soft", "blue"),
-        node("entry", 350, 200, 265, 95, ":维护脚本 / 管理端", ["IngestionEntry"], "cyan_soft", "cyan"),
-        node("metadata", 350, 560, 265, 95, ":元数据与哈希检查", ["MetadataGate"], "cyan_soft", "cyan"),
-        node("parser", 690, 185, 270, 95, ":解析与 OCR", ["ParserOCR"], "purple_soft", "purple"),
-        node("local", 690, 440, 270, 105, ":本地知识资产", ["LocalKnowledge"], "orange_soft", "orange"),
-        node("chunks", 690, 700, 270, 95, ":分块与定位", ["ChunkBuilder"], "green_soft", "green"),
-        node("csv", 1060, 185, 250, 90, ":CSV 元数据索引", ["IndexCSV"], "orange_soft", "orange"),
-        node("chroma", 1060, 415, 250, 95, ":Chroma 向量库", ["ChromaBuilder"], "purple_soft", "purple"),
-        node("bm25", 1060, 660, 250, 95, ":BM25 索引", ["BM25Builder"], "orange_soft", "orange"),
-        node("quality", 1040, 890, 290, 115, ":质量与发布闸门", ["QualityGate", "Chroma PASS && BM25 PASS"], "green_soft", "green"),
-        node("tests", 1400, 650, 270, 95, ":离线评测", ["PoCTestSuite"], "green_soft", "green"),
-        node("report", 1400, 890, 270, 95, ":更新报告", ["MaintenanceReport"], "cyan_soft", "cyan"),
+        node("maintainer", 70, 240, 250, 95, ":知识库维护者", ["Maintainer"], "blue_soft", "blue"),
+        node("entry", 360, 210, 280, 100, ":维护脚本 / 管理端", ["IngestionEntry"], "cyan_soft", "cyan"),
+        node("metadata", 360, 600, 280, 100, ":元数据与哈希检查", ["MetadataGate"], "cyan_soft", "cyan"),
+        node("parser", 720, 190, 280, 100, ":解析与 OCR", ["ParserOCR"], "purple_soft", "purple"),
+        node("local", 720, 450, 280, 110, ":本地知识资产", ["LocalKnowledge"], "orange_soft", "orange"),
+        node("chunks", 720, 720, 280, 100, ":分块与定位", ["ChunkBuilder"], "green_soft", "green"),
+        node("csv", 1100, 185, 260, 95, ":CSV 元数据索引", ["IndexCSV"], "orange_soft", "orange"),
+        node("chroma", 1100, 420, 260, 100, ":Chroma 向量库", ["ChromaBuilder"], "purple_soft", "purple"),
+        node("bm25", 1100, 665, 260, 100, ":BM25 索引", ["BM25Builder"], "orange_soft", "orange"),
+        node("quality", 1080, 930, 300, 120, ":质量与发布闸门", ["QualityGate", "双索引 PASS + 人工审核"], "green_soft", "green"),
+        node("tests", 1450, 650, 270, 100, ":离线评测", ["PoCTestSuite"], "green_soft", "green"),
+        node("publisher", 1450, 930, 270, 100, ":索引发布器", ["IndexPublisher"], "purple_soft", "purple"),
+        node("agentGateway", 1740, 930, 270, 100, ":Agent 查询入口", ["AgentQueryGateway"], "green_soft", "green"),
+        node("agent", 1740, 650, 270, 100, ":Agent", ["Orchestrator"], "blue_soft", "blue"),
+        node("report", 1740, 1130, 270, 85, ":更新报告", ["MaintenanceReport"], "cyan_soft", "cyan"),
     ]
     flows = [
-        message("i01", "maintainer", "entry", [(305, 275), (350, 250)], "blue", "1 登记资料", (330, 238)),
-        message("i02", "entry", "metadata", [(482, 295), (482, 560)], "cyan", "2 检查", (530, 425)),
-        message("i03", "metadata", "parser", [(615, 575), (690, 235)], "cyan", "3 解析", (660, 385)),
-        message("i04", "parser", "local", [(825, 280), (825, 440)], "purple", "4 保存", (875, 360)),
-        message("i05", "local", "csv", [(960, 470), (1060, 235)], "orange", "5 更新索引", (1010, 345)),
-        message("i06", "local", "chunks", [(825, 545), (825, 700)], "green", "6 分块", (875, 625)),
-        message("i07", "chunks", "chroma", [(960, 730), (1060, 465)], "purple", "7a 构建", (1010, 590)),
-        message("i08", "chunks", "bm25", [(960, 750), (1060, 705)], "orange", "7b 构建", (1010, 715)),
-        message("i09", "chroma", "quality", [(1185, 510), (1185, 890)], "green", "8a 索引状态", (1235, 700)),
-        message("i10", "bm25", "quality", [(1185, 755), (1185, 890)], "green", "8b 索引状态", (1235, 830)),
-        message("i11", "csv", "quality", [(1185, 275), (1185, 890)], "orange", "8c 元数据状态", (1235, 400)),
-        message("i12", "quality", "tests", [(1330, 930), (1400, 730)], "green", "9 两项 PASS 后测试", (1410, 830)),
-        message("i13", "tests", "quality", [(1400, 725), (1330, 925)], "green", "9.1 测试结果", (1430, 780), dashed=True),
-        message("i14", "quality", "report", [(1330, 945), (1400, 945)], "green", "10 发布许可", (1365, 925)),
-        message("i15", "report", "entry", [(1400, 935), (615, 265)], "cyan", "10.1 状态反馈", (1000, 600), dashed=True),
+        message("i01", "maintainer", "entry", [(320, 287), (360, 260)], "blue", "1 登记资料", (340, 360)),
+        message("i02", "entry", "metadata", [(500, 310), (500, 600)], "cyan", "2 元数据/来源检查", (555, 455)),
+        message("i03", "metadata", "parser", [(640, 610), (720, 240)], "cyan", "3 解析", (685, 420)),
+        message("i04", "parser", "local", [(860, 290), (860, 450)], "purple", "4 保存", (910, 370)),
+        message("i05", "local", "csv", [(1000, 485), (1100, 235)], "orange", "5 更新 CSV", (1050, 360)),
+        message("i06", "local", "chunks", [(860, 560), (860, 720)], "green", "6 分块", (910, 640)),
+        message("i07", "chunks", "chroma", [(1000, 750), (1100, 470)], "purple", "7a 构建", (1050, 610)),
+        message("i08", "chunks", "bm25", [(1000, 770), (1100, 715)], "orange", "7b 构建", (1050, 730)),
+        message("i09", "chroma", "quality", [(1360, 470), (1380, 470), (1380, 800), (1230, 800), (1230, 930)], "green", "8a 索引状态", (1300, 875)),
+        message("i10", "bm25", "quality", [(1230, 765), (1230, 930)], "green", "8b 索引状态", (1280, 845)),
+        message("i11", "csv", "quality", [(1100, 235), (1040, 235), (1040, 970), (1080, 970)], "orange", "8c 元数据状态", (1035, 410)),
+        message("i12", "quality", "tests", [(1380, 960), (1450, 750)], "green", "9 两项 PASS 后测试", (1460, 855)),
+        message("i13", "tests", "quality", [(1450, 725), (1380, 950)], "green", "9.1 测试结果", (1480, 780), dashed=True),
+        message("i14", "quality", "publisher", [(1380, 990), (1450, 990)], "green", "10 审核+测试通过", (1415, 1090)),
+        message("i15", "publisher", "chroma", [(1450, 1020), (1420, 1020), (1420, 450), (1360, 470)], "purple", "10.1 激活向量版本", (1390, 550), dashed=True),
+        message("i16", "publisher", "bm25", [(1550, 1030), (1430, 1030), (1430, 750), (1360, 715)], "orange", "10.2 激活关键词版本", (1440, 825), dashed=True),
+        message("i17", "publisher", "agentGateway", [(1720, 980), (1740, 980)], "purple", "10.3 发布活动版本", (1730, 1080)),
+        message("i18", "agentGateway", "agent", [(1875, 930), (1875, 750)], "green", "10.4 Agent 可检索", (1925, 840)),
+        message("i19", "publisher", "report", [(1585, 1030), (1650, 1130), (1780, 1130)], "cyan", "10.5 发布结果", (1600, 1150)),
+        message("i20", "report", "entry", [(1875, 1215), (2050, 1215), (2050, 310), (640, 310)], "cyan", "10.6 状态反馈", (2010, 500), dashed=True),
     ]
     return {
         "kind": "communication",
         "title": "UML 通信图 · 知识资料维护与索引更新",
         "drawio_name": "UML通信图_知识入库_赵紫龙_v1.drawio",
-        "width": 1860, "height": 1180, "bg": "bg",
+        "width": 2100, "height": 1250, "bg": "bg",
+        "bands": [
+            {"x": 50, "y": 155, "w": 2000, "h": 550, "label": "资料登记、人工核验、正文提取与本地资产更新", "fill": "blue_soft"},
+            {"x": 50, "y": 735, "w": 2000, "h": 490, "label": "双索引构建、质量闸门、发布与 Agent 可用性", "fill": "green_soft"},
+        ],
         "nodes": nodes, "messages": flows,
         "labels": [
-            {"xy": (930, 35), "text": "UML 通信图 · 知识资料维护与索引更新", "size": 34, "bold": True},
-            {"xy": (930, 76), "text": "本地资料 → CSV/Chroma/BM25 → 双索引质量闸门 → 测试 → 发布与状态反馈", "size": 20, "fill": "muted"},
-            {"xy": (930, 1105), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  项目知识库基准 44 条；当前仓库 CSV 31 条，仅表示现有索引记录", "size": 16, "fill": "muted"},
+            {"xy": (1050, 35), "text": "UML 通信图 · 知识资料维护与索引更新", "size": 34, "bold": True},
+            {"xy": (1050, 76), "text": "资料审核 → CSV/Chroma/BM25 → 双索引闸门 → 测试 → IndexPublisher → Agent", "size": 20, "fill": "muted"},
+            {"xy": (1050, 1215), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  项目基准 44 条；当前仓库 CSV 31 条仅表示现有索引记录", "size": 16, "fill": "muted"},
         ],
         "legends": [
-            {"xy": (70, 70), "w": 620, "h": 115, "title": "质量闸门", "lines": [
-                "只有 Chroma 与 BM25 均 PASS，QualityGate 才允许测试",
-                "CSV 只表示元数据状态，不替代两个索引的构建结果",
-                "任意索引失败：不进入发布，保留上一可用版本",
+            {"xy": (70, 70), "w": 680, "h": 115, "title": "发布规则", "lines": [
+                "人工审核 + Chroma PASS + BM25 PASS + 测试通过",
+                "IndexPublisher 原子切换活动索引版本",
+                "任一步失败：不发布，继续保留上一可用版本",
             ]},
         ],
     }
