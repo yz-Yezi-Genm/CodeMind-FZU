@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Generate architecture and UML communication diagrams aligned with the opening deck."""
+"""Single-source diagram generator for Zhaozilong's assignment-02 deliverables.
+
+Scene dictionaries define nodes, messages, routing, and labels. Draw.io, SVG,
+and PNG files are exported from those dictionaries so their content stays
+synchronized.
+"""
 
 from __future__ import annotations
 
@@ -38,32 +43,32 @@ P = {
 }
 
 
-def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(str(FONT_BOLD if bold else FONT_REGULAR), size)
-
-
 def color(value: str) -> str:
     return P.get(value, value)
 
 
-def box(x: int, y: int, w: int, h: int, title: str,
-        lines: list[str] | None = None, fill: str = "white",
-        stroke: str = "line", **kwargs) -> dict:
+def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
+    return ImageFont.truetype(str(FONT_BOLD if bold else FONT_REGULAR), size)
+
+
+def node(id_: str, x: int, y: int, w: int, h: int, title: str,
+         lines: list[str] | None = None, fill: str = "white",
+         stroke: str = "line", **kwargs) -> dict:
     return {
-        "x": x, "y": y, "w": w, "h": h, "title": title,
+        "id": id_, "x": x, "y": y, "w": w, "h": h, "title": title,
         "lines": lines or [], "fill": fill, "stroke": stroke, **kwargs,
     }
 
 
-def edge(points: list[tuple[int, int]], stroke: str = "line",
-         label: str | None = None, label_xy: tuple[int, int] | None = None,
-         *, dashed: bool = False, arrow: bool = True, width: int = 3,
-         messages: list[tuple[int, int]] | None = None) -> dict:
+def message(id_: str, source: str, target: str, points: list[tuple[int, int]],
+            stroke: str = "line", label: str = "",
+            label_xy: tuple[int, int] | None = None, *,
+            dashed: bool = False, width: int = 3) -> dict:
     return {
-        "points": points, "stroke": stroke, "label": label,
+        "id": id_, "source": source, "target": target, "points": points,
+        "stroke": stroke, "label": label,
         "label_xy": label_xy or points[len(points) // 2],
-        "dashed": dashed, "arrow": arrow, "width": width,
-        "messages": messages or [],
+        "dashed": dashed, "width": width,
     }
 
 
@@ -72,47 +77,46 @@ def text(draw: ImageDraw.ImageDraw, xy: tuple[int, int], value: str, size: int,
     draw.text(xy, value, font=font(size, bold), fill=color(fill), anchor=anchor)
 
 
-def head(draw: ImageDraw.ImageDraw, points: list[tuple[int, int]], fill: str,
-         width: int) -> None:
+def arrowhead(draw: ImageDraw.ImageDraw, points: list[tuple[int, int]],
+              fill: str, width: int) -> None:
     start, end = points[-2], points[-1]
     angle = math.atan2(end[1] - start[1], end[0] - start[0])
     length = 15
-    left = (
-        end[0] - length * math.cos(angle - math.pi / 7),
-        end[1] - length * math.sin(angle - math.pi / 7),
+    draw.polygon(
+        [
+            end,
+            (end[0] - length * math.cos(angle - math.pi / 7),
+             end[1] - length * math.sin(angle - math.pi / 7)),
+            (end[0] - length * math.cos(angle + math.pi / 7),
+             end[1] - length * math.sin(angle + math.pi / 7)),
+        ],
+        fill=color(fill),
     )
-    right = (
-        end[0] - length * math.cos(angle + math.pi / 7),
-        end[1] - length * math.sin(angle + math.pi / 7),
-    )
-    draw.polygon([end, left, right], fill=color(fill))
 
 
-def render(scene: dict, svg_path: Path, png_path: Path) -> None:
+def draw_scene(scene: dict, svg_path: Path, png_path: Path) -> None:
     width, height = scene["width"], scene["height"]
-    image = Image.new("RGB", (width, height), color(scene.get("bg", "bg")))
+    bg = color(scene.get("bg", "bg"))
+    image = Image.new("RGB", (width, height), bg)
     draw = ImageDraw.Draw(image)
 
     for band in scene.get("bands", []):
-        x, y, w, h = band["x"], band["y"], band["w"], band["h"]
         draw.rounded_rectangle(
-            (x, y, x + w, y + h), radius=band.get("radius", 22),
-            fill=color(band.get("fill", "white")),
-            outline=color(band.get("stroke", "gray_soft")), width=2,
+            (band["x"], band["y"], band["x"] + band["w"], band["y"] + band["h"]),
+            radius=22, fill=color(band["fill"]), outline=color(band.get("stroke", "gray_soft")),
+            width=2,
         )
-        text(draw, (x + 22, y + 23), band["label"], band.get("size", 20),
-             band.get("text", "blue"), bold=True, anchor="lm")
+        text(draw, (band["x"] + 22, band["y"] + 23), band["label"], 20,
+             band.get("text", "blue"), True, "lm")
 
-    for line in scene.get("edges", []):
+    for line in scene.get("messages", []):
         pts = line["points"]
-        stroke = color(line.get("stroke", "line"))
+        stroke = color(line["stroke"])
         if line.get("dashed"):
             for start, end in zip(pts, pts[1:]):
-                length = math.dist(start, end)
-                steps = max(1, int(length // 12))
-                for i in range(0, steps, 2):
-                    a = i / steps
-                    b = min((i + 1) / steps, 1)
+                length = max(1, int(math.dist(start, end)))
+                for offset in range(0, length, 12):
+                    a, b = offset / length, min((offset + 7) / length, 1)
                     draw.line(
                         [
                             (start[0] + (end[0] - start[0]) * a,
@@ -124,59 +128,44 @@ def render(scene: dict, svg_path: Path, png_path: Path) -> None:
                     )
         else:
             draw.line(pts, fill=stroke, width=line.get("width", 3), joint="curve")
-        if line.get("arrow", True):
-            head(draw, pts, stroke, line.get("width", 3))
-        for point in line.get("messages", []):
-            draw.ellipse(
-                (point[0] - 6, point[1] - 6, point[0] + 6, point[1] + 6),
-                fill=color(scene.get("bg", "bg")), outline=stroke, width=2,
-            )
-        label = line.get("label")
-        if label:
+        arrowhead(draw, pts, stroke, line.get("width", 3))
+        if line["label"]:
             lx, ly = line["label_xy"]
-            bbox = draw.textbbox((lx, ly), label, font=font(16, True), anchor="mm")
+            bbox = draw.textbbox((lx, ly), line["label"], font=font(16, True), anchor="mm")
             draw.rounded_rectangle(
                 (bbox[0] - 6, bbox[1] - 3, bbox[2] + 6, bbox[3] + 3),
-                radius=5, fill=color(scene.get("bg", "bg")),
+                radius=5, fill=bg,
             )
-            text(draw, (lx, ly), label, 16, stroke, bold=True)
+            text(draw, (lx, ly), line["label"], 16, stroke, True)
 
-    for item in scene["boxes"]:
+    for item in scene["nodes"]:
         x, y, w, h = item["x"], item["y"], item["w"], item["h"]
         draw.rounded_rectangle(
-            (x, y, x + w, y + h), radius=item.get("radius", 16),
-            fill=color(item.get("fill", "white")),
-            outline=color(item.get("stroke", "line")),
-            width=item.get("width", 2),
+            (x, y, x + w, y + h), radius=16, fill=color(item["fill"]),
+            outline=color(item["stroke"]), width=2,
         )
-        title_size = item.get("title_size", 23)
-        line_size = item.get("line_size", 17)
-        center = x + w // 2
-        lines = item.get("lines", [])
+        lines = item["lines"]
+        compact = bool(lines) and h < 100
+        title_size = min(item.get("title_size", 22), 19) if compact else item.get("title_size", 22)
+        line_size = min(item.get("line_size", 16), 14) if compact else item.get("line_size", 16)
+        title_y = y + (23 if compact else 31)
+        text(draw, (x + w // 2, title_y), item["title"], title_size, "ink", True)
         if lines:
-            compact = h < 100
-            if compact:
-                title_size = min(title_size, 19)
-                line_size = min(line_size, 14)
-            text(draw, (center, y + (23 if compact else 31)), item["title"],
-                 title_size, "ink", True)
             start_y = y + (45 if compact else 62)
             spacing = (
-                min(17, max(14, (h - 48) // max(1, len(lines))))
+                min(17, max(14, (h - 48) // len(lines)))
                 if compact
-                else min(27, max(20, (h - 65) // max(1, len(lines))))
+                else min(27, max(20, (h - 60) // len(lines)))
             )
-            for idx, line in enumerate(lines):
-                text(draw, (center, start_y + idx * spacing), line, line_size, "muted")
+            for idx, value in enumerate(lines):
+                text(draw, (x + w // 2, start_y + idx * spacing), value,
+                     line_size, "muted")
         else:
-            text(draw, (center, y + h // 2), item["title"], title_size, "ink", True)
+            text(draw, (x + w // 2, y + h // 2), item["title"], title_size, "ink", True)
 
     for item in scene.get("labels", []):
-        text(
-            draw, item["xy"], item["text"], item.get("size", 18),
-            item.get("fill", "ink"), item.get("bold", False),
-            item.get("anchor", "mm"),
-        )
+        text(draw, item["xy"], item["text"], item.get("size", 18),
+             item.get("fill", "ink"), item.get("bold", False))
 
     for legend in scene.get("legends", []):
         x, y = legend["xy"]
@@ -191,6 +180,7 @@ def render(scene: dict, svg_path: Path, png_path: Path) -> None:
     png_path.parent.mkdir(parents=True, exist_ok=True)
     image.save(png_path)
     write_svg(scene, svg_path)
+    write_drawio(scene)
 
 
 def write_svg(scene: dict, path: Path) -> None:
@@ -200,82 +190,68 @@ def write_svg(scene: dict, path: Path) -> None:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}">',
         "<style>text{font-family:'Microsoft YaHei',sans-serif}</style>",
-        '<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" '
-        'orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#617089"/></marker></defs>',
+        '<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" '
+        'refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" '
+        'fill="#617089"/></marker></defs>',
         f'<rect width="{width}" height="{height}" fill="{bg}"/>',
     ]
-    for item in scene.get("bands", []):
+    for band in scene.get("bands", []):
         out.append(
-            f'<rect x="{item["x"]}" y="{item["y"]}" width="{item["w"]}" '
-            f'height="{item["h"]}" rx="22" fill="{color(item.get("fill","white"))}" '
-            f'stroke="{color(item.get("stroke","gray_soft"))}" stroke-width="2"/>'
+            f'<rect x="{band["x"]}" y="{band["y"]}" width="{band["w"]}" '
+            f'height="{band["h"]}" rx="22" fill="{color(band["fill"])}" '
+            f'stroke="{color(band.get("stroke","gray_soft"))}" stroke-width="2"/>'
         )
         out.append(
-            f'<text x="{item["x"] + 22}" y="{item["y"] + 31}" font-size="20" '
-            f'font-weight="700" fill="{color(item.get("text","blue"))}">'
-            f'{escape(item["label"])}</text>'
+            f'<text x="{band["x"] + 22}" y="{band["y"] + 31}" font-size="20" '
+            f'font-weight="700" fill="{color(band.get("text","blue"))}">'
+            f'{escape(band["label"])}</text>'
         )
-    for line in scene.get("edges", []):
+    for line in scene.get("messages", []):
         points = " ".join(f"{x},{y}" for x, y in line["points"])
-        dash = ' stroke-dasharray="8 6"' if line.get("dashed") else ""
-        marker = ' marker-end="url(#a)"' if line.get("arrow", True) else ""
+        dashed = ' stroke-dasharray="8 6"' if line.get("dashed") else ""
         out.append(
-            f'<polyline points="{points}" fill="none" stroke="{color(line.get("stroke","line"))}" '
-            f'stroke-width="{line.get("width",3)}"{dash}{marker}/>'
+            f'<polyline points="{points}" fill="none" stroke="{color(line["stroke"])}" '
+            f'stroke-width="{line.get("width",3)}"{dashed} marker-end="url(#arrow)"/>'
         )
-        for px, py in line.get("messages", []):
-            out.append(
-                f'<circle cx="{px}" cy="{py}" r="6" fill="{bg}" '
-                f'stroke="{color(line.get("stroke","line"))}" stroke-width="2"/>'
-            )
-        if line.get("label"):
+        if line["label"]:
             x, y = line["label_xy"]
             out.append(
                 f'<text x="{x}" y="{y + 6}" text-anchor="middle" font-size="16" '
-                f'font-weight="700" fill="{color(line.get("stroke","line"))}">'
-                f'{escape(line["label"])}</text>'
+                f'font-weight="700" fill="{color(line["stroke"])}">{escape(line["label"])}</text>'
             )
-    for item in scene["boxes"]:
+    for item in scene["nodes"]:
         out.append(
             f'<rect x="{item["x"]}" y="{item["y"]}" width="{item["w"]}" '
-            f'height="{item["h"]}" rx="16" fill="{color(item.get("fill","white"))}" '
-            f'stroke="{color(item.get("stroke","line"))}" stroke-width="2"/>'
+            f'height="{item["h"]}" rx="16" fill="{color(item["fill"])}" '
+            f'stroke="{color(item["stroke"])}" stroke-width="2"/>'
         )
-        center = item["x"] + item["w"] / 2
-        lines = item.get("lines", [])
+        lines = item["lines"]
         compact = bool(lines) and item["h"] < 100
-        title_size = item.get("title_size", 23)
-        line_size = item.get("line_size", 17)
-        if compact:
-            title_size = min(title_size, 19)
-            line_size = min(line_size, 14)
-        title_y = item["y"] + (
-            (34 if compact else 43) if lines else item["h"] / 2 + 8
-        )
+        title_size = min(item.get("title_size", 22), 19) if compact else item.get("title_size", 22)
+        line_size = min(item.get("line_size", 16), 14) if compact else item.get("line_size", 16)
+        title_y = item["y"] + (34 if compact else 43)
         out.append(
-            f'<text x="{center}" y="{title_y}" text-anchor="middle" '
-            f'font-size="{title_size}" font-weight="700" '
-            f'fill="{P["ink"]}">{escape(item["title"])}</text>'
+            f'<text x="{item["x"] + item["w"] / 2}" y="{title_y}" text-anchor="middle" '
+            f'font-size="{title_size}" font-weight="700" fill="{P["ink"]}">'
+            f'{escape(item["title"])}</text>'
         )
         if lines:
             start_y = item["y"] + (55 if compact else 75)
             spacing = (
-                min(17, max(14, (item["h"] - 48) // max(1, len(lines))))
+                min(17, max(14, (item["h"] - 48) // len(lines)))
                 if compact
-                else min(27, max(20, (item["h"] - 65) // max(1, len(lines))))
+                else min(27, max(20, (item["h"] - 60) // len(lines)))
             )
-            for idx, line in enumerate(lines):
+            for idx, value in enumerate(lines):
                 out.append(
-                    f'<text x="{center}" y="{start_y + idx * spacing}" '
-                    f'text-anchor="middle" font-size="{line_size}" '
-                    f'fill="{P["muted"]}">{escape(line)}</text>'
+                    f'<text x="{item["x"] + item["w"] / 2}" y="{start_y + idx * spacing}" '
+                    f'text-anchor="middle" font-size="{line_size}" fill="{P["muted"]}">'
+                    f'{escape(value)}</text>'
                 )
     for item in scene.get("labels", []):
         out.append(
-            f'<text x="{item["xy"][0]}" y="{item["xy"][1] + 6}" '
-            f'text-anchor="{item.get("anchor","middle") if item.get("anchor") != "mm" else "middle"}" '
-            f'font-size="{item.get("size",18)}" '
-            f'font-weight="{700 if item.get("bold") else 400}" '
+            f'<text x="{item["xy"][0]}" y="{item["xy"][1] + 6}" text-anchor="middle" '
+            f'font-size="{item.get("size",18)}" font-weight="{700 if item.get("bold") else 400}" '
             f'fill="{color(item.get("fill","ink"))}">{escape(item["text"])}</text>'
         )
     for legend in scene.get("legends", []):
@@ -283,23 +259,155 @@ def write_svg(scene: dict, path: Path) -> None:
         out.append(
             f'<rect x="{x}" y="{y}" width="{legend["w"]}" height="{legend["h"]}" '
             f'rx="12" fill="#FFFFFF" stroke="{P["gray_soft"]}" stroke-width="2"/>'
-        )
-        out.append(
             f'<text x="{x+16}" y="{y+27}" font-size="17" font-weight="700" '
             f'fill="{P["ink"]}">{escape(legend["title"])}</text>'
         )
-        for idx, line in enumerate(legend["lines"]):
+        for idx, value in enumerate(legend["lines"]):
             out.append(
                 f'<text x="{x+16}" y="{y+53+idx*21}" font-size="14" '
-                f'fill="{P["muted"]}">{escape(line)}</text>'
+                f'fill="{P["muted"]}">{escape(value)}</text>'
             )
     out.append("</svg>")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(out), encoding="utf-8")
 
 
+def write_drawio(scene: dict) -> None:
+    cells: list[str] = []
+    for idx, band in enumerate(scene.get("bands", [])):
+        cells.append(
+            f'<mxCell id="band_{idx}" value="{escape(band["label"])}" '
+            f'style="rounded=1;whiteSpace=wrap;html=1;fillColor={color(band["fill"])};'
+            f'strokeColor={color(band.get("stroke","gray_soft"))};fontColor={color(band.get("text","blue"))};'
+            'fontSize=20;fontStyle=1;align=left;spacingLeft=18;" vertex="1" parent="1">'
+            f'<mxGeometry x="{band["x"]}" y="{band["y"]}" width="{band["w"]}" '
+            f'height="{band["h"]}" as="geometry"/></mxCell>'
+        )
+    for item in scene["nodes"]:
+        value = escape(f"{item['title']}\n" + "\n".join(item["lines"]), {'"': "&quot;"})
+        value = value.replace("\n", "&lt;br&gt;")
+        cells.append(
+            f'<mxCell id="{item["id"]}" value="{value}" '
+            f'style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor={color(item["fill"])};'
+            f'strokeColor={color(item["stroke"])};strokeWidth=2;fontColor=#172033;'
+            'fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1">'
+            f'<mxGeometry x="{item["x"]}" y="{item["y"]}" width="{item["w"]}" '
+            f'height="{item["h"]}" as="geometry"/></mxCell>'
+        )
+    for line in scene.get("messages", []):
+        value = escape(line["label"], {'"': "&quot;"}).replace("\n", "&lt;br&gt;")
+        dash = "dashed=1;" if line.get("dashed") else ""
+        waypoints = "".join(
+            f'<mxPoint x="{x}" y="{y}"/>' for x, y in line["points"][1:-1]
+        )
+        waypoint_xml = f'<Array as="points">{waypoints}</Array>' if waypoints else ""
+        cells.append(
+            f'<mxCell id="{line["id"]}" value="{value}" '
+            f'style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=1;html=1;'
+            f'endArrow=block;strokeColor={color(line["stroke"])};strokeWidth={line.get("width",3)};'
+            f'{dash}fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" '
+            f'source="{line["source"]}" target="{line["target"]}">'
+            f'<mxGeometry relative="1" as="geometry">{waypoint_xml}</mxGeometry></mxCell>'
+        )
+    for idx, item in enumerate(scene.get("labels", [])):
+        cells.append(
+            f'<mxCell id="label_{idx}" value="{escape(item["text"], {chr(34): "&quot;"})}" '
+            f'style="text;html=1;align=center;verticalAlign=middle;fontColor={color(item.get("fill","ink"))};'
+            f'fontSize={item.get("size",18)};fontStyle={1 if item.get("bold") else 0};" '
+            f'vertex="1" parent="1"><mxGeometry x="{item["xy"][0]-150}" y="{item["xy"][1]-15}" '
+            'width="300" height="30" as="geometry"/></mxCell>'
+        )
+    for idx, legend in enumerate(scene.get("legends", [])):
+        value = escape(legend["title"] + "\n" + "\n".join(legend["lines"]))
+        value = value.replace("\n", "&lt;br&gt;")
+        cells.append(
+            f'<mxCell id="legend_{idx}" value="{value}" style="rounded=1;whiteSpace=wrap;'
+            'html=1;align=left;verticalAlign=top;spacing=10;fillColor=#FFFFFF;'
+            'strokeColor=#EDF1F6;fontFamily=Microsoft YaHei;fontSize=14;" vertex="1" parent="1">'
+            f'<mxGeometry x="{legend["xy"][0]}" y="{legend["xy"][1]}" '
+            f'width="{legend["w"]}" height="{legend["h"]}" as="geometry"/></mxCell>'
+        )
+    body = "\n".join("        " + cell for cell in cells)
+    filename = scene["drawio_name"]
+    diagram_id = Path(filename).stem
+    xml = (
+        '<mxfile host="app.diagrams.net" modified="2026-11-08T09:00:00.000Z" '
+        'agent="CodeMind-FZU" version="24.0.0">\n'
+        f'  <diagram name="{escape(scene["title"])}" id="{diagram_id}">\n'
+        f'    <mxGraphModel dx="{scene["width"]}" dy="{scene["height"]}" grid="1" '
+        'gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" '
+        f'page="1" pageScale="1" pageWidth="{scene["width"]}" pageHeight="{scene["height"]}" '
+        'math="0" shadow="0">\n'
+        '      <root>\n        <mxCell id="0"/>\n        <mxCell id="1" parent="0"/>\n'
+        f"{body}\n      </root>\n    </mxGraphModel>\n  </diagram>\n</mxfile>\n"
+    )
+    target = ARCH_DIR if scene.get("kind") == "architecture" else COMM_DIR
+    (target / filename).write_text(xml, encoding="utf-8")
+
+
 def architecture_scene() -> dict:
+    nodes = [
+        node("user", 110, 165, 330, 72, "学生用户", ["统一提问 · 查看引用 · 补充信息"], "white", "blue"),
+        node("maintainer", 490, 165, 330, 72, "知识库维护者", ["登记资料 · 核验元数据 · 重建索引"], "white", "blue"),
+        node("sources", 870, 165, 390, 72, "学校 / 学院官方网站", ["通知 · 办法 · 附件 · 培养方案"], "white", "blue"),
+        node("tavily", 1310, 165, 450, 72, "Tavily 联网工具（候选）", ["按需核验官方公开信息 · 非首版硬依赖"], "white", "blue"),
+        node("web", 110, 325, 330, 78, "Web 用户入口", ["HTML / CSS / JavaScript", "提问、追问与引用展示"], "white", "cyan"),
+        node("api", 490, 325, 330, 78, "FastAPI 后端", ["POST /api/ask", "校验 / 异常映射 / 统一响应"], "white", "cyan"),
+        node("poc", 870, 325, 390, 78, "现有原型与离线 PoC", ["Figma 原型已有", "9 项测试通过 · 非真实模型联调"], "orange_soft", "orange"),
+        node("reserved", 1310, 325, 450, 78, "响应与追踪", ["requestId / citations", "answerStatus / limitations"], "white", "cyan"),
+        node("classify", 100, 500, 290, 115, "任务识别", ["事务 / 机会 / 规划", "年级、专业、年份、用途"], "white", "purple"),
+        node("route", 430, 500, 290, 115, "策略选择与路由", ["四类官方依据查询", "v1.0 聚焦可靠问答"], "white", "purple"),
+        node("clarify", 760, 500, 290, 115, "主动追问", ["缺关键信息时返回前端", "用户补充后重新提交"], "red_soft", "red"),
+        node("agent", 1090, 500, 350, 115, "Agent 编排器", ["组织问题、证据与工具调用", "控制完整回答流程"], "white", "purple"),
+        node("composer", 1480, 500, 335, 115, "回答组织", ["解释 / 引用 / 下一步建议", "冲突与不确定性提示"], "white", "purple"),
+        node("hybrid", 95, 720, 290, 115, "混合检索", ["本地资料优先 · Top-K", "关键词与语义召回"], "white", "green"),
+        node("chroma", 425, 720, 280, 115, "Chroma 向量索引", ["Embedding 语义召回", "返回候选分块"], "white", "green"),
+        node("bm25", 745, 720, 260, 115, "BM25 索引", ["规则名称 / 文号 / 年度", "返回关键词候选"], "white", "green"),
+        node("rrf", 1045, 720, 270, 115, "RRF 融合排序", ["融合两路候选", "去重并保留召回依据"], "white", "green"),
+        node("verify", 1355, 720, 460, 115, "证据核验", ["来源 / 日期 / 适用范围 / 时效", "无依据或冲突时拒绝确定结论"], "white", "green"),
+        node("local", 95, 935, 370, 115, "本地知识资产", ["原始资料 + 中文整理稿", "CSV 索引 / 状态 / 页码定位"], "white", "orange"),
+        node("embedding", 505, 935, 280, 115, "Embedding 组件", ["文本分块向量化", "索引可重建"], "white", "orange"),
+        node("qwen", 825, 935, 280, 115, "Qwen API", ["接收问题 + 证据", "返回回答草稿"], "white", "orange"),
+        node("tavilyTool", 1145, 935, 285, 115, "Tavily（可选）", ["接收查询请求", "返回核验结果"], "white", "orange"),
+        node("eval", 1470, 935, 345, 115, "离线 PoC 与评测", ["来源追溯 / 事实正确性", "任务适应 / 无依据处理"], "white", "orange"),
+        node("ops1", 95, 1142, 500, 30, "离线测试 · 失败降级 · 调用日志 · 资料更新记录", [], "white", "line", title_size=18),
+        node("ops2", 625, 1142, 530, 30, "不采集成绩、密码、统一认证凭据或无关个人数据", [], "white", "line", title_size=18),
+        node("ops3", 1185, 1142, 630, 30, "数据库仅作为后续设计议题，需与数据库负责人确认首版范围", [], "white", "line", title_size=18),
+    ]
+    flows = [
+        message("a01", "user", "web", [(275, 237), (275, 325)], "blue", "1 提问", (325, 282)),
+        message("a02", "maintainer", "local", [(655, 237), (335, 935)], "orange", "资料维护", (495, 750)),
+        message("a03", "sources", "local", [(1065, 237), (280, 935)], "blue", "官方原文", (650, 890)),
+        message("a04", "web", "api", [(440, 364), (490, 364)], "cyan", "2 请求", (465, 346)),
+        message("a05", "api", "classify", [(655, 403), (655, 500)], "purple", "3 分类", (705, 455)),
+        message("a06", "classify", "route", [(390, 557), (430, 557)], "purple", "4", (410, 539)),
+        message("a07", "route", "clarify", [(720, 557), (760, 557)], "red", "4a 缺信息", (740, 539), dashed=True),
+        message("a08", "clarify", "web", [(805, 500), (805, 445), (275, 445), (275, 403)], "red", "4b 返回追问", (520, 428), dashed=True),
+        message("a09", "user", "web", [(185, 237), (185, 325)], "blue", "4c 补充后重提", (135, 282), dashed=True),
+        message("a10", "web", "api", [(430, 385), (490, 385)], "cyan", "4d 重新提交", (460, 368)),
+        message("a11", "route", "agent", [(720, 557), (1090, 557)], "purple", "5 路由", (905, 539)),
+        message("a12", "agent", "hybrid", [(1120, 615), (240, 720)], "green", "6 检索计划", (730, 676)),
+        message("a13", "hybrid", "chroma", [(385, 777), (425, 777)], "green", "6.1a", (405, 759)),
+        message("a14", "hybrid", "bm25", [(240, 720), (240, 690), (875, 690), (875, 720)], "green", "6.1b", (555, 673)),
+        message("a15", "chroma", "rrf", [(705, 777), (1045, 777)], "green", "6.2a 候选", (875, 759)),
+        message("a16", "bm25", "rrf", [(1005, 777), (1045, 777)], "green", "6.2b 候选", (1025, 759)),
+        message("a17", "rrf", "verify", [(1315, 777), (1355, 777)], "green", "7 融合结果", (1335, 759)),
+        message("a18", "verify", "tavilyTool", [(1470, 835), (1288, 935)], "orange", "8a 查询请求", (1390, 888), dashed=True),
+        message("a19", "tavilyTool", "verify", [(1310, 935), (1480, 835)], "orange", "8b 返回结果", (1425, 920), dashed=True),
+        message("a20", "agent", "qwen", [(1180, 615), (965, 935)], "purple", "9 问题 + 证据", (1080, 780)),
+        message("a21", "qwen", "verify", [(1105, 980), (1400, 835)], "purple", "9.1 回答草稿", (1260, 895)),
+        message("a22", "verify", "composer", [(1650, 720), (1650, 615)], "green", "10 核验后结果", (1720, 668)),
+        message("a23", "composer", "api", [(1550, 615), (820, 388)], "cyan", "11 响应", (1200, 470)),
+        message("a24", "api", "web", [(490, 364), (440, 364)], "cyan", "12 返回", (465, 455)),
+        message("a25", "web", "user", [(275, 325), (275, 237)], "blue", "13 展示回答", (225, 282)),
+        message("a26", "local", "embedding", [(465, 992), (505, 992)], "orange", "建立向量索引", (485, 975)),
+        message("a27", "embedding", "chroma", [(645, 935), (565, 835)], "orange", "写向量", (610, 885)),
+        message("a28", "local", "bm25", [(465, 1005), (875, 835)], "orange", "建立关键词索引", (660, 930)),
+    ]
     return {
+        "kind": "architecture",
+        "title": "CodeMind-FZU 系统技术架构图",
+        "drawio_name": "系统技术架构图_赵紫龙_v1.drawio",
         "width": 1920, "height": 1220, "bg": "bg",
         "bands": [
             {"x": 50, "y": 125, "w": 1820, "h": 140, "label": "01  用户、入口与资料来源", "fill": "blue_soft"},
@@ -309,362 +417,150 @@ def architecture_scene() -> dict:
             {"x": 50, "y": 900, "w": 1820, "h": 190, "label": "05  外部模型、可选联网工具与验证资产", "fill": "orange_soft"},
             {"x": 50, "y": 1120, "w": 1820, "h": 60, "label": "06  可信性、离线评测与运行日志", "fill": "gray_soft"},
         ],
-        "boxes": [
-            box(110, 165, 330, 72, "学生用户", ["Web 统一提问 · 查看引用 · 继续追问"], "white", "blue"),
-            box(490, 165, 330, 72, "知识库维护者", ["登记资料 · 核验元数据 · 重建索引"], "white", "blue"),
-            box(870, 165, 390, 72, "学校 / 学院官方网站", ["通知 · 办法 · 附件 · 培养方案"], "white", "blue"),
-            box(1310, 165, 450, 72, "Tavily 联网工具（候选）", ["仅核验官方公开信息 · 非首版硬依赖"], "white", "blue"),
-            box(110, 325, 330, 78, "Web 用户入口", ["HTML / CSS / JavaScript", "统一提问、来源与不确定性展示"], "white", "cyan"),
-            box(490, 325, 330, 78, "FastAPI 后端", ["统一接口 / 参数校验", "异常处理 / 结果返回"], "white", "cyan"),
-            box(870, 325, 390, 78, "Ask API 与响应层", ["POST /api/ask", "答案 + citations + status"], "white", "cyan"),
-            box(1310, 325, 450, 78, "现有原型与离线 PoC", ["Figma 原型已有", "9 项测试通过 · 非真实模型联调"], "orange_soft", "orange"),
-            box(100, 500, 300, 115, "任务识别", ["任务类型 / 用户对象", "竞赛、年份、用途等实体"], "white", "purple"),
-            box(435, 500, 300, 115, "策略选择与路由", ["事务 / 机会 / 规划", "v1.0 聚焦官方依据查询"], "white", "purple"),
-            box(770, 500, 300, 115, "主动追问", ["缺年级、事项、年份或用途", "信息不足时不猜测结论"], "white", "purple"),
-            box(1105, 500, 350, 115, "Agent 编排器", ["选择检索、核验与回答步骤", "受控调用本地与外部工具"], "white", "purple"),
-            box(1490, 500, 325, 115, "回答组织", ["结论解释 / 引用 / 下一步", "旧通知与冲突显式提示"], "white", "purple"),
-            box(95, 720, 300, 115, "混合检索", ["本地资料优先 · Top-K", "关键词与语义召回"], "white", "green"),
-            box(430, 720, 285, 115, "Chroma 向量索引", ["Embedding 生成", "语义近邻检索"], "white", "green"),
-            box(750, 720, 265, 115, "BM25 索引", ["关键词精确匹配", "规则名称 / 文号 / 年度"], "white", "green"),
-            box(1050, 720, 285, 115, "RRF 融合排序", ["融合两路候选", "去重并保留召回依据"], "white", "green"),
-            box(1370, 720, 445, 115, "证据核验", ["来源 / 日期 / 适用范围 / 时效", "无依据或冲突时拒绝确定结论"], "white", "green"),
-            box(95, 935, 390, 115, "本地知识资产", ["原始资料 + 中文整理稿", "CSV 索引 / 状态 / 页码定位"], "white", "orange"),
-            box(520, 935, 300, 115, "Embedding 组件", ["文本分块向量化", "索引可重建"], "white", "orange"),
-            box(855, 935, 280, 115, "Qwen API", ["理解问题", "基于证据组织回答"], "white", "orange"),
-            box(1170, 935, 290, 115, "Tavily（可选）", ["候选联网核验", "失败时不生成无依据结论"], "white", "orange"),
-            box(1495, 935, 320, 115, "离线 PoC 与评测", ["来源追溯 / 事实正确性", "任务适应 / 无依据处理"], "white", "orange"),
-            box(95, 1142, 550, 32, "离线测试、失败降级、调用日志与资料更新记录", [], "white", "line", title_size=18),
-            box(680, 1142, 540, 32, "不采集成绩、密码、统本身份凭据或无关个人数据", [], "white", "line", title_size=18),
-            box(1255, 1142, 565, 32, "当前状态：资料已登记，真实 Agent 与混合检索尚未完成联调", [], "white", "line", title_size=18),
-        ],
-        "edges": [
-            edge([(275, 237), (275, 325)], "blue", "提问", (325, 282)),
-            edge([(655, 237), (335, 935)], "orange", "维护资料", (495, 750)),
-            edge([(1065, 237), (280, 935)], "blue", "官方原文", (650, 890)),
-            edge([(440, 364), (490, 364)], "cyan", "请求", (465, 346)),
-            edge([(820, 364), (870, 364)], "cyan", "/api/ask", (845, 346)),
-            edge([(1065, 403), (1070, 500)], "purple", "任务", (1125, 457)),
-            edge([(400, 557), (435, 557)], "purple", "分类", (417, 539)),
-            edge([(735, 557), (770, 557)], "purple", "缺信息", (752, 539)),
-            edge([(1070, 557), (1105, 557)], "purple", "路由", (1087, 539)),
-            edge([(1160, 615), (260, 720)], "green", "检索计划", (750, 680)),
-            edge([(395, 777), (430, 777)], "green", "语义", (412, 759)),
-            edge([(715, 777), (750, 777)], "green", "关键词", (732, 759)),
-            edge([(1015, 777), (1050, 777)], "green", "候选", (1032, 759)),
-            edge([(1335, 777), (1370, 777)], "green", "融合", (1352, 759)),
-            edge([(1590, 720), (1590, 615)], "green", "可信证据", (1655, 665)),
-            edge([(485, 935), (620, 835)], "orange", "构建索引", (555, 885)),
-            edge([(309, 935), (309, 835)], "orange", "分块/元数据", (370, 890)),
-            edge([(995, 935), (1240, 615)], "orange", "证据上下文", (1215, 780)),
-            edge([(1315, 935), (1510, 835)], "orange", "按需核验", (1445, 890)),
-            edge([(1815, 557), (1220, 365)], "cyan", "响应", (1490, 455)),
-            edge([(870, 364), (440, 364)], "cyan", "最终结果", (650, 455)),
-            edge([(275, 325), (275, 237)], "blue", "来源展示", (225, 282)),
-            edge([(770, 575), (1490, 575)], "red", "信息缺失 → 先追问", (1120, 625), dashed=True),
-        ],
+        "nodes": nodes,
+        "messages": flows,
         "labels": [
             {"xy": (960, 34), "text": "CodeMind-FZU 系统技术架构图", "size": 34, "bold": True},
             {"xy": (960, 75), "text": "基于 2026-10-24 开题答辩方案 · 本地知识优先 · 可追溯回答", "size": 20, "fill": "muted"},
-            {"xy": (960, 1203), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  数据库、独立管理端与正式部署为后续设计", "size": 16, "fill": "muted"},
+            {"xy": (960, 1203), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  Draw.io / SVG / PNG 由同一场景模型生成", "size": 16, "fill": "muted"},
         ],
         "legends": [
             {"xy": (1440, 32), "w": 380, "h": 98, "title": "版本边界", "lines": [
                 "v1.0：四类官方资料查询与引用",
                 "候选：Tavily 联网核验，非硬依赖",
-                "后续：管理端、持久化、个性化推荐",
+                "数据库是否部署：待数据库负责人确认",
             ]},
         ],
     }
 
 
 def comm_qa_scene() -> dict:
+    nodes = [
+        node("browser", 70, 240, 230, 90, ":学生浏览器", ["Browser"], "blue_soft", "blue"),
+        node("frontend", 350, 205, 240, 95, ":Web 用户入口", ["Frontend"], "cyan_soft", "cyan"),
+        node("api", 590, 520, 250, 95, ":FastAPI 后端", ["AskController"], "cyan_soft", "cyan"),
+        node("router", 900, 180, 250, 95, ":任务识别", ["TaskRouter"], "purple_soft", "purple"),
+        node("clarify", 1240, 210, 245, 90, ":主动追问", ["Clarifier"], "red_soft", "red"),
+        node("agent", 900, 470, 270, 105, ":Agent 编排器", ["AgentOrchestrator"], "purple_soft", "purple"),
+        node("retriever", 600, 735, 270, 100, ":混合检索器", ["HybridRetriever"], "green_soft", "green"),
+        node("chroma", 280, 770, 230, 90, ":Chroma 向量索引", ["ChromaIndex"], "orange_soft", "orange"),
+        node("bm25", 280, 970, 230, 90, ":BM25 索引", ["BM25Index"], "orange_soft", "orange"),
+        node("rrf", 600, 980, 270, 90, ":RRF 融合", ["RRFRanker"], "green_soft", "green"),
+        node("verify", 950, 815, 270, 100, ":证据核验", ["EvidenceVerifier"], "green_soft", "green"),
+        node("tavily", 1300, 700, 250, 90, ":Tavily（可选）", ["OnlineCheck"], "orange_soft", "orange"),
+        node("qwen", 1300, 980, 250, 95, ":Qwen API", ["LLMAdapter"], "purple_soft", "purple"),
+        node("composer", 1470, 390, 260, 100, ":回答组织", ["AnswerComposer"], "cyan_soft", "cyan"),
+    ]
+    flows = [
+        message("q01", "browser", "frontend", [(300, 285), (350, 255)], "blue", "1 提交", (325, 252)),
+        message("q02", "frontend", "api", [(465, 300), (660, 520)], "cyan", "2 / 5.1 提交", (540, 410)),
+        message("q03", "api", "router", [(715, 520), (900, 275)], "cyan", "3 校验分类", (805, 395)),
+        message("q04", "router", "clarify", [(1150, 230), (1240, 250)], "red", "4a 缺信息", (1195, 228), dashed=True),
+        message("q05", "clarify", "api", [(1240, 245), (1120, 245), (1120, 560), (840, 560)], "red", "4b 追问请求", (980, 492), dashed=True),
+        message("q06", "api", "frontend", [(590, 555), (540, 555), (540, 325), (475, 300)], "red", "4c 返回追问", (540, 380), dashed=True),
+        message("q07", "frontend", "browser", [(390, 205), (390, 170), (250, 170), (250, 240)], "red", "4d 展示追问", (320, 163), dashed=True),
+        message("q08", "browser", "frontend", [(300, 315), (370, 330)], "blue", "5 补充重提", (330, 340)),
+        message("q09", "router", "agent", [(1025, 275), (1025, 470)], "purple", "6 路由", (1075, 380)),
+        message("q10", "agent", "retriever", [(950, 575), (735, 735)], "green", "7 检索", (830, 655)),
+        message("q11", "retriever", "chroma", [(600, 795), (510, 815)], "orange", "7.1a 语义", (555, 770)),
+        message("q12", "retriever", "bm25", [(600, 825), (510, 1010)], "orange", "7.1b 关键词", (550, 925)),
+        message("q13", "chroma", "rrf", [(510, 815), (600, 1010)], "green", "7.2a 候选", (555, 940)),
+        message("q14", "bm25", "rrf", [(510, 1015), (600, 1015)], "green", "7.2b 候选", (555, 1000)),
+        message("q15", "rrf", "verify", [(870, 1015), (1040, 915)], "green", "8 融合证据", (955, 960)),
+        message("q16", "verify", "tavily", [(1220, 855), (1300, 770)], "orange", "8.1 查询请求", (1260, 780), dashed=True),
+        message("q17", "tavily", "verify", [(1300, 765), (1220, 835)], "orange", "8.2 返回结果", (1265, 830), dashed=True),
+        message("q18", "agent", "qwen", [(1140, 575), (1350, 980)], "purple", "9 问题 + 证据", (1245, 800)),
+        message("q19", "qwen", "verify", [(1300, 995), (1220, 915)], "purple", "9.1 返回草稿", (1245, 1000)),
+        message("q20", "verify", "composer", [(1100, 815), (1470, 490)], "green", "10 可信结果", (1270, 665)),
+        message("q21", "composer", "api", [(1470, 470), (840, 540)], "cyan", "11 最终响应", (1135, 525)),
+        message("q22", "api", "frontend", [(590, 540), (590, 300)], "cyan", "12 返回前端", (540, 425)),
+        message("q23", "frontend", "browser", [(350, 285), (300, 315)], "blue", "13 展示结果", (280, 375), dashed=True),
+    ]
     return {
-        "width": 1860, "height": 1180, "bg": "bg",
-        "boxes": [
-            box(75, 245, 230, 90, ":学生浏览器", ["Browser"], "blue_soft", "blue"),
-            box(365, 210, 235, 95, ":Web 用户入口", ["Frontend"], "cyan_soft", "cyan"),
-            box(365, 560, 235, 95, ":FastAPI 后端", ["AskController"], "cyan_soft", "cyan"),
-            box(690, 210, 250, 95, ":任务识别", ["TaskRouter"], "purple_soft", "purple"),
-            box(690, 520, 270, 105, ":Agent 编排器", ["AgentOrchestrator"], "purple_soft", "purple"),
-            box(690, 780, 270, 100, ":混合检索器", ["HybridRetriever"], "green_soft", "green"),
-            box(365, 845, 230, 85, ":Chroma 向量索引", ["ChromaIndex"], "orange_soft", "orange"),
-            box(365, 1000, 230, 85, ":BM25 索引", ["BM25Index"], "orange_soft", "orange"),
-            box(690, 995, 270, 90, ":RRF 融合", ["RRFRanker"], "green_soft", "green"),
-            box(1010, 835, 270, 100, ":证据核验", ["EvidenceVerifier"], "green_soft", "green"),
-            box(1340, 760, 245, 90, ":Tavily（可选）", ["OnlineCheck"], "orange_soft", "orange"),
-            box(1300, 1010, 255, 95, ":Qwen API", ["LLMAdapter"], "purple_soft", "purple"),
-            box(1300, 280, 260, 95, ":回答组织", ["AnswerComposer"], "cyan_soft", "cyan"),
-            box(1320, 540, 250, 95, ":主动追问", ["Clarifier"], "red_soft", "red"),
-        ],
-        "edges": [
-            edge([(305, 290), (365, 255)], "blue", "1", (332, 252), messages=[(335, 273)]),
-            edge([(482, 305), (482, 560)], "cyan", "2 / 10", (532, 435)),
-            edge([(600, 590), (690, 255)], "cyan", "3", (645, 420)),
-            edge([(815, 305), (815, 520)], "purple", "4", (865, 420)),
-            edge([(790, 520), (790, 210)], "red", "4a 缺信息", (700, 405), dashed=True),
-            edge([(960, 570), (960, 280)], "red", "4b 追问", (1040, 420), dashed=True),
-            edge([(825, 625), (825, 780)], "green", "5", (875, 705)),
-            edge([(690, 830), (595, 877)], "orange", "5.1a", (630, 815)),
-            edge([(690, 865), (595, 1040)], "orange", "5.1b", (650, 925)),
-            edge([(595, 1040), (690, 1040)], "green", "5.2", (642, 1020)),
-            edge([(960, 830), (1010, 885)], "green", "6", (985, 840)),
-            edge([(1145, 835), (1340, 805)], "orange", "6.1 按需", (1245, 790), dashed=True),
-            edge([(1145, 885), (1300, 550)], "purple", "7 证据请求", (1215, 710)),
-            edge([(1300, 1055), (1145, 935)], "purple", "7.1 草稿", (1215, 1000)),
-            edge([(1115, 835), (1300, 340)], "green", "8 校验", (1235, 580)),
-            edge([(1300, 325), (600, 610)], "cyan", "9 最终响应", (940, 420)),
-            edge([(365, 255), (305, 290)], "blue", "10 引用与状态", (275, 355), dashed=True),
-        ],
+        "kind": "communication",
+        "title": "UML 通信图 · 官方资料问答",
+        "drawio_name": "UML通信图_智能问答_赵紫龙_v1.drawio",
+        "width": 1860, "height": 1240, "bg": "bg",
+        "nodes": nodes, "messages": flows,
         "labels": [
             {"xy": (930, 35), "text": "UML 通信图 · 官方资料问答", "size": 34, "bold": True},
-            {"xy": (930, 76), "text": "v1.0 主路径：识别任务 → 混合检索 → 证据核验 → Qwen 组织回答 → 引用输出", "size": 20, "fill": "muted"},
-            {"xy": (1510, 205), "text": "目标：有依据才回答", "size": 18, "bold": True, "fill": "green"},
-            {"xy": (1510, 230), "text": "无依据则说明无法确认", "size": 16, "fill": "muted"},
-            {"xy": (930, 1138), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  当前尚无真实 Qwen 联调与会话持久化", "size": 16, "fill": "muted"},
+            {"xy": (930, 76), "text": "标准路径：任务识别 → 混合检索 → 证据核验 → Qwen 草稿 → 证据复核 → 返回", "size": 20, "fill": "muted"},
+            {"xy": (930, 1198), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  消息编号与通信设计说明逐项一致", "size": 16, "fill": "muted"},
         ],
         "legends": [
-            {"xy": (75, 70), "w": 525, "h": 112, "title": "消息与边界", "lines": [
-                "1—10：v1.0 问答主路径",
-                "4a/4b：信息不足时先追问，不进入检索",
-                "6.1：Tavily 仅按需核验官方公开信息",
+            {"xy": (70, 70), "w": 600, "h": 120, "title": "关键约束", "lines": [
+                "4a—4d：追问返回浏览器；5/5.1：用户补充后重新提交",
+                "8.1/8.2：Tavily 请求与结果双向；9.1：Qwen 返回草稿",
+                "12/13：AskController 经 Frontend 返回浏览器",
             ]},
         ],
     }
 
 
 def comm_ingestion_scene() -> dict:
+    nodes = [
+        node("maintainer", 70, 230, 235, 90, ":知识库维护者", ["Maintainer"], "blue_soft", "blue"),
+        node("entry", 350, 200, 265, 95, ":维护脚本 / 管理端", ["IngestionEntry"], "cyan_soft", "cyan"),
+        node("metadata", 350, 560, 265, 95, ":元数据与哈希检查", ["MetadataGate"], "cyan_soft", "cyan"),
+        node("parser", 690, 185, 270, 95, ":解析与 OCR", ["ParserOCR"], "purple_soft", "purple"),
+        node("local", 690, 440, 270, 105, ":本地知识资产", ["LocalKnowledge"], "orange_soft", "orange"),
+        node("chunks", 690, 700, 270, 95, ":分块与定位", ["ChunkBuilder"], "green_soft", "green"),
+        node("csv", 1060, 185, 250, 90, ":CSV 元数据索引", ["IndexCSV"], "orange_soft", "orange"),
+        node("chroma", 1060, 415, 250, 95, ":Chroma 向量库", ["ChromaBuilder"], "purple_soft", "purple"),
+        node("bm25", 1060, 660, 250, 95, ":BM25 索引", ["BM25Builder"], "orange_soft", "orange"),
+        node("quality", 1040, 890, 290, 115, ":质量与发布闸门", ["QualityGate", "Chroma PASS && BM25 PASS"], "green_soft", "green"),
+        node("tests", 1400, 650, 270, 95, ":离线评测", ["PoCTestSuite"], "green_soft", "green"),
+        node("report", 1400, 890, 270, 95, ":更新报告", ["MaintenanceReport"], "cyan_soft", "cyan"),
+    ]
+    flows = [
+        message("i01", "maintainer", "entry", [(305, 275), (350, 250)], "blue", "1 登记资料", (330, 238)),
+        message("i02", "entry", "metadata", [(482, 295), (482, 560)], "cyan", "2 检查", (530, 425)),
+        message("i03", "metadata", "parser", [(615, 575), (690, 235)], "cyan", "3 解析", (660, 385)),
+        message("i04", "parser", "local", [(825, 280), (825, 440)], "purple", "4 保存", (875, 360)),
+        message("i05", "local", "csv", [(960, 470), (1060, 235)], "orange", "5 更新索引", (1010, 345)),
+        message("i06", "local", "chunks", [(825, 545), (825, 700)], "green", "6 分块", (875, 625)),
+        message("i07", "chunks", "chroma", [(960, 730), (1060, 465)], "purple", "7a 构建", (1010, 590)),
+        message("i08", "chunks", "bm25", [(960, 750), (1060, 705)], "orange", "7b 构建", (1010, 715)),
+        message("i09", "chroma", "quality", [(1185, 510), (1185, 890)], "green", "8a 索引状态", (1235, 700)),
+        message("i10", "bm25", "quality", [(1185, 755), (1185, 890)], "green", "8b 索引状态", (1235, 830)),
+        message("i11", "csv", "quality", [(1185, 275), (1185, 890)], "orange", "8c 元数据状态", (1235, 400)),
+        message("i12", "quality", "tests", [(1330, 930), (1400, 730)], "green", "9 两项 PASS 后测试", (1410, 830)),
+        message("i13", "tests", "quality", [(1400, 725), (1330, 925)], "green", "9.1 测试结果", (1430, 780), dashed=True),
+        message("i14", "quality", "report", [(1330, 945), (1400, 945)], "green", "10 发布许可", (1365, 925)),
+        message("i15", "report", "entry", [(1400, 935), (615, 265)], "cyan", "10.1 状态反馈", (1000, 600), dashed=True),
+    ]
     return {
+        "kind": "communication",
+        "title": "UML 通信图 · 知识资料维护与索引更新",
+        "drawio_name": "UML通信图_知识入库_赵紫龙_v1.drawio",
         "width": 1860, "height": 1180, "bg": "bg",
-        "boxes": [
-            box(70, 240, 235, 95, ":知识库维护者", ["Maintainer"], "blue_soft", "blue"),
-            box(365, 215, 260, 100, ":维护脚本 / 管理端", ["IngestionEntry"], "cyan_soft", "cyan"),
-            box(365, 610, 260, 100, ":元数据与哈希检查", ["MetadataGate"], "cyan_soft", "cyan"),
-            box(715, 195, 270, 100, ":解析与 OCR", ["ParserOCR"], "purple_soft", "purple"),
-            box(715, 460, 270, 110, ":本地知识资产", ["LocalKnowledge"], "orange_soft", "orange"),
-            box(715, 735, 270, 100, ":分块与定位", ["ChunkBuilder"], "green_soft", "green"),
-            box(1080, 180, 250, 95, ":CSV 元数据索引", ["IndexCSV"], "orange_soft", "orange"),
-            box(1080, 445, 250, 100, ":Chroma 向量库", ["ChromaBuilder"], "purple_soft", "purple"),
-            box(1080, 710, 250, 100, ":BM25 索引", ["BM25Builder"], "orange_soft", "orange"),
-            box(1080, 940, 250, 100, ":质量与时效核验", ["QualityGate"], "green_soft", "green"),
-            box(1400, 445, 275, 105, ":离线评测", ["PoCTestSuite"], "green_soft", "green"),
-            box(1400, 715, 275, 105, ":更新报告", ["MaintenanceReport"], "cyan_soft", "cyan"),
-        ],
-        "edges": [
-            edge([(305, 287), (365, 265)], "blue", "1", (334, 250), messages=[(335, 275)]),
-            edge([(495, 315), (495, 610)], "cyan", "2", (545, 462)),
-            edge([(625, 645), (715, 250)], "cyan", "3", (675, 410)),
-            edge([(850, 295), (850, 460)], "purple", "4", (900, 380)),
-            edge([(985, 500), (1080, 227)], "orange", "5", (1032, 365)),
-            edge([(850, 570), (850, 735)], "green", "6", (900, 650)),
-            edge([(985, 785), (1080, 490)], "purple", "7 分块", (1032, 625)),
-            edge([(985, 800), (1080, 760)], "orange", "7b 关键词", (1032, 750)),
-            edge([(850, 735), (1080, 990)], "green", "8 检查", (975, 875)),
-            edge([(1205, 445), (1205, 280)], "orange", "5.1 状态", (1260, 360)),
-            edge([(1330, 985), (1400, 500)], "green", "9 运行测试", (1370, 745)),
-            edge([(1330, 995), (1400, 770)], "cyan", "10 报告", (1370, 900)),
-            edge([(1537, 715), (495, 710)], "cyan", "10.1 状态与待核项", (1015, 675), dashed=True),
-        ],
+        "nodes": nodes, "messages": flows,
         "labels": [
             {"xy": (930, 35), "text": "UML 通信图 · 知识资料维护与索引更新", "size": 34, "bold": True},
-            {"xy": (930, 76), "text": "首版使用本地资料、CSV 索引和可重建索引；正式 Web 管理端属于后续设计", "size": 20, "fill": "muted"},
-            {"xy": (1510, 160), "text": "资料先核验，再进入问答", "size": 18, "bold": True, "fill": "green"},
-            {"xy": (1510, 185), "text": "正文提取 ≠ 向量化 ≠ 联网复核", "size": 16, "fill": "muted"},
-            {"xy": (930, 1125), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  开题稿记录 44 条资料、43 条已提取正文、1 条待 OCR", "size": 16, "fill": "muted"},
+            {"xy": (930, 76), "text": "本地资料 → CSV/Chroma/BM25 → 双索引质量闸门 → 测试 → 发布与状态反馈", "size": 20, "fill": "muted"},
+            {"xy": (930, 1105), "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  项目知识库基准 44 条；当前仓库 CSV 31 条，仅表示现有索引记录", "size": 16, "fill": "muted"},
         ],
         "legends": [
-            {"xy": (70, 70), "w": 540, "h": 112, "title": "落地方式", "lines": [
-                "v1.0：维护者运行入库脚本并重建索引",
-                "v1.1：可增加 Web 管理端与审核状态",
-                "任意步骤失败：不更新问答可见索引",
+            {"xy": (70, 70), "w": 620, "h": 115, "title": "质量闸门", "lines": [
+                "只有 Chroma 与 BM25 均 PASS，QualityGate 才允许测试",
+                "CSV 只表示元数据状态，不替代两个索引的构建结果",
+                "任意索引失败：不进入发布，保留上一可用版本",
             ]},
         ],
     }
 
 
-def drawio_box(id_: str, label: str, x: int, y: int, w: int, h: int,
-               fill: str, stroke: str) -> str:
-    value = escape(label, {'"': "&quot;"})
-    style = (
-        "rounded=1;whiteSpace=wrap;html=1;arcSize=12;"
-        f"fillColor={fill};strokeColor={stroke};strokeWidth=2;"
-        "fontFamily=Microsoft YaHei;fontSize=16;"
-    )
-    return (
-        f'<mxCell id="{id_}" value="{value}" style="{style}" vertex="1" parent="1">'
-        f'<mxGeometry x="{x}" y="{y}" width="{w}" height="{h}" as="geometry"/>'
-        "</mxCell>"
-    )
-
-
-def drawio_edge(id_: str, source: str, target: str, label: str = "") -> str:
-    return (
-        f'<mxCell id="{id_}" value="{escape(label)}" style="endArrow=block;html=1;'
-        "rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;"
-        'fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" '
-        f'source="{source}" target="{target}"><mxGeometry relative="1" as="geometry"/>'
-        "</mxCell>"
-    )
-
-
-def write_drawio(name: str, filename: str, cells: list[str],
-                 width: int = 1600, height: int = 950) -> None:
-    body = "\n".join("        " + cell for cell in cells)
-    value = (
-        '<mxfile host="app.diagrams.net" modified="2026-11-08T08:00:00.000Z" '
-        'agent="CodeMind-FZU" version="24.0.0">\n'
-        f'  <diagram name="{escape(name)}" id="{Path(filename).stem}">\n'
-        f'    <mxGraphModel dx="{width}" dy="{height}" grid="1" gridSize="10" '
-        'guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" '
-        f'pageScale="1" pageWidth="{width}" pageHeight="{height}" math="0" shadow="0">\n'
-        '      <root>\n        <mxCell id="0"/>\n        <mxCell id="1" parent="0"/>\n'
-        f"{body}\n      </root>\n    </mxGraphModel>\n  </diagram>\n</mxfile>\n"
-    )
-    target = ARCH_DIR if filename.startswith("系统") else COMM_DIR
-    (target / filename).write_text(value, encoding="utf-8")
-
-
-def write_drawio_files() -> None:
-    write_drawio(
-        "系统技术架构图", "系统技术架构图_赵紫龙_v1.drawio",
-        [
-            drawio_box("title", "CodeMind-FZU 系统技术架构图\nWeb + FastAPI + 本地混合检索 + Qwen + 证据核验",
-                       300, 20, 1000, 66, "#F5F8FC", "#F5F8FC"),
-            drawio_box("student", "学生用户\nWeb 统一提问 / 查看引用", 80, 120, 260, 65, "#EAF0FF", "#1F5EFF"),
-            drawio_box("maintainer", "知识库维护者\n登记资料 / 核验 / 重建索引", 380, 120, 290, 65, "#EAF0FF", "#1F5EFF"),
-            drawio_box("sources", "学校 / 学院官方网站\n通知 / 办法 / 附件 / 培养方案", 710, 120, 360, 65, "#EAF0FF", "#1F5EFF"),
-            drawio_box("tavily", "Tavily 联网工具（候选）\n仅按需核验官方公开信息", 1110, 120, 390, 65, "#EAF0FF", "#1F5EFF"),
-            drawio_box("web", "Web 用户入口\nHTML / CSS / JavaScript", 80, 245, 270, 70, "#E4F7FA", "#0D91A8"),
-            drawio_box("api", "FastAPI 后端\n接口校验 / 异常处理", 390, 245, 270, 70, "#E4F7FA", "#0D91A8"),
-            drawio_box("response", "Ask API 与响应\n答案 + citations + status", 700, 245, 300, 70, "#E4F7FA", "#0D91A8"),
-            drawio_box("poc", "现有原型与离线 PoC\nFigma 原型 / 9 项测试", 1040, 245, 460, 70, "#FFF1DF", "#C46A12"),
-            drawio_box("classify", "任务识别\n任务 / 用户 / 实体", 80, 390, 250, 85, "#F0EAFF", "#7448D8"),
-            drawio_box("router", "策略选择与路由\nv1.0 聚焦官方依据查询", 370, 390, 260, 85, "#F0EAFF", "#7448D8"),
-            drawio_box("clarify", "主动追问\n信息不足不猜测", 670, 390, 250, 85, "#FCEBEF", "#B93C4F"),
-            drawio_box("agent", "Agent 编排器\n受控选择工具与步骤", 960, 390, 270, 85, "#F0EAFF", "#7448D8"),
-            drawio_box("compose", "回答组织\n引用 / 不确定性 / 下一步", 1270, 390, 230, 85, "#FCEBEF", "#B93C4F"),
-            drawio_box("hybrid", "混合检索\n本地资料优先 / Top-K", 80, 565, 250, 90, "#E6F6EF", "#16845B"),
-            drawio_box("chroma", "Chroma 向量索引\nEmbedding + 近邻", 365, 565, 250, 90, "#E6F6EF", "#16845B"),
-            drawio_box("bm25", "BM25 索引\n关键词 / 文号 / 年度", 650, 565, 250, 90, "#E6F6EF", "#16845B"),
-            drawio_box("rrf", "RRF 融合排序\n去重与候选融合", 935, 565, 250, 90, "#E6F6EF", "#16845B"),
-            drawio_box("verify", "证据核验\n来源 / 日期 / 范围 / 时效", 1220, 565, 280, 90, "#E6F6EF", "#16845B"),
-            drawio_box("local", "本地知识资产\n原始资料 + Markdown + CSV", 80, 750, 300, 90, "#FFF1DF", "#C46A12"),
-            drawio_box("embed", "Embedding 组件\n分块向量化", 415, 750, 240, 90, "#FFF1DF", "#C46A12"),
-            drawio_box("qwen", "Qwen API\n理解问题 / 组织回答", 690, 750, 260, 90, "#FFF1DF", "#C46A12"),
-            drawio_box("online", "Tavily（可选）\n失败时不作无依据结论", 985, 750, 285, 90, "#FFF1DF", "#C46A12"),
-            drawio_box("eval", "离线 PoC 与评测\n9 项测试 / 来源可追溯", 1305, 750, 195, 90, "#FFF1DF", "#C46A12"),
-            drawio_edge("a1", "student", "web", "提问"),
-            drawio_edge("a2", "web", "api", "请求"),
-            drawio_edge("a3", "api", "classify", "任务"),
-            drawio_edge("a4", "classify", "router", "分类"),
-            drawio_edge("a5", "router", "clarify", "缺信息"),
-            drawio_edge("a6", "router", "agent", "路由"),
-            drawio_edge("a7", "agent", "hybrid", "检索计划"),
-            drawio_edge("a8", "hybrid", "chroma", "语义"),
-            drawio_edge("a9", "hybrid", "bm25", "关键词"),
-            drawio_edge("a10", "chroma", "rrf", "候选"),
-            drawio_edge("a11", "bm25", "rrf", "候选"),
-            drawio_edge("a12", "rrf", "verify", "融合"),
-            drawio_edge("a13", "verify", "compose", "可信证据"),
-            drawio_edge("a14", "local", "embed", "索引素材"),
-            drawio_edge("a15", "embed", "chroma", "向量"),
-            drawio_edge("a16", "qwen", "verify", "证据上下文"),
-            drawio_edge("a17", "online", "verify", "按需核验"),
-            drawio_edge("a18", "compose", "response", "最终结果"),
-            drawio_edge("a19", "response", "web", "返回"),
-            drawio_edge("a20", "web", "student", "来源展示"),
-            drawio_box("bottom", "首版不包含数据库、独立管理端和正式部署；Tavily 为候选工具，Qwen 真实联调待验证",
-                       80, 870, 1420, 44, "#EDF1F6", "#617089"),
-        ],
-    )
-
-    write_drawio(
-        "UML通信图_官方资料问答", "UML通信图_智能问答_赵紫龙_v1.drawio",
-        [
-            drawio_box("title", "UML 通信图 · 官方资料问答\n识别任务 → 混合检索 → 证据核验 → Qwen 回答 → 引用输出",
-                       270, 20, 1060, 66, "#F5F8FC", "#F5F8FC"),
-            drawio_box("browser", ":学生浏览器\nBrowser", 70, 220, 210, 70, "#EAF0FF", "#1F5EFF"),
-            drawio_box("web", ":Web 用户入口\nFrontend", 330, 190, 220, 70, "#E4F7FA", "#0D91A8"),
-            drawio_box("api", ":FastAPI 后端\nAskController", 350, 520, 220, 70, "#E4F7FA", "#0D91A8"),
-            drawio_box("router", ":任务识别\nTaskRouter", 640, 180, 220, 70, "#F0EAFF", "#7448D8"),
-            drawio_box("agent", ":Agent 编排器\nAgentOrchestrator", 650, 430, 250, 80, "#F0EAFF", "#7448D8"),
-            drawio_box("retriever", ":混合检索器\nHybridRetriever", 650, 670, 250, 80, "#E6F6EF", "#16845B"),
-            drawio_box("chroma", ":Chroma 向量索引\nChromaIndex", 350, 740, 220, 70, "#FFF1DF", "#C46A12"),
-            drawio_box("bm25", ":BM25 索引\nBM25Index", 350, 850, 220, 70, "#FFF1DF", "#C46A12"),
-            drawio_box("rrf", ":RRF 融合\nRRFRanker", 650, 850, 230, 75, "#E6F6EF", "#16845B"),
-            drawio_box("verify", ":证据核验\nEvidenceVerifier", 960, 720, 230, 75, "#E6F6EF", "#16845B"),
-            drawio_box("online", ":Tavily（可选）\nOnlineCheck", 1260, 660, 220, 70, "#FFF1DF", "#C46A12"),
-            drawio_box("qwen", ":Qwen API\nLLMAdapter", 1220, 850, 220, 70, "#F0EAFF", "#7448D8"),
-            drawio_box("compose", ":回答组织\nAnswerComposer", 1220, 310, 220, 70, "#E4F7FA", "#0D91A8"),
-            drawio_box("clarify", ":主动追问\nClarifier", 1240, 450, 210, 70, "#FCEBEF", "#B93C4F"),
-            drawio_edge("q1", "browser", "web", "1"),
-            drawio_edge("q2", "web", "api", "2 / 10"),
-            drawio_edge("q3", "api", "router", "3"),
-            drawio_edge("q4", "router", "agent", "4"),
-            drawio_edge("q5", "router", "clarify", "4a/4b"),
-            drawio_edge("q6", "agent", "retriever", "5"),
-            drawio_edge("q7", "retriever", "chroma", "5.1a"),
-            drawio_edge("q8", "retriever", "bm25", "5.1b"),
-            drawio_edge("q9", "chroma", "rrf", "候选"),
-            drawio_edge("q10", "bm25", "rrf", "候选"),
-            drawio_edge("q11", "rrf", "verify", "6"),
-            drawio_edge("q12", "verify", "online", "6.1 按需"),
-            drawio_edge("q13", "verify", "qwen", "7 证据请求"),
-            drawio_edge("q14", "qwen", "verify", "7.1 草稿"),
-            drawio_edge("q15", "verify", "compose", "8 校验"),
-            drawio_edge("q16", "compose", "api", "9 最终响应"),
-            drawio_edge("q17", "api", "browser", "10 引用与状态"),
-        ],
-    )
-
-    write_drawio(
-        "UML通信图_知识维护", "UML通信图_知识入库_赵紫龙_v1.drawio",
-        [
-            drawio_box("title", "UML 通信图 · 知识资料维护与索引更新\n首版使用本地资料、CSV 索引和可重建索引",
-                       270, 20, 1060, 66, "#F5F8FC", "#F5F8FC"),
-            drawio_box("maintainer", ":知识库维护者\nMaintainer", 70, 220, 210, 70, "#EAF0FF", "#1F5EFF"),
-            drawio_box("entry", ":维护脚本 / 管理端\nIngestionEntry", 340, 190, 220, 75, "#E4F7FA", "#0D91A8"),
-            drawio_box("metadata", ":元数据与哈希检查\nMetadataGate", 340, 550, 220, 75, "#E4F7FA", "#0D91A8"),
-            drawio_box("parser", ":解析与 OCR\nParserOCR", 650, 175, 230, 75, "#F0EAFF", "#7448D8"),
-            drawio_box("local", ":本地知识资产\nLocalKnowledge", 650, 400, 230, 80, "#FFF1DF", "#C46A12"),
-            drawio_box("chunks", ":分块与定位\nChunkBuilder", 650, 660, 230, 75, "#E6F6EF", "#16845B"),
-            drawio_box("csv", ":CSV 元数据索引\nIndexCSV", 980, 165, 220, 70, "#FFF1DF", "#C46A12"),
-            drawio_box("chroma", ":Chroma 向量库\nChromaBuilder", 980, 390, 220, 75, "#F0EAFF", "#7448D8"),
-            drawio_box("bm25", ":BM25 索引\nBM25Builder", 980, 620, 220, 75, "#FFF1DF", "#C46A12"),
-            drawio_box("quality", ":质量与时效核验\nQualityGate", 980, 815, 220, 75, "#E6F6EF", "#16845B"),
-            drawio_box("tests", ":离线评测\nPoCTestSuite", 1290, 390, 220, 75, "#E6F6EF", "#16845B"),
-            drawio_box("report", ":更新报告\nMaintenanceReport", 1290, 620, 220, 75, "#E4F7FA", "#0D91A8"),
-            drawio_edge("i1", "maintainer", "entry", "1"),
-            drawio_edge("i2", "entry", "metadata", "2"),
-            drawio_edge("i3", "metadata", "parser", "3"),
-            drawio_edge("i4", "parser", "local", "4"),
-            drawio_edge("i5", "local", "csv", "5"),
-            drawio_edge("i6", "local", "chunks", "6"),
-            drawio_edge("i7", "chunks", "chroma", "7 向量"),
-            drawio_edge("i8", "chunks", "bm25", "7b 关键词"),
-            drawio_edge("i9", "quality", "tests", "9"),
-            drawio_edge("i10", "quality", "report", "10"),
-            drawio_edge("i11", "report", "entry", "10.1 待核项"),
-        ],
-    )
-
-
 def main() -> None:
-    render(
-        architecture_scene(),
-        ARCH_DIR / "系统技术架构图_赵紫龙_v1.svg",
-        ARCH_DIR / "系统技术架构图_赵紫龙_v1.png",
-    )
-    render(
-        comm_qa_scene(),
-        COMM_DIR / "UML通信图_智能问答_赵紫龙_v1.svg",
-        COMM_DIR / "UML通信图_智能问答_赵紫龙_v1.png",
-    )
-    render(
-        comm_ingestion_scene(),
-        COMM_DIR / "UML通信图_知识入库_赵紫龙_v1.svg",
-        COMM_DIR / "UML通信图_知识入库_赵紫龙_v1.png",
-    )
-    write_drawio_files()
+    specs = [
+        (architecture_scene(), ARCH_DIR / "系统技术架构图_赵紫龙_v1.svg",
+         ARCH_DIR / "系统技术架构图_赵紫龙_v1.png"),
+        (comm_qa_scene(), COMM_DIR / "UML通信图_智能问答_赵紫龙_v1.svg",
+         COMM_DIR / "UML通信图_智能问答_赵紫龙_v1.png"),
+        (comm_ingestion_scene(), COMM_DIR / "UML通信图_知识入库_赵紫龙_v1.svg",
+         COMM_DIR / "UML通信图_知识入库_赵紫龙_v1.png"),
+    ]
+    for scene, svg_path, png_path in specs:
+        draw_scene(scene, svg_path, png_path)
 
 
 if __name__ == "__main__":

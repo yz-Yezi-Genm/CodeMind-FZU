@@ -6,7 +6,7 @@
 
 | 路径 | 说明 |
 |---|---|
-| `tools/generate_zhaozilong_diagrams.py` | 赵紫龙技术架构图、智能问答通信图和知识入库通信图的统一生成脚本；同时输出 SVG、PNG 与 Draw.io 初稿，便于后续统一修改。 |
+| `tools/generate_zhaozilong_diagrams.py` | 赵紫龙技术架构图、智能问答通信图和知识入库通信图的统一设计源；同一场景数据同时生成 Draw.io、SVG 和 PNG，保证消息节点、方向、编号与路径一致。 |
 
 脚本仅使用 Python 标准库和 Pillow。运行方式：
 

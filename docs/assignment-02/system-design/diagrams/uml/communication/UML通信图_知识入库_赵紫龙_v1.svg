@@ -1,78 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1860" height="1180" viewBox="0 0 1860 1180">
 <style>text{font-family:'Microsoft YaHei',sans-serif}</style>
-<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#617089"/></marker></defs>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#617089"/></marker></defs>
 <rect width="1860" height="1180" fill="#F5F8FC"/>
-<polyline points="305,287 365,265" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#a)"/>
-<circle cx="335" cy="275" r="6" fill="#F5F8FC" stroke="#1F5EFF" stroke-width="2"/>
-<text x="334" y="256" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">1</text>
-<polyline points="495,315 495,610" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
-<text x="545" y="468" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">2</text>
-<polyline points="625,645 715,250" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
-<text x="675" y="416" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">3</text>
-<polyline points="850,295 850,460" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
-<text x="900" y="386" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">4</text>
-<polyline points="985,500 1080,227" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
-<text x="1032" y="371" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">5</text>
-<polyline points="850,570 850,735" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
-<text x="900" y="656" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6</text>
-<polyline points="985,785 1080,490" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
-<text x="1032" y="631" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">7 分块</text>
-<polyline points="985,800 1080,760" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
-<text x="1032" y="756" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">7b 关键词</text>
-<polyline points="850,735 1080,990" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
-<text x="975" y="881" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8 检查</text>
-<polyline points="1205,445 1205,280" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
-<text x="1260" y="366" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">5.1 状态</text>
-<polyline points="1330,985 1400,500" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
-<text x="1370" y="751" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 运行测试</text>
-<polyline points="1330,995 1400,770" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
-<text x="1370" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">10 报告</text>
-<polyline points="1537,715 495,710" fill="none" stroke="#0D91A8" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#a)"/>
-<text x="1015" y="681" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">10.1 状态与待核项</text>
-<rect x="70" y="240" width="235" height="95" rx="16" fill="#EAF0FF" stroke="#1F5EFF" stroke-width="2"/>
-<text x="187.5" y="274" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:知识库维护者</text>
-<text x="187.5" y="295" text-anchor="middle" font-size="14" fill="#5B6578">Maintainer</text>
-<rect x="365" y="215" width="260" height="100" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
-<text x="495.0" y="258" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:维护脚本 / 管理端</text>
-<text x="495.0" y="290" text-anchor="middle" font-size="17" fill="#5B6578">IngestionEntry</text>
-<rect x="365" y="610" width="260" height="100" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
-<text x="495.0" y="653" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:元数据与哈希检查</text>
-<text x="495.0" y="685" text-anchor="middle" font-size="17" fill="#5B6578">MetadataGate</text>
-<rect x="715" y="195" width="270" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="850.0" y="238" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:解析与 OCR</text>
-<text x="850.0" y="270" text-anchor="middle" font-size="17" fill="#5B6578">ParserOCR</text>
-<rect x="715" y="460" width="270" height="110" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
-<text x="850.0" y="503" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:本地知识资产</text>
-<text x="850.0" y="535" text-anchor="middle" font-size="17" fill="#5B6578">LocalKnowledge</text>
-<rect x="715" y="735" width="270" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="850.0" y="778" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:分块与定位</text>
-<text x="850.0" y="810" text-anchor="middle" font-size="17" fill="#5B6578">ChunkBuilder</text>
-<rect x="1080" y="180" width="250" height="95" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
-<text x="1205.0" y="214" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:CSV 元数据索引</text>
-<text x="1205.0" y="235" text-anchor="middle" font-size="14" fill="#5B6578">IndexCSV</text>
-<rect x="1080" y="445" width="250" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="1205.0" y="488" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:Chroma 向量库</text>
-<text x="1205.0" y="520" text-anchor="middle" font-size="17" fill="#5B6578">ChromaBuilder</text>
-<rect x="1080" y="710" width="250" height="100" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
-<text x="1205.0" y="753" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:BM25 索引</text>
-<text x="1205.0" y="785" text-anchor="middle" font-size="17" fill="#5B6578">BM25Builder</text>
-<rect x="1080" y="940" width="250" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="1205.0" y="983" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:质量与时效核验</text>
-<text x="1205.0" y="1015" text-anchor="middle" font-size="17" fill="#5B6578">QualityGate</text>
-<rect x="1400" y="445" width="275" height="105" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="1537.5" y="488" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:离线评测</text>
-<text x="1537.5" y="520" text-anchor="middle" font-size="17" fill="#5B6578">PoCTestSuite</text>
-<rect x="1400" y="715" width="275" height="105" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
-<text x="1537.5" y="758" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:更新报告</text>
-<text x="1537.5" y="790" text-anchor="middle" font-size="17" fill="#5B6578">MaintenanceReport</text>
+<polyline points="305,275 350,250" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="330" y="244" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">1 登记资料</text>
+<polyline points="482,295 482,560" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="530" y="431" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">2 检查</text>
+<polyline points="615,575 690,235" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="660" y="391" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">3 解析</text>
+<polyline points="825,280 825,440" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="875" y="366" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">4 保存</text>
+<polyline points="960,470 1060,235" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1010" y="351" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">5 更新索引</text>
+<polyline points="825,545 825,700" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="875" y="631" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6 分块</text>
+<polyline points="960,730 1060,465" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1010" y="596" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">7a 构建</text>
+<polyline points="960,750 1060,705" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1010" y="721" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">7b 构建</text>
+<polyline points="1185,510 1185,890" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1235" y="706" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8a 索引状态</text>
+<polyline points="1185,755 1185,890" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1235" y="836" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8b 索引状态</text>
+<polyline points="1185,275 1185,890" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1235" y="406" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8c 元数据状态</text>
+<polyline points="1330,930 1400,730" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1410" y="836" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 两项 PASS 后测试</text>
+<polyline points="1400,725 1330,925" fill="none" stroke="#16845B" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="1430" y="786" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9.1 测试结果</text>
+<polyline points="1330,945 1400,945" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1365" y="931" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 发布许可</text>
+<polyline points="1400,935 615,265" fill="none" stroke="#0D91A8" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="1000" y="606" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">10.1 状态反馈</text>
+<rect x="70" y="230" width="235" height="90" rx="16" fill="#EAF0FF" stroke="#1F5EFF" stroke-width="2"/>
+<text x="187.5" y="264" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:知识库维护者</text>
+<text x="187.5" y="285" text-anchor="middle" font-size="14" fill="#5B6578">Maintainer</text>
+<rect x="350" y="200" width="265" height="95" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="482.5" y="234" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:维护脚本 / 管理端</text>
+<text x="482.5" y="255" text-anchor="middle" font-size="14" fill="#5B6578">IngestionEntry</text>
+<rect x="350" y="560" width="265" height="95" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="482.5" y="594" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:元数据与哈希检查</text>
+<text x="482.5" y="615" text-anchor="middle" font-size="14" fill="#5B6578">MetadataGate</text>
+<rect x="690" y="185" width="270" height="95" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
+<text x="825.0" y="219" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:解析与 OCR</text>
+<text x="825.0" y="240" text-anchor="middle" font-size="14" fill="#5B6578">ParserOCR</text>
+<rect x="690" y="440" width="270" height="105" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="825.0" y="483" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:本地知识资产</text>
+<text x="825.0" y="515" text-anchor="middle" font-size="16" fill="#5B6578">LocalKnowledge</text>
+<rect x="690" y="700" width="270" height="95" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
+<text x="825.0" y="734" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:分块与定位</text>
+<text x="825.0" y="755" text-anchor="middle" font-size="14" fill="#5B6578">ChunkBuilder</text>
+<rect x="1060" y="185" width="250" height="90" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="1185.0" y="219" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:CSV 元数据索引</text>
+<text x="1185.0" y="240" text-anchor="middle" font-size="14" fill="#5B6578">IndexCSV</text>
+<rect x="1060" y="415" width="250" height="95" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
+<text x="1185.0" y="449" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:Chroma 向量库</text>
+<text x="1185.0" y="470" text-anchor="middle" font-size="14" fill="#5B6578">ChromaBuilder</text>
+<rect x="1060" y="660" width="250" height="95" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="1185.0" y="694" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:BM25 索引</text>
+<text x="1185.0" y="715" text-anchor="middle" font-size="14" fill="#5B6578">BM25Builder</text>
+<rect x="1040" y="890" width="290" height="115" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
+<text x="1185.0" y="933" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:质量与发布闸门</text>
+<text x="1185.0" y="965" text-anchor="middle" font-size="16" fill="#5B6578">QualityGate</text>
+<text x="1185.0" y="992" text-anchor="middle" font-size="16" fill="#5B6578">Chroma PASS &amp;&amp; BM25 PASS</text>
+<rect x="1400" y="650" width="270" height="95" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
+<text x="1535.0" y="684" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:离线评测</text>
+<text x="1535.0" y="705" text-anchor="middle" font-size="14" fill="#5B6578">PoCTestSuite</text>
+<rect x="1400" y="890" width="270" height="95" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="1535.0" y="924" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:更新报告</text>
+<text x="1535.0" y="945" text-anchor="middle" font-size="14" fill="#5B6578">MaintenanceReport</text>
 <text x="930" y="41" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">UML 通信图 · 知识资料维护与索引更新</text>
-<text x="930" y="82" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">首版使用本地资料、CSV 索引和可重建索引；正式 Web 管理端属于后续设计</text>
-<text x="1510" y="166" text-anchor="middle" font-size="18" font-weight="700" fill="#16845B">资料先核验，再进入问答</text>
-<text x="1510" y="191" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">正文提取 ≠ 向量化 ≠ 联网复核</text>
-<text x="930" y="1131" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  开题稿记录 44 条资料、43 条已提取正文、1 条待 OCR</text>
-<rect x="70" y="70" width="540" height="112" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/>
-<text x="86" y="97" font-size="17" font-weight="700" fill="#172033">落地方式</text>
-<text x="86" y="123" font-size="14" fill="#5B6578">v1.0：维护者运行入库脚本并重建索引</text>
-<text x="86" y="144" font-size="14" fill="#5B6578">v1.1：可增加 Web 管理端与审核状态</text>
-<text x="86" y="165" font-size="14" fill="#5B6578">任意步骤失败：不更新问答可见索引</text>
+<text x="930" y="82" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">本地资料 → CSV/Chroma/BM25 → 双索引质量闸门 → 测试 → 发布与状态反馈</text>
+<text x="930" y="1111" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  项目知识库基准 44 条；当前仓库 CSV 31 条，仅表示现有索引记录</text>
+<rect x="70" y="70" width="620" height="115" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="86" y="97" font-size="17" font-weight="700" fill="#172033">质量闸门</text>
+<text x="86" y="123" font-size="14" fill="#5B6578">只有 Chroma 与 BM25 均 PASS，QualityGate 才允许测试</text>
+<text x="86" y="144" font-size="14" fill="#5B6578">CSV 只表示元数据状态，不替代两个索引的构建结果</text>
+<text x="86" y="165" font-size="14" fill="#5B6578">任意索引失败：不进入发布，保留上一可用版本</text>
 </svg>

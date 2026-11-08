@@ -23,5 +23,6 @@
 4. Tavily 是候选能力，联网结果必须回到官方原文核验。
 5. 证据不足、规则冲突、模型超时或引用校验失败时必须保守降级。
 6. 数据库、完整 Web 管理端、会话持久化和个性化推荐属于后续阶段。
+7. 知识库项目基准为 44 条；当前仓库 CSV 的 31 条仅表示现有索引记录数，二者不能直接等价。
 
 生成脚本位于 [`../../source/tools/generate_zhaozilong_diagrams.py`](../../source/tools/generate_zhaozilong_diagrams.py)。
