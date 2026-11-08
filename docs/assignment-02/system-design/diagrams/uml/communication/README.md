@@ -13,7 +13,7 @@
 
 详细对象职责、消息编号、错误处理、状态机与审计字段见 [`通信设计说明_赵紫龙_v1.md`](通信设计说明_赵紫龙_v1.md)。
 
-> 说明：问答链路采用开题稿确定的 Chroma + BM25 + RRF + Qwen 方案。当前真实模型调用与混合检索联调仍待验证；数据库与完整 Web 管理端属于后续设计。
+> 说明：问答链路采用开题稿确定的 Chroma + BM25 + RRF + Qwen 方案。当前真实模型调用与混合检索联调仍待验证。数据库设计说明书属于本次作业成果；独立数据库部署仍待负责人确认，完整 Web 管理端和会话持久化属于后续阶段。
 
 Draw.io、SVG 和 PNG 均由 [`../../../source/tools/generate_zhaozilong_diagrams.py`](../../../source/tools/generate_zhaozilong_diagrams.py) 的同一场景模型生成，避免三种格式的消息连接漂移。
 

@@ -106,8 +106,8 @@
 <text x="1535.0" y="395" text-anchor="middle" font-size="14" fill="#5B6578">answerStatus / limitations</text>
 <rect x="100" y="500" width="290" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
 <text x="245.0" y="543" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">任务识别</text>
-<text x="245.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">事务 / 机会 / 规划</text>
-<text x="245.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">年级、专业、年份、用途</text>
+<text x="245.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">v1.0：事务 / 机会查询</text>
+<text x="245.0" y="602" text-anchor="middle" font-size="16" fill="#5B6578">规划路由=后续预留</text>
 <rect x="430" y="500" width="290" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
 <text x="575.0" y="543" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">策略选择与路由</text>
 <text x="575.0" y="575" text-anchor="middle" font-size="16" fill="#5B6578">覆盖五大业务方向</text>

@@ -29,17 +29,17 @@
 <polyline points="1100,305 1040,305 1040,1040 1080,1040" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1035" y="486" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8c 元数据状态</text>
 <polyline points="1380,1030 1450,820" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1460" y="931" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 两项 PASS 后测试</text>
+<text x="1380" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 两项 PASS 后测试</text>
 <polyline points="1450,795 1380,1020" fill="none" stroke="#16845B" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1480" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9.1 测试结果</text>
+<text x="1540" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9.1 测试结果</text>
 <polyline points="1380,1060 1450,1060" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1415" y="966" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 审核+测试通过</text>
+<text x="1370" y="976" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 审核+测试通过</text>
 <polyline points="1585,1100 1585,1150" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1530" y="1131" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.1 写入完整 vN</text>
 <polyline points="1450,1160 1420,1160 1420,520 1360,540" fill="none" stroke="#7448D8" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1280" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.2 Chroma=vN</text>
+<text x="1200" y="956" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.2 Chroma=vN</text>
 <polyline points="1450,1180 1430,1180 1430,820 1360,785" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1420" y="886" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">10.3 BM25=vN</text>
+<text x="1540" y="936" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">10.3 BM25=vN</text>
 <polyline points="1720,1190 1730,1190 1730,1050 1740,1050" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1770" y="1126" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.4 切换 activity=vN</text>
 <polyline points="1875,1000 1875,820" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
