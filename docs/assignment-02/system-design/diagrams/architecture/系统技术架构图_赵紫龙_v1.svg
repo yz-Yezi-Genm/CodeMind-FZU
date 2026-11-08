@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1220" viewBox="0 0 1920 1220">
+<style>text{font-family:'Microsoft YaHei',sans-serif}</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#617089"/></marker></defs>
+<rect width="1920" height="1220" fill="#F5F8FC"/>
+<rect x="50" y="125" width="1820" height="140" rx="22" fill="#EAF0FF" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="156" font-size="20" font-weight="700" fill="#1F5EFF">01  用户、入口与资料来源</text>
+<rect x="50" y="295" width="1820" height="135" rx="22" fill="#E4F7FA" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="326" font-size="20" font-weight="700" fill="#1F5EFF">02  v1.0 Web 入口与 FastAPI 服务</text>
+<rect x="50" y="460" width="1820" height="190" rx="22" fill="#F0EAFF" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="491" font-size="20" font-weight="700" fill="#1F5EFF">03  Agent 任务理解、策略选择与编排</text>
+<rect x="50" y="680" width="1820" height="190" rx="22" fill="#E6F6EF" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="711" font-size="20" font-weight="700" fill="#1F5EFF">04  本地知识、混合检索与证据核验</text>
+<rect x="50" y="900" width="1820" height="190" rx="22" fill="#FFF1DF" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="931" font-size="20" font-weight="700" fill="#1F5EFF">05  外部模型、可选联网工具与验证资产</text>
+<rect x="50" y="1120" width="1820" height="60" rx="22" fill="#EDF1F6" stroke="#EDF1F6" stroke-width="2"/>
+<text x="72" y="1151" font-size="20" font-weight="700" fill="#1F5EFF">06  可信性、离线评测与运行日志</text>
+<polyline points="275,237 275,325" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#a)"/>
+<text x="325" y="288" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">提问</text>
+<polyline points="655,237 335,935" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="495" y="756" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">维护资料</text>
+<polyline points="1065,237 280,935" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#a)"/>
+<text x="650" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">官方原文</text>
+<polyline points="440,364 490,364" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="465" y="352" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">请求</text>
+<polyline points="820,364 870,364" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="845" y="352" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">/api/ask</text>
+<polyline points="1065,403 1070,500" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="1125" y="463" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">任务</text>
+<polyline points="400,557 435,557" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="417" y="545" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">分类</text>
+<polyline points="735,557 770,557" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="752" y="545" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">缺信息</text>
+<polyline points="1070,557 1105,557" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="1087" y="545" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">路由</text>
+<polyline points="1160,615 260,720" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="750" y="686" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">检索计划</text>
+<polyline points="395,777 430,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="412" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">语义</text>
+<polyline points="715,777 750,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="732" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">关键词</text>
+<polyline points="1015,777 1050,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="1032" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">候选</text>
+<polyline points="1335,777 1370,777" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="1352" y="765" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">融合</text>
+<polyline points="1590,720 1590,615" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="1655" y="671" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">可信证据</text>
+<polyline points="485,935 620,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="555" y="891" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">构建索引</text>
+<polyline points="309,935 309,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="370" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">分块/元数据</text>
+<polyline points="995,935 1240,615" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="1215" y="786" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">证据上下文</text>
+<polyline points="1315,935 1510,835" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="1445" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">按需核验</text>
+<polyline points="1815,557 1220,365" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="1490" y="461" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">响应</text>
+<polyline points="870,364 440,364" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="650" y="461" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">最终结果</text>
+<polyline points="275,325 275,237" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#a)"/>
+<text x="225" y="288" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">来源展示</text>
+<polyline points="770,575 1490,575" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#a)"/>
+<text x="1120" y="631" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">信息缺失 → 先追问</text>
+<rect x="110" y="165" width="330" height="72" rx="16" fill="#FFFFFF" stroke="#1F5EFF" stroke-width="2"/>
+<text x="275.0" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">学生用户</text>
+<text x="275.0" y="220" text-anchor="middle" font-size="14" fill="#5B6578">Web 统一提问 · 查看引用 · 继续追问</text>
+<rect x="490" y="165" width="330" height="72" rx="16" fill="#FFFFFF" stroke="#1F5EFF" stroke-width="2"/>
+<text x="655.0" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">知识库维护者</text>
+<text x="655.0" y="220" text-anchor="middle" font-size="14" fill="#5B6578">登记资料 · 核验元数据 · 重建索引</text>
+<rect x="870" y="165" width="390" height="72" rx="16" fill="#FFFFFF" stroke="#1F5EFF" stroke-width="2"/>
+<text x="1065.0" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">学校 / 学院官方网站</text>
+<text x="1065.0" y="220" text-anchor="middle" font-size="14" fill="#5B6578">通知 · 办法 · 附件 · 培养方案</text>
+<rect x="1310" y="165" width="450" height="72" rx="16" fill="#FFFFFF" stroke="#1F5EFF" stroke-width="2"/>
+<text x="1535.0" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">Tavily 联网工具（候选）</text>
+<text x="1535.0" y="220" text-anchor="middle" font-size="14" fill="#5B6578">仅核验官方公开信息 · 非首版硬依赖</text>
+<rect x="110" y="325" width="330" height="78" rx="16" fill="#FFFFFF" stroke="#0D91A8" stroke-width="2"/>
+<text x="275.0" y="359" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">Web 用户入口</text>
+<text x="275.0" y="380" text-anchor="middle" font-size="14" fill="#5B6578">HTML / CSS / JavaScript</text>
+<text x="275.0" y="395" text-anchor="middle" font-size="14" fill="#5B6578">统一提问、来源与不确定性展示</text>
+<rect x="490" y="325" width="330" height="78" rx="16" fill="#FFFFFF" stroke="#0D91A8" stroke-width="2"/>
+<text x="655.0" y="359" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">FastAPI 后端</text>
+<text x="655.0" y="380" text-anchor="middle" font-size="14" fill="#5B6578">统一接口 / 参数校验</text>
+<text x="655.0" y="395" text-anchor="middle" font-size="14" fill="#5B6578">异常处理 / 结果返回</text>
+<rect x="870" y="325" width="390" height="78" rx="16" fill="#FFFFFF" stroke="#0D91A8" stroke-width="2"/>
+<text x="1065.0" y="359" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">Ask API 与响应层</text>
+<text x="1065.0" y="380" text-anchor="middle" font-size="14" fill="#5B6578">POST /api/ask</text>
+<text x="1065.0" y="395" text-anchor="middle" font-size="14" fill="#5B6578">答案 + citations + status</text>
+<rect x="1310" y="325" width="450" height="78" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="1535.0" y="359" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">现有原型与离线 PoC</text>
+<text x="1535.0" y="380" text-anchor="middle" font-size="14" fill="#5B6578">Figma 原型已有</text>
+<text x="1535.0" y="395" text-anchor="middle" font-size="14" fill="#5B6578">9 项测试通过 · 非真实模型联调</text>
+<rect x="100" y="500" width="300" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
+<text x="250.0" y="543" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">任务识别</text>
+<text x="250.0" y="575" text-anchor="middle" font-size="17" fill="#5B6578">任务类型 / 用户对象</text>
+<text x="250.0" y="600" text-anchor="middle" font-size="17" fill="#5B6578">竞赛、年份、用途等实体</text>
+<rect x="435" y="500" width="300" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
+<text x="585.0" y="543" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">策略选择与路由</text>
+<text x="585.0" y="575" text-anchor="middle" font-size="17" fill="#5B6578">事务 / 机会 / 规划</text>
+<text x="585.0" y="600" text-anchor="middle" font-size="17" fill="#5B6578">v1.0 聚焦官方依据查询</text>
+<rect x="770" y="500" width="300" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
+<text x="920.0" y="543" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">主动追问</text>
+<text x="920.0" y="575" text-anchor="middle" font-size="17" fill="#5B6578">缺年级、事项、年份或用途</text>
+<text x="920.0" y="600" text-anchor="middle" font-size="17" fill="#5B6578">信息不足时不猜测结论</text>
+<rect x="1105" y="500" width="350" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
+<text x="1280.0" y="543" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">Agent 编排器</text>
+<text x="1280.0" y="575" text-anchor="middle" font-size="17" fill="#5B6578">选择检索、核验与回答步骤</text>
+<text x="1280.0" y="600" text-anchor="middle" font-size="17" fill="#5B6578">受控调用本地与外部工具</text>
+<rect x="1490" y="500" width="325" height="115" rx="16" fill="#FFFFFF" stroke="#7448D8" stroke-width="2"/>
+<text x="1652.5" y="543" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">回答组织</text>
+<text x="1652.5" y="575" text-anchor="middle" font-size="17" fill="#5B6578">结论解释 / 引用 / 下一步</text>
+<text x="1652.5" y="600" text-anchor="middle" font-size="17" fill="#5B6578">旧通知与冲突显式提示</text>
+<rect x="95" y="720" width="300" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
+<text x="245.0" y="763" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">混合检索</text>
+<text x="245.0" y="795" text-anchor="middle" font-size="17" fill="#5B6578">本地资料优先 · Top-K</text>
+<text x="245.0" y="820" text-anchor="middle" font-size="17" fill="#5B6578">关键词与语义召回</text>
+<rect x="430" y="720" width="285" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
+<text x="572.5" y="763" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">Chroma 向量索引</text>
+<text x="572.5" y="795" text-anchor="middle" font-size="17" fill="#5B6578">Embedding 生成</text>
+<text x="572.5" y="820" text-anchor="middle" font-size="17" fill="#5B6578">语义近邻检索</text>
+<rect x="750" y="720" width="265" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
+<text x="882.5" y="763" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">BM25 索引</text>
+<text x="882.5" y="795" text-anchor="middle" font-size="17" fill="#5B6578">关键词精确匹配</text>
+<text x="882.5" y="820" text-anchor="middle" font-size="17" fill="#5B6578">规则名称 / 文号 / 年度</text>
+<rect x="1050" y="720" width="285" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
+<text x="1192.5" y="763" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">RRF 融合排序</text>
+<text x="1192.5" y="795" text-anchor="middle" font-size="17" fill="#5B6578">融合两路候选</text>
+<text x="1192.5" y="820" text-anchor="middle" font-size="17" fill="#5B6578">去重并保留召回依据</text>
+<rect x="1370" y="720" width="445" height="115" rx="16" fill="#FFFFFF" stroke="#16845B" stroke-width="2"/>
+<text x="1592.5" y="763" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">证据核验</text>
+<text x="1592.5" y="795" text-anchor="middle" font-size="17" fill="#5B6578">来源 / 日期 / 适用范围 / 时效</text>
+<text x="1592.5" y="820" text-anchor="middle" font-size="17" fill="#5B6578">无依据或冲突时拒绝确定结论</text>
+<rect x="95" y="935" width="390" height="115" rx="16" fill="#FFFFFF" stroke="#C46A12" stroke-width="2"/>
+<text x="290.0" y="978" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">本地知识资产</text>
+<text x="290.0" y="1010" text-anchor="middle" font-size="17" fill="#5B6578">原始资料 + 中文整理稿</text>
+<text x="290.0" y="1035" text-anchor="middle" font-size="17" fill="#5B6578">CSV 索引 / 状态 / 页码定位</text>
+<rect x="520" y="935" width="300" height="115" rx="16" fill="#FFFFFF" stroke="#C46A12" stroke-width="2"/>
+<text x="670.0" y="978" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">Embedding 组件</text>
+<text x="670.0" y="1010" text-anchor="middle" font-size="17" fill="#5B6578">文本分块向量化</text>
+<text x="670.0" y="1035" text-anchor="middle" font-size="17" fill="#5B6578">索引可重建</text>
+<rect x="855" y="935" width="280" height="115" rx="16" fill="#FFFFFF" stroke="#C46A12" stroke-width="2"/>
+<text x="995.0" y="978" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">Qwen API</text>
+<text x="995.0" y="1010" text-anchor="middle" font-size="17" fill="#5B6578">理解问题</text>
+<text x="995.0" y="1035" text-anchor="middle" font-size="17" fill="#5B6578">基于证据组织回答</text>
+<rect x="1170" y="935" width="290" height="115" rx="16" fill="#FFFFFF" stroke="#C46A12" stroke-width="2"/>
+<text x="1315.0" y="978" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">Tavily（可选）</text>
+<text x="1315.0" y="1010" text-anchor="middle" font-size="17" fill="#5B6578">候选联网核验</text>
+<text x="1315.0" y="1035" text-anchor="middle" font-size="17" fill="#5B6578">失败时不生成无依据结论</text>
+<rect x="1495" y="935" width="320" height="115" rx="16" fill="#FFFFFF" stroke="#C46A12" stroke-width="2"/>
+<text x="1655.0" y="978" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">离线 PoC 与评测</text>
+<text x="1655.0" y="1010" text-anchor="middle" font-size="17" fill="#5B6578">来源追溯 / 事实正确性</text>
+<text x="1655.0" y="1035" text-anchor="middle" font-size="17" fill="#5B6578">任务适应 / 无依据处理</text>
+<rect x="95" y="1142" width="550" height="32" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
+<text x="370.0" y="1166.0" text-anchor="middle" font-size="18" font-weight="700" fill="#172033">离线测试、失败降级、调用日志与资料更新记录</text>
+<rect x="680" y="1142" width="540" height="32" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
+<text x="950.0" y="1166.0" text-anchor="middle" font-size="18" font-weight="700" fill="#172033">不采集成绩、密码、统本身份凭据或无关个人数据</text>
+<rect x="1255" y="1142" width="565" height="32" rx="16" fill="#FFFFFF" stroke="#617089" stroke-width="2"/>
+<text x="1537.5" y="1166.0" text-anchor="middle" font-size="18" font-weight="700" fill="#172033">当前状态：资料已登记，真实 Agent 与混合检索尚未完成联调</text>
+<text x="960" y="40" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">CodeMind-FZU 系统技术架构图</text>
+<text x="960" y="81" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">基于 2026-10-24 开题答辩方案 · 本地知识优先 · 可追溯回答</text>
+<text x="960" y="1209" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  数据库、独立管理端与正式部署为后续设计</text>
+<rect x="1440" y="32" width="380" height="98" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/>
+<text x="1456" y="59" font-size="17" font-weight="700" fill="#172033">版本边界</text>
+<text x="1456" y="85" font-size="14" fill="#5B6578">v1.0：四类官方资料查询与引用</text>
+<text x="1456" y="106" font-size="14" fill="#5B6578">候选：Tavily 联网核验，非硬依赖</text>
+<text x="1456" y="127" font-size="14" fill="#5B6578">后续：管理端、持久化、个性化推荐</text>
+</svg>

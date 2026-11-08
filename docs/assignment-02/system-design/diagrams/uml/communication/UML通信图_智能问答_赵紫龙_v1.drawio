@@ -1,0 +1,57 @@
+<mxfile host="app.diagrams.net" modified="2026-11-08T08:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
+  <diagram name="UML通信图_官方资料问答" id="UML通信图_智能问答_赵紫龙_v1">
+    <mxGraphModel dx="1600" dy="950" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="UML 通信图 · 官方资料问答
+识别任务 → 混合检索 → 证据核验 → Qwen 回答 → 引用输出" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F5F8FC;strokeColor=#F5F8FC;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="270" y="20" width="1060" height="66" as="geometry"/></mxCell>
+        <mxCell id="browser" value=":学生浏览器
+Browser" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#EAF0FF;strokeColor=#1F5EFF;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="70" y="220" width="210" height="70" as="geometry"/></mxCell>
+        <mxCell id="web" value=":Web 用户入口
+Frontend" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E4F7FA;strokeColor=#0D91A8;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="330" y="190" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="api" value=":FastAPI 后端
+AskController" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E4F7FA;strokeColor=#0D91A8;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="350" y="520" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="router" value=":任务识别
+TaskRouter" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0EAFF;strokeColor=#7448D8;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="640" y="180" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="agent" value=":Agent 编排器
+AgentOrchestrator" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0EAFF;strokeColor=#7448D8;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="650" y="430" width="250" height="80" as="geometry"/></mxCell>
+        <mxCell id="retriever" value=":混合检索器
+HybridRetriever" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F6EF;strokeColor=#16845B;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="650" y="670" width="250" height="80" as="geometry"/></mxCell>
+        <mxCell id="chroma" value=":Chroma 向量索引
+ChromaIndex" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFF1DF;strokeColor=#C46A12;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="350" y="740" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="bm25" value=":BM25 索引
+BM25Index" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFF1DF;strokeColor=#C46A12;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="350" y="850" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="rrf" value=":RRF 融合
+RRFRanker" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F6EF;strokeColor=#16845B;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="650" y="850" width="230" height="75" as="geometry"/></mxCell>
+        <mxCell id="verify" value=":证据核验
+EvidenceVerifier" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F6EF;strokeColor=#16845B;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="960" y="720" width="230" height="75" as="geometry"/></mxCell>
+        <mxCell id="online" value=":Tavily（可选）
+OnlineCheck" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFF1DF;strokeColor=#C46A12;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="1260" y="660" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="qwen" value=":Qwen API
+LLMAdapter" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0EAFF;strokeColor=#7448D8;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="1220" y="850" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="compose" value=":回答组织
+AnswerComposer" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E4F7FA;strokeColor=#0D91A8;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="1220" y="310" width="220" height="70" as="geometry"/></mxCell>
+        <mxCell id="clarify" value=":主动追问
+Clarifier" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FCEBEF;strokeColor=#B93C4F;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1"><mxGeometry x="1240" y="450" width="210" height="70" as="geometry"/></mxCell>
+        <mxCell id="q1" value="1" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="browser" target="web"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q2" value="2 / 10" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="web" target="api"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q3" value="3" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="api" target="router"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q4" value="4" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="router" target="agent"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q5" value="4a/4b" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="router" target="clarify"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q6" value="5" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="agent" target="retriever"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q7" value="5.1a" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="retriever" target="chroma"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q8" value="5.1b" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="retriever" target="bm25"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q9" value="候选" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="chroma" target="rrf"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q10" value="候选" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="bm25" target="rrf"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q11" value="6" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="rrf" target="verify"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q12" value="6.1 按需" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="verify" target="online"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q13" value="7 证据请求" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="verify" target="qwen"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q14" value="7.1 草稿" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="qwen" target="verify"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q15" value="8 校验" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="verify" target="compose"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q16" value="9 最终响应" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="compose" target="api"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="q17" value="10 引用与状态" style="endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#617089;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="api" target="browser"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

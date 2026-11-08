@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1860" height="1180" viewBox="0 0 1860 1180">
+<style>text{font-family:'Microsoft YaHei',sans-serif}</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#617089"/></marker></defs>
+<rect width="1860" height="1180" fill="#F5F8FC"/>
+<polyline points="305,290 365,255" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#a)"/>
+<circle cx="335" cy="273" r="6" fill="#F5F8FC" stroke="#1F5EFF" stroke-width="2"/>
+<text x="332" y="258" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">1</text>
+<polyline points="482,305 482,560" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="532" y="441" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">2 / 10</text>
+<polyline points="600,590 690,255" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="645" y="426" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">3</text>
+<polyline points="815,305 815,520" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="865" y="426" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">4</text>
+<polyline points="790,520 790,210" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#a)"/>
+<text x="700" y="411" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4a 缺信息</text>
+<polyline points="960,570 960,280" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#a)"/>
+<text x="1040" y="426" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4b 追问</text>
+<polyline points="825,625 825,780" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="875" y="711" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">5</text>
+<polyline points="690,830 595,877" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="630" y="821" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">5.1a</text>
+<polyline points="690,865 595,1040" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#a)"/>
+<text x="650" y="931" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">5.1b</text>
+<polyline points="595,1040 690,1040" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="642" y="1026" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">5.2</text>
+<polyline points="960,830 1010,885" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="985" y="846" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">6</text>
+<polyline points="1145,835 1340,805" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#a)"/>
+<text x="1245" y="796" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">6.1 按需</text>
+<polyline points="1145,885 1300,550" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="1215" y="716" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">7 证据请求</text>
+<polyline points="1300,1055 1145,935" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#a)"/>
+<text x="1215" y="1006" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">7.1 草稿</text>
+<polyline points="1115,835 1300,340" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#a)"/>
+<text x="1235" y="586" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8 校验</text>
+<polyline points="1300,325 600,610" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#a)"/>
+<text x="940" y="426" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">9 最终响应</text>
+<polyline points="365,255 305,290" fill="none" stroke="#1F5EFF" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#a)"/>
+<text x="275" y="361" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">10 引用与状态</text>
+<rect x="75" y="245" width="230" height="90" rx="16" fill="#EAF0FF" stroke="#1F5EFF" stroke-width="2"/>
+<text x="190.0" y="279" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:学生浏览器</text>
+<text x="190.0" y="300" text-anchor="middle" font-size="14" fill="#5B6578">Browser</text>
+<rect x="365" y="210" width="235" height="95" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="482.5" y="244" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:Web 用户入口</text>
+<text x="482.5" y="265" text-anchor="middle" font-size="14" fill="#5B6578">Frontend</text>
+<rect x="365" y="560" width="235" height="95" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="482.5" y="594" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:FastAPI 后端</text>
+<text x="482.5" y="615" text-anchor="middle" font-size="14" fill="#5B6578">AskController</text>
+<rect x="690" y="210" width="250" height="95" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
+<text x="815.0" y="244" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:任务识别</text>
+<text x="815.0" y="265" text-anchor="middle" font-size="14" fill="#5B6578">TaskRouter</text>
+<rect x="690" y="520" width="270" height="105" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
+<text x="825.0" y="563" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:Agent 编排器</text>
+<text x="825.0" y="595" text-anchor="middle" font-size="17" fill="#5B6578">AgentOrchestrator</text>
+<rect x="690" y="780" width="270" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
+<text x="825.0" y="823" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:混合检索器</text>
+<text x="825.0" y="855" text-anchor="middle" font-size="17" fill="#5B6578">HybridRetriever</text>
+<rect x="365" y="845" width="230" height="85" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="480.0" y="879" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:Chroma 向量索引</text>
+<text x="480.0" y="900" text-anchor="middle" font-size="14" fill="#5B6578">ChromaIndex</text>
+<rect x="365" y="1000" width="230" height="85" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="480.0" y="1034" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:BM25 索引</text>
+<text x="480.0" y="1055" text-anchor="middle" font-size="14" fill="#5B6578">BM25Index</text>
+<rect x="690" y="995" width="270" height="90" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
+<text x="825.0" y="1029" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:RRF 融合</text>
+<text x="825.0" y="1050" text-anchor="middle" font-size="14" fill="#5B6578">RRFRanker</text>
+<rect x="1010" y="835" width="270" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
+<text x="1145.0" y="878" text-anchor="middle" font-size="23" font-weight="700" fill="#172033">:证据核验</text>
+<text x="1145.0" y="910" text-anchor="middle" font-size="17" fill="#5B6578">EvidenceVerifier</text>
+<rect x="1340" y="760" width="245" height="90" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
+<text x="1462.5" y="794" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:Tavily（可选）</text>
+<text x="1462.5" y="815" text-anchor="middle" font-size="14" fill="#5B6578">OnlineCheck</text>
+<rect x="1300" y="1010" width="255" height="95" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
+<text x="1427.5" y="1044" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:Qwen API</text>
+<text x="1427.5" y="1065" text-anchor="middle" font-size="14" fill="#5B6578">LLMAdapter</text>
+<rect x="1300" y="280" width="260" height="95" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="1430.0" y="314" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:回答组织</text>
+<text x="1430.0" y="335" text-anchor="middle" font-size="14" fill="#5B6578">AnswerComposer</text>
+<rect x="1320" y="540" width="250" height="95" rx="16" fill="#FCEBEF" stroke="#B93C4F" stroke-width="2"/>
+<text x="1445.0" y="574" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:主动追问</text>
+<text x="1445.0" y="595" text-anchor="middle" font-size="14" fill="#5B6578">Clarifier</text>
+<text x="930" y="41" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">UML 通信图 · 官方资料问答</text>
+<text x="930" y="82" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">v1.0 主路径：识别任务 → 混合检索 → 证据核验 → Qwen 组织回答 → 引用输出</text>
+<text x="1510" y="211" text-anchor="middle" font-size="18" font-weight="700" fill="#16845B">目标：有依据才回答</text>
+<text x="1510" y="236" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">无依据则说明无法确认</text>
+<text x="930" y="1144" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  当前尚无真实 Qwen 联调与会话持久化</text>
+<rect x="75" y="70" width="525" height="112" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/>
+<text x="91" y="97" font-size="17" font-weight="700" fill="#172033">消息与边界</text>
+<text x="91" y="123" font-size="14" fill="#5B6578">1—10：v1.0 问答主路径</text>
+<text x="91" y="144" font-size="14" fill="#5B6578">4a/4b：信息不足时先追问，不进入检索</text>
+<text x="91" y="165" font-size="14" fill="#5B6578">6.1：Tavily 仅按需核验官方公开信息</text>
+</svg>
