@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" agent="CodeMind-FZU" version="24.0.0">
+  <diagram name="kb-maintain" id="kb-maintain">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1040" pageHeight="1400" math="0" shadow="0">
+      <root><mxCell id="0"/><mxCell id="1" parent="0"/>
+        <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2b2f2e;strokeColor=#2b2f2e;" vertex="1" parent="1"><mxGeometry x="346" y="46" width="28" height="28" as="geometry"/></mxCell>
+        <mxCell id="m1" value="定期扫描学校、学院&#10;官方渠道" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="108" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m2" value="发现新资料或新版本" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="200" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m3" value="登记元数据：名称、单位、&#10;文号、日期、原文链接" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="292" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m4" value="采集原始文件（网页/附件）" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="384" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="k1" value="正文提取&#10;是否成功？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fbf4e8;strokeColor=#b98234;fontColor=#2e3532;fontSize=12;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="270" y="476" width="180" height="92" as="geometry"/></mxCell>
+        <mxCell id="m5" value="标记待 OCR/待处理&#10;退回重新处理" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#faf1f1;strokeColor=#a85555;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="660" y="494" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m6" value="人工核验来源、日期、&#10;适用范围与政策时效" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="612" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="k2" value="核验&#10;是否通过？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fbf4e8;strokeColor=#b98234;fontColor=#2e3532;fontSize=12;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="270" y="704" width="180" height="92" as="geometry"/></mxCell>
+        <mxCell id="m7" value="标记待核验&#10;退回修正" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#faf1f1;strokeColor=#a85555;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="660" y="722" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m8" value="标注政策状态：有效、学期&#10;有效、待核验、历史、废止" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="840" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="k3" value="是否为已有事项&#10;的新版本？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fbf4e8;strokeColor=#b98234;fontColor=#2e3532;fontSize=12;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="932" width="200" height="92" as="geometry"/></mxCell>
+        <mxCell id="m9" value="旧版本转历史参考/废止&#10;保留记录不删除" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#fbf4e8;strokeColor=#c99a4d;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="660" y="950" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m10" value="发布入库&#10;可被 Agent 检索调用" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#f3f7f4;strokeColor=#4a7c59;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="1068" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="m11" value="定期复核与到期状态变更" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#fbfcfb;strokeColor=#8a9490;fontColor=#2e3532;fontSize=13;strokeWidth=1.4;" vertex="1" parent="1"><mxGeometry x="260" y="1160" width="200" height="56" as="geometry"/></mxCell>
+        <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2b2f2e;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="346" y="1252" width="28" height="28" as="geometry"/></mxCell>
+        <mxCell id="endin" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2b2f2e;strokeColor=#2b2f2e;" vertex="1" parent="1"><mxGeometry x="349" y="1255" width="22" height="22" as="geometry"/></mxCell>
+        <mxCell id="e0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="start" target="m1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m1" target="m2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m2" target="m3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m3" target="m4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m4" target="k1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#a85555;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="k1" target="m5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="522"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m5" target="m4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="412"/>
+            <mxPoint x="460" y="412"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="k1" target="m6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m6" target="k2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#a85555;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="k2" target="m7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="750"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m7" target="m6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="640"/>
+            <mxPoint x="460" y="640"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="k2" target="m8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m8" target="k3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" value="是" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="k3" target="m9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="978"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="k3" target="m10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m9" target="m10">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="1096"/>
+            <mxPoint x="460" y="1096"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m10" target="m11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#78827f;strokeWidth=1.5;dashed=0;endArrow=block;endFill=1;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="m11" target="end">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root></mxGraphModel></diagram></mxfile>
