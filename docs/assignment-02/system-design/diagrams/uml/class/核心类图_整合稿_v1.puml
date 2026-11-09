@@ -1,0 +1,87 @@
+@startuml
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+skinparam nodesep 25
+skinparam ranksep 35
+hide circle
+title CodeMind-FZU 核心领域类图（整合稿）
+
+class User {
+  + id : UUID
+  + role : str
+  + grade : str
+  + major : str
+}
+class ConversationSession {
+  + id : UUID
+  + title : str
+  + status : str
+}
+class InteractionMessage {
+  + id : UUID
+  + role : str
+  + content : text
+}
+class AgentTask {
+  + id : UUID
+  + taskType : str
+  + status : str
+}
+class TaskResult {
+  + id : UUID
+  + answerStatus : str
+}
+class ResultCitation {
+  + id : UUID
+  + locator : str
+}
+class KnowledgeCategory {
+  + id : UUID
+  + name : str
+}
+class KnowledgeDocument {
+  + id : UUID
+  + title : str
+  + documentType : str
+}
+class DocumentVersion {
+  + id : UUID
+  + versionNo : str
+  + policyStatus : str
+  + retrievalStatus : str
+}
+class DocumentFile {
+  + id : UUID
+  + fileRole : str
+  + sha256 : str
+}
+class ApplicabilityRule {
+  + id : UUID
+  + purpose : str
+}
+class KnowledgeChunk {
+  + id : UUID
+  + content : text
+  + locator : str
+}
+class VerificationRecord {
+  + id : UUID
+  + conclusion : str
+}
+
+User "1" -- "*" ConversationSession
+ConversationSession "1" -- "*" InteractionMessage
+InteractionMessage "1" -- "0..1" AgentTask : 请求
+AgentTask "1" -- "*" TaskResult
+TaskResult "1" -- "*" ResultCitation
+KnowledgeChunk "1" -- "*" ResultCitation : 被引用
+KnowledgeCategory "1" -- "*" KnowledgeDocument
+KnowledgeDocument "1" -- "*" DocumentVersion
+DocumentVersion "1" -- "*" DocumentFile
+DocumentVersion "1" -- "*" ApplicabilityRule
+DocumentVersion "1" -- "*" KnowledgeChunk
+DocumentFile "1" -- "*" KnowledgeChunk : 来源
+DocumentVersion "1" -- "*" VerificationRecord
+
+@enduml
