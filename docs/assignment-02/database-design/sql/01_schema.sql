@@ -445,9 +445,9 @@ CREATE TABLE agent_tasks (
 	CONSTRAINT fk_agent_tasks_session_id_conversation_sessions FOREIGN KEY(session_id) REFERENCES conversation_sessions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_agent_tasks_request ON agent_tasks (request_message_id);
-
 CREATE INDEX ix_agent_tasks_status ON agent_tasks (status, created_at);
+
+CREATE INDEX ix_agent_tasks_request ON agent_tasks (request_message_id);
 
 COMMENT ON TABLE agent_tasks IS '由用户消息触发的Agent任务';
 
@@ -494,9 +494,9 @@ CREATE TABLE document_milestones (
 	CONSTRAINT fk_document_milestones_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_milestones_due_time ON document_milestones (due_at);
-
 CREATE INDEX ix_milestones_due_date ON document_milestones (due_on);
+
+CREATE INDEX ix_milestones_due_time ON document_milestones (due_at);
 
 CREATE INDEX ix_milestones_version ON document_milestones (version_id);
 
@@ -855,9 +855,9 @@ CREATE TABLE verification_tasks (
 	CONSTRAINT uq_verification_tasks_id_version_id UNIQUE (id, version_id)
 );
 
-CREATE INDEX ix_review_tasks_version ON verification_tasks (version_id);
-
 CREATE INDEX ix_review_tasks_status ON verification_tasks (status, priority);
+
+CREATE INDEX ix_review_tasks_version ON verification_tasks (version_id);
 
 COMMENT ON TABLE verification_tasks IS '资料核查待办';
 

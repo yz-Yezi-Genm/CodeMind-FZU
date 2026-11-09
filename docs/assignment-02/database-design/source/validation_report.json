@@ -7,6 +7,7 @@
   "snapshot_columns_per_record": 37,
   "files": 149,
   "business_links": 53,
+  "business_directions_order_verified": true,
   "sql_statements_parsed": {
     "01_schema.sql": 303,
     "02_review_seed_44.sql": 364
@@ -14,9 +15,9 @@
   "sqlite_full_stage_insert": "passed",
   "all_retrieval_blocked": true,
   "limitations": [
-    "没有连接PostgreSQL实库",
-    "没有执行部署或远程导入",
-    "未重新联网核验44条政策",
-    "服务层业务校验未实现"
+    "候选技术基线采用 PostgreSQL 16 + SQLAlchemy 2.0，未连接实库",
+    "没有执行生产部署或远程导入",
+    "未重新联网核验 44 条政策有效性",
+    "服务层业务校验及 Agent 接口未实现"
   ]
 }
