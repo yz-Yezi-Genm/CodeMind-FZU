@@ -74,9 +74,10 @@ def set_doc_defaults(doc):
         rpr = OxmlElement("w:rPr")
         rpr_default.append(rpr)
     set_rfonts(rpr, SONG, TNR)
-    sz = OxmlElement("w:sz")
-    sz.set(qn("w:val"), "24")
-    rpr.append(sz)
+    if rpr.find(qn("w:sz")) is None:
+        sz = OxmlElement("w:sz")
+        sz.set(qn("w:val"), "24")
+        rpr.append(sz)
 
 
 def add_table_borders(doc):

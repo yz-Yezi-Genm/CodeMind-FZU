@@ -53,6 +53,7 @@ class AgentQueryGateway {
 MetadataGate --> LocalKnowledge : save
 ParserOCR --> LocalKnowledge : save
 MetadataGate --> IndexCSV : update
+IndexCSV --> QualityGate : 元数据状态
 ChunkBuilder --> LocalKnowledge : read
 ChunkBuilder --> ChromaBuilder : chunks
 ChunkBuilder --> BM25Builder : chunks

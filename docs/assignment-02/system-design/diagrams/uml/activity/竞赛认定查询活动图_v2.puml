@@ -19,9 +19,10 @@ else (是)
 endif
 fork
   :检索竞赛认定规则;
-  :检索综评办法;
-  :检索推免办法;
 fork again
+  :检索综评办法;
+fork again
+  :检索推免办法;
 end fork
 if (检索调用是否成功?) then (否)
   :返回检索失败提示;
@@ -32,10 +33,15 @@ endif
 if (各事项证据是否充分?) then (充分或部分充分)
   :仅对证据充分的事项，将核验通过的证据交给 Qwen 生成回答草稿;
   note right: 证据不足的事项不进入生成链路
-  :AnswerVerifier 生成后复核;
-  :AnswerComposer 分事项组织结论\n(有依据项正常回答，缺依据项单独说明无法确认);
-  :展示回答与来源;
-  stop
+  if (Qwen 调用是否成功?) then (否)
+    :返回模型异常提示;
+    stop
+  else (是)
+    :AnswerVerifier 生成后复核;
+    :AnswerComposer 分事项组织结论\n(有依据项正常回答，缺依据项单独说明无法确认);
+    :展示回答与来源;
+    stop
+  endif
 else (全部不足)
   :各事项分别说明无法确认，并给出核实建议;
   :展示无法确认提示;

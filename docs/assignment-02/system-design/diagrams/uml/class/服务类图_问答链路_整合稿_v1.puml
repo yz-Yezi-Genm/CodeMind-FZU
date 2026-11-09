@@ -1,11 +1,10 @@
 @startuml
 skinparam defaultFontName "Microsoft YaHei"
-skinparam defaultFontSize 13
+skinparam defaultFontSize 14
 skinparam classAttributeIconSize 0
-skinparam nodesep 20
-skinparam ranksep 24
+skinparam nodesep 22
+skinparam ranksep 28
 hide circle
-left to right direction
 title 问答链路服务类图（整合稿）
 
 class Frontend <<Web前端>> {
@@ -47,8 +46,10 @@ class 本地索引 <<Chroma + BM25>> {
   + vectorSearch(q)
   + keywordSearch(q)
 }
-class QwenAPI <<外部服务>>
-class Tavily <<外部服务>>
+class 外部服务 <<Qwen / Tavily>> {
+  + generate()
+  + search()
+}
 
 Frontend --> AskController : /api/ask
 AskController --> TaskRouter : classify
@@ -58,10 +59,10 @@ AgentOrchestrator --> HybridRetriever : retrieve
 HybridRetriever --> 本地索引 : 双路召回
 HybridRetriever --> RRFRanker : fuse
 RRFRanker --> EvidenceVerifier : verify
-EvidenceVerifier --> Tavily : 联网核验(可选)
+EvidenceVerifier --> 外部服务 : 联网核验(可选)
 AgentOrchestrator --> LLMAdapter : generate
-LLMAdapter --> QwenAPI : generate
-AgentOrchestrator --> AnswerVerifier : verify
+LLMAdapter --> 外部服务 : Qwen 生成
+LLMAdapter --> AnswerVerifier : 草稿复核
 AnswerVerifier --> AnswerComposer : compose
 AnswerComposer --> AgentOrchestrator : 返回结果
 AgentOrchestrator --> AskController : 响应
