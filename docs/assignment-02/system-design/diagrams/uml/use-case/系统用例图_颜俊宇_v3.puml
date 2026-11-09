@@ -1,7 +1,7 @@
 @startuml 系统用例图
 ' ============================================
 ' CodeMind-FZU 系统用例图
-' 负责人：颜俊宇  版本：v3.2
+' 负责人：颜俊宇  版本：v3.3
 ' 建模原则：先定边界 → 再定参与者(角色) → 用例=用户目标 → 关系能少则少
 ' 业务范围：对齐整体功能蓝图五大方向，首版优先支持前四个方向的有资料依据查询与导航；
 '           竞赛认定/奖学金申请/推免基本条件为三个代表性测试任务
@@ -53,8 +53,8 @@ actor "知识库管理员\n（内容维护者）" as KbAdmin
 ' ============ 系统边界 ============
 rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as System {
 
-  ' ---- 抽象基用例（统一查询目标） ----
-  usecase "查询校园事务信息" as UC_Query
+  ' ---- 抽象基用例（统一查询目标，abstract 标识） ----
+  usecase "查询校园事务信息\n<<abstract>>" as UC_Query
 
   ' ---- 查询类用例（对齐蓝图前四方向） ----
   usecase "查询竞赛认定信息" as UC_Competition
@@ -66,6 +66,9 @@ rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as Syst
   usecase "补充信息追问" as UC_Followup
   usecase "查看回答依据" as UC_Evidence
 
+  ' ---- 学生反馈 ----
+  usecase "反馈回答问题" as UC_Feedback
+
   ' ---- 知识库管理员目标 ----
   usecase "维护知识库资料" as UC_KB
   usecase "核验资料时效与来源" as UC_Verify
@@ -73,7 +76,9 @@ rectangle "CodeMind-FZU 系统\n校园事务与发展信息查询助手" as Syst
 
 ' ============ 关联（普通实线，无箭头） ============
 Student -- UC_Query
+Student -- UC_Feedback
 KbAdmin -- UC_KB
+KbAdmin -- UC_Verify
 
 ' ============ 布局约束：学生拉到左侧 ============
 Student -[hidden]down- UC_Competition
@@ -97,6 +102,7 @@ legend bottom right
   | 泛化 △ 场景查询是「查询校园事务信息」的特例 |
   | <<extend>> 可选扩展交互 |
   | <<include>> 必然包含的用例 |
+  | <<abstract>> 抽象基用例，不独立交付 |
   | 竞赛认定 / 奖学金 / 推免 = 代表性测试任务 |
 endlegend
 
