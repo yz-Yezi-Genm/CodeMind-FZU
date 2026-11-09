@@ -1,0 +1,12 @@
+# Keep review artifact bytes identical in Git checkouts and SHA-256 manifests.
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.sql text eol=lf
+*.csv text eol=lf
+*.txt text eol=lf
+*.mmd text eol=lf
+*.svg text eol=lf
+.gitattributes text eol=lf
+*.pdf binary
+*.png binary
