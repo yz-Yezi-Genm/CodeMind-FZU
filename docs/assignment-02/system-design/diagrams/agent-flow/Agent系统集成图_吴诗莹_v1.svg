@@ -102,7 +102,7 @@
 <polyline points="805,1055.0 900,1055.0" fill="none" stroke="#087E82" stroke-width="2"/>
 <polygon points="900,1055.0 888.0,1050.0 888.0,1060.0" fill="#087E82"/>
 <rect x="811.5" y="1027.0" width="82.0" height="26" fill="white"/>
-<text x="852.5" y="1045.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">复核结果</text>
+<text x="852.5" y="1045.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">单向复核结果</text>
 <polyline points="1065.0,995 1065,930 640,930 640.0,380" fill="none" stroke="#087E82" stroke-width="2"/>
 <polygon points="640.0,380 635.0,392.0 645.0,392.0" fill="#087E82"/>
 <rect x="599.0" y="627.0" width="82.0" height="26" fill="white"/>
@@ -112,5 +112,4 @@
 <text x="465" y="1353.32" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">• Qwen API 是外部模型服务，调用链为 AgentOrchestrator → LLMAdapter → Qwen API。</text>
 <text x="465" y="1380.3" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">• 前端不直连模型、索引或 Tavily。</text>
 <text x="50" y="1621.76" text-anchor="start" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#53677F">吴诗莹  ·  根据 PR #7 审核意见修订  ·  2026-11-09</text>
-<text x="50" y="1626" font-family="Microsoft YaHei" font-size="16" fill="#53677F">吴诗莹  ·  根据 PR #7 审核意见修订  ·  2026-11-09</text>
 </svg>

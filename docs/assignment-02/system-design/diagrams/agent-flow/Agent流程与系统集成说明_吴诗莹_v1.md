@@ -33,7 +33,7 @@
 - `AgentOrchestrator` 调用 `HybridRetriever` 发起混合检索；`HybridRetriever` 在 `par` 片段中分别调用 `Chroma Index` 和 `BM25 Index`，两路候选返回后再交给 `RRF` 融合、去重和排序。
 - `EvidenceVerifier` 接收融合候选，并可选调用 Tavily 补充官方原文。
 - 核验结果先返回 Agent；Agent 调用 FastAPI 内部的 `LLMAdapter`，再由适配器调用外部 Qwen API 生成草稿。
-- `AnswerVerifier` 复核草稿，`AnswerComposer` 组织最终响应，FastAPI 再返回前端。
+- `AnswerVerifier` 复核草稿并单向交给 `AnswerComposer`；`AnswerComposer` 将组织后的结果返回 `AgentOrchestrator`，再由 Agent 交给 FastAPI `/api/ask`，最后由 FastAPI 返回 Web 前端。
 
 图中的第一个 `opt` 表示主动追问分支，`par` 表示双路召回与 RRF 融合，第二个 `opt` 表示本地证据不足时的可选联网核验。
 
@@ -73,3 +73,4 @@ Tavily 是候选联网能力，只在本地证据不足、资料时效不明或�
 - Tavily 结果返回 `EvidenceVerifier`，不直接进入 Qwen。
 - Qwen 只接收生成前核验通过的证据。
 - 回答草稿必须经过 `AnswerVerifier`，再由 `AnswerComposer` 返回最终结果。
+- `AnswerVerifier → AnswerComposer` 为单向调用；最终响应必须沿 `AnswerComposer → AgentOrchestrator → FastAPI /api/ask → Web 前端` 返回，不能绕过 FastAPI。

@@ -182,7 +182,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="item-34" value="复核结果" style="edgeStyle=none;rounded=0;html=0;strokeColor=#087E82;strokeWidth=2;endArrow=block;endFill=1;dashed=0;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+        <mxCell id="item-34" value="单向复核结果" style="edgeStyle=none;rounded=0;html=0;strokeColor=#087E82;strokeWidth=2;startArrow=none;endArrow=block;endFill=1;dashed=0;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="805" y="1055.0" as="sourcePoint" />
             <mxPoint x="900" y="1055.0" as="targetPoint" />
