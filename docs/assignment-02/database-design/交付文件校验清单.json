@@ -7,7 +7,7 @@
   {
     "path": "CodeMind-FZU_数据库设计说明书.pdf",
     "bytes": 1625898,
-    "sha256": "bfb4f0b1330b2b18f7b4b1e5c7adff2c32adc70d7fb5b5f525e0c9dc875894c7"
+    "sha256": "ce96ac6ff894095cc0d60e3746f76bc5b4a6ebb759def3b8703f7ed648491bf6"
   },
   {
     "path": "data-dictionary/README.md",
@@ -56,8 +56,8 @@
   },
   {
     "path": "knowledge-base/44条资料业务分类表_v1.2.md",
-    "bytes": 33172,
-    "sha256": "846c117e2b546081ff3f3229094b8b2ab58466794769e2f8c8630f7f3af42a5e"
+    "bytes": 33225,
+    "sha256": "164700670fa8a25d35d1df57f6dd4a5cea0e87ca02bc38ddd78de5f87ad874ad"
   },
   {
     "path": "knowledge-base/入库预览_44条.json",
@@ -111,8 +111,8 @@
   },
   {
     "path": "source/build_deliverables.py",
-    "bytes": 24681,
-    "sha256": "230564fd5b57cecefac8682b8d33e9858c39ccb7e205cbfc5288fefb4c652094"
+    "bytes": 24734,
+    "sha256": "18ffc151872fa94ef2af27f23281b7d0bfb3cf85bbe4445df39bdcad814a21bf"
   },
   {
     "path": "source/build_summary.json",

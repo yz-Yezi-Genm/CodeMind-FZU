@@ -274,7 +274,7 @@ def main():
     for name in ['knowledge_categories', 'business_directions', 'knowledge_documents', 'document_versions', 'document_files', 'document_business_directions', 'verification_tasks', 'document_milestones']:
         seed.extend(insert_sql(name, x) for x in stage[name])
     seed.append('COMMIT;'); write(Path('sql/02_review_seed_44.sql'), '\n'.join(seed) + '\n')
-    write(Path('knowledge-base/44条资料业务分类表_v1.2.md'), '# 44条资料业务分类表（审核建议）\n\n保留原编号、原分类及全部核查原文。所有44条纳入首版资料归档范围的建议，不代表当前政策可用或Agent已开放；历史及范围限制见每行。分类是本轮建议，未修改原索引。第五方向不建设专门资料，交换/出国交流不列首版任务。\n\n' + mtable(['资料编号', '资料名称', '原始分类', '所属业务方向', '正文提取状态', '来源及政策时效核验状态', '是否纳入v1.2', '限制及待办', '附件解析状态', '回答开放状态'], classified))
+    write(Path('knowledge-base/44条资料业务分类表_v1.2.md'), '# 44条资料业务分类表（审核建议）\n\n保留原编号、原分类及全部核查原文。所有44条纳入首版资料归档范围的建议，不代表当前政策可用或Agent已开放；历史及范围限制见每行。分类是本轮建议，未修改原索引。第五方向不建设专门资料，交换/出国交流不列首版任务。文档修订版为v1.2，项目首版范围为v1.0。\n\n' + mtable(['资料编号', '资料名称', '原始分类', '所属业务方向', '正文提取状态', '来源及政策时效核验状态', '是否纳入v1.0', '限制及待办', '附件解析状态', '回答开放状态'], classified))
     cov = ['# 首版四方向资料覆盖清单', '', '仅按已有登记的官方来源归类；未重新联网确认所有政策有效性。标签可多选，各方向数量不可相加作为44条总数。就业专门政策、当前年级培养方案、学院办事渠道的覆盖仍有缺口，不能因为方向已有资料就宣称全场景覆盖。', '']
     for code, name, _ in DIRECTIONS:
         cov += ['## ' + name + '（' + str(len(coverage[code])) + '条关联）', '']
