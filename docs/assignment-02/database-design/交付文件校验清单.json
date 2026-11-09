@@ -6,8 +6,8 @@
   },
   {
     "path": "CodeMind-FZU_数据库设计说明书.pdf",
-    "bytes": 1625898,
-    "sha256": "ce96ac6ff894095cc0d60e3746f76bc5b4a6ebb759def3b8703f7ed648491bf6"
+    "bytes": 1626613,
+    "sha256": "a21c14ed9cf923a7badbfdfaa20ebc5955742ece55c8afd726f77bd1a73f7eb5"
   },
   {
     "path": "data-dictionary/README.md",
@@ -91,8 +91,8 @@
   },
   {
     "path": "README.md",
-    "bytes": 3693,
-    "sha256": "c16aeacbcc7a32c1acbd1322cde0ab70d525d91d3eddfd9f3ce98eb9350aec6b"
+    "bytes": 3754,
+    "sha256": "b768105c0d3f5e6aacf50de20fae340edecbbb3d9051b2f9c910669073e6703e"
   },
   {
     "path": "relational-model/README.md",
@@ -121,8 +121,8 @@
   },
   {
     "path": "source/finalize_acceptance.py",
-    "bytes": 7354,
-    "sha256": "feb52677dff43463b1a8880e3780be8f9eafb549c150d8b8a3b796fd765eab87"
+    "bytes": 7866,
+    "sha256": "3f36910b99a7069e8b1f938fefa670f0738752731c160e8ed4d075766c41fa5f"
   },
   {
     "path": "source/fixtures/知识库索引_44条_fixture.csv",
@@ -141,8 +141,8 @@
   },
   {
     "path": "source/README.md",
-    "bytes": 5328,
-    "sha256": "14c900f9ae2758466cabb7dc5c18d5d645cc9d755e8ea5d069494a34277247a8"
+    "bytes": 5476,
+    "sha256": "c47767fc7e97fa77fcb0fe314a7ad3959794d9c37a90b3b4314ab6034259f658"
   },
   {
     "path": "source/requirements-review.txt",
@@ -161,13 +161,13 @@
   },
   {
     "path": "source/validate_deliverables.py",
-    "bytes": 5197,
-    "sha256": "65c87924f96a7af13afcd8eebaa2723dfc27c84ef1aa78c28d602f69c6d922b4"
+    "bytes": 5763,
+    "sha256": "4c11f5c9f01fbbccd913401e778c84f0557283081319990bd7f3801cc18fd565"
   },
   {
     "path": "source/validation_report.json",
-    "bytes": 650,
-    "sha256": "1c814bd723fa3c0f95c1e7ec7cea9a709ee0238ddf3aa9463d2e9e313442ab29"
+    "bytes": 1348,
+    "sha256": "a7cbedc282b9845a736b2cec0215ea999bc7ea1eec7f3aba4717c9e4b313733b"
   },
   {
     "path": "source/业务方向顺序修正/knowledge-base/入库预览_44条.json",
@@ -221,13 +221,13 @@
   },
   {
     "path": "完整审核稿_v1.2.md",
-    "bytes": 92219,
-    "sha256": "d8241072db3ce024fccc302f75751caf875723135e7f08233f232c58eea4871f"
+    "bytes": 92513,
+    "sha256": "2552a085d3cf5cfccee0a69014aafd4308282d3f808b65e1c35c31f13711b1ab"
   },
   {
     "path": "数据库详细设计说明书_v1.2.md",
-    "bytes": 5860,
-    "sha256": "286396aba442fb371c574239ad197b72b72d53690be3cddbbc8e6d980fc1ca10"
+    "bytes": 6002,
+    "sha256": "52fd42eb804be66554ed7282c241b245931462fac18e6ebd51074bd64ed59bf7"
   },
   {
     "path": "架构与概念设计确认说明_v1.2.md",
@@ -236,7 +236,7 @@
   },
   {
     "path": "验证报告_v1.2.md",
-    "bytes": 1280,
-    "sha256": "995144e919ee91773b7b03cb103775f00b865590d2beb5aa58aaf8c5dce3f5d0"
+    "bytes": 1432,
+    "sha256": "0f1a87a5d879f3d47ce9fd5c89323e3d4c5702d389ca1299b880170060f2382b"
   }
 ]

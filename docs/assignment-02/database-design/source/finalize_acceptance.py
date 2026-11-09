@@ -57,6 +57,12 @@ def main():
     validation = BASE / '验证报告_v1.2.md'
     text = re.sub(r'\d+项自动测试通过', str(report['tests_passed']) + '项自动测试通过', validation.read_text(encoding='utf-8'))
     text = text.split('\nfixture复现验证：')[0].rstrip()
+    scope = ('- SQLite 全表建表及核心资料导入验证通过：创建'
+             + str(report['sqlite_tables_created']) + '张表，当前fixture向'
+             + str(len(report['sqlite_fixture_tables_inserted'])) + '张核心资料表插入数据；其余'
+             + str(report['sqlite_other_tables_without_fixture_import'])
+             + '张表未通过同一份fixture导入，相关约束另由单元测试覆盖。')
+    text = re.sub(r'^- .*SQLite.*$', scope, text, flags=re.MULTILINE)
     text = text.replace('43条正文已提取、1条待OCR', '原索引登记43条正文已提取、1条待OCR') if '原索引登记43条' not in text else text
     text += '\n\nfixture复现验证：149个文件记录均为failed、SHA-256为空；原索引提取记录43/1保留在版本字段及快照中，与物理文件状态分开。数据源路径仅记录相对路径或类型标识。\n'
     validation.write_text(text, encoding='utf-8')

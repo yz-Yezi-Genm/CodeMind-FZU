@@ -21,6 +21,13 @@ EXPECTED_DIRECTIONS = [
     ('GROWTH_PLANNING', '个人成长档案与长期规划', 5),
 ]
 
+# The shared fixture imports core material records, not all 23 tables.
+CORE_IMPORT_TABLES = (
+    'knowledge_categories', 'business_directions', 'knowledge_documents',
+    'document_versions', 'document_files', 'document_business_directions',
+    'verification_tasks', 'document_milestones',
+)
+
 def main():
     parser = argparse.ArgumentParser(description="离线验证详细设计交付物")
     parser.add_argument('--data-dir', default=None, help="指定政策资料根目录（可选，默认自动检索或使用内建测试夹具）")
@@ -50,12 +57,12 @@ def main():
     assert sum(v['extraction_status'] == 'extracted' for v in versions) == 43
     assert sum(v['extraction_status'] == 'needs_ocr' for v in versions) == 1
 
-    # 3. SQLite 内存完整建表与外键入库验证
+    # 3. SQLite 全表建表及核心资料导入验证（23张表建表，8张表插入fixture）
     engine = create_engine('sqlite://')
     event.listen(engine, 'connect', lambda db, _: db.execute('PRAGMA foreign_keys=ON'))
     metadata.create_all(engine)
     with engine.begin() as conn:
-        for name in ['knowledge_categories', 'business_directions', 'knowledge_documents', 'document_versions', 'document_files', 'document_business_directions', 'verification_tasks', 'document_milestones']:
+        for name in CORE_IMPORT_TABLES:
             t = metadata.tables[name]
             for row in stage[name]:
                 row = row.copy()
@@ -89,13 +96,18 @@ def main():
         'business_links': len(stage['document_business_directions']),
         'business_directions_order_verified': True,
         'sql_statements_parsed': sql_counts,
-        'sqlite_full_stage_insert': 'passed',
+        'sqlite_core_material_import': 'passed',
+        'sqlite_tables_created': len(metadata.tables),
+        'sqlite_fixture_tables_inserted': list(CORE_IMPORT_TABLES),
+        'sqlite_fixture_rows_inserted': {name: len(stage[name]) for name in CORE_IMPORT_TABLES},
+        'sqlite_other_tables_without_fixture_import': len(metadata.tables) - len(CORE_IMPORT_TABLES),
         'all_retrieval_blocked': True,
         'limitations': [
             '候选技术基线采用 PostgreSQL 16 + SQLAlchemy 2.0，未连接实库',
             '没有执行生产部署或远程导入',
             '未重新联网核验 44 条政策有效性',
-            '服务层业务校验及 Agent 接口未实现'
+            'OCR 尚未完成',
+            'Agent 和数据库服务尚未集成，服务层业务校验及 Agent 接口未实现'
         ]
     }
     (BASE / 'source/validation_report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
