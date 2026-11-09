@@ -1,7 +1,7 @@
 # Agent 流程与系统集成说明
 
 负责人：吴诗莹  
-版本：v1.0，2026-11-09  
+版本：v1.1，2026-11-09
 架构基线：[赵紫龙《技术架构设计说明》v1.0](../architecture/技术架构设计说明_赵紫龙_v1.md)
 
 本文负责 Agent 工作流程、关键调用时序和系统集成说明。组件名称、调用方向和能力边界以团队技术架构为准。
@@ -17,7 +17,7 @@
 3. 信息完整时，`AgentOrchestrator` 选择策略并调用 `HybridRetriever`。Chroma 与 BM25 双路召回后，由 RRF 融合、去重和排序。
 4. `EvidenceVerifier` 在生成前核验证据的来源、日期、适用范围、时效和政策状态。本地证据不足且允许在线核验时，它按需调用 Tavily；Tavily 结果必须回到 `EvidenceVerifier`，不能直接交给生成模型。
 5. `EvidenceVerifier` 向 Agent 返回 `verifiedEvidence`、`citationIds` 和 `policyStatus`。证据不足或冲突时，系统返回 `insufficient_evidence` 或 `conflict`，不强行生成结论。
-6. Agent 通过 `LLMAdapter` 将问题和已核验证据提交给 Qwen API，获得回答草稿与引用候选。
+6. Agent 调用 FastAPI 内部的 `LLMAdapter`，由适配器将问题和已核验证据提交给外部 Qwen API，并接收回答草稿与引用候选。
 7. `AnswerVerifier` 在生成后复核回答、引用和政策状态。通过后由 `AnswerComposer` 组织最终答案、来源、限制和下一步建议；未通过时保守降级。
 
 生成前的 `EvidenceVerifier` 与生成后的 `AnswerVerifier` 是两个不同步骤，不能合并为一次“核验证据”。
@@ -30,9 +30,9 @@
 
 - 学生、Web 前端和 FastAPI 负责问题提交与结果展示。
 - `TaskRouter + Clarifier` 负责任务识别和主动追问，不在检索前调用 Qwen 自由判断政策事实。
-- `AgentOrchestrator` 发起混合检索；`HybridRetriever` 完成 Chroma、BM25 和 RRF 处理。
+- `AgentOrchestrator` 调用 `HybridRetriever` 发起混合检索；`HybridRetriever` 在 `par` 片段中分别调用 `Chroma Index` 和 `BM25 Index`，两路候选返回后再交给 `RRF` 融合、去重和排序。
 - `EvidenceVerifier` 接收融合候选，并可选调用 Tavily 补充官方原文。
-- 核验结果先返回 Agent，再由 `LLMAdapter / Qwen API` 基于证据生成草稿。
+- 核验结果先返回 Agent；Agent 调用 FastAPI 内部的 `LLMAdapter`，再由适配器调用外部 Qwen API 生成草稿。
 - `AnswerVerifier` 复核草稿，`AnswerComposer` 组织最终响应，FastAPI 再返回前端。
 
 图中的第一个 `opt` 表示主动追问分支，`par` 表示双路召回与 RRF 融合，第二个 `opt` 表示本地证据不足时的可选联网核验。
@@ -43,7 +43,7 @@
 
 ### 3.1 集成方式
 
-v1.0 使用单体 FastAPI 应用承载 API 与 Agent 编排逻辑，不把 Agent 预设为独立微服务。HTML/CSS/JavaScript 前端只访问 FastAPI；FastAPI 内部包含 Ask API、任务路由、主动追问、Agent 编排、混合检索、证据核验、回答复核和回答组织等逻辑组件。
+v1.0 使用单体 FastAPI 应用承载 API 与 Agent 编排逻辑，不把 Agent 预设为独立微服务。HTML/CSS/JavaScript 前端只访问 FastAPI；FastAPI 内部包含 Ask API、任务路由、主动追问、Agent 编排、混合检索、证据核验、`LLMAdapter`、回答复核和回答组织等逻辑组件。Qwen API 是 FastAPI 边界外部的模型服务。
 
 这种集成方式保持清晰的调用边界：前端不持有模型密钥，也不能绕过后端直接调用 Qwen、Tavily 或本地索引。
 
@@ -57,7 +57,7 @@ Chroma 与 BM25 应读取同一完整发布版本。检索结果只是候选资�
 
 Tavily 是候选联网能力，只在本地证据不足、资料时效不明或需要补查当前官方信息时，由 `EvidenceVerifier` 受控调用。搜索结果需要回到官方原文核验，不能直接作为回答。
 
-Qwen API 通过 `LLMAdapter` 调用，只负责基于 `verifiedEvidence` 组织回答草稿，不独立决定政策事实。草稿必须经过 `AnswerVerifier` 的引用存在性和政策状态复核。
+`LLMAdapter` 是 FastAPI 内部的模型适配组件，负责封装模型请求、响应和错误；Qwen API 是外部模型服务。调用链固定为 `AgentOrchestrator → LLMAdapter → Qwen API`。Qwen 只负责基于 `verifiedEvidence` 组织回答草稿，不独立决定政策事实，草稿必须经过 `AnswerVerifier` 的引用存在性和政策状态复核。
 
 ### 3.4 任务流程的作用
 
@@ -67,7 +67,9 @@ Qwen API 通过 `LLMAdapter` 调用，只负责基于 `verifiedEvidence` 组织�
 
 - 前端只调用 FastAPI，不直连 Qwen、Tavily、Chroma 或 BM25。
 - Agent 编排逻辑属于单体 FastAPI 应用，不描述成已部署的独立微服务。
+- `LLMAdapter` 位于 FastAPI 应用内部，Qwen API 位于系统边界外部；二者不得合并成同一个外部组件。
 - 本地检索固定为 Chroma + BM25 + RRF，不省略融合步骤。
+- UML 时序图使用 `par` 的两个操作数分别表示 Chroma 与 BM25 召回，RRF 在两路结果返回后执行。
 - Tavily 结果返回 `EvidenceVerifier`，不直接进入 Qwen。
 - Qwen 只接收生成前核验通过的证据。
 - 回答草稿必须经过 `AnswerVerifier`，再由 `AnswerComposer` 返回最终结果。
