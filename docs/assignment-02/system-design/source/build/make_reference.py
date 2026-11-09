@@ -89,6 +89,9 @@ def add_table_borders(doc):
     if tblpr is None:
         tblpr = OxmlElement("w:tblPr")
         tbl.insert(0, tblpr)
+    existing = tblpr.find(qn("w:tblBorders"))
+    if existing is not None:
+        tblpr.remove(existing)
     borders = OxmlElement("w:tblBorders")
     for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
         el = OxmlElement("w:" + edge)

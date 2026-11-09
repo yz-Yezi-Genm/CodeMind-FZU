@@ -2,57 +2,52 @@
 skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 13
 skinparam classAttributeIconSize 0
-skinparam nodesep 30
-skinparam ranksep 40
+skinparam nodesep 24
+skinparam ranksep 30
 hide circle
-title CodeMind-FZU 知识入库与索引类图（整合稿）
+title 知识入库与索引类图（整合稿）
 
-package "资料采集与登记" {
-  class MetadataGate {
-    + check(metadata) : bool
-  }
-  class ParserOCR {
-    + parse(file) : Text
-    + markOCR(file) : bool
-  }
-  class LocalKnowledge {
-    + saveRaw(file)
-    + saveClean(text)
-  }
-  class IndexCSV {
-    + update(record)
-  }
+class MetadataGate {
+  + check(metadata)
 }
-
-package "分块与索引构建" {
-  class ChunkBuilder {
-    + chunk(version) : Chunks
-  }
-  class ChromaBuilder {
-    + build(versionId) : IndexStatus
-  }
-  class BM25Builder {
-    + build(versionId) : IndexStatus
-  }
-  class QualityGate {
-    + gate(version) : bool
-  }
-  class PoCTestSuite {
-    + run(version) : Report
-  }
+class ParserOCR {
+  + parse(file)
+  + markOCR(file)
 }
-
-package "发布与读取" {
-  class IndexPublisher {
-    + publish(version) : void
-  }
-  class VersionRegistry {
-    + bind(versionId) : void
-    + switch(versionId) : void
-  }
-  class AgentQueryGateway {
-    + activeIndex() : Index
-  }
+class LocalKnowledge {
+  + saveRaw(file)
+  + saveClean(text)
+}
+class IndexCSV {
+  + update(record)
+}
+class ChunkBuilder {
+  + chunk(version)
+}
+class ChromaBuilder {
+  + build(versionId)
+}
+class BM25Builder {
+  + build(versionId)
+}
+class QualityGate {
+  + gate(version)
+}
+class PoCTestSuite {
+  + run(version)
+}
+class ManualReview <<人工审核>> {
+  + review(version)
+}
+class IndexPublisher {
+  + publish(version)
+}
+class VersionRegistry {
+  + bind(versionId)
+  + switch(versionId)
+}
+class AgentQueryGateway {
+  + activeIndex()
 }
 
 MetadataGate --> LocalKnowledge : save
@@ -61,10 +56,12 @@ MetadataGate --> IndexCSV : update
 ChunkBuilder --> LocalKnowledge : read
 ChunkBuilder --> ChromaBuilder : chunks
 ChunkBuilder --> BM25Builder : chunks
-QualityGate --> ChromaBuilder : status
-QualityGate --> BM25Builder : status
+ChromaBuilder --> QualityGate : 索引状态
+BM25Builder --> QualityGate : 索引状态
 QualityGate --> PoCTestSuite : run
-PoCTestSuite --> IndexPublisher : pass
+PoCTestSuite --> QualityGate : 测试结果
+ManualReview --> QualityGate : 审核结果
+QualityGate --> IndexPublisher : 双索引PASS+测试通过+审核通过
 IndexPublisher --> VersionRegistry : bind
 VersionRegistry --> AgentQueryGateway : activeIndex
 

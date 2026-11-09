@@ -2,79 +2,69 @@
 skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 13
 skinparam classAttributeIconSize 0
-skinparam nodesep 30
-skinparam ranksep 40
+skinparam nodesep 20
+skinparam ranksep 24
 hide circle
-title CodeMind-FZU 问答链路服务类图（整合稿）
+left to right direction
+title 问答链路服务类图（整合稿）
 
-package "Web 与 API" {
-  class AskController {
-    + handleAsk(request) : Response
-    + handleHealth() : Health
-  }
+class Frontend <<Web前端>> {
+  + render(response)
 }
-
-package "Agent 编排" {
-  class TaskRouter {
-    + classify(question) : TaskType
-    + extract(text) : Entities
-  }
-  class Clarifier {
-    + clarify(missingFields) : Prompt
-  }
-  class AgentOrchestrator {
-    + orchestrate(task, entities) : Answer
-  }
-  class AnswerComposer {
-    + compose(checkedAnswer) : Response
-  }
+class AskController {
+  + handleAsk(request)
+  + handleHealth()
 }
-
-package "检索与证据" {
-  class HybridRetriever {
-    + retrieve(queryPlan) : Candidates
-  }
-  class RRFRanker {
-    + fuse(candidates) : Candidates
-  }
-  class EvidenceVerifier {
-    + verify(candidates) : Evidence
-  }
-  class AnswerVerifier {
-    + verify(draft, citations) : CheckedAnswer
-  }
+class TaskRouter {
+  + classify(question)
+  + extract(text)
 }
-
-package "模型与外部" {
-  class LLMAdapter {
-    + generate(question, evidence) : Draft
-  }
-  class QwenAPI <<external>>
-  class Tavily <<external>>
+class Clarifier {
+  + clarify(missingFields)
 }
-
-package "本地索引" {
-  class ChromaIndex {
-    + vectorSearch(embedding) : Hits
-  }
-  class BM25Index {
-    + keywordSearch(tokens) : Hits
-  }
+class AgentOrchestrator {
+  + orchestrate(task)
 }
+class HybridRetriever {
+  + retrieve(queryPlan)
+}
+class RRFRanker {
+  + fuse(candidates)
+}
+class EvidenceVerifier {
+  + verify(candidates)
+}
+class AnswerVerifier {
+  + verify(draft, citations)
+}
+class AnswerComposer {
+  + compose(checkedAnswer)
+}
+class LLMAdapter {
+  + generate(question, evidence)
+}
+class 本地索引 <<Chroma + BM25>> {
+  + vectorSearch(q)
+  + keywordSearch(q)
+}
+class QwenAPI <<外部服务>>
+class Tavily <<外部服务>>
 
+Frontend --> AskController : /api/ask
 AskController --> TaskRouter : classify
 AskController --> AgentOrchestrator : orchestrate
-TaskRouter --> Clarifier : clarify
+TaskRouter --> Clarifier : 信息不足时追问
 AgentOrchestrator --> HybridRetriever : retrieve
-HybridRetriever --> ChromaIndex : vectorSearch
-HybridRetriever --> BM25Index : keywordSearch
+HybridRetriever --> 本地索引 : 双路召回
 HybridRetriever --> RRFRanker : fuse
 RRFRanker --> EvidenceVerifier : verify
-EvidenceVerifier --> Tavily : queryOfficialSources
+EvidenceVerifier --> Tavily : 联网核验(可选)
 AgentOrchestrator --> LLMAdapter : generate
 LLMAdapter --> QwenAPI : generate
 AgentOrchestrator --> AnswerVerifier : verify
 AnswerVerifier --> AnswerComposer : compose
-AnswerComposer --> AskController : response
+AnswerComposer --> AgentOrchestrator : 返回结果
+AgentOrchestrator --> AskController : 响应
+AskController --> Frontend : render
 
 @enduml
