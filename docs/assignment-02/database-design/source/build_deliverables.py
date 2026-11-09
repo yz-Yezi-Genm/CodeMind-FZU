@@ -69,10 +69,31 @@ def compute_file_sha256(path):
     如果文件实际存在，返回其实际内容的 SHA-256 十六进制字符串；
     如果文件不存在，严格返回 None (NULL)，严禁使用路径字符串生成伪哈希。
     """
+    if not path:
+        return None
     p = Path(path)
     if p.is_file():
         return hashlib.sha256(p.read_bytes()).hexdigest()
     return None
+
+def resolve_file_record(file_path, raw_record, role, rel):
+    """
+    区分当前环境的物理文件状态与原始索引记录状态：
+    - 物理文件存在时：正常计算内容真实 SHA-256 哈希，标记为 saved/extracted/needs_ocr，备注物理文件已核验；
+    - 物理文件缺失时（如仅使用内置测试夹具模式）：sha256 严格置为 None (NULL)，
+      状态标记为 failed，并在备注中如实记录原始索引登记状态与当前环境物理缺失情况。
+    """
+    p = Path(file_path)
+    if p.is_file():
+        file_sha = hashlib.sha256(p.read_bytes()).hexdigest()
+        status = 'needs_ocr' if not raw_record['正文文件'] and role == 'original' else 'extracted' if role == 'extracted' else 'saved'
+        note = '已登记物理文件存在；正文来源组合及附件内容完整性仍待人工核实。'
+    else:
+        file_sha = None
+        status = 'failed'
+        orig_desc = raw_record['正文提取状态'] if role == 'extracted' else (raw_record['附件处理状态'] or '已登记')
+        note = f"原始索引记录状态：[{orig_desc}]；当前运行环境物理文件缺失（测试夹具模式），状态记为failed，待导入物理文件后重新核验。"
+    return file_sha, status, note
 
 def uid(s): return str(uuid5(NAMESPACE_URL, 'codemind-fzu/review-v1/' + s))
 def calendar_date(raw):
@@ -217,7 +238,7 @@ def main():
             for rel in [p.strip() for p in re.split('[；;]', x[field]) if p.strip()]:
                 file_path = (kb_dir / rel).resolve()
                 file_name = file_path.name if file_path.is_file() else Path(rel).name
-                file_sha = compute_file_sha256(file_path)
+                file_sha, file_status, file_note = resolve_file_record(file_path, x, role, rel)
                 stage['document_files'].append(dict(
                     id=uid('file/' + code + '/' + role + '/' + rel),
                     version_id=vid,
@@ -225,8 +246,8 @@ def main():
                     storage_key='knowledge_base/政策资料/' + rel,
                     original_name=file_name,
                     sha256=file_sha,
-                    processing_status='needs_ocr' if not x['正文文件'] and role == 'original' else 'extracted' if role == 'extracted' else 'saved',
-                    processing_note='已登记文件存在；正文来源组合及附件内容完整性仍待人工核实。'
+                    processing_status=file_status,
+                    processing_note=file_note
                 ))
         todo = [x['核验状态'], x['核验说明'], x['附件处理状态'], '正文语义复核' if x['正文文件'] else 'OCR及人工核验']
         stage['verification_tasks'].append(dict(id=uid('review-task/' + code), version_id=vid, task_type='initial_review', description='；'.join(s for s in todo if s), status='open', priority=1 if any(t in code for t in ['高水平科创', '竞赛等级目录', '竞赛项目级别认定', '历史培养', '奖学金', '推免']) else 2))
@@ -245,7 +266,19 @@ def main():
         cov += [mtable(['编号', '标题', '登记官方来源', '原适用/政策限制'], [[x['记录编号'], x['标题'], x['来源网址'], x['状态'] + '；' + x['核验说明']] for x in coverage[code]])]
     write(Path('knowledge-base/首版资料覆盖清单_v1.2.md'), '\n'.join(cov))
     count = {name: len(items) for name, items in stage.items()}
-    write(Path('source/build_summary.json'), json.dumps({'tables': len(metadata.tables), 'columns': sum(len(t.c) for t in metadata.tables.values()), 'stage_counts': count, 'source_csv_sha256': hashlib.sha256(csv_file.read_bytes()).hexdigest(), 'kb_source_path': str(kb_dir)}, ensure_ascii=False, indent=2))
-    print(json.dumps({'tables': len(metadata.tables), 'columns': sum(len(t.c) for t in metadata.tables.values()), 'stage_counts': count, 'kb_source_path': str(kb_dir)}, ensure_ascii=False))
+    try:
+        rel_kb_path = str(kb_dir.relative_to(ROOT)).replace('\\', '/')
+    except ValueError:
+        rel_kb_path = str(kb_dir).replace('\\', '/')
+    summary_data = {
+        'tables': len(metadata.tables),
+        'columns': sum(len(t.c) for t in metadata.tables.values()),
+        'stage_counts': count,
+        'source_csv_sha256': hashlib.sha256(csv_file.read_bytes()).hexdigest(),
+        'data_source_type': 'builtin_fixture' if kb_dir == FIXTURE_DIR else 'local_materials',
+        'kb_source_path': rel_kb_path
+    }
+    write(Path('source/build_summary.json'), json.dumps(summary_data, ensure_ascii=False, indent=2) + '\n')
+    print(json.dumps(summary_data, ensure_ascii=False))
 
 if __name__ == '__main__': main()

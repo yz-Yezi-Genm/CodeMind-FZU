@@ -27,5 +27,6 @@
     "feedback_review_links": 0
   },
   "source_csv_sha256": "fb3643f2df509f8c817d5539527d13b756ad66e958fa2dd993ae0d0d28d55e4d",
-  "kb_source_path": "E:\\MyProjects\\codemind\\audit_materials\\knowledge\\知识库\\政策资料"
+  "data_source_type": "local_materials",
+  "kb_source_path": "audit_materials/knowledge/知识库/政策资料"
 }

@@ -2,7 +2,7 @@
   {
     "path": "CodeMind-FZU_数据库设计说明书.pdf",
     "bytes": 1619397,
-    "sha256": "0d48aead05f5741542c4ffb3114336e59cd453f361cc217878b18da28a1b4dc3"
+    "sha256": "487fbe381809bee3075fe368a846a6eac0a3bc9f1ea7feb01d4fb0674e7d36ba"
   },
   {
     "path": "README.md",
@@ -17,7 +17,7 @@
   {
     "path": "完整审核稿_v1.2.md",
     "bytes": 92160,
-    "sha256": "385c9dc5144b20abb53b1e3097dc3e4cfab4bbc8e62ec6e6546e6083377e0a6e"
+    "sha256": "a06f8705c1526ca3c0b29549e21d3d98608ee78bd4acf8678db314c7207d4ba8"
   },
   {
     "path": "架构与概念设计确认说明_v1.2.md",
@@ -37,7 +37,7 @@
   {
     "path": "验证报告_v1.2.md",
     "bytes": 968,
-    "sha256": "e85d2d431d67557df7c50d1f95be20297856b6dfea2664391b9e1ee8af93a2f4"
+    "sha256": "a14cd1626fec9d4af471c440662fdc07b14059275aaba634367f59ada91b684f"
   },
   {
     "path": "relational-model/关系数据模型_v1.2.md",
@@ -57,7 +57,7 @@
   {
     "path": "sql/02_review_seed_44.sql",
     "bytes": 286475,
-    "sha256": "9740af07052607500bb07f1f59fb0dde1751d391d7dbf77e35c6a4cb965e79ca"
+    "sha256": "e509dfcedb5847c628c2b7509a9c25945641562e9e479108a2961ccdcb5b867d"
   },
   {
     "path": "data-dictionary/数据字典_v1.2.md",
@@ -82,7 +82,7 @@
   {
     "path": "knowledge-base/入库预览_44条.json",
     "bytes": 322582,
-    "sha256": "5d8b6962d31ac760a9122e633f454c57a42006f5615ce33f71f260c40e9b4982"
+    "sha256": "4064a076bb2f6b39da0259ac50ab78f6b79e35dabd04b39207513c244ed427c0"
   },
   {
     "path": "knowledge-base/知识库入库映射与存储方案_v1.2.md",
@@ -107,7 +107,7 @@
   {
     "path": "source/build_deliverables.py",
     "bytes": 22427,
-    "sha256": "d75f1a556c2d33fd3337c8f7fc8864f87567fdbad855e65e08e29d1ad554020b"
+    "sha256": "b244375ed3eac680c91627ea381c3fff3d40c8280882de3e9fe67c27fac41741"
   },
   {
     "path": "source/generate_pdf.py",
@@ -127,12 +127,12 @@
   {
     "path": "source/test_import_rules.py",
     "bytes": 2434,
-    "sha256": "69129ea2e634802afe0bf37b3feb7c0d6cf37c90411f7709a23cd7d8a6152167"
+    "sha256": "c1eb79c99eb2c806b2643d0166aa13539565d65ba3f9243b2eb8cff29866cbfb"
   },
   {
     "path": "source/build_summary.json",
     "bytes": 964,
-    "sha256": "8f90646f35cc487566ed7ad071078036540f3782518f8c7ed23d4dea31d0e384"
+    "sha256": "641450c68c6ab04181c0eddb67f491dbb004f99e50c76fd4fd5585b318dc64d5"
   },
   {
     "path": "source/validation_report.json",
