@@ -65,7 +65,12 @@ class ImportRulesTests(unittest.TestCase):
         self.assertIsNone(sha)
         self.assertEqual(status, 'failed')
         self.assertIn('原始索引记录状态：[已提取正文，待人工复核]', note)
-        self.assertIn('物理文件缺失（测试夹具模式）', note)
+        self.assertIn('当前运行环境物理文件缺失', note)
+        for role in ('original', 'attachment', 'curated'):
+            sha, status, note = resolve_file_record(Path(non_existent), raw_rec, role, 'missing.pdf')
+            self.assertIsNone(sha)
+            self.assertEqual(status, 'failed')
+            self.assertIn('原始索引记录状态', note)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

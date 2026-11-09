@@ -1,63 +1,13 @@
 [
   {
     "path": "CodeMind-FZU_数据库设计说明书.pdf",
-    "bytes": 1619397,
-    "sha256": "487fbe381809bee3075fe368a846a6eac0a3bc9f1ea7feb01d4fb0674e7d36ba"
+    "bytes": 1623694,
+    "sha256": "76c2e069d652d041e6f189024d0df778839d8028abc0f7ecbf2b874bff9fa068"
   },
   {
-    "path": "README.md",
-    "bytes": 3669,
-    "sha256": "e5ac67ca0023eba8bf7c91644dbfe7e18b7713f7c3e8e28a178d7068a9fc8f0c"
-  },
-  {
-    "path": "数据库详细设计说明书_v1.2.md",
-    "bytes": 5852,
-    "sha256": "83707d492effda7acb7574a8f73f57735e85bcd968f69135d6bfbbeac3b89483"
-  },
-  {
-    "path": "完整审核稿_v1.2.md",
-    "bytes": 92160,
-    "sha256": "a06f8705c1526ca3c0b29549e21d3d98608ee78bd4acf8678db314c7207d4ba8"
-  },
-  {
-    "path": "架构与概念设计确认说明_v1.2.md",
-    "bytes": 6219,
-    "sha256": "40b7b6a2831bd24900b82f71e6c3727ee6dbf99a1aeadc101f1a1cc65a0f701c"
-  },
-  {
-    "path": "修订说明_v1.2.md",
-    "bytes": 3378,
-    "sha256": "1853b556d8bb6791faedf691cf1410d3f78c9411d46214c1d3f334ba102d08ab"
-  },
-  {
-    "path": "业务回答与反馈规则_v1.2.md",
-    "bytes": 4898,
-    "sha256": "488e8c74deb108714987459ebb3d49bd0e2aad2fa802071f7c0d363837303a4d"
-  },
-  {
-    "path": "验证报告_v1.2.md",
-    "bytes": 968,
-    "sha256": "a14cd1626fec9d4af471c440662fdc07b14059275aaba634367f59ada91b684f"
-  },
-  {
-    "path": "relational-model/关系数据模型_v1.2.md",
-    "bytes": 14090,
-    "sha256": "77f17093f8376a9fb23fa3395ce07a924bdcd23809cc162cb071bde8d4fe9b19"
-  },
-  {
-    "path": "relational-model/关系数据模型_v1.2.mmd",
-    "bytes": 1678,
-    "sha256": "c737b4f8cd5bf765b828e44793a08cb365f497c6e799bac6cf8a5cb07f7386bf"
-  },
-  {
-    "path": "sql/01_schema.sql",
-    "bytes": 49781,
-    "sha256": "4f846edf4ae91040ecb798038f2067729d6f7e55ba34ea03a3cec2f6f9cc8531"
-  },
-  {
-    "path": "sql/02_review_seed_44.sql",
-    "bytes": 286475,
-    "sha256": "e509dfcedb5847c628c2b7509a9c25945641562e9e479108a2961ccdcb5b867d"
+    "path": "data-dictionary/README.md",
+    "bytes": 248,
+    "sha256": "9a48a74b3d4f95914a8185fb7a9dcee05b437fd11c5811a579ffa0604780cbf5"
   },
   {
     "path": "data-dictionary/数据字典_v1.2.md",
@@ -70,9 +20,34 @@
     "sha256": "d7e4740be1eeb32a880798d295c812071140b25334202891e902855a3c06d287"
   },
   {
-    "path": "orm/ORM映射说明_v1.2.md",
-    "bytes": 4169,
-    "sha256": "cac2c1dbe455defc6c28683bf30f16e33ae8ed95360b63cebc0b83b4c0973b44"
+    "path": "er/README.md",
+    "bytes": 3062,
+    "sha256": "ffb19e6321edf7ff00a42e63f6da49bf3c71eee2faf8ddbf512ae3a0b176284c"
+  },
+  {
+    "path": "er/实体关系说明.md",
+    "bytes": 8509,
+    "sha256": "3e84a9c00d7ca675ef38fb7c2ff0a35789cc92da67afe7d86201e338e5a1ba6e"
+  },
+  {
+    "path": "er/数据库关系图.mmd",
+    "bytes": 8126,
+    "sha256": "b985509b579d87b191b1854c3486fbde4a292383b01d7aa5ff6a6fc166a62017"
+  },
+  {
+    "path": "er/知识库ER图.png",
+    "bytes": 224239,
+    "sha256": "24a77ed51754014d1b542f57c698fdb48f1ba5ba7d940943bcab4043426d57eb"
+  },
+  {
+    "path": "er/知识库ER图.svg",
+    "bytes": 12484,
+    "sha256": "44d8b5906321c1e1166fda7117bb48785e18cf7037c1b2740e811d5c5068f05c"
+  },
+  {
+    "path": "er/详细设计对接说明.md",
+    "bytes": 10858,
+    "sha256": "c828427688b36ec1fcf09c3121d584006718c9e0c5c91290b91f65f2da12617a"
   },
   {
     "path": "knowledge-base/44条资料业务分类表_v1.2.md",
@@ -81,13 +56,13 @@
   },
   {
     "path": "knowledge-base/入库预览_44条.json",
-    "bytes": 322582,
+    "bytes": 323476,
     "sha256": "4064a076bb2f6b39da0259ac50ab78f6b79e35dabd04b39207513c244ed427c0"
   },
   {
     "path": "knowledge-base/知识库入库映射与存储方案_v1.2.md",
-    "bytes": 8993,
-    "sha256": "e22bad390a1e4720d0917c90d165cfe151689589709adc64fe027314abaae54c"
+    "bytes": 9338,
+    "sha256": "c33fa7b18ac7f34b0f415f3799617dac9d5f8005d38dd6dc33409ef3f5eb04a0"
   },
   {
     "path": "knowledge-base/范围调整与交接说明_v1.2.md",
@@ -100,14 +75,54 @@
     "sha256": "71b04f5a49fab3f53867b0eb398446d0e4f7df156d94983737856ec69006fb8d"
   },
   {
-    "path": "source/models.py",
-    "bytes": 27291,
-    "sha256": "58724c1f3023596aa9f9f33702ab7dc94195d921136e2f4c8949a0519bf16188"
+    "path": "orm/ORM映射说明_v1.2.md",
+    "bytes": 4169,
+    "sha256": "cac2c1dbe455defc6c28683bf30f16e33ae8ed95360b63cebc0b83b4c0973b44"
+  },
+  {
+    "path": "orm/README.md",
+    "bytes": 214,
+    "sha256": "e90c0257c852df382b82960966557b30b6f799a3010ea1e672b1e7a30246965e"
+  },
+  {
+    "path": "README.md",
+    "bytes": 3669,
+    "sha256": "e5ac67ca0023eba8bf7c91644dbfe7e18b7713f7c3e8e28a178d7068a9fc8f0c"
+  },
+  {
+    "path": "relational-model/README.md",
+    "bytes": 185,
+    "sha256": "7be29b63ec8754f69475836d46783f85c28b9d4630ebbab4cc643f8bff8b98f2"
+  },
+  {
+    "path": "relational-model/关系数据模型_v1.2.md",
+    "bytes": 14090,
+    "sha256": "77f17093f8376a9fb23fa3395ce07a924bdcd23809cc162cb071bde8d4fe9b19"
+  },
+  {
+    "path": "relational-model/关系数据模型_v1.2.mmd",
+    "bytes": 1678,
+    "sha256": "c737b4f8cd5bf765b828e44793a08cb365f497c6e799bac6cf8a5cb07f7386bf"
   },
   {
     "path": "source/build_deliverables.py",
-    "bytes": 22427,
-    "sha256": "b244375ed3eac680c91627ea381c3fff3d40c8280882de3e9fe67c27fac41741"
+    "bytes": 23817,
+    "sha256": "b3f3df6902830056c52e90074f1b92db39b70e01e3a17b4c8e932585ac9ad05b"
+  },
+  {
+    "path": "source/build_summary.json",
+    "bytes": 979,
+    "sha256": "641450c68c6ab04181c0eddb67f491dbb004f99e50c76fd4fd5585b318dc64d5"
+  },
+  {
+    "path": "source/finalize_acceptance.py",
+    "bytes": 5013,
+    "sha256": "f25c8ec8e681cade6c4c49a45d4da19b990da77badbd277d5d02daace07300c2"
+  },
+  {
+    "path": "source/fixtures/知识库索引_44条_fixture.csv",
+    "bytes": 53266,
+    "sha256": "fb3643f2df509f8c817d5539527d13b756ad66e958fa2dd993ae0d0d28d55e4d"
   },
   {
     "path": "source/generate_pdf.py",
@@ -115,29 +130,14 @@
     "sha256": "2e7ef597c89a0f77091c73ab7b2289a08f820f97c7c100444db989a50eff495b"
   },
   {
-    "path": "source/validate_deliverables.py",
-    "bytes": 5197,
-    "sha256": "65c87924f96a7af13afcd8eebaa2723dfc27c84ef1aa78c28d602f69c6d922b4"
+    "path": "source/models.py",
+    "bytes": 27291,
+    "sha256": "58724c1f3023596aa9f9f33702ab7dc94195d921136e2f4c8949a0519bf16188"
   },
   {
-    "path": "source/test_models.py",
-    "bytes": 7379,
-    "sha256": "82a153331dac595c1d615d6f079f3ede8418f174f2acca793f07228da720afa6"
-  },
-  {
-    "path": "source/test_import_rules.py",
-    "bytes": 2434,
-    "sha256": "c1eb79c99eb2c806b2643d0166aa13539565d65ba3f9243b2eb8cff29866cbfb"
-  },
-  {
-    "path": "source/build_summary.json",
-    "bytes": 964,
-    "sha256": "641450c68c6ab04181c0eddb67f491dbb004f99e50c76fd4fd5585b318dc64d5"
-  },
-  {
-    "path": "source/validation_report.json",
-    "bytes": 673,
-    "sha256": "2df78b80d568eb8450ed223dd1eb91e6ff11e41a824dafbcf222a66381f123d9"
+    "path": "source/README.md",
+    "bytes": 4506,
+    "sha256": "6206df95ef727c03e2623b6fa3899b5f2fa844c17d5e260ae4e0974f9b70cc39"
   },
   {
     "path": "source/requirements-review.txt",
@@ -145,13 +145,68 @@
     "sha256": "6b1de61a3e25f9b15a83ed55cd501dd250e9f6ca1b63a1adc815ae94348826b8"
   },
   {
-    "path": "source/README.md",
-    "bytes": 3838,
-    "sha256": "fd0277408bc4240752f22736d7f4eae3598938a739f6e8bc132f0b16701ee119"
+    "path": "source/test_import_rules.py",
+    "bytes": 3887,
+    "sha256": "fcd273a3f27b043d0196f0cb3d42fde5ab0555540cb93a340ae800e2313f8ab2"
   },
   {
-    "path": "source/fixtures/知识库索引_44条_fixture.csv",
-    "bytes": 53266,
-    "sha256": "fb3643f2df509f8c817d5539527d13b756ad66e958fa2dd993ae0d0d28d55e4d"
+    "path": "source/test_models.py",
+    "bytes": 7379,
+    "sha256": "82a153331dac595c1d615d6f079f3ede8418f174f2acca793f07228da720afa6"
+  },
+  {
+    "path": "source/validate_deliverables.py",
+    "bytes": 5197,
+    "sha256": "65c87924f96a7af13afcd8eebaa2723dfc27c84ef1aa78c28d602f69c6d922b4"
+  },
+  {
+    "path": "source/validation_report.json",
+    "bytes": 673,
+    "sha256": "2df78b80d568eb8450ed223dd1eb91e6ff11e41a824dafbcf222a66381f123d9"
+  },
+  {
+    "path": "sql/01_schema.sql",
+    "bytes": 49781,
+    "sha256": "4f846edf4ae91040ecb798038f2067729d6f7e55ba34ea03a3cec2f6f9cc8531"
+  },
+  {
+    "path": "sql/02_review_seed_44.sql",
+    "bytes": 287369,
+    "sha256": "e509dfcedb5847c628c2b7509a9c25945641562e9e479108a2961ccdcb5b867d"
+  },
+  {
+    "path": "业务回答与反馈规则_v1.2.md",
+    "bytes": 4898,
+    "sha256": "488e8c74deb108714987459ebb3d49bd0e2aad2fa802071f7c0d363837303a4d"
+  },
+  {
+    "path": "修订说明_v1.2.md",
+    "bytes": 3994,
+    "sha256": "956be4e84d41871a08c1cf6a61cabfce360a8a7610b1732adf2d3a5a4a316e15"
+  },
+  {
+    "path": "完整审核稿_v1.2.md",
+    "bytes": 93404,
+    "sha256": "62a0b9ad53ba315f361a6255c1a782fb45bfb1706bdf8da1064a41f2856ba6d1"
+  },
+  {
+    "path": "数据库详细设计说明书_v1.2.md",
+    "bytes": 5852,
+    "sha256": "83707d492effda7acb7574a8f73f57735e85bcd968f69135d6bfbbeac3b89483"
+  },
+  {
+    "path": "架构与概念设计确认说明_v1.2.md",
+    "bytes": 6219,
+    "sha256": "40b7b6a2831bd24900b82f71e6c3727ee6dbf99a1aeadc101f1a1cc65a0f701c"
+  },
+  {
+    "path": "给丁晓炜_概念模型与详细设计对接说明.md",
+    "bytes": 902,
+    "sha256": "eaf8e650eb0d9cd4ee452aec0044bc33d619af0768b2ac6b88d5cc67ea15a5d5"
+  },
+  {
+    "path": "验证报告_v1.2.md",
+    "bytes": 1282,
+    "sha256": "16fdb250df17d243c41dff06a16f40a20b1a7fd4bd72ec9bad11f679e7efe76f"
   }
 ]

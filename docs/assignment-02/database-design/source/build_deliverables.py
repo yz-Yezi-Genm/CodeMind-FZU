@@ -92,7 +92,7 @@ def resolve_file_record(file_path, raw_record, role, rel):
         file_sha = None
         status = 'failed'
         orig_desc = raw_record['正文提取状态'] if role == 'extracted' else (raw_record['附件处理状态'] or '已登记')
-        note = f"原始索引记录状态：[{orig_desc}]；当前运行环境物理文件缺失（测试夹具模式），状态记为failed，待导入物理文件后重新核验。"
+        note = f"原始索引记录状态：[{orig_desc}]；当前运行环境物理文件缺失（包括仅索引测试夹具模式），状态记为failed，待导入物理文件后重新核验。"
     return file_sha, status, note
 
 def uid(s): return str(uuid5(NAMESPACE_URL, 'codemind-fzu/review-v1/' + s))
@@ -269,7 +269,7 @@ def main():
     try:
         rel_kb_path = str(kb_dir.relative_to(ROOT)).replace('\\', '/')
     except ValueError:
-        rel_kb_path = str(kb_dir).replace('\\', '/')
+        rel_kb_path = 'external_local_materials'
     summary_data = {
         'tables': len(metadata.tables),
         'columns': sum(len(t.c) for t in metadata.tables.values()),

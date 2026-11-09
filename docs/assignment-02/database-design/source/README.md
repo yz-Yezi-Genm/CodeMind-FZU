@@ -60,3 +60,11 @@ python docs/assignment-02/database-design/source/generate_pdf.py
 python docs/assignment-02/database-design/source/generate_pdf.py --browser "C:\Program Files\Google\Chrome\Application\chrome.exe"
 ```
 PDF 输出位置：`docs/assignment-02/database-design/CodeMind-FZU_数据库设计说明书.pdf`。
+
+### 5. 更新当前审核稿、PDF、校验清单及压缩包
+```bash
+python docs/assignment-02/database-design/source/finalize_acceptance.py
+```
+该命令先在临时目录验证fixture，再生成当前资料预览并执行20项测试，最后更新审核稿、PDF及逐文件校验的压缩包。需安装上述依赖并具备可用浏览器。
+
+fixture仅含44条索引，不含149个物理文件。版本级`extraction_status`记录原索引的43条已提取、1条待OCR；文件级`processing_status`描述当前环境，缺失时为`failed`，`sha256`为空，备注保留原索引状态。原核查记录不代表Agent回答资格，检索仍为`blocked`。
