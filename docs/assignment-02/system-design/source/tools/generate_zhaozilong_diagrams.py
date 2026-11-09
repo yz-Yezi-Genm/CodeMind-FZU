@@ -296,8 +296,24 @@ def write_drawio(scene: dict) -> None:
             f'height="{band["h"]}" as="geometry"/></mxCell>'
         )
     for item in scene["nodes"]:
-        value = escape(f"{item['title']}\n" + "\n".join(item["lines"]), {'"': "&quot;"})
-        value = value.replace("\n", "&lt;br&gt;")
+        if scene.get("rich_text"):
+            lines = item["lines"]
+            compact = bool(lines) and item["h"] < 100
+            title_size = min(item.get("title_size", 22), 19) if compact else item.get("title_size", 22)
+            line_size = min(item.get("line_size", 16), 14) if compact else item.get("line_size", 16)
+            value = (
+                f"<span style='font-size:{title_size}px;font-weight:700'>"
+                f"{escape(item['title'])}</span>"
+            )
+            if lines:
+                value += "<br>" + "<br>".join(
+                    f"<span style='font-size:{line_size}px'>{escape(line)}</span>"
+                    for line in lines
+                )
+            value = value.replace("<", "&lt;").replace(">", "&gt;")
+        else:
+            value = escape(f"{item['title']}\n" + "\n".join(item["lines"]), {'"': "&quot;"})
+            value = value.replace("\n", "&lt;br&gt;")
         cells.append(
             f'<mxCell id="{item["id"]}" value="{value}" '
             f'style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor={color(item["fill"])};'
@@ -309,13 +325,14 @@ def write_drawio(scene: dict) -> None:
     for line in scene.get("messages", []):
         value = escape(line["label"], {'"': "&quot;"}).replace("\n", "&lt;br&gt;")
         dash = "dashed=1;" if line.get("dashed") else ""
+        rounding = "rounded=0;curved=0;" if scene.get("rich_text") else "rounded=1;curved=1;"
         waypoints = "".join(
             f'<mxPoint x="{x}" y="{y}"/>' for x, y in line["points"][1:-1]
         )
         waypoint_xml = f'<Array as="points">{waypoints}</Array>' if waypoints else ""
         cells.append(
             f'<mxCell id="{line["id"]}" value="{value}" '
-            f'style="edgeStyle=orthogonalEdgeStyle;rounded=1;curved=1;html=1;'
+            f'style="edgeStyle=orthogonalEdgeStyle;{rounding}html=1;'
             f'endArrow=block;strokeColor={color(line["stroke"])};strokeWidth={line.get("width",3)};'
             f'{dash}fontFamily=Microsoft YaHei;fontSize=16;" edge="1" parent="1" '
             f'source="{line["source"]}" target="{line["target"]}">'
@@ -349,7 +366,7 @@ def write_drawio(scene: dict) -> None:
     filename = scene["drawio_name"]
     diagram_id = Path(filename).stem
     xml = (
-        '<mxfile host="app.diagrams.net" modified="2026-11-08T09:00:00.000Z" '
+        f'<mxfile host="app.diagrams.net" modified="{scene.get("modified", "2026-11-08T09:00:00.000Z")}" '
         'agent="CodeMind-FZU" version="24.0.0">\n'
         f'  <diagram name="{escape(scene["title"])}" id="{diagram_id}">\n'
         f'    <mxGraphModel dx="{scene["width"]}" dy="{scene["height"]}" grid="1" '
@@ -363,7 +380,7 @@ def write_drawio(scene: dict) -> None:
     (target / filename).write_text(xml, encoding="utf-8")
 
 
-def architecture_scene() -> dict:
+def _legacy_architecture_scene() -> dict:
     nodes = [
         node("user", 110, 165, 330, 72, "学生用户", ["统一提问 · 查看引用 · 补充信息"], "white", "blue"),
         node("maintainer", 490, 165, 330, 72, "知识库维护者", ["登记资料 · 核验元数据 · 重建索引"], "white", "blue"),
@@ -452,6 +469,117 @@ def architecture_scene() -> dict:
                 "3 竞赛科研 · 4 学院资源",
                 "5 成长规划：后续迭代",
                 "测试任务数量 ≠ 业务方向数量",
+            ]},
+        ],
+    }
+
+
+def architecture_scene() -> dict:
+    nodes = [
+        node("student", 150, 185, 300, 60, "学生用户",
+             ["自然语言提问 / 查看引用"], "blue_soft", "blue"),
+        node("maintainer", 550, 185, 320, 60, "知识库维护者",
+             ["登记资料 / 审核 / 发布"], "blue_soft", "blue"),
+        node("sources", 950, 185, 540, 60, "福大官方来源",
+             ["学校与学院通知 / 办法 / 附件"], "blue_soft", "blue"),
+        node("web", 150, 350, 350, 75, "Web 前端",
+             ["学生端 / 后台入口", "统一问答、引用与说明展示"], "cyan_soft", "cyan"),
+        node("api", 650, 350, 450, 75, "FastAPI 服务层",
+             ["POST /api/ask", "参数校验 / 异常映射 / 统一响应"], "cyan_soft", "cyan"),
+        node("task", 100, 505, 320, 85, "任务识别与主动追问",
+             ["TaskRouter · Clarifier", "缺字段时经 FastAPI 返回补充"], "purple_soft", "purple"),
+        node("agent", 500, 505, 700, 85, "AgentOrchestrator",
+             ["统一流程编排 / 策略路由", "受控调用检索、核验与外部模型"], "purple_soft", "purple"),
+        node("answer", 1300, 505, 400, 85, "回答复核与组织",
+             ["AnswerVerifier → AnswerComposer", "引用 / 政策状态 / 限制校验"], "red_soft", "red"),
+        node("hybrid", 100, 780, 450, 100, "HybridRetriever",
+             ["Chroma 语义召回 + BM25 关键词召回", "RRF 融合 / 去重 / versionId"],
+             "green_soft", "green"),
+        node("verify", 750, 780, 400, 100, "EvidenceVerifier",
+             ["来源 / 日期 / 适用范围 / 时效", "verifiedEvidence / citationIds / policyStatus"],
+             "green_soft", "green"),
+        node("local", 100, 1010, 400, 100, "本地知识资产",
+             ["原始资料 + CSV 索引 + 元数据", "项目内可审计的事实来源"], "orange_soft", "orange"),
+        node("qwen", 900, 1010, 400, 100, "Qwen API（外部服务）",
+             ["基于已核验证据生成回答草稿"], "orange_soft", "orange"),
+        node("tavily", 1320, 1010, 380, 100, "Tavily（可选外部服务）",
+             ["按需核验官方公开信息", "非首版硬依赖"], "orange_soft", "orange"),
+        node("version", 100, 1240, 350, 60, "VersionRegistry",
+             ["Chroma / BM25 统一 versionId · 原子切换"], "white", "purple", title_size=18),
+        node("tests", 500, 1240, 340, 60, "离线 PoC 与固定验收用例",
+             [], "white", "green", title_size=17),
+        node("ops", 900, 1240, 700, 60, "日志、审计与失败降级：保留上一可用版本",
+             [], "white", "line", title_size=17),
+    ]
+    flows = [
+        message("f01", "student", "web", [(400, 245), (400, 350)],
+                "blue", "访问", (450, 265)),
+        message("f02", "sources", "maintainer", [(950, 215), (870, 215)],
+                "blue", "收录", (910, 196)),
+        message("f03", "web", "api", [(500, 387), (650, 387)],
+                "cyan", "API", (575, 367)),
+        message("f04", "api", "agent",
+                [(875, 425), (875, 505)],
+                "purple", "任务请求", (930, 455)),
+        message("f05", "task", "agent", [(420, 547), (500, 547)],
+                "purple", "任务 / 缺项", (460, 487)),
+        message("f06", "agent", "hybrid",
+                [(650, 590), (650, 800), (550, 800)],
+                "green", "检索", (700, 680)),
+        message("f07", "hybrid", "verify", [(550, 830), (750, 830)],
+                "green", "候选", (650, 810)),
+        message("f08", "verify", "agent", [(950, 780), (950, 590)],
+                "green", "已核验证据", (1000, 685)),
+        message("f09", "agent", "qwen", [(1200, 590), (1200, 1010)],
+                "purple", "问题 + 证据", (1250, 900)),
+        message("f10", "local", "hybrid", [(450, 1010), (450, 880)],
+                "orange", "读取", (500, 945)),
+        message("f12", "qwen", "answer",
+                [(1100, 1110), (1100, 1140), (1730, 1140),
+                 (1730, 547), (1700, 547)],
+                "purple", "回答草稿", (1740, 900)),
+        message("f13", "answer", "api",
+                [(1500, 505), (1500, 425), (1100, 425), (1100, 387)],
+                "cyan", "最终响应", (1300, 440)),
+    ]
+    return {
+        "kind": "architecture",
+        "title": "CodeMind-FZU 系统技术架构图",
+        "drawio_name": "系统技术架构图_赵紫龙_v1.drawio",
+        "width": 1800, "height": 1400, "bg": "bg",
+        "modified": "2026-11-09T13:00:00.000Z",
+        "rich_text": True,
+        "bands": [
+            {"x": 50, "y": 120, "w": 1700, "h": 140,
+             "label": "01  用户与官方资料来源", "fill": "blue_soft"},
+            {"x": 50, "y": 280, "w": 1700, "h": 140,
+             "label": "02  Web 前端与 FastAPI 服务层", "fill": "cyan_soft"},
+            {"x": 50, "y": 450, "w": 1700, "h": 220,
+             "label": "03  Agent 编排与回答复核", "fill": "purple_soft"},
+            {"x": 50, "y": 700, "w": 1700, "h": 220,
+             "label": "04  混合检索与生成前证据核验", "fill": "green_soft"},
+            {"x": 50, "y": 950, "w": 1700, "h": 220,
+             "label": "05  知识资产与外部服务边界", "fill": "orange_soft"},
+            {"x": 50, "y": 1180, "w": 1700, "h": 160,
+             "label": "06  版本、测试与可靠性支撑", "fill": "gray_soft"},
+        ],
+        "nodes": nodes,
+        "messages": flows,
+        "labels": [
+            {"xy": (700, 30), "text": "CodeMind-FZU 系统技术架构图",
+             "size": 34, "bold": True},
+            {"xy": (700, 70),
+             "text": "分层依赖视图 · 主链路：Web → FastAPI → Agent → 检索/证据核验 → Qwen → 回答复核",
+             "size": 19, "fill": "muted"},
+            {"xy": (700, 1370),
+             "text": "编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-09  |  Draw.io / SVG / PNG 同源导出",
+             "size": 15, "fill": "muted"},
+        ],
+        "legends": [
+            {"xy": (1300, 22), "w": 430, "h": 90, "title": "边界说明", "lines": [
+                "内部：Web / FastAPI / Agent / 检索 / 数据",
+                "外部：Qwen API；Tavily 可选",
+                "支撑：版本、测试和日志不混入主链路",
             ]},
         ],
     }
