@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "tables": 23,
+  "columns": 233,
+  "tests_passed": 21,
+  "source_records": 44,
+  "snapshot_columns_per_record": 37,
+  "files": 149,
+  "business_links": 53,
+  "business_directions_order_verified": true,
+  "sql_statements_parsed": {
+    "01_schema.sql": 303,
+    "02_review_seed_44.sql": 364
+  },
+  "sqlite_core_material_import": "passed",
+  "sqlite_tables_created": 23,
+  "sqlite_fixture_tables_inserted": [
+    "knowledge_categories",
+    "business_directions",
+    "knowledge_documents",
+    "document_versions",
+    "document_files",
+    "document_business_directions",
+    "verification_tasks",
+    "document_milestones"
+  ],
+  "sqlite_fixture_rows_inserted": {
+    "knowledge_categories": 7,
+    "business_directions": 5,
+    "knowledge_documents": 44,
+    "document_versions": 44,
+    "document_files": 149,
+    "document_business_directions": 53,
+    "verification_tasks": 44,
+    "document_milestones": 16
+  },
+  "sqlite_other_tables_without_fixture_import": 15,
+  "all_retrieval_blocked": true,
+  "limitations": [
+    "候选技术基线采用 PostgreSQL 16 + SQLAlchemy 2.0，未连接实库",
+    "没有执行生产部署或远程导入",
+    "未重新联网核验 44 条政策有效性",
+    "OCR 尚未完成",
+    "Agent 和数据库服务尚未集成，服务层业务校验及 Agent 接口未实现"
+  ]
+}
