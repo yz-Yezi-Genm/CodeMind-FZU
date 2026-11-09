@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3100" height="2420" viewBox="0 0 3100 2420">
+<rect width="100%" height="100%" fill="white"/>
+<text x="50" y="43.480000000000004" text-anchor="start" font-family="Microsoft YaHei" font-size="18" font-weight="700" fill="#087E82">CODEMIND-FZU  /  AGENT DESIGN</text>
+<text x="50" y="94.24" text-anchor="start" font-family="Microsoft YaHei" font-size="34" font-weight="700" fill="#182D45">UML 时序图：官方资料问答</text>
+<text x="50" y="132.34" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">par 片段分别展示 Chroma 与 BM25 并行召回，再由 RRF 融合。</text>
+<polyline points="50,156 3050,156" fill="none" stroke="#A9B9CB" stroke-width="2"/>
+<rect x="65" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="150.0" y="236.76" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">学生</text>
+<polyline points="150,272 150,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="265" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="350.0" y="236.76" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Web 前端</text>
+<polyline points="350,272 350,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="465" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="550.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">FastAPI</text>
+<text x="550.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">/api/ask</text>
+<polyline points="550,272 550,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="665" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="750.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">TaskRouter</text>
+<text x="750.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">+ Clarifier</text>
+<polyline points="750,272 750,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="865" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="950.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Agent</text>
+<text x="950.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Orchestrator</text>
+<polyline points="950,272 950,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="1065" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1150.0" y="236.76" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">HybridRetriever</text>
+<polyline points="1150,272 1150,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="1265" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1350.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Chroma</text>
+<text x="1350.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Index</text>
+<polyline points="1350,272 1350,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="1465" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1550.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">BM25</text>
+<text x="1550.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Index</text>
+<polyline points="1550,272 1550,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="1665" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1750.0" y="236.76" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">RRF</text>
+<polyline points="1750,272 1750,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="1865" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="1950.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Evidence</text>
+<text x="1950.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Verifier</text>
+<polyline points="1950,272 1950,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="2065" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="2150.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Tavily</text>
+<text x="2150.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">（可选）</text>
+<polyline points="2150,272 2150,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="2265" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="2350.0" y="236.76" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">LLMAdapter</text>
+<polyline points="2350,272 2350,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="2465" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="2550.0" y="236.76" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Qwen API</text>
+<polyline points="2550,272 2550,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="2665" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="2750.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Answer</text>
+<text x="2750.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Verifier</text>
+<polyline points="2750,272 2750,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="2865" y="190" width="170" height="82" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="2950.0" y="225.39999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Answer</text>
+<text x="2950.0" y="248.11999999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#182D45">Composer</text>
+<polyline points="2950,272 2950,2320" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="40" y="480" width="3020" height="300" rx="14" fill="#FFF5E5" stroke="#A96712" stroke-width="1.6"/>
+<text x="56" y="510.06" text-anchor="start" font-family="Microsoft YaHei" font-size="21" font-weight="700" fill="#A96712">opt  [缺少必要字段：返回追问并结束本次请求]</text>
+<rect x="40" y="1010" width="3020" height="280" rx="14" fill="#F3F6FA" stroke="#53677F" stroke-width="1.6"/>
+<text x="56" y="1040.06" text-anchor="start" font-family="Microsoft YaHei" font-size="21" font-weight="700" fill="#53677F">par  [Chroma Index 与 BM25 Index 并行召回]</text>
+<polyline points="40,1150 3060,1150" fill="none" stroke="#A9B9CB" stroke-width="1" stroke-dasharray="8 6"/>
+<rect x="40" y="1435" width="3020" height="220" rx="14" fill="#FFF5E5" stroke="#A96712" stroke-width="1.6"/>
+<text x="56" y="1465.06" text-anchor="start" font-family="Microsoft YaHei" font-size="21" font-weight="700" fill="#A96712">opt  [本地证据不足且允许在线核验]</text>
+<polyline points="150,325 350,325" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="350,325 338.0,320.0 338.0,330.0" fill="#53677F"/>
+<rect x="198.25" y="298.0" width="103.5" height="26" fill="white"/>
+<text x="250.0" y="316.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">1  输入问题</text>
+<polyline points="350,385 550,385" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="550,385 538.0,380.0 538.0,390.0" fill="#53677F"/>
+<rect x="373.25" y="358.0" width="153.5" height="26" fill="white"/>
+<text x="450.0" y="376.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">2  POST /api/ask</text>
+<polyline points="550,445 750,445" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="750,445 738.0,440.0 738.0,450.0" fill="#53677F"/>
+<rect x="526.0" y="418.0" width="248.0" height="26" fill="white"/>
+<text x="650.0" y="436.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">3  校验并识别任务 / 提取字段</text>
+<polyline points="750,545 822,545 822,579 750,579" fill="none" stroke="#A96712" stroke-width="2"/>
+<polygon points="750,579 762.0,584.0 762.0,574.0" fill="#A96712"/>
+<rect x="812.25" y="518.0" width="185.5" height="26" fill="white"/>
+<text x="905" y="536.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">4a  生成一个关键追问</text>
+<polyline points="750,610 550,610" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="550,610 562.0,615.0 562.0,605.0" fill="#A96712"/>
+<rect x="549.0" y="583.0" width="202.0" height="26" fill="white"/>
+<text x="650.0" y="601.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">4b  needs_clarification</text>
+<polyline points="550,670 350,670" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="350,670 362.0,675.0 362.0,665.0" fill="#A96712"/>
+<rect x="393.75" y="643.0" width="112.5" height="26" fill="white"/>
+<text x="450.0" y="661.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">4c  返回追问</text>
+<polyline points="350,730 150,730" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="150,730 162.0,735.0 162.0,725.0" fill="#A96712"/>
+<rect x="120.5" y="703.0" width="259.0" height="26" fill="white"/>
+<text x="250.0" y="721.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">4d  展示追问；补充后重新提交</text>
+<polyline points="750,850 950,850" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="950,850 938.0,845.0 938.0,855.0" fill="#53677F"/>
+<rect x="753.5" y="823.0" width="193.0" height="26" fill="white"/>
+<text x="850.0" y="841.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">5  [信息完整] 路由任务</text>
+<polyline points="950,920 1150,920" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="1150,920 1138.0,915.0 1138.0,925.0" fill="#53677F"/>
+<rect x="980.25" y="893.0" width="139.5" height="26" fill="white"/>
+<text x="1050.0" y="911.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">6  发起混合检索</text>
+<polyline points="1150,1065 1350,1065" fill="none" stroke="#285FC7" stroke-width="2"/>
+<polygon points="1350,1065 1338.0,1060.0 1338.0,1070.0" fill="#285FC7"/>
+<rect x="1131.49609375" y="1038.0" width="237.0078125" height="26" fill="white"/>
+<text x="1250.0" y="1056.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#285FC7">7a  semanticSearch(query)</text>
+<polyline points="1350,1120 1150,1120" fill="none" stroke="#285FC7" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1150,1120 1162.0,1125.0 1162.0,1115.0" fill="#285FC7"/>
+<rect x="1174.25390625" y="1093.0" width="151.4921875" height="26" fill="white"/>
+<text x="1250.0" y="1111.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#285FC7">8a  Chroma 候选</text>
+<polyline points="1150,1195 1550,1195" fill="none" stroke="#285FC7" stroke-width="2"/>
+<polygon points="1550,1195 1538.0,1190.0 1538.0,1200.0" fill="#285FC7"/>
+<rect x="1232.50390625" y="1168.0" width="234.9921875" height="26" fill="white"/>
+<text x="1350.0" y="1186.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#285FC7">7b  keywordSearch(query)</text>
+<polyline points="1550,1250 1150,1250" fill="none" stroke="#285FC7" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1150,1250 1162.0,1255.0 1162.0,1245.0" fill="#285FC7"/>
+<rect x="1282.75" y="1223.0" width="134.5" height="26" fill="white"/>
+<text x="1350.0" y="1241.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#285FC7">8b  BM25 候选</text>
+<polyline points="1150,1335 1750,1335" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="1750,1335 1738.0,1330.0 1738.0,1340.0" fill="#087E82"/>
+<rect x="1247.51171875" y="1308.0" width="404.9765625" height="26" fill="white"/>
+<text x="1450.0" y="1326.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">9  fuseAndRank(chromaResults, bm25Results)</text>
+<polyline points="1750,1390 1950,1390" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="1950,1390 1938.0,1385.0 1938.0,1395.0" fill="#087E82"/>
+<rect x="1748.0" y="1363.0" width="204.0" height="26" fill="white"/>
+<text x="1850.0" y="1381.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">10  融合、去重后的候选</text>
+<polyline points="1950,1500 2150,1500" fill="none" stroke="#A96712" stroke-width="2"/>
+<polygon points="2150,1500 2138.0,1495.0 2138.0,1505.0" fill="#A96712"/>
+<rect x="1952.0" y="1473.0" width="196.0" height="26" fill="white"/>
+<text x="2050.0" y="1491.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">11a  查询官方公开信息</text>
+<polyline points="2150,1585 1950,1585" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1950,1585 1962.0,1590.0 1962.0,1580.0" fill="#A96712"/>
+<rect x="1942.25" y="1558.0" width="215.5" height="26" fill="white"/>
+<text x="2050.0" y="1576.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">11b  返回候选原文和网址</text>
+<polyline points="1950,1705 950,1705" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="950,1705 962.0,1710.0 962.0,1700.0" fill="#087E82"/>
+<rect x="1243.75390625" y="1678.0" width="412.4921875" height="26" fill="white"/>
+<text x="1450.0" y="1696.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">12  verifiedEvidence、citationIds、policyStatus</text>
+<polyline points="950,1770 2350,1770" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="2350,1770 2338.0,1765.0 2338.0,1775.0" fill="#087E82"/>
+<rect x="1553.75" y="1743.0" width="192.5" height="26" fill="white"/>
+<text x="1650.0" y="1761.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">13  问题 + 已核验证据</text>
+<polyline points="2350,1830 2550,1830" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="2550,1830 2538.0,1825.0 2538.0,1835.0" fill="#087E82"/>
+<rect x="2366.25" y="1803.0" width="167.5" height="26" fill="white"/>
+<text x="2450.0" y="1821.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">14  调用 Qwen API</text>
+<polyline points="2550,1890 2350,1890" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="2350,1890 2362.0,1895.0 2362.0,1885.0" fill="#087E82"/>
+<rect x="2375.0" y="1863.0" width="150.0" height="26" fill="white"/>
+<text x="2450.0" y="1881.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">15  返回回答草稿</text>
+<polyline points="2350,1950 2750,1950" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="2750,1950 2738.0,1945.0 2738.0,1955.0" fill="#53677F"/>
+<rect x="2462.75" y="1923.0" width="174.5" height="26" fill="white"/>
+<text x="2550.0" y="1941.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">16  草稿 + 引用候选</text>
+<polyline points="2750,2005 2840,2005 2840,2039 2750,2039" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="2750,2039 2762.0,2044.0 2762.0,2034.0" fill="#53677F"/>
+<rect x="2757.00390625" y="1978.0" width="295.9921875" height="26" fill="white"/>
+<text x="2905" y="1996.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">17  复核回答、引用与 policyStatus</text>
+<polyline points="2750,2055 2950,2055" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="2950,2055 2938.0,2050.0 2938.0,2060.0" fill="#087E82"/>
+<rect x="2739.0" y="2064.0" width="222.0" height="26" fill="white"/>
+<text x="2850.0" y="2082.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">18  通过或拒绝的复核结果</text>
+<polyline points="2950,2140 950,2140" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="950,2140 962.0,2145.0 962.0,2135.0" fill="#087E82"/>
+<rect x="1840.0" y="2113.0" width="220.0" height="26" fill="white"/>
+<text x="1950.0" y="2131.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">19  返回组织后的最终响应</text>
+<polyline points="950,2190 550,2190" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="550,2190 562.0,2195.0 562.0,2185.0" fill="#087E82"/>
+<rect x="595.0" y="2163.0" width="310.0" height="26" fill="white"/>
+<text x="750.0" y="2181.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">20  Agent 返回答案、引用和状态</text>
+<polyline points="550,2240 350,2240" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="350,2240 362.0,2245.0 362.0,2235.0" fill="#087E82"/>
+<rect x="390.0" y="2213.0" width="120.0" height="26" fill="white"/>
+<text x="450.0" y="2231.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">21  HTTP 响应</text>
+<polyline points="350,2290 150,2290" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="150,2290 162.0,2295.0 162.0,2285.0" fill="#087E82"/>
+<rect x="130.0" y="2263.0" width="240.0" height="26" fill="white"/>
+<text x="250.0" y="2281.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">22  展示结果或保守降级提示</text>
+<text x="50" y="2390" font-family="Microsoft YaHei" font-size="16" fill="#53677F">吴诗莹  ·  根据 PR #7 审核意见修订  ·  2026-11-09</text>
+</svg>
