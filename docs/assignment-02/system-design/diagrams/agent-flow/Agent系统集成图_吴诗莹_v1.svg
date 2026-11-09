@@ -95,18 +95,22 @@
 <polygon points="1395.0,600 1390.0,612.0 1400.0,612.0" fill="#087E82"/>
 <rect x="1436.5" y="627.0" width="82.0" height="26" fill="white"/>
 <text x="1477.5" y="645.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">回答草稿</text>
-<polyline points="1395.0,600 1395,900 850,900 850,1055 805,1055.0" fill="none" stroke="#087E82" stroke-width="2"/>
-<polygon points="805,1055.0 817.0,1060.0 817.0,1050.0" fill="#087E82"/>
-<rect x="1099.5" y="872.0" width="46.0" height="26" fill="white"/>
-<text x="1122.5" y="890.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">草稿</text>
+<polyline points="1395.0,600 1395,965 640,965 640,995" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="640,995 635.0,983.0 645.0,983.0" fill="#087E82"/>
+<rect x="994.5" y="937.0" width="46.0" height="26" fill="white"/>
+<text x="1017.5" y="955.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">草稿</text>
 <polyline points="805,1055.0 900,1055.0" fill="none" stroke="#087E82" stroke-width="2"/>
 <polygon points="900,1055.0 888.0,1050.0 888.0,1060.0" fill="#087E82"/>
 <rect x="811.5" y="1027.0" width="82.0" height="26" fill="white"/>
 <text x="852.5" y="1045.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">单向复核结果</text>
-<polyline points="1065.0,995 1065,930 640,930 640.0,380" fill="none" stroke="#087E82" stroke-width="2"/>
-<polygon points="640.0,380 635.0,392.0 645.0,392.0" fill="#087E82"/>
-<rect x="599.0" y="627.0" width="82.0" height="26" fill="white"/>
-<text x="640.0" y="645.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">最终响应</text>
+<polyline points="1230,1055 1245,1055 1245,690 1000,690 1000,600" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="1000,600 995.0,612.0 1005.0,612.0" fill="#087E82"/>
+<rect x="1063.5" y="662.0" width="118.0" height="26" fill="white"/>
+<text x="1122.5" y="680.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">组织后的响应</text>
+<polyline points="745,475 745,380" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="745,380 740.0,392.0 750.0,392.0" fill="#087E82"/>
+<rect x="686.0" y="414.0" width="118.0" height="26" fill="white"/>
+<text x="745.0" y="432.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">返回最终响应</text>
 <text x="465" y="1278.92" text-anchor="start" font-family="Microsoft YaHei" font-size="22" font-weight="700" fill="#087E82">边界约束</text>
 <text x="465" y="1326.34" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">• LLMAdapter 是 FastAPI 内部组件，负责模型请求、响应和错误适配。</text>
 <text x="465" y="1353.32" text-anchor="start" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#53677F">• Qwen API 是外部模型服务，调用链为 AgentOrchestrator → LLMAdapter → Qwen API。</text>
