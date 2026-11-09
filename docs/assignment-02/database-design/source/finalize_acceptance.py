@@ -55,7 +55,14 @@ def main():
     full = '# 数据库详细设计审核稿 v1.2\n\n' + '\n\n---\n\n'.join((BASE / p).read_text(encoding='utf-8') for p in parts)
     (BASE / '完整审核稿_v1.2.md').write_text(full, encoding='utf-8')
     run(BASE / 'source/generate_pdf.py')
-    files = sorted(p for p in BASE.rglob('*') if p.is_file() and '__pycache__' not in p.parts and '业务方向顺序修正' not in p.parts and '校验清单' not in p.name and p.name not in ('finalize_revision.py', 'revise_v12_review.py') and not re.search(r'v(?:0\.1|1\.[01])', p.name) and '设计审查问题清单' not in p.name)
+    files = sorted(p for p in BASE.rglob('*') if p.is_file() and '__pycache__' not in p.parts and '业务方向顺序修正' not in p.parts and '校验清单' not in p.name and not p.name.startswith('给丁晓炜_') and p.name not in ('finalize_revision.py', 'revise_v12_review.py') and not re.search(r'v(?:0\.1|1\.[01])', p.name) and '设计审查问题清单' not in p.name)
+    # Match the directory's eol=lf attributes before hashing or packaging.
+    for p in files:
+        if p.suffix in ('.md', '.py', '.json', '.sql', '.csv', '.txt', '.mmd', '.svg') or p.name == '.gitattributes':
+            content = p.read_bytes()
+            normalized = content.replace(b'\r\n', b'\n')
+            if normalized != content:
+                p.write_bytes(normalized)
     manifest = [dict(path=p.relative_to(BASE).as_posix(), bytes=p.stat().st_size, sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in files]
     target_manifest = BASE / '交付文件校验清单.json'
     target_manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
