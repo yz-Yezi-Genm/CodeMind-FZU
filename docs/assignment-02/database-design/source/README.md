@@ -6,8 +6,9 @@
 
 ## 📂 源码与数据结构说明
 
-- **`models.py`**：基于 SQLAlchemy 2.0 规范编写的 23 张表声明式 ORM 模型映射（`Mapped` / `mapped_column`），含完整主键、复合唯一约束、Check 约束与关系属性。
-- **`build_deliverables.py`**：衍生交付物构建脚本。自动从数据字典与模型生成 PostgreSQL DDL（`sql/01_schema.sql`）、种子数据（`sql/02_review_seed_44.sql`）、数据字典 Markdown 以及业务方向覆盖清单。
+- **`models.py`**：基于 SQLAlchemy 2.0 命令式映射规范编写的 23 张表 ORM 模型映射（采用 `registry.map_imperatively` 与类定义解耦）。包含完整主键、复合唯一约束、Check 约束与关系属性。UUID 主键由应用层调用端生成，`updated_at` 由业务服务显式维护，未在数据库配置自动更新触发器。
+- **`build_deliverables.py`**：衍生交付物构建脚本。自动从数据字典与模型生成 PostgreSQL 16 候选技术基线下的 DDL（`sql/01_schema.sql`）、种子数据（`sql/02_review_seed_44.sql`）、数据字典 Markdown 以及业务方向覆盖清单。
+  - **支持文件内容 SHA-256 严谨计算**：当政策资料物理文件存在时正常计算内容哈希；当文件不存在时严格置为 NULL (`None`)，绝不使用路径字符串生成伪哈希。
   - **支持多种数据根目录优先级检索**：
     1. CLI 参数 `--data-dir <path>`
     2. 环境变量 `CODEMIND_KB_ROOT`
@@ -21,9 +22,9 @@
   - 严格断言五大业务方向的代码、名称与 `sort_order`（1~5）顺序，防止生成回退。
   - 自动运行 SQLite 内存数据库完整建表与 44 条阶段数据入库。
   - 自动执行 `pglast` 对 PostgreSQL DDL 与 Seed 进行 AST 语法树解析。
-  - 自动执行 18 项自动化单元测试。
+  - 自动执行 20 项自动化单元测试。
 - **`fixtures/`**：内置最小测试数据夹具（包含 44 条资料完整元数据 CSV），确保克隆仓库的队员开箱即可复现全套流程。
-- **`test_models.py` & `test_import_rules.py`**：18 项单元测试用例，覆盖跨版本外键拦截、不可级联删除、Check 约束与时间精度解析。
+- **`test_models.py` & `test_import_rules.py`**：20 项单元测试用例，覆盖跨版本外键拦截、不可级联删除、Check 约束、时间精度解析以及文件真实 SHA-256 计算与缺失置空逻辑。
 - **`requirements-review.txt`**：运行本目录工具链的完整 Python 依赖清单。
 
 ---

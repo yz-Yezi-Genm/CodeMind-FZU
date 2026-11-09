@@ -26,7 +26,7 @@ TECH_BASELINE = (
     '本版以 PostgreSQL 16 和 SQLAlchemy 2.0 作为数据库设计与建模验证的候选技术基线。'
     '该技术选型已与技术架构负责人（赵紫龙）对接确认，作为详细设计阶段的规范依据；'
     '目前仍属设计方案，不代表 CodeMind-FZU v1.0 生产环境已绑死该部署方案。'
-    '本次已完成全量关系数据模型、生产级 DDL、数据字典及 ORM 映射设计，但尚未部署在线数据库，也未接入 Agent。'
+    '本次已完成全量关系数据模型、PostgreSQL 16 候选技术基线下的 DDL 设计、数据字典及命令式 ORM 映射设计（UUID 由应用生成，updated_at 由业务服务显式维护，未配置自动更新触发器），尚未部署在线数据库，也未接入 Agent。'
 )
 CATEGORIES = ['学籍与学生事务', '课程考试与教务办理', '综评与奖学金', '竞赛认定与创新学分', '培养方案与学位要求', '科研实践与实验室', '推免与升学']
 
@@ -62,6 +62,17 @@ def resolve_kb_path(cli_dir=None):
 
     fixture_csv = FIXTURE_DIR / '知识库索引_44条_fixture.csv'
     return FIXTURE_DIR, fixture_csv
+
+def compute_file_sha256(path):
+    """
+    计算文件内容的 SHA-256 哈希值。
+    如果文件实际存在，返回其实际内容的 SHA-256 十六进制字符串；
+    如果文件不存在，严格返回 None (NULL)，严禁使用路径字符串生成伪哈希。
+    """
+    p = Path(path)
+    if p.is_file():
+        return hashlib.sha256(p.read_bytes()).hexdigest()
+    return None
 
 def uid(s): return str(uuid5(NAMESPACE_URL, 'codemind-fzu/review-v1/' + s))
 def calendar_date(raw):
@@ -144,9 +155,9 @@ def main():
     ddl = []
     engine = create_mock_engine('postgresql://', lambda sql, *a, **kw: ddl.append(str(sql.compile(dialect=DIALECT)).strip() + ';'))
     metadata.create_all(engine, checkfirst=False)
-    write(Path('sql/01_schema.sql'), '-- 审核稿；PostgreSQL；只在空的专用数据库/Schema审核后执行。UUID由调用端提供。\nBEGIN;\n' + '\n\n'.join(ddl) + '\nCOMMIT;\n')
+    write(Path('sql/01_schema.sql'), '-- 审核稿；PostgreSQL 16 候选技术基线；只在空的专用数据库/Schema审核后执行。UUID由应用层调用端生成，updated_at由业务服务维护，未配置自动更新触发器。\nBEGIN;\n' + '\n\n'.join(ddl) + '\nCOMMIT;\n')
 
-    dictionary = ['# 数据字典 v1.2（审核稿）', '', TECH_BASELINE, '', '以下字段类型按候选 PostgreSQL 方言编制，ORM采用SQLAlchemy 2命令式映射。所有UUID由应用生成。全部表含created_at和updated_at；updated_at由写入服务显式更新，未配置自动更新时间触发器。', '', 'JSONB仅用于原始元数据快照和证据，不用于代替多标签或多附件关系。日期精度不足时不填伪造时间。', '']
+    dictionary = ['# 数据字典 v1.2（审核稿）', '', TECH_BASELINE, '', '以下字段类型按候选 PostgreSQL 方言编制，ORM采用 SQLAlchemy 2.0 命令式映射（registry.map_imperatively）。所有UUID由应用生成。全部表含created_at和updated_at；updated_at由写入服务显式更新，未配置自动更新时间触发器。', '', 'JSONB仅用于原始元数据快照和证据，不用于代替多标签或多附件关系。日期精度不足时不填伪造时间。', '']
     constraints = ['# 主外键、约束与索引设计', '', '所有外键默认ON DELETE RESTRICT；不级联删除引用证据。复合外键使用明确的组合列对齐，格式为 (字段组合) → 父表(父表字段组合)。复合外键默认使用 MATCH SIMPLE，允许可选外键为空；非空时必须同版本。', '']
     for cls, t in MODEL_TABLES:
         dictionary += ['## ' + t.name + ' — ' + t.comment, '', mtable(['字段', '中文含义', 'PostgreSQL类型', '非空', '主键', '唯一约束成员', '服务端默认值'], [[c.name, c.comment, str(c.type.compile(dialect=DIALECT)), '是' if not c.nullable else '否', '是' if c.primary_key else '', ', '.join(k.name or '' for k in t.constraints if k.__class__.__name__ == 'UniqueConstraint' and c in list(k.columns)), str(c.server_default.arg) if c.server_default else '无'] for c in t.columns]), '']
@@ -170,10 +181,10 @@ def main():
     write(Path('data-dictionary/数据字典_v1.2.md'), '\n'.join(dictionary))
     write(Path('data-dictionary/约束与索引设计_v1.2.md'), '\n'.join(constraints) + '\n')
 
-    orm = ['# ORM映射说明 v1.2', '', TECH_BASELINE, '', '候选ORM方案采用SQLAlchemy 2命令式映射。models.py为可导入的模型源文件，不连接数据库。字段名与列名一致，不额外制造别名；关系属性用于对象导航，底层外键/约束为最终依据。', '', mtable(['实体类', '表名', '主键'], [[cls.__name__, t.name, ', '.join(c.name for c in t.primary_key)] for cls, t in MODEL_TABLES]),
+    orm = ['# ORM映射说明 v1.2', '', TECH_BASELINE, '', '候选ORM方案采用 SQLAlchemy 2.0 命令式映射（registry.map_imperatively）。models.py为可导入的模型源文件，不连接数据库。UUID 由应用层生成，updated_at 由业务服务显式维护，未配置自动更新时间触发器。字段名与列名一致，不额外制造别名；关系属性用于对象导航，底层外键/约束为最终依据。', '', mtable(['实体类', '表名', '主键'], [[cls.__name__, t.name, ', '.join(c.name for c in t.primary_key)] for cls, t in MODEL_TABLES]),
          '## 对象关联', '', 'KnowledgeDocument.category、DocumentVersion.document、DocumentFile.version、ApplicabilityRule.version、ApplicabilityRuleValue.rule、KnowledgeChunk.file、DocumentBusinessDirection.document/direction、ConversationSession.user、InteractionMessage.session、AgentTask.request_message、TaskResult.task、ResultCitation.result/chunk、DocumentMilestone.version、DocumentFileSource.file/source_file、MessageResultLink.message/result均已映射。其余关联通过明确外键查询，未承诺所有反向collection均存在。', '',
          '## 写入示例', '', '```python\nfrom sqlalchemy.orm import Session\nfrom models import KnowledgeCategory, KnowledgeDocument, DocumentVersion\n# engine由架构层配置，本文件不包含连接凭据\nwith Session(engine) as session, session.begin():\n    category = KnowledgeCategory(name="示例分类", sort_order=99)\n    document = KnowledgeDocument(category=category, title="示例政策", document_type="政策")\n    version = DocumentVersion(document=document, record_code="示例-001",\n        version_no="import-1", source_url="https://example.edu/policy")\n    session.add(version)\n# 默认检索blocked；生产入库使用已有七分类，不重复创建示例分类\n```', '',
-         '写入时区使用UTC存储时刻、展示按Asia/Shanghai转换；政策生效等日历日期使用DATE。UUID默认由uuid4生成。组合主键关联类无单独id。禁止依赖ORM级联删除政策证据；updated_at需业务服务维护。', '',
+         '写入时区使用UTC存储时刻、展示按Asia/Shanghai转换；政策生效等日历日期使用DATE。UUID默认由uuid4生成。组合主键关联类无单独id。禁止依赖ORM级联删除政策证据；updated_at需业务服务显式维护。', '',
          '## 实现边界', '', 'ORM源文件及表结构已生成并通过本地可移植约束测试；数据库部署、业务服务、Agent接入、认证接入、向量检索及在线迁移尚未实施。PostgreSQL专属DDL仅经编译/语法解析，不冒充实库集成测试。', '',
          '依据：[SQLAlchemy官方映射文档](https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html)、[组合外键](https://docs.sqlalchemy.org/en/20/core/constraints.html#defining-foreign-keys)。']
     write(Path('orm/ORM映射说明_v1.2.md'), '\n'.join(orm) + '\n')
@@ -205,12 +216,8 @@ def main():
         for field, role in [('原始文件', 'original'), ('附件路径', 'attachment'), ('正文文件', 'extracted'), ('整理文件', 'curated')]:
             for rel in [p.strip() for p in re.split('[；;]', x[field]) if p.strip()]:
                 file_path = (kb_dir / rel).resolve()
-                if file_path.is_file():
-                    file_name = file_path.name
-                    file_sha = hashlib.sha256(file_path.read_bytes()).hexdigest()
-                else:
-                    file_name = Path(rel).name
-                    file_sha = hashlib.sha256(rel.encode('utf-8')).hexdigest()
+                file_name = file_path.name if file_path.is_file() else Path(rel).name
+                file_sha = compute_file_sha256(file_path)
                 stage['document_files'].append(dict(
                     id=uid('file/' + code + '/' + role + '/' + rel),
                     version_id=vid,

@@ -1,4 +1,4 @@
--- 审核稿；PostgreSQL；只在空的专用数据库/Schema审核后执行。UUID由调用端提供。
+-- 审核稿；PostgreSQL 16 候选技术基线；只在空的专用数据库/Schema审核后执行。UUID由应用层调用端生成，updated_at由业务服务维护，未配置自动更新触发器。
 BEGIN;
 CREATE TABLE knowledge_categories (
 	id UUID NOT NULL, 
@@ -445,9 +445,9 @@ CREATE TABLE agent_tasks (
 	CONSTRAINT fk_agent_tasks_session_id_conversation_sessions FOREIGN KEY(session_id) REFERENCES conversation_sessions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_agent_tasks_status ON agent_tasks (status, created_at);
-
 CREATE INDEX ix_agent_tasks_request ON agent_tasks (request_message_id);
+
+CREATE INDEX ix_agent_tasks_status ON agent_tasks (status, created_at);
 
 COMMENT ON TABLE agent_tasks IS '由用户消息触发的Agent任务';
 
@@ -494,11 +494,11 @@ CREATE TABLE document_milestones (
 	CONSTRAINT fk_document_milestones_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_milestones_due_date ON document_milestones (due_on);
+CREATE INDEX ix_milestones_version ON document_milestones (version_id);
 
 CREATE INDEX ix_milestones_due_time ON document_milestones (due_at);
 
-CREATE INDEX ix_milestones_version ON document_milestones (version_id);
+CREATE INDEX ix_milestones_due_date ON document_milestones (due_on);
 
 COMMENT ON TABLE document_milestones IS '版本的多个办理节点；原文与时间精度分别保存';
 
