@@ -1,0 +1,80 @@
+@startuml
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 40
+hide circle
+title CodeMind-FZU 问答链路服务类图（整合稿）
+
+package "Web 与 API" {
+  class AskController {
+    + handleAsk(request) : Response
+    + handleHealth() : Health
+  }
+}
+
+package "Agent 编排" {
+  class TaskRouter {
+    + classify(question) : TaskType
+    + extract(text) : Entities
+  }
+  class Clarifier {
+    + clarify(missingFields) : Prompt
+  }
+  class AgentOrchestrator {
+    + orchestrate(task, entities) : Answer
+  }
+  class AnswerComposer {
+    + compose(checkedAnswer) : Response
+  }
+}
+
+package "检索与证据" {
+  class HybridRetriever {
+    + retrieve(queryPlan) : Candidates
+  }
+  class RRFRanker {
+    + fuse(candidates) : Candidates
+  }
+  class EvidenceVerifier {
+    + verify(candidates) : Evidence
+  }
+  class AnswerVerifier {
+    + verify(draft, citations) : CheckedAnswer
+  }
+}
+
+package "模型与外部" {
+  class LLMAdapter {
+    + generate(question, evidence) : Draft
+  }
+  class QwenAPI <<external>>
+  class Tavily <<external>>
+}
+
+package "本地索引" {
+  class ChromaIndex {
+    + vectorSearch(embedding) : Hits
+  }
+  class BM25Index {
+    + keywordSearch(tokens) : Hits
+  }
+}
+
+AskController --> TaskRouter : classify
+AskController --> AgentOrchestrator : orchestrate
+TaskRouter --> Clarifier : clarify
+AgentOrchestrator --> HybridRetriever : retrieve
+HybridRetriever --> ChromaIndex : vectorSearch
+HybridRetriever --> BM25Index : keywordSearch
+HybridRetriever --> RRFRanker : fuse
+RRFRanker --> EvidenceVerifier : verify
+EvidenceVerifier --> Tavily : queryOfficialSources
+AgentOrchestrator --> LLMAdapter : generate
+LLMAdapter --> QwenAPI : generate
+AgentOrchestrator --> AnswerVerifier : verify
+AnswerVerifier --> AnswerComposer : compose
+AnswerComposer --> AskController : response
+
+@enduml
