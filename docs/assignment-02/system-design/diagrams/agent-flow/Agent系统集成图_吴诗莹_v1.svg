@@ -55,10 +55,14 @@
 <text x="1885.0" y="1305.33" text-anchor="middle" font-family="Microsoft YaHei" font-size="19" font-weight="400" fill="#182D45">离线测试、日志与失败降级</text>
 <polyline points="212.5,405 212.5,505" fill="none" stroke="#53677F" stroke-width="2"/>
 <polygon points="212.5,505 217.5,493.0 207.5,493.0" fill="#53677F"/>
-<polyline points="340,562.5 475,322.5" fill="none" stroke="#53677F" stroke-width="2"/>
-<polygon points="475,322.5 464.75898743878656,330.50760024733177 473.474742810032,335.41021264365736" fill="#53677F"/>
-<rect x="357.25" y="414.5" width="100.5" height="26" fill="white"/>
-<text x="407.5" y="432.98" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">请求 / 响应</text>
+<polyline points="340,535 410,535 410,290 475,290" fill="none" stroke="#53677F" stroke-width="2"/>
+<polygon points="475,290 463,285 463,295" fill="#53677F"/>
+<rect x="326" y="464" width="168" height="26" fill="white"/>
+<text x="410" y="482.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#53677F">HTTP POST /api/ask</text>
+<polyline points="475,355 440,355 440,590 340,590" fill="none" stroke="#087E82" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="340,590 352,595 352,585" fill="#087E82"/>
+<rect x="348" y="548" width="184" height="26" fill="white"/>
+<text x="440" y="566.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">HTTP 响应 / answerStatus</text>
 <polyline points="805,322.5 900,322.5" fill="none" stroke="#53677F" stroke-width="2"/>
 <polygon points="900,322.5 888.0,317.5 888.0,327.5" fill="#53677F"/>
 <polyline points="1065.0,380 890.0,475" fill="none" stroke="#53677F" stroke-width="2"/>
@@ -75,10 +79,14 @@
 <polygon points="900,780.0 888.0,775.0 888.0,785.0" fill="#087E82"/>
 <rect x="810.0" y="752.0" width="85.0" height="26" fill="white"/>
 <text x="852.5" y="770.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">RRF 候选</text>
-<polyline points="1230,780.0 1580,780 1580,992 1680,992.5" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
-<polygon points="1680,992.5 1668.0251496846934,987.4400632488141 1667.9751503096816,997.4399382511579" fill="#A96712"/>
-<rect x="1346.0" y="752.0" width="118.0" height="26" fill="white"/>
-<text x="1405.0" y="770.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">按需双向核验</text>
+<polyline points="1230,760 1580,760 1580,975 1680,975" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1680,975 1668,970 1668,980" fill="#A96712"/>
+<rect x="1340" y="732" width="130" height="26" fill="white"/>
+<text x="1405" y="750.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">Tavily 查询请求</text>
+<polyline points="1680,1025 1550,1025 1550,860 1100,860 1100,840" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1100,840 1095,852 1105,852" fill="#A96712"/>
+<rect x="1251.5" y="832" width="147" height="26" fill="white"/>
+<text x="1325" y="850.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">官方信息查询结果</text>
 <polyline points="1065.0,720 1065,650 1130,650 1130,537 1090,537.5" fill="none" stroke="#087E82" stroke-width="2"/>
 <polygon points="1090,537.5 1102.0615577276087,542.3496211381473 1101.9365674920894,532.3504022966065" fill="#087E82"/>
 <rect x="1049.25390625" y="617.0" width="381.4921875" height="26" fill="white"/>

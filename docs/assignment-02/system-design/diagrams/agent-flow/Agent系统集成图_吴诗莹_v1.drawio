@@ -77,10 +77,24 @@
             <mxPoint x="212.5" y="505" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="item-22" value="请求 / 响应" style="edgeStyle=none;rounded=0;html=0;strokeColor=#53677F;strokeWidth=2;endArrow=block;endFill=1;dashed=0;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+        <mxCell id="item-22" value="HTTP POST /api/ask" style="edgeStyle=none;rounded=0;html=0;strokeColor=#53677F;strokeWidth=2;endArrow=block;endFill=1;dashed=0;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="340" y="562.5" as="sourcePoint" />
-            <mxPoint x="475" y="322.5" as="targetPoint" />
+            <mxPoint x="340" y="535" as="sourcePoint" />
+            <mxPoint x="475" y="290" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="410" y="535" />
+              <mxPoint x="410" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="item-22b" value="HTTP 响应 / answerStatus" style="edgeStyle=none;rounded=0;html=0;strokeColor=#087E82;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="475" y="355" as="sourcePoint" />
+            <mxPoint x="340" y="590" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="440" y="355" />
+              <mxPoint x="440" y="590" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="item-23" value="" style="edgeStyle=none;rounded=0;html=0;strokeColor=#53677F;strokeWidth=2;endArrow=block;endFill=1;dashed=0;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
@@ -123,13 +137,24 @@
             <mxPoint x="900" y="780.0" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="item-28" value="按需双向核验" style="edgeStyle=none;rounded=0;html=0;strokeColor=#A96712;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+        <mxCell id="item-28" value="Tavily 查询请求" style="edgeStyle=none;rounded=0;html=0;strokeColor=#A96712;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1230" y="780.0" as="sourcePoint" />
-            <mxPoint x="1680" y="992.5" as="targetPoint" />
+            <mxPoint x="1230" y="760" as="sourcePoint" />
+            <mxPoint x="1680" y="975" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="1580" y="780" />
-              <mxPoint x="1580" y="992" />
+              <mxPoint x="1580" y="760" />
+              <mxPoint x="1580" y="975" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="item-28b" value="官方信息查询结果" style="edgeStyle=none;rounded=0;html=0;strokeColor=#A96712;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontFamily=Microsoft YaHei;fontSize=18;labelBackgroundColor=#FFFFFF;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1680" y="1025" as="sourcePoint" />
+            <mxPoint x="1100" y="840" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1550" y="1025" />
+              <mxPoint x="1550" y="860" />
+              <mxPoint x="1100" y="860" />
             </Array>
           </mxGeometry>
         </mxCell>

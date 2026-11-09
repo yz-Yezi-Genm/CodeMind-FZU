@@ -41,8 +41,8 @@
 <text x="1680.0" y="1215.5" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Tavily（可选外部工具）</text>
 <text x="1680.0" y="1243.9" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">补查官方公开信息</text>
 <polygon points="745.0,1365 865,1425.0 745.0,1485 625,1425.0" fill="#FFF5E5" stroke="#A96712" stroke-width="1.6"/>
-<text x="745.0" y="1417.6499999999999" text-anchor="middle" font-family="Microsoft YaHei" font-size="21" font-weight="400" fill="#182D45">证据是否</text>
-<text x="745.0" y="1447.4699999999998" text-anchor="middle" font-family="Microsoft YaHei" font-size="21" font-weight="400" fill="#182D45">足以生成？</text>
+<text x="745.0" y="1405.8" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">AgentOrchestrator</text>
+<text x="745.0" y="1431.36" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">证据是否足以生成？</text>
 <rect x="85" y="1370" width="255" height="110" rx="14" fill="#FFF0F0" stroke="#B34848" stroke-width="1.6"/>
 <text x="212.5" y="1405.92" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">保守返回</text>
 <text x="212.5" y="1431.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">insufficient_evidence</text>
@@ -63,9 +63,15 @@
 <text x="212.5" y="1780.92" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">保守降级</text>
 <text x="212.5" y="1806.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">degraded / conflict</text>
 <text x="212.5" y="1832.04" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">或检索摘要</text>
-<rect x="545" y="1930" width="400" height="105" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
-<text x="745.0" y="1975.5" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">AnswerComposer</text>
-<text x="745.0" y="2003.9" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">组织答案、引用与限制</text>
+<rect x="1000" y="1930" width="280" height="105" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="1140" y="1975.92" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">AnswerComposer</text>
+<text x="1140" y="2001.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">组织答案、引用与限制</text>
+<rect x="710" y="1930" width="250" height="105" rx="14" fill="#EAF7F5" stroke="#087E82" stroke-width="1.6"/>
+<text x="835" y="1975.92" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">AgentOrchestrator</text>
+<text x="835" y="2001.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">接收最终结果</text>
+<rect x="430" y="1930" width="240" height="105" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
+<text x="550" y="1975.92" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">FastAPI /api/ask</text>
+<text x="550" y="2001.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#182D45">返回 HTTP 响应</text>
 <rect x="85" y="1935" width="255" height="95" rx="14" fill="#EEF4FF" stroke="#285FC7" stroke-width="1.6"/>
 <text x="212.5" y="1975.5" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">Web 展示结果</text>
 <text x="212.5" y="2003.9" text-anchor="middle" font-family="Microsoft YaHei" font-size="20" font-weight="400" fill="#182D45">及 answerStatus</text>
@@ -97,14 +103,18 @@
 <polygon points="945,1222.5 957.0066559940883,1227.4839955697837 956.9933226726068,1217.4840044586606" fill="#087E82"/>
 <rect x="1090.0" y="1194.25" width="85.0" height="26" fill="white"/>
 <text x="1132.5" y="1212.73" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">RRF 候选</text>
-<polyline points="945,1222.5 1430,1222.5" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
-<polygon points="1430,1222.5 1418.0,1217.5 1418.0,1227.5" fill="#A96712"/>
-<rect x="1128.5" y="1194.5" width="118.0" height="26" fill="white"/>
-<text x="1187.5" y="1212.98" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">按需双向核验</text>
+<polyline points="945,1180 1430,1180" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="1430,1180 1418,1175 1418,1185" fill="#A96712"/>
+<rect x="1123" y="1152" width="129" height="26" fill="white"/>
+<text x="1187.5" y="1170.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">Tavily 查询请求</text>
+<polyline points="1430,1270 945,1270" fill="none" stroke="#A96712" stroke-width="2" stroke-dasharray="8 6"/>
+<polygon points="945,1270 957,1275 957,1265" fill="#A96712"/>
+<rect x="1114" y="1242" width="147" height="26" fill="white"/>
+<text x="1187.5" y="1260.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#A96712">官方信息查询结果</text>
 <polyline points="745.0,1285 745.0,1365" fill="none" stroke="#087E82" stroke-width="2"/>
 <polygon points="745.0,1365 750.0,1353.0 740.0,1353.0" fill="#087E82"/>
-<rect x="935.0" y="1327.0" width="150.0" height="26" fill="white"/>
-<text x="1010" y="1345.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">verifiedEvidence</text>
+<rect x="914" y="1327.0" width="192" height="26" fill="white"/>
+<text x="1010" y="1345.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">返回 verifiedEvidence</text>
 <rect x="898.50390625" y="1352.56" width="222.9921875" height="26" fill="white"/>
 <text x="1010" y="1371.04" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">citationIds / policyStatus</text>
 <polyline points="625,1425.0 340,1425.0" fill="none" stroke="#B34848" stroke-width="2"/>
@@ -133,16 +143,19 @@
 <polygon points="340,1800.0 352.0,1805.0 352.0,1795.0" fill="#B34848"/>
 <rect x="468.5" y="1772.0" width="28.0" height="26" fill="white"/>
 <text x="482.5" y="1790.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#B34848">否</text>
-<polyline points="745.0,1860 745.0,1930" fill="none" stroke="#087E82" stroke-width="2"/>
-<polygon points="745.0,1930 750.0,1918.0 740.0,1918.0" fill="#087E82"/>
+<polyline points="745.0,1860 745,1895 1140,1895 1140,1930" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="1140,1930 1145,1918 1135,1918" fill="#087E82"/>
 <rect x="731.0" y="1867.0" width="28.0" height="26" fill="white"/>
 <text x="745.0" y="1885.48" text-anchor="middle" font-family="Microsoft YaHei" font-size="18" font-weight="400" fill="#087E82">是</text>
-<polyline points="545,1982.5 340,1982.5" fill="none" stroke="#087E82" stroke-width="2"/>
-<polygon points="340,1982.5 352.0,1987.5 352.0,1977.5" fill="#087E82"/>
-<polyline points="212.5,1480 212,1650 55,1650 55,1900 212,1900 212.5,1935" fill="none" stroke="#B34848" stroke-width="2"/>
-<polygon points="212.5,1935 217.32807879260335,1922.9298030184916 207.32909904460823,1923.0726455863203" fill="#B34848"/>
-<polyline points="212.5,1855 212.5,1935" fill="none" stroke="#B34848" stroke-width="2"/>
-<polygon points="212.5,1935 217.5,1923.0 207.5,1923.0" fill="#B34848"/>
+<polyline points="1000,1982.5 960,1982.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="960,1982.5 972,1987.5 972,1977.5" fill="#087E82"/>
+<polyline points="710,1982.5 670,1982.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="670,1982.5 682,1987.5 682,1977.5" fill="#087E82"/>
+<polyline points="430,1982.5 340,1982.5" fill="none" stroke="#087E82" stroke-width="2"/>
+<polygon points="340,1982.5 352,1987.5 352,1977.5" fill="#087E82"/>
+<polyline points="212.5,1480 212,1650 400,1650 400,1982 430,1982.5" fill="none" stroke="#B34848" stroke-width="2"/>
+<polygon points="430,1982.5 418,1977.3 418,1987.3" fill="#B34848"/>
+<polyline points="340,1800 400,1800 400,1982 430,1982.5" fill="none" stroke="#B34848" stroke-width="2"/>
+<polygon points="430,1982.5 418,1977.3 418,1987.3" fill="#B34848"/>
 <text x="50" y="2171.76" text-anchor="start" font-family="Microsoft YaHei" font-size="16" font-weight="400" fill="#53677F">吴诗莹  ·  根据 PR #7 审核意见修订  ·  2026-11-09</text>
-<text x="50" y="2176" font-family="Microsoft YaHei" font-size="16" fill="#53677F">吴诗莹  ·  根据 PR #7 审核意见修订  ·  2026-11-09</text>
 </svg>
