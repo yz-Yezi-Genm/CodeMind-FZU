@@ -8,6 +8,7 @@ import sys
 import tempfile
 import shutil
 import zipfile
+import os
 
 BASE = Path(__file__).resolve().parents[1]
 ROOT = BASE.parents[2]
@@ -18,25 +19,35 @@ def run(script, *args):
 def main():
     # Exercise the shipped fixture without overwriting the actual-material preview.
     with tempfile.TemporaryDirectory(prefix='codemind-fixture-') as temp:
-        sample = Path(temp) / 'design'
+        clean_root = Path(temp) / 'repo'
+        sample = clean_root / 'docs/assignment-02/database-design'
         shutil.copytree(BASE / 'source', sample / 'source', ignore=shutil.ignore_patterns('__pycache__', '业务方向顺序修正'))
-        run(sample / 'source/build_deliverables.py', '--data-dir', sample / 'source/fixtures')
+        legacy = clean_root / 'knowledge_base/政策资料'
+        legacy.mkdir(parents=True)
+        shutil.copyfile(ROOT / 'knowledge_base/政策资料/知识库索引.csv', legacy / '知识库索引.csv')
+        clean_env = dict(os.environ)
+        clean_env.pop('CODEMIND_KB_ROOT', None)
+        subprocess.run([sys.executable, str(sample / 'source/build_deliverables.py')], check=True, env=clean_env)
+        summary = json.loads((sample / 'source/build_summary.json').read_text(encoding='utf-8'))
+        assert summary['data_source_type'] == 'builtin_fixture'
         stage = json.loads((sample / 'knowledge-base/入库预览_44条.json').read_text(encoding='utf-8'))
         assert len(stage['document_files']) == 149
         assert all(f['processing_status'] == 'failed' and f['sha256'] is None for f in stage['document_files'])
         assert all('原始索引记录状态' in f['processing_note'] for f in stage['document_files'])
         assert sum(v['extraction_status'] == 'extracted' for v in stage['document_versions']) == 43
-        run(sample / 'source/validate_deliverables.py', '--data-dir', sample / 'source/fixtures')
+        subprocess.run([sys.executable, str(sample / 'source/validate_deliverables.py')], check=True, env=clean_env)
     run(BASE / 'source/build_deliverables.py')
     run(BASE / 'source/validate_deliverables.py')
     report = json.loads((BASE / 'source/validation_report.json').read_text(encoding='utf-8'))
-    assert report['tests_passed'] == 20
+    assert report['tests_passed'] == 21
     note = '\n\n## 验收收尾修订（2026-11-09）\n\n当前验证为20项全部通过；历史修订记录中的18项保留为当时结果。内置fixture仅包含索引，不含149个物理文件：文件缺失时processing_status=failed、sha256=NULL，并保留原索引状态说明。document_versions.extraction_status及原始快照表示原索引登记的43条已提取、1条待OCR，不表示当前环境具有文件。已完整运行fixture生成与离线验证。build_summary使用仓库相对路径或external_local_materials标识。PDF及校验清单已重新生成。23表233字段及ORM结构保持不变。\n'
     revision = BASE / '修订说明_v1.2.md'
     text = revision.read_text(encoding='utf-8').split('## 验收收尾修订（2026-11-09）')[0].rstrip()
+    note = note.replace('当前验证为20项全部通过', '上一轮验证为20项全部通过')
+    note += '\n本轮复现性修订：默认选择顺序调整为CLI、环境变量、外部资料、完整44条fixture、仓库旧索引。新增干净克隆回归测试，当前21项测试全部通过；此前20项为上一轮记录。临时仓库保留旧索引且不提供外部资料，不传--data-dir完成默认生成与验证。\n'
     revision.write_text(text + note, encoding='utf-8')
     validation = BASE / '验证报告_v1.2.md'
-    text = validation.read_text(encoding='utf-8').replace('18项自动测试通过', '20项自动测试通过')
+    text = re.sub(r'\d+项自动测试通过', str(report['tests_passed']) + '项自动测试通过', validation.read_text(encoding='utf-8'))
     text = text.split('\nfixture复现验证：')[0].rstrip()
     text += '\n\nfixture复现验证：149个文件记录均为failed、SHA-256为空；原索引提取记录43/1保留在版本字段及快照中，与物理文件状态分开。数据源路径仅记录相对路径或类型标识。\n'
     validation.write_text(text, encoding='utf-8')

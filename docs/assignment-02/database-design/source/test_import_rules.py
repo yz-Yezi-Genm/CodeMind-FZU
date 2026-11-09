@@ -3,10 +3,45 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import shutil
+import build_deliverables as builder
 
 from build_deliverables import calendar_date, compute_file_sha256, deadline_nodes, resolve_file_record
 
 class ImportRulesTests(unittest.TestCase):
+    def test_default_clean_clone_prefers_complete_fixture(self):
+        """无外部资料且旧31条索引存在时默认仍选44条夹具；显式配置优先。"""
+        import csv
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            fixture = root / 'source/fixtures'
+            fixture.mkdir(parents=True)
+            fixture_csv = fixture / '知识库索引_44条_fixture.csv'
+            shutil.copyfile(builder.FIXTURE_DIR / fixture_csv.name, fixture_csv)
+            legacy = root / 'knowledge_base/政策资料'
+            legacy.mkdir(parents=True)
+            with fixture_csv.open(encoding='utf-8-sig', newline='') as stream:
+                reader = csv.DictReader(stream)
+                fields, rows = reader.fieldnames, list(reader)
+            with (legacy / '知识库索引.csv').open('w', encoding='utf-8-sig', newline='') as stream:
+                writer = csv.DictWriter(stream, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows(rows[:31])
+            with patch.object(builder, 'ROOT', root), patch.object(builder, 'FIXTURE_DIR', fixture), patch.dict(os.environ, {'CODEMIND_KB_ROOT': ''}):
+                chosen, index = builder.resolve_kb_path()
+                self.assertEqual((chosen, index), (fixture, fixture_csv))
+                with index.open(encoding='utf-8-sig', newline='') as stream:
+                    self.assertEqual(len(list(csv.DictReader(stream))), 44)
+                self.assertEqual(builder.resolve_kb_path(legacy)[0], legacy)
+                with patch.dict(os.environ, {'CODEMIND_KB_ROOT': str(legacy)}):
+                    self.assertEqual(builder.resolve_kb_path()[0], legacy)
+                    self.assertEqual(builder.resolve_kb_path(fixture)[0], fixture)
+                external = root / 'audit_materials/knowledge/知识库/政策资料'
+                external.mkdir(parents=True)
+                shutil.copyfile(fixture_csv, external / '知识库索引.csv')
+                self.assertEqual(builder.resolve_kb_path()[0], external)
+
     def test_real_date(self):
         self.assertEqual(calendar_date('2026-09-09'), '2026-09-09')
 

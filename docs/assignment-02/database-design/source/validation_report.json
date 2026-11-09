@@ -2,7 +2,7 @@
   "status": "passed",
   "tables": 23,
   "columns": 233,
-  "tests_passed": 20,
+  "tests_passed": 21,
   "source_records": 44,
   "snapshot_columns_per_record": 37,
   "files": 149,

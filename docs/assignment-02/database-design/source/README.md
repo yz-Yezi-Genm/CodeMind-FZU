@@ -13,8 +13,8 @@
     1. CLI 参数 `--data-dir <path>`
     2. 环境变量 `CODEMIND_KB_ROOT`
     3. 外部资料目录 `audit_materials/knowledge/知识库/政策资料`
-    4. 仓库内目录 `knowledge_base/政策资料`
-    5. 本目录内置最小测试夹具 `fixtures/`（即使无外部原始文件，也能 100% 独立成功运行）。
+    4. 本目录内置完整44条索引夹具 `fixtures/`（干净克隆默认使用）
+    5. 仓库内旧目录 `knowledge_base/政策资料`（仅作为无夹具时的后备来源）。
 - **`generate_pdf.py`**：基于 `markdown-it-py` 和无头浏览器（Edge / Chrome / Chromium）的说明书 PDF 自动化编译脚本。
   - 支持 CLI 参数 `--browser <path>` 或环境变量 `CODEMIND_BROWSER_PATH`。
   - 支持 Windows / macOS / Linux 常见浏览器可执行文件跨平台自动检测。
@@ -22,9 +22,9 @@
   - 严格断言五大业务方向的代码、名称与 `sort_order`（1~5）顺序，防止生成回退。
   - 自动运行 SQLite 内存数据库完整建表与 44 条阶段数据入库。
   - 自动执行 `pglast` 对 PostgreSQL DDL 与 Seed 进行 AST 语法树解析。
-  - 自动执行 20 项自动化单元测试。
+  - 自动执行 21 项自动化单元测试。
 - **`fixtures/`**：内置最小测试数据夹具（包含 44 条资料完整元数据 CSV），确保克隆仓库的队员开箱即可复现全套流程。
-- **`test_models.py` & `test_import_rules.py`**：20 项单元测试用例，覆盖跨版本外键拦截、不可级联删除、Check 约束、时间精度解析以及文件真实 SHA-256 计算与缺失置空逻辑。
+- **`test_models.py` & `test_import_rules.py`**：21 项单元测试用例，覆盖默认数据源选择、显式配置优先级、跨版本外键拦截、不可级联删除、Check 约束、时间精度解析以及文件真实 SHA-256 计算与缺失置空逻辑。
 - **`requirements-review.txt`**：运行本目录工具链的完整 Python 依赖清单。
 
 ---
@@ -65,6 +65,6 @@ PDF 输出位置：`docs/assignment-02/database-design/CodeMind-FZU_数据库设
 ```bash
 python docs/assignment-02/database-design/source/finalize_acceptance.py
 ```
-该命令先在临时目录验证fixture，再生成当前资料预览并执行20项测试，最后更新审核稿、PDF及逐文件校验的压缩包。需安装上述依赖并具备可用浏览器。
+该命令先在保留仓库旧索引的临时目录中验证默认选择fixture，再生成当前资料预览并执行21项测试，最后更新审核稿、PDF及逐文件校验的压缩包。需安装上述依赖并具备可用浏览器。
 
 fixture仅含44条索引，不含149个物理文件。版本级`extraction_status`记录原索引的43条已提取、1条待OCR；文件级`processing_status`描述当前环境，缺失时为`failed`，`sha256`为空，备注保留原索引状态。原核查记录不代表Agent回答资格，检索仍为`blocked`。

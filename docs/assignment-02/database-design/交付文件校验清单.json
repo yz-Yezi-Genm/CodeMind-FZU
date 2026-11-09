@@ -1,8 +1,8 @@
 [
   {
     "path": "CodeMind-FZU_数据库设计说明书.pdf",
-    "bytes": 1623694,
-    "sha256": "76c2e069d652d041e6f189024d0df778839d8028abc0f7ecbf2b874bff9fa068"
+    "bytes": 1625897,
+    "sha256": "97b43522f162d704eb8312f3ea60cafb830624ec96feec05df6f93878dcd421b"
   },
   {
     "path": "data-dictionary/README.md",
@@ -86,8 +86,8 @@
   },
   {
     "path": "README.md",
-    "bytes": 3669,
-    "sha256": "e5ac67ca0023eba8bf7c91644dbfe7e18b7713f7c3e8e28a178d7068a9fc8f0c"
+    "bytes": 3693,
+    "sha256": "c16aeacbcc7a32c1acbd1322cde0ab70d525d91d3eddfd9f3ce98eb9350aec6b"
   },
   {
     "path": "relational-model/README.md",
@@ -106,8 +106,8 @@
   },
   {
     "path": "source/build_deliverables.py",
-    "bytes": 23817,
-    "sha256": "b3f3df6902830056c52e90074f1b92db39b70e01e3a17b4c8e932585ac9ad05b"
+    "bytes": 23818,
+    "sha256": "55fc11d323d56bf80463e5c4ea12056920b4fb0c02073381ac23f0b31e5ed577"
   },
   {
     "path": "source/build_summary.json",
@@ -116,8 +116,8 @@
   },
   {
     "path": "source/finalize_acceptance.py",
-    "bytes": 5013,
-    "sha256": "f25c8ec8e681cade6c4c49a45d4da19b990da77badbd277d5d02daace07300c2"
+    "bytes": 6056,
+    "sha256": "8d88acb3b97b72b14cd4a6ee9b356a6938ac2d019873c7cac4a1011249016c7b"
   },
   {
     "path": "source/fixtures/知识库索引_44条_fixture.csv",
@@ -136,8 +136,8 @@
   },
   {
     "path": "source/README.md",
-    "bytes": 4506,
-    "sha256": "6206df95ef727c03e2623b6fa3899b5f2fa844c17d5e260ae4e0974f9b70cc39"
+    "bytes": 4607,
+    "sha256": "8c1bf858cf4d6cd604e985eca894aa588a7d1c33f6c77985d280314e88eb260b"
   },
   {
     "path": "source/requirements-review.txt",
@@ -146,8 +146,8 @@
   },
   {
     "path": "source/test_import_rules.py",
-    "bytes": 3887,
-    "sha256": "fcd273a3f27b043d0196f0cb3d42fde5ab0555540cb93a340ae800e2313f8ab2"
+    "bytes": 6053,
+    "sha256": "06077d73a662e2afb7a4333f0ba95a48207a4513850c96848cfc80b6959c6a56"
   },
   {
     "path": "source/test_models.py",
@@ -162,7 +162,7 @@
   {
     "path": "source/validation_report.json",
     "bytes": 673,
-    "sha256": "2df78b80d568eb8450ed223dd1eb91e6ff11e41a824dafbcf222a66381f123d9"
+    "sha256": "c348dc46530741340ee97ef45241e9a66dd7b71c16cb36cb93035d5fa98407ed"
   },
   {
     "path": "sql/01_schema.sql",
@@ -181,23 +181,23 @@
   },
   {
     "path": "修订说明_v1.2.md",
-    "bytes": 3994,
-    "sha256": "956be4e84d41871a08c1cf6a61cabfce360a8a7610b1732adf2d3a5a4a316e15"
+    "bytes": 4324,
+    "sha256": "9d53b991933322f79fd48856d9596a9903f2d17539b986fd7e369c81185533a2"
   },
   {
     "path": "完整审核稿_v1.2.md",
-    "bytes": 93404,
-    "sha256": "62a0b9ad53ba315f361a6255c1a782fb45bfb1706bdf8da1064a41f2856ba6d1"
+    "bytes": 93742,
+    "sha256": "bf93ba13902f80c3de03cb8743460f615492638ede8f2f32ab1d21466472b217"
   },
   {
     "path": "数据库详细设计说明书_v1.2.md",
-    "bytes": 5852,
-    "sha256": "83707d492effda7acb7574a8f73f57735e85bcd968f69135d6bfbbeac3b89483"
+    "bytes": 5860,
+    "sha256": "286396aba442fb371c574239ad197b72b72d53690be3cddbbc8e6d980fc1ca10"
   },
   {
     "path": "架构与概念设计确认说明_v1.2.md",
     "bytes": 6219,
-    "sha256": "40b7b6a2831bd24900b82f71e6c3727ee6dbf99a1aeadc101f1a1cc65a0f701c"
+    "sha256": "61f3f83aea02bdf4147f72f4732bda12843741759fa099fec08c9ee55614cfc3"
   },
   {
     "path": "给丁晓炜_概念模型与详细设计对接说明.md",
@@ -207,6 +207,6 @@
   {
     "path": "验证报告_v1.2.md",
     "bytes": 1282,
-    "sha256": "16fdb250df17d243c41dff06a16f40a20b1a7fd4bd72ec9bad11f679e7efe76f"
+    "sha256": "11f4286ad538b0f2d2591781758a3622a0c27406d1b92cabac2b1e3c3f003146"
   }
 ]

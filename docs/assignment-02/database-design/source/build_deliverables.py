@@ -36,8 +36,8 @@ def resolve_kb_path(cli_dir=None):
     1. CLI 参数指定的目录
     2. 环境变量 CODEMIND_KB_ROOT
     3. 仓库外部采集资料目录 ROOT / 'audit_materials/knowledge/知识库/政策资料'
-    4. 仓库内 tracked 知识库目录 ROOT / 'knowledge_base/政策资料'
-    5. 本模块内置最小测试数据源 BASE / 'source/fixtures'
+    4. 本模块内置完整44条索引夹具 BASE / 'source/fixtures'
+    5. 仓库内旧知识库目录（仅作为无夹具时的后备来源）
     """
     candidates = []
     if cli_dir:
@@ -47,8 +47,8 @@ def resolve_kb_path(cli_dir=None):
         candidates.append(Path(env_dir))
     candidates.extend([
         ROOT / 'audit_materials/knowledge/知识库/政策资料',
-        ROOT / 'knowledge_base/政策资料',
-        FIXTURE_DIR
+        FIXTURE_DIR,
+        ROOT / 'knowledge_base/政策资料'
     ])
 
     for c in candidates:
