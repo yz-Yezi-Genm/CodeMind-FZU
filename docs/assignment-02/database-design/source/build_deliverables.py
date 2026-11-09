@@ -11,7 +11,14 @@ from sqlalchemy.dialects import postgresql
 from models import metadata, MODEL_TABLES
 
 BASE = Path(__file__).resolve().parents[1]
-ROOT = BASE.parents[2]
+
+def project_root(base):
+    """Support both the repository layout and an independently extracted review package."""
+    if base.parent.name == 'assignment-02' and base.parent.parent.name == 'docs':
+        return base.parents[2]
+    return base
+
+ROOT = project_root(BASE)
 FIXTURE_DIR = BASE / 'source/fixtures'
 
 DIALECT = postgresql.dialect()
@@ -39,29 +46,32 @@ def resolve_kb_path(cli_dir=None):
     4. 本模块内置完整44条索引夹具 BASE / 'source/fixtures'
     5. 仓库内旧知识库目录（仅作为无夹具时的后备来源）
     """
-    candidates = []
-    if cli_dir:
-        candidates.append(Path(cli_dir))
+    def index_at(directory):
+        for name in ('知识库索引.csv', '知识库索引_44条_fixture.csv'):
+            index = directory / name
+            if index.is_file():
+                return directory, index
+        return None
+
     env_dir = os.environ.get('CODEMIND_KB_ROOT')
-    if env_dir:
-        candidates.append(Path(env_dir))
-    candidates.extend([
+    explicit_dir = cli_dir or env_dir
+    if explicit_dir:
+        selected = index_at(Path(explicit_dir).expanduser().resolve())
+        if selected:
+            return selected
+        raise FileNotFoundError('显式指定的数据源目录中未找到知识库索引：' + str(explicit_dir) + '；请修正配置，不会静默回退到fixture。')
+    candidates = [
         ROOT / 'audit_materials/knowledge/知识库/政策资料',
         FIXTURE_DIR,
         ROOT / 'knowledge_base/政策资料'
-    ])
+    ]
 
     for c in candidates:
-        if c.is_dir():
-            csv_candidate = c / '知识库索引.csv'
-            if csv_candidate.is_file():
-                return c, csv_candidate
-            fixture_csv = c / '知识库索引_44条_fixture.csv'
-            if fixture_csv.is_file():
-                return c, fixture_csv
+        selected = index_at(c.resolve())
+        if selected:
+            return selected
 
-    fixture_csv = FIXTURE_DIR / '知识库索引_44条_fixture.csv'
-    return FIXTURE_DIR, fixture_csv
+    raise FileNotFoundError('未找到可用知识库索引；请恢复内置44条fixture或使用--data-dir指定完整资料目录。')
 
 def compute_file_sha256(path):
     """
@@ -173,15 +183,21 @@ def main():
     rows = list(csv.DictReader(csv_file.open(encoding='utf-8-sig', newline='')))
     assert len(rows) == 44 and len({r['记录编号'] for r in rows}) == 44
 
-    ddl = []
-    engine = create_mock_engine('postgresql://', lambda sql, *a, **kw: ddl.append(str(sql.compile(dialect=DIALECT)).strip() + ';'))
+    ddl, indexes = [], []
+    def collect_ddl(sql, *args, **kwargs):
+        statement = str(sql.compile(dialect=DIALECT)).strip() + ';'
+        # SQLAlchemy stores indexes in a set. Their emission order must not
+        # change file hashes between otherwise identical rebuilds.
+        (indexes if re.match(r'CREATE (?:UNIQUE )?INDEX ', statement) else ddl).append(statement)
+    engine = create_mock_engine('postgresql://', collect_ddl)
     metadata.create_all(engine, checkfirst=False)
+    ddl.extend(sorted(indexes))
     write(Path('sql/01_schema.sql'), '-- 审核稿；PostgreSQL 16 候选技术基线；只在空的专用数据库/Schema审核后执行。UUID由应用层调用端生成，updated_at由业务服务维护，未配置自动更新触发器。\nBEGIN;\n' + '\n\n'.join(ddl) + '\nCOMMIT;\n')
 
     dictionary = ['# 数据字典 v1.2（审核稿）', '', TECH_BASELINE, '', '以下字段类型按候选 PostgreSQL 方言编制，ORM采用 SQLAlchemy 2.0 命令式映射（registry.map_imperatively）。所有UUID由应用生成。全部表含created_at和updated_at；updated_at由写入服务显式更新，未配置自动更新时间触发器。', '', 'JSONB仅用于原始元数据快照和证据，不用于代替多标签或多附件关系。日期精度不足时不填伪造时间。', '']
     constraints = ['# 主外键、约束与索引设计', '', '所有外键默认ON DELETE RESTRICT；不级联删除引用证据。复合外键使用明确的组合列对齐，格式为 (字段组合) → 父表(父表字段组合)。复合外键默认使用 MATCH SIMPLE，允许可选外键为空；非空时必须同版本。', '']
     for cls, t in MODEL_TABLES:
-        dictionary += ['## ' + t.name + ' — ' + t.comment, '', mtable(['字段', '中文含义', 'PostgreSQL类型', '非空', '主键', '唯一约束成员', '服务端默认值'], [[c.name, c.comment, str(c.type.compile(dialect=DIALECT)), '是' if not c.nullable else '否', '是' if c.primary_key else '', ', '.join(k.name or '' for k in t.constraints if k.__class__.__name__ == 'UniqueConstraint' and c in list(k.columns)), str(c.server_default.arg) if c.server_default else '无'] for c in t.columns]), '']
+        dictionary += ['## ' + t.name + ' — ' + t.comment, '', mtable(['字段', '中文含义', 'PostgreSQL类型', '非空', '主键', '唯一约束成员', '服务端默认值'], [[c.name, c.comment, str(c.type.compile(dialect=DIALECT)), '是' if not c.nullable else '否', '是' if c.primary_key else '', ', '.join(sorted(k.name or '' for k in t.constraints if k.__class__.__name__ == 'UniqueConstraint' and c in list(k.columns))), str(c.server_default.arg) if c.server_default else '无'] for c in t.columns]), '']
         constraints += ['## ' + t.name, '']
         for k in sorted(t.constraints, key=lambda k: k.name or ''):
             if k.__class__.__name__ == 'CheckConstraint': detail = str(k.sqltext)

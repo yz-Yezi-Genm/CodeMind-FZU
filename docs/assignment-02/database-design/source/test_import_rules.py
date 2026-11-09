@@ -29,14 +29,23 @@ class ImportRulesTests(unittest.TestCase):
                 writer.writeheader()
                 writer.writerows(rows[:31])
             with patch.object(builder, 'ROOT', root), patch.object(builder, 'FIXTURE_DIR', fixture), patch.dict(os.environ, {'CODEMIND_KB_ROOT': ''}):
+                self.assertEqual(builder.project_root(root / 'docs/assignment-02/database-design'), root)
+                self.assertEqual(builder.project_root(root / 'standalone-package'), root / 'standalone-package')
                 chosen, index = builder.resolve_kb_path()
                 self.assertEqual((chosen, index), (fixture, fixture_csv))
                 with index.open(encoding='utf-8-sig', newline='') as stream:
                     self.assertEqual(len(list(csv.DictReader(stream))), 44)
                 self.assertEqual(builder.resolve_kb_path(legacy)[0], legacy)
+                with self.assertRaises(FileNotFoundError):
+                    builder.resolve_kb_path(root / 'missing-cli')
+                with patch('os.getcwd', return_value=str(root)):
+                    self.assertEqual(builder.resolve_kb_path('source/fixtures'), (fixture, fixture_csv))
                 with patch.dict(os.environ, {'CODEMIND_KB_ROOT': str(legacy)}):
                     self.assertEqual(builder.resolve_kb_path()[0], legacy)
                     self.assertEqual(builder.resolve_kb_path(fixture)[0], fixture)
+                with patch.dict(os.environ, {'CODEMIND_KB_ROOT': str(root / 'missing-env')}):
+                    with self.assertRaises(FileNotFoundError):
+                        builder.resolve_kb_path()
                 external = root / 'audit_materials/knowledge/知识库/政策资料'
                 external.mkdir(parents=True)
                 shutil.copyfile(fixture_csv, external / '知识库索引.csv')

@@ -92,8 +92,6 @@ CREATE TABLE knowledge_documents (
 	CONSTRAINT fk_knowledge_documents_category_id_knowledge_categories FOREIGN KEY(category_id) REFERENCES knowledge_categories (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_documents_category ON knowledge_documents (category_id);
-
 COMMENT ON TABLE knowledge_documents IS '政策或通知的逻辑身份';
 
 COMMENT ON COLUMN knowledge_documents.id IS '内部UUID；应用生成';
@@ -120,8 +118,6 @@ CREATE TABLE conversation_sessions (
 	CONSTRAINT ck_conversation_sessions_session_time_order CHECK (ended_at IS NULL OR ended_at >= started_at), 
 	CONSTRAINT fk_conversation_sessions_user_id_users FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE RESTRICT
 );
-
-CREATE INDEX ix_sessions_user_start ON conversation_sessions (user_id, started_at);
 
 COMMENT ON TABLE conversation_sessions IS '会话；支持匿名';
 
@@ -188,8 +184,6 @@ CREATE TABLE document_versions (
 	CONSTRAINT fk_document_versions_document_id_knowledge_documents FOREIGN KEY(document_id) REFERENCES knowledge_documents (id) ON DELETE RESTRICT, 
 	CONSTRAINT uq_document_versions_record_code UNIQUE (record_code)
 );
-
-CREATE INDEX ix_versions_answer_filter ON document_versions (v1_inclusion_status, retrieval_status, timeliness_verification_status);
 
 COMMENT ON TABLE document_versions IS '确定内容的版本与原登记元数据';
 
@@ -274,8 +268,6 @@ CREATE TABLE document_business_directions (
 	CONSTRAINT fk_document_business_directions_direction_id_business_d_b3a9 FOREIGN KEY(direction_id) REFERENCES business_directions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_document_directions_reverse ON document_business_directions (direction_id, document_id);
-
 COMMENT ON TABLE document_business_directions IS '文档业务方向多标签';
 
 COMMENT ON COLUMN document_business_directions.document_id IS '文档';
@@ -345,8 +337,6 @@ CREATE TABLE document_files (
 	CONSTRAINT uq_document_files_storage_key UNIQUE (storage_key)
 );
 
-CREATE INDEX ix_files_version_role ON document_files (version_id, file_role);
-
 COMMENT ON TABLE document_files IS '原始网页、附件、正文及整理稿';
 
 COMMENT ON COLUMN document_files.id IS '内部UUID；应用生成';
@@ -393,8 +383,6 @@ CREATE TABLE applicability_rules (
 	CONSTRAINT ck_applicability_rules_verification_status_values CHECK (verification_status IN ('pending', 'verified', 'failed')), 
 	CONSTRAINT fk_applicability_rules_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
-
-CREATE INDEX ix_rules_version_purpose ON applicability_rules (version_id, purpose);
 
 COMMENT ON TABLE applicability_rules IS '适用规则；同用途多条OR';
 
@@ -445,10 +433,6 @@ CREATE TABLE agent_tasks (
 	CONSTRAINT fk_agent_tasks_session_id_conversation_sessions FOREIGN KEY(session_id) REFERENCES conversation_sessions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_agent_tasks_request ON agent_tasks (request_message_id);
-
-CREATE INDEX ix_agent_tasks_status ON agent_tasks (status, created_at);
-
 COMMENT ON TABLE agent_tasks IS '由用户消息触发的Agent任务';
 
 COMMENT ON COLUMN agent_tasks.id IS '内部UUID；应用生成';
@@ -494,12 +478,6 @@ CREATE TABLE document_milestones (
 	CONSTRAINT fk_document_milestones_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_milestones_version ON document_milestones (version_id);
-
-CREATE INDEX ix_milestones_due_time ON document_milestones (due_at);
-
-CREATE INDEX ix_milestones_due_date ON document_milestones (due_on);
-
 COMMENT ON TABLE document_milestones IS '版本的多个办理节点；原文与时间精度分别保存';
 
 COMMENT ON COLUMN document_milestones.id IS '内部UUID；应用生成';
@@ -541,8 +519,6 @@ CREATE TABLE document_version_relations (
 	CONSTRAINT fk_document_version_relations_from_version_id_document_versions FOREIGN KEY(from_version_id) REFERENCES document_versions (id) ON DELETE RESTRICT, 
 	CONSTRAINT fk_document_version_relations_to_version_id_document_versions FOREIGN KEY(to_version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
-
-CREATE INDEX ix_version_relations_target ON document_version_relations (to_version_id);
 
 COMMENT ON TABLE document_version_relations IS '有证据的政策版本替代/补充/配套关系';
 
@@ -587,10 +563,6 @@ CREATE TABLE answer_feedback (
 	CONSTRAINT fk_answer_feedback_session_id_conversation_sessions FOREIGN KEY(session_id) REFERENCES conversation_sessions (id) ON DELETE RESTRICT, 
 	CONSTRAINT fk_answer_feedback_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
-
-CREATE INDEX ix_feedback_message ON answer_feedback (message_id);
-
-CREATE INDEX ix_feedback_queue ON answer_feedback (status, created_at);
 
 COMMENT ON TABLE answer_feedback IS '对助手回复的反馈及处理结果';
 
@@ -664,8 +636,6 @@ CREATE TABLE knowledge_chunks (
 	CONSTRAINT fk_knowledge_chunks_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_chunks_version ON knowledge_chunks (version_id);
-
 COMMENT ON TABLE knowledge_chunks IS '可追溯检索片段';
 
 COMMENT ON COLUMN knowledge_chunks.id IS '内部UUID；应用生成';
@@ -715,8 +685,6 @@ CREATE TABLE verification_records (
 	CONSTRAINT ck_verification_records_outcome_values CHECK (outcome IN ('passed', 'partial', 'failed', 'inconclusive')), 
 	CONSTRAINT fk_verification_records_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
-
-CREATE INDEX ix_checks_version_date ON verification_records (version_id, checked_on);
 
 COMMENT ON TABLE verification_records IS '只追加的核查历史';
 
@@ -811,8 +779,6 @@ CREATE TABLE document_file_sources (
 	CONSTRAINT fk_document_file_sources_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_file_sources_reverse ON document_file_sources (source_file_id);
-
 COMMENT ON TABLE document_file_sources IS '派生文件与多个同版本来源；替代单来源字段';
 
 COMMENT ON COLUMN document_file_sources.file_id IS '派生文件';
@@ -854,10 +820,6 @@ CREATE TABLE verification_tasks (
 	CONSTRAINT fk_verification_tasks_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT, 
 	CONSTRAINT uq_verification_tasks_id_version_id UNIQUE (id, version_id)
 );
-
-CREATE INDEX ix_review_tasks_status ON verification_tasks (status, priority);
-
-CREATE INDEX ix_review_tasks_version ON verification_tasks (version_id);
 
 COMMENT ON TABLE verification_tasks IS '资料核查待办';
 
@@ -907,8 +869,6 @@ CREATE TABLE result_citations (
 	CONSTRAINT fk_result_citations_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_citations_version ON result_citations (version_id);
-
 COMMENT ON TABLE result_citations IS '结果引用；固定版本及可选片段';
 
 COMMENT ON COLUMN result_citations.id IS '内部UUID；应用生成';
@@ -951,8 +911,6 @@ CREATE TABLE message_result_links (
 	CONSTRAINT fk_message_result_links_session_id_conversation_sessions FOREIGN KEY(session_id) REFERENCES conversation_sessions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_message_results_reverse ON message_result_links (result_id);
-
 COMMENT ON TABLE message_result_links IS '助手消息实际采用的结果；多对多支持结果整合';
 
 COMMENT ON COLUMN message_result_links.message_id IS '助手消息';
@@ -979,8 +937,6 @@ CREATE TABLE feedback_review_links (
 	CONSTRAINT fk_feedback_review_links_version_id_document_versions FOREIGN KEY(version_id) REFERENCES document_versions (id) ON DELETE RESTRICT
 );
 
-CREATE INDEX ix_feedback_reviews_task ON feedback_review_links (verification_task_id);
-
 COMMENT ON TABLE feedback_review_links IS '反馈转核查待办；同版本证据链';
 
 COMMENT ON COLUMN feedback_review_links.feedback_id IS '反馈';
@@ -992,4 +948,48 @@ COMMENT ON COLUMN feedback_review_links.version_id IS '反馈及待办共同指�
 COMMENT ON COLUMN feedback_review_links.created_at IS '创建时间';
 
 COMMENT ON COLUMN feedback_review_links.updated_at IS '更新时间；更新操作须显式维护';
+
+CREATE INDEX ix_agent_tasks_request ON agent_tasks (request_message_id);
+
+CREATE INDEX ix_agent_tasks_status ON agent_tasks (status, created_at);
+
+CREATE INDEX ix_checks_version_date ON verification_records (version_id, checked_on);
+
+CREATE INDEX ix_chunks_version ON knowledge_chunks (version_id);
+
+CREATE INDEX ix_citations_version ON result_citations (version_id);
+
+CREATE INDEX ix_document_directions_reverse ON document_business_directions (direction_id, document_id);
+
+CREATE INDEX ix_documents_category ON knowledge_documents (category_id);
+
+CREATE INDEX ix_feedback_message ON answer_feedback (message_id);
+
+CREATE INDEX ix_feedback_queue ON answer_feedback (status, created_at);
+
+CREATE INDEX ix_feedback_reviews_task ON feedback_review_links (verification_task_id);
+
+CREATE INDEX ix_file_sources_reverse ON document_file_sources (source_file_id);
+
+CREATE INDEX ix_files_version_role ON document_files (version_id, file_role);
+
+CREATE INDEX ix_message_results_reverse ON message_result_links (result_id);
+
+CREATE INDEX ix_milestones_due_date ON document_milestones (due_on);
+
+CREATE INDEX ix_milestones_due_time ON document_milestones (due_at);
+
+CREATE INDEX ix_milestones_version ON document_milestones (version_id);
+
+CREATE INDEX ix_review_tasks_status ON verification_tasks (status, priority);
+
+CREATE INDEX ix_review_tasks_version ON verification_tasks (version_id);
+
+CREATE INDEX ix_rules_version_purpose ON applicability_rules (version_id, purpose);
+
+CREATE INDEX ix_sessions_user_start ON conversation_sessions (user_id, started_at);
+
+CREATE INDEX ix_version_relations_target ON document_version_relations (to_version_id);
+
+CREATE INDEX ix_versions_answer_filter ON document_versions (v1_inclusion_status, retrieval_status, timeliness_verification_status);
 COMMIT;

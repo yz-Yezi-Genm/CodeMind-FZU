@@ -68,3 +68,9 @@ python docs/assignment-02/database-design/source/finalize_acceptance.py
 该命令先在保留仓库旧索引的临时目录中验证默认选择fixture，再生成当前资料预览并执行21项测试，最后更新审核稿、PDF及逐文件校验的压缩包。需安装上述依赖并具备可用浏览器。
 
 fixture仅含44条索引，不含149个物理文件。版本级`extraction_status`记录原索引的43条已提取、1条待OCR；文件级`processing_status`描述当前环境，缺失时为`failed`，`sha256`为空，备注保留原索引状态。原核查记录不代表Agent回答资格，检索仍为`blocked`。
+
+压缩包独立解压后，在包目录运行`python source/finalize_acceptance.py`即可完成同一流程，不依赖仓库外的31条旧索引；新压缩包输出到解压目录的上一层，避免把旧压缩包再次打进包内。
+
+`--data-dir`或`CODEMIND_KB_ROOT`显式指定目录时，目录不存在或缺少索引会直接报错，不会静默改用fixture。可用索引须保留44条37列的冻结口径。
+
+`业务方向顺序修正/`是丁晓炜提交的历史输入快照，随包保留以支持概念设计文档中的原始链接；不作为当前生成入口。正式生成、验证和打包分别使用本目录的`build_deliverables.py`、`validate_deliverables.py`和`finalize_acceptance.py`。
