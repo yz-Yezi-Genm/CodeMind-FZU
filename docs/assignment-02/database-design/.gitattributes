@@ -10,3 +10,5 @@
 .gitattributes text eol=lf
 *.pdf binary
 *.png binary
+*.docx binary
+*.ps1 text eol=lf

@@ -1,0 +1,35 @@
+erDiagram
+    accTitle: CodeMind Feedback Relational View
+    accDescr: Selected key fields and within domain foreign keys. Complete cross domain constraints are listed in Appendix B.
+    interaction_messages {
+        uuid id PK "required"
+        uuid session_id FK "required"
+    }
+    document_versions {
+        uuid id PK "required"
+        uuid document_id FK "required"
+    }
+    answer_feedback {
+        uuid id PK "required"
+        uuid message_id FK "required"
+        uuid session_id FK "required"
+        string message_role FK "required"
+        uuid version_id FK "nullable"
+    }
+    feedback_review_links {
+        uuid feedback_id PK,FK "required"
+        uuid verification_task_id PK,FK "required"
+        uuid version_id FK "required"
+    }
+    verification_tasks {
+        uuid id PK "required"
+        uuid version_id FK "required"
+        uuid file_id FK "nullable"
+        uuid completion_record_id FK "nullable"
+    }
+    document_versions ||--o{ verification_tasks : "F16"
+    interaction_messages ||--o{ answer_feedback : "F35"
+    document_versions o|--o{ answer_feedback : "F37"
+    answer_feedback ||--o{ feedback_review_links : "F38"
+    verification_tasks ||--o{ feedback_review_links : "F39"
+    document_versions ||--o{ feedback_review_links : "F40"

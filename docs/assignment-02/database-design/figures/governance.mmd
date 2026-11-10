@@ -1,0 +1,38 @@
+erDiagram
+    accTitle: CodeMind Governance Relational View
+    accDescr: Selected key fields and within domain foreign keys. Complete cross domain constraints are listed in Appendix B.
+    business_directions {
+        uuid id PK "required"
+    }
+    document_business_directions {
+        uuid document_id PK,FK "required"
+        uuid direction_id PK,FK "required"
+    }
+    verification_records {
+        uuid id PK "required"
+        uuid version_id FK "required"
+        uuid file_id FK "nullable"
+    }
+    verification_tasks {
+        uuid id PK "required"
+        uuid version_id FK "required"
+        uuid file_id FK "nullable"
+        uuid completion_record_id FK "nullable"
+    }
+    document_milestones {
+        uuid id PK "required"
+        uuid version_id FK "required"
+    }
+    document_file_sources {
+        uuid file_id PK,FK "required"
+        uuid source_file_id PK,FK "required"
+        uuid version_id FK "required"
+    }
+    document_version_relations {
+        uuid from_version_id PK,FK "required"
+        uuid to_version_id PK,FK "required"
+        string relation_type PK "required"
+    }
+    business_directions ||--o{ document_business_directions : "F09"
+    verification_records o|--o{ verification_tasks : "F13"
+    verification_records o|--o{ verification_tasks : "F14"

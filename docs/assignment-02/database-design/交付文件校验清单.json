@@ -1,13 +1,18 @@
 [
   {
     "path": ".gitattributes",
-    "bytes": 275,
-    "sha256": "60cb6f34b375c9694d1c17a739c42a502e4c6aa4582d06d695cc1c2f810fd83b"
+    "bytes": 307,
+    "sha256": "70bb757042ec98c81324721ffb2a5a6cd0f6b0a6b22fec9dc111a2c20166dca1"
   },
   {
-    "path": "CodeMind-FZU_数据库设计说明书.pdf",
-    "bytes": 1626613,
-    "sha256": "a21c14ed9cf923a7badbfdfaa20ebc5955742ece55c8afd726f77bd1a73f7eb5"
+    "path": "AgentX_数据库设计说明书.md",
+    "bytes": 72859,
+    "sha256": "de93366a165a7d23b2b5cabfe0fa66245d05ecc4f197c4c5cd56ffe7106df857"
+  },
+  {
+    "path": "AgentX_数据库设计说明书.pdf",
+    "bytes": 3020042,
+    "sha256": "3c84125d762f2dfb6d276fe18f9a2da46addcded78f55be3e16904c2406e0bda"
   },
   {
     "path": "data-dictionary/README.md",
@@ -55,6 +60,101 @@
     "sha256": "22bc1c71253c0519a561d8f512dd0f037023a430e3fa29e80f737f350958b485"
   },
   {
+    "path": "figures/concept.mmd",
+    "bytes": 1199,
+    "sha256": "eff4a9735ef18104ade27789116eb13858fe6fe9714093419ea43c4ff1fa515b"
+  },
+  {
+    "path": "figures/concept.png",
+    "bytes": 250006,
+    "sha256": "25ebdaf7c3f328c7e1b4b17e708753e969ac22f581ea70d7fcb67affdd4c75a4"
+  },
+  {
+    "path": "figures/concept.svg",
+    "bytes": 79616,
+    "sha256": "e95a10aed6634345524c4926a245d1bc14d925feb1d6f4eaf8c6475c1ac19454"
+  },
+  {
+    "path": "figures/core.mmd",
+    "bytes": 1411,
+    "sha256": "d38b7f25c1d406196ed4e7eb11c8ef58cbc8f9c04ebb7cb1cc9153b792063d4c"
+  },
+  {
+    "path": "figures/core.png",
+    "bytes": 284219,
+    "sha256": "394388a103911a84c61710ea872045260afc2cb054c5c31a1276f00c6ec34136"
+  },
+  {
+    "path": "figures/core.svg",
+    "bytes": 93270,
+    "sha256": "22ccfcba18956992adf85edb028da613c8dc91eca4587da02da988fae0bcdc99"
+  },
+  {
+    "path": "figures/feedback.mmd",
+    "bytes": 1286,
+    "sha256": "58b927814d64d1d1765cda21e21742ab99e76d065fdee82714bc0534a2b85a49"
+  },
+  {
+    "path": "figures/feedback.png",
+    "bytes": 290016,
+    "sha256": "4c3007b7712fded2d66e7b17dbf0b561565f5246072a5386fd282bfe5d3f9164"
+  },
+  {
+    "path": "figures/feedback.svg",
+    "bytes": 78914,
+    "sha256": "78fc87a70eb7912325aea8062d45425028c33ae3c609fe0c9be79d57329366ff"
+  },
+  {
+    "path": "figures/governance.mmd",
+    "bytes": 1305,
+    "sha256": "5ff8609bcd216fbeece1b0bddef5cc55d03dbee1c94975a37bb6147d18a7d3f0"
+  },
+  {
+    "path": "figures/governance.png",
+    "bytes": 228293,
+    "sha256": "6a08c6d678e1cdb0a45d9699e0470e38a4205b8e1d77190545ba2ae3dae02629"
+  },
+  {
+    "path": "figures/governance.svg",
+    "bytes": 91347,
+    "sha256": "c80cede70a8c7d8fd66e2e3f9ffb31d9d8dcf7b983a396b4a2b4320a4c656d0b"
+  },
+  {
+    "path": "figures/interaction.mmd",
+    "bytes": 1644,
+    "sha256": "59650cd227461bece00c62313a2a89d1a2e929fe4c73517214ad86a1e13b5769"
+  },
+  {
+    "path": "figures/interaction.png",
+    "bytes": 378831,
+    "sha256": "3b4ba5cf6e0e6d119c495a6763fdf25a8564cc70531621c4a54fd0b8c6ab94e8"
+  },
+  {
+    "path": "figures/interaction.svg",
+    "bytes": 105729,
+    "sha256": "293bf2a0490e659c64cdf0775782f930f3a18d7187c7acbf6d8d56b78385dab7"
+  },
+  {
+    "path": "figures/overview.mmd",
+    "bytes": 3768,
+    "sha256": "23d1ab25eb79137be28f4e747b8af794fb7d0d49253af90ca1eefb650dbe16a6"
+  },
+  {
+    "path": "figures/overview.png",
+    "bytes": 390221,
+    "sha256": "769167cd377abf4b95a8687cc10b86be69d5cb3b15157f6d191e9cf849552832"
+  },
+  {
+    "path": "figures/overview.svg",
+    "bytes": 67748,
+    "sha256": "796db53ac4a929cf929071841d426dc7d281480fa3380b3cbcafce0036077b94"
+  },
+  {
+    "path": "figures/render_manifest.json",
+    "bytes": 635,
+    "sha256": "85a123aebdcb5a511ddad63faf12159bc6fcf0e08ed3336040667263b69e9f85"
+  },
+  {
     "path": "knowledge-base/44条资料业务分类表_v1.2.md",
     "bytes": 33225,
     "sha256": "164700670fa8a25d35d1df57f6dd4a5cea0e87ca02bc38ddd78de5f87ad874ad"
@@ -91,8 +191,8 @@
   },
   {
     "path": "README.md",
-    "bytes": 3754,
-    "sha256": "b768105c0d3f5e6aacf50de20fae340edecbbb3d9051b2f9c910669073e6703e"
+    "bytes": 2396,
+    "sha256": "fed8220b25fab65514370d115f676df52d6e22a4cb10c734f6d2bcc684e86e71"
   },
   {
     "path": "relational-model/README.md",
@@ -110,9 +210,19 @@
     "sha256": "43d1b7dee8905caf1ee21a462c2807851f3d6a0846ed4b9067917c4eb50c9a61"
   },
   {
+    "path": "source/AgentX_数据库设计说明书.docx",
+    "bytes": 1985065,
+    "sha256": "9266ba363011a42c0ede24b4b910204bff22c2fae374f2345c2288153621f0a8"
+  },
+  {
     "path": "source/build_deliverables.py",
     "bytes": 24734,
     "sha256": "18ffc151872fa94ef2af27f23281b7d0bfb3cf85bbe4445df39bdcad814a21bf"
+  },
+  {
+    "path": "source/build_specification.py",
+    "bytes": 9033,
+    "sha256": "80083adaf14896c216892ad885ceb65187c9a057a20a0220361fa7441c3f0bf2"
   },
   {
     "path": "source/build_summary.json",
@@ -120,9 +230,29 @@
     "sha256": "093d9be0579adeef2312f0dea4d8f29f4607dcda1d7318a36cf01a111695f897"
   },
   {
+    "path": "source/create_word_specification.py",
+    "bytes": 15345,
+    "sha256": "28318411338e782c822520f7a288a463e8fde5e19b8c31d8a36e5363feb3a3b2"
+  },
+  {
+    "path": "source/document_build_report.json",
+    "bytes": 1664,
+    "sha256": "d9f44c5fd9059ab89d66dafd1567ffb7f710e37b7cce15113f447bf41fbae8a8"
+  },
+  {
+    "path": "source/document_layout_report.json",
+    "bytes": 14177,
+    "sha256": "b9c55e095c228f0371320de0bd65805428e8a56db69f6144e8247c9cd0334d87"
+  },
+  {
+    "path": "source/document_verification.json",
+    "bytes": 395,
+    "sha256": "81c11d2941e8798f7ca5510c9757c7b3dad60cf28baabd3250364e0558d19c80"
+  },
+  {
     "path": "source/finalize_acceptance.py",
-    "bytes": 7866,
-    "sha256": "3f36910b99a7069e8b1f938fefa670f0738752731c160e8ed4d075766c41fa5f"
+    "bytes": 2432,
+    "sha256": "6e37cdf350aaf045ceea67eb9e3656d7520766b97953addd40224fa6e9cc8439"
   },
   {
     "path": "source/fixtures/知识库索引_44条_fixture.csv",
@@ -131,8 +261,8 @@
   },
   {
     "path": "source/generate_pdf.py",
-    "bytes": 5543,
-    "sha256": "2e7ef597c89a0f77091c73ab7b2289a08f820f97c7c100444db989a50eff495b"
+    "bytes": 2338,
+    "sha256": "6385b9c928d67a7e835328e3fb83fab211b5f46917871746eca5d7af72aab91d"
   },
   {
     "path": "source/models.py",
@@ -141,8 +271,18 @@
   },
   {
     "path": "source/README.md",
-    "bytes": 5476,
-    "sha256": "c47767fc7e97fa77fcb0fe314a7ad3959794d9c37a90b3b4314ab6034259f658"
+    "bytes": 2843,
+    "sha256": "8ced23206af4595bf6d8a9737cb50ba128880b960dbe78b136ef1a03ce498c14"
+  },
+  {
+    "path": "source/render_diagrams.py",
+    "bytes": 7351,
+    "sha256": "b34b70342f1ef97773f5ddd705ac67288c93ee224941b45873b9f1149efaac67"
+  },
+  {
+    "path": "source/requirements-document.txt",
+    "bytes": 75,
+    "sha256": "5c56aebac96441ef7c9aa974e2e07177106f7d5c3ae079a64b18f5e5d67783e0"
   },
   {
     "path": "source/requirements-review.txt",
@@ -160,6 +300,11 @@
     "sha256": "82a153331dac595c1d615d6f079f3ede8418f174f2acca793f07228da720afa6"
   },
   {
+    "path": "source/update_fields_export.ps1",
+    "bytes": 2122,
+    "sha256": "d1386c603a7719876c0a7450aaacb6679e5aa9a52784ab485785522da807fe2e"
+  },
+  {
     "path": "source/validate_deliverables.py",
     "bytes": 5763,
     "sha256": "4c11f5c9f01fbbccd913401e778c84f0557283081319990bd7f3801cc18fd565"
@@ -168,6 +313,11 @@
     "path": "source/validation_report.json",
     "bytes": 1348,
     "sha256": "a7cbedc282b9845a736b2cec0215ea999bc7ea1eec7f3aba4717c9e4b313733b"
+  },
+  {
+    "path": "source/verify_specification.py",
+    "bytes": 4943,
+    "sha256": "9b9202a72157dff9eddb3537459c433c8b6374af52266b76f842e701eb8698db"
   },
   {
     "path": "source/业务方向顺序修正/knowledge-base/入库预览_44条.json",
@@ -200,6 +350,11 @@
     "sha256": "8efd535f2bb251e9ae00798420fddd8f9da8cd06212fe1e3483ee72111d671ae"
   },
   {
+    "path": "source/数据库设计说明书_正文.md",
+    "bytes": 18926,
+    "sha256": "91de90f74e96bd3031da40feff7ad98a302aee838cbb3781e3119e3ecfa98f27"
+  },
+  {
     "path": "sql/01_schema.sql",
     "bytes": 48786,
     "sha256": "5a0a770fa3fa6c69fd21e0190392aa0beed4d9e513779058d3ce9898775ebdc3"
@@ -213,21 +368,6 @@
     "path": "业务回答与反馈规则_v1.2.md",
     "bytes": 4858,
     "sha256": "909521bd399c8a4274497035c98ebaedb715a3ed8f1cfe6ba3b064e50e58727c"
-  },
-  {
-    "path": "修订说明_v1.2.md",
-    "bytes": 4293,
-    "sha256": "67558091cdee9e8a05617b08a3b08f9e5f895259b79f3a8c05a2a6951463d5a4"
-  },
-  {
-    "path": "完整审核稿_v1.2.md",
-    "bytes": 92513,
-    "sha256": "2552a085d3cf5cfccee0a69014aafd4308282d3f808b65e1c35c31f13711b1ab"
-  },
-  {
-    "path": "数据库详细设计说明书_v1.2.md",
-    "bytes": 6002,
-    "sha256": "52fd42eb804be66554ed7282c241b245931462fac18e6ebd51074bd64ed59bf7"
   },
   {
     "path": "架构与概念设计确认说明_v1.2.md",

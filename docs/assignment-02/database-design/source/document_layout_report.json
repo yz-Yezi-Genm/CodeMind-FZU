@@ -1,0 +1,386 @@
+{
+    "pages":  58,
+    "toc_count":  1,
+    "headings":  [
+                     {
+                         "title":  "1 引言",
+                         "page":  3,
+                         "level":  1
+                     },
+                     {
+                         "title":  "1.1 编写目的",
+                         "page":  3,
+                         "level":  2
+                     },
+                     {
+                         "title":  "1.2 项目背景与适用范围",
+                         "page":  3,
+                         "level":  2
+                     },
+                     {
+                         "title":  "1.3 编排依据与阅读约定",
+                         "page":  3,
+                         "level":  2
+                     },
+                     {
+                         "title":  "1.4 术语与缩略语",
+                         "page":  4,
+                         "level":  2
+                     },
+                     {
+                         "title":  "2 数据库概述",
+                         "page":  5,
+                         "level":  1
+                     },
+                     {
+                         "title":  "2.1 设计目标",
+                         "page":  5,
+                         "level":  2
+                     },
+                     {
+                         "title":  "2.2 业务范围",
+                         "page":  5,
+                         "level":  2
+                     },
+                     {
+                         "title":  "2.3 技术基线与实施状态",
+                         "page":  6,
+                         "level":  2
+                     },
+                     {
+                         "title":  "3 概念结构设计",
+                         "page":  7,
+                         "level":  1
+                     },
+                     {
+                         "title":  "3.1 核心实体",
+                         "page":  7,
+                         "level":  2
+                     },
+                     {
+                         "title":  "3.2 概念模型到关系模型的转换",
+                         "page":  8,
+                         "level":  2
+                     },
+                     {
+                         "title":  "4 逻辑结构设计",
+                         "page":  9,
+                         "level":  1
+                     },
+                     {
+                         "title":  "4.1 关系模型总览",
+                         "page":  9,
+                         "level":  2
+                     },
+                     {
+                         "title":  "4.2 知识库核心关系",
+                         "page":  10,
+                         "level":  2
+                     },
+                     {
+                         "title":  "4.3 资料治理关系",
+                         "page":  12,
+                         "level":  2
+                     },
+                     {
+                         "title":  "4.4 用户交互、任务与结果",
+                         "page":  13,
+                         "level":  2
+                     },
+                     {
+                         "title":  "4.5 反馈与核查闭环",
+                         "page":  14,
+                         "level":  2
+                     },
+                     {
+                         "title":  "4.6 规范化与可扩展性",
+                         "page":  15,
+                         "level":  2
+                     },
+                     {
+                         "title":  "5 物理结构设计",
+                         "page":  16,
+                         "level":  1
+                     },
+                     {
+                         "title":  "5.1 命名、类型与默认值",
+                         "page":  16,
+                         "level":  2
+                     },
+                     {
+                         "title":  "5.2 主键、外键与索引",
+                         "page":  16,
+                         "level":  2
+                     },
+                     {
+                         "title":  "5.3 文件、正文与元数据的存放",
+                         "page":  17,
+                         "level":  2
+                     },
+                     {
+                         "title":  "5.4 事务、部署与恢复边界",
+                         "page":  17,
+                         "level":  2
+                     },
+                     {
+                         "title":  "6 ORM 映射设计",
+                         "page":  18,
+                         "level":  1
+                     },
+                     {
+                         "title":  "6.1 映射方式",
+                         "page":  18,
+                         "level":  2
+                     },
+                     {
+                         "title":  "6.2 实体与关系映射",
+                         "page":  18,
+                         "level":  2
+                     },
+                     {
+                         "title":  "6.3 写入与使用约束",
+                         "page":  18,
+                         "level":  2
+                     },
+                     {
+                         "title":  "7 数据管理与约束",
+                         "page":  19,
+                         "level":  1
+                     },
+                     {
+                         "title":  "7.1 资料质量与回答开放",
+                         "page":  19,
+                         "level":  2
+                     },
+                     {
+                         "title":  "7.2 同版本与同会话一致性",
+                         "page":  19,
+                         "level":  2
+                     },
+                     {
+                         "title":  "7.3 数据库约束与服务规则的边界",
+                         "page":  19,
+                         "level":  2
+                     },
+                     {
+                         "title":  "7.4 隐私与运维管理",
+                         "page":  19,
+                         "level":  2
+                     },
+                     {
+                         "title":  "8 验证与设计结论",
+                         "page":  20,
+                         "level":  1
+                     },
+                     {
+                         "title":  "8.1 既有验证范围",
+                         "page":  20,
+                         "level":  2
+                     },
+                     {
+                         "title":  "8.2 本轮文档核对",
+                         "page":  20,
+                         "level":  2
+                     },
+                     {
+                         "title":  "8.3 结论与尚未实施事项",
+                         "page":  20,
+                         "level":  2
+                     },
+                     {
+                         "title":  "9 参考资料",
+                         "page":  21,
+                         "level":  1
+                     },
+                     {
+                         "title":  "附录A 完整数据字典",
+                         "page":  22,
+                         "level":  1
+                     },
+                     {
+                         "title":  "A.1 knowledge_categories",
+                         "page":  22,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.2 knowledge_documents",
+                         "page":  22,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.3 document_versions",
+                         "page":  23,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.4 document_files",
+                         "page":  24,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.5 applicability_rules",
+                         "page":  25,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.6 applicability_rule_values",
+                         "page":  26,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.7 knowledge_chunks",
+                         "page":  26,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.8 business_directions",
+                         "page":  27,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.9 document_business_directions",
+                         "page":  28,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.10 verification_records",
+                         "page":  28,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.11 verification_tasks",
+                         "page":  29,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.12 users",
+                         "page":  30,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.13 conversation_sessions",
+                         "page":  30,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.14 interaction_messages",
+                         "page":  31,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.15 agent_tasks",
+                         "page":  31,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.16 task_results",
+                         "page":  32,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.17 result_citations",
+                         "page":  33,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.18 document_milestones",
+                         "page":  33,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.19 document_file_sources",
+                         "page":  34,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.20 message_result_links",
+                         "page":  35,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.21 document_version_relations",
+                         "page":  35,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.22 answer_feedback",
+                         "page":  36,
+                         "level":  2
+                     },
+                     {
+                         "title":  "A.23 feedback_review_links",
+                         "page":  36,
+                         "level":  2
+                     },
+                     {
+                         "title":  "附录B 完整关系约束与索引",
+                         "page":  38,
+                         "level":  1
+                     },
+                     {
+                         "title":  "B.1 全部40组外键",
+                         "page":  38,
+                         "level":  2
+                     },
+                     {
+                         "title":  "B.2 各表主键、唯一约束、检查约束与索引",
+                         "page":  41,
+                         "level":  2
+                     },
+                     {
+                         "title":  "附录C 完整 ORM 映射",
+                         "page":  49,
+                         "level":  1
+                     },
+                     {
+                         "title":  "C.1 实体类与表",
+                         "page":  49,
+                         "level":  2
+                     },
+                     {
+                         "title":  "C.2 对象关联",
+                         "page":  50,
+                         "level":  2
+                     },
+                     {
+                         "title":  "附录D 既有验证记录",
+                         "page":  51,
+                         "level":  1
+                     },
+                     {
+                         "title":  "D.1 范围与结果",
+                         "page":  51,
+                         "level":  2
+                     },
+                     {
+                         "title":  "D.2 单元测试清单",
+                         "page":  51,
+                         "level":  2
+                     },
+                     {
+                         "title":  "D.3 原始机器可读报告",
+                         "page":  52,
+                         "level":  2
+                     },
+                     {
+                         "title":  "附录E 知识库资料范围",
+                         "page":  54,
+                         "level":  1
+                     },
+                     {
+                         "title":  "附录F 技术成果定位与保全",
+                         "page":  57,
+                         "level":  1
+                     },
+                     {
+                         "title":  "F.1 完整技术成果",
+                         "page":  57,
+                         "level":  2
+                     },
+                     {
+                         "title":  "F.2 技术基线校验值",
+                         "page":  57,
+                         "level":  2
+                     }
+                 ]
+}

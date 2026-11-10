@@ -1,0 +1,12 @@
+{
+  "renderer": "@mermaid-js/mermaid-cli@11.12.0",
+  "profile": "formal-word-2",
+  "source_sha256": {
+    "concept.mmd": "eff4a9735ef18104ade27789116eb13858fe6fe9714093419ea43c4ff1fa515b",
+    "core.mmd": "d38b7f25c1d406196ed4e7eb11c8ef58cbc8f9c04ebb7cb1cc9153b792063d4c",
+    "feedback.mmd": "58b927814d64d1d1765cda21e21742ab99e76d065fdee82714bc0534a2b85a49",
+    "governance.mmd": "5ff8609bcd216fbeece1b0bddef5cc55d03dbee1c94975a37bb6147d18a7d3f0",
+    "interaction.mmd": "59650cd227461bece00c62313a2a89d1a2e929fe4c73517214ad86a1e13b5769",
+    "overview.mmd": "23d1ab25eb79137be28f4e747b8af794fb7d0d49253af90ca1eefb650dbe16a6"
+  }
+}

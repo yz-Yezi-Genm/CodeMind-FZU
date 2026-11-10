@@ -1,0 +1,35 @@
+erDiagram
+    accTitle: CodeMind Concept Relational View
+    accDescr: Selected key fields and within domain foreign keys. Complete cross domain constraints are listed in Appendix B.
+    knowledge_categories {
+        uuid id PK "required"
+    }
+    knowledge_documents {
+        uuid id PK "required"
+        uuid category_id FK "required"
+    }
+    document_versions {
+        uuid id PK "required"
+        uuid document_id FK "required"
+    }
+    document_files {
+        uuid id PK "required"
+        uuid version_id FK "required"
+    }
+    applicability_rules {
+        uuid id PK "required"
+        uuid version_id FK "required"
+    }
+    knowledge_chunks {
+        uuid id PK "required"
+        uuid version_id FK "required"
+        uuid file_id FK "required"
+        uuid original_file_id FK "nullable"
+    }
+    knowledge_categories ||--o{ knowledge_documents : "F01"
+    knowledge_documents ||--o{ document_versions : "F02"
+    document_versions ||--o{ document_files : "F03"
+    document_versions ||--o{ applicability_rules : "F04"
+    document_files ||--o{ knowledge_chunks : "F06"
+    document_files o|--o{ knowledge_chunks : "F07"
+    document_versions ||--o{ knowledge_chunks : "F08"
