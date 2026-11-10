@@ -28,6 +28,15 @@ def font(run, size=None, bold=False):
     if size:
         run.font.size = Pt(size)
 
+def explicit_fonts(style, chinese):
+    rfonts = style._element.get_or_add_rPr().get_or_add_rFonts()
+    for attribute in ('asciiTheme','hAnsiTheme','eastAsiaTheme','cstheme'):
+        rfonts.attrib.pop(qn('w:'+attribute),None)
+    for attribute in ('ascii','hAnsi','cs'):
+        rfonts.set(qn('w:'+attribute),'Times New Roman')
+    rfonts.set(qn('w:eastAsia'),chinese)
+    style.font.color.rgb = RGBColor(0,0,0)
+
 def text(value):
     value = value.replace('<br/>', '\n').replace('<br>', '\n').replace('\\|', '|')
     for key, index in [('standard', '1'), ('postgres', '2'), ('sqlalchemy', '3')]:
@@ -128,6 +137,8 @@ def create(output):
     normal.paragraph_format.line_spacing = 1.5
     normal.paragraph_format.space_after = Pt(6)
     normal.paragraph_format.first_line_indent = Pt(24)
+    explicit_fonts(normal,'宋体')
+    explicit_fonts(document.styles['Title'],'黑体')
     for level, size in [(1,16),(2,14),(3,12)]:
         style = document.styles['Heading ' + str(level)]
         style.font.name = 'Times New Roman'
@@ -135,13 +146,18 @@ def create(output):
         style.font.bold = True
         style.font.color.rgb = RGBColor(0,0,0)
         style._element.get_or_add_rPr().get_or_add_rFonts().set(qn('w:eastAsia'), '黑体')
+        explicit_fonts(style,'黑体')
         style.paragraph_format.first_line_indent = Pt(0)
         style.paragraph_format.keep_with_next = True
         style.paragraph_format.space_before = Pt(12)
         style.paragraph_format.space_after = Pt(8)
         if level == 1:
             style.paragraph_format.page_break_before = True
-    for name, size, after in [('toc 1',11,5),('toc 2',10.5,2)]:
+    main_section = document.styles.add_style('MainSection',WD_STYLE_TYPE.PARAGRAPH)
+    main_section.base_style = document.styles['Heading 2']
+    main_section._element.get_or_add_pPr().append(xml('outlineLvl',val=1))
+    explicit_fonts(main_section,'黑体')
+    for name, size, after in [('toc 1',11,3),('toc 2',10.5,0)]:
         existing = next((style for style in document.styles if style.name.lower()==name),None)
         style = existing if existing is not None else document.styles.add_style(name,WD_STYLE_TYPE.PARAGRAPH,builtin=True)
         style.font.name = 'Times New Roman'
@@ -152,6 +168,9 @@ def create(output):
         style.paragraph_format.space_before = Pt(0)
         style.paragraph_format.space_after = Pt(after)
         style.paragraph_format.first_line_indent = Pt(0)
+        style.paragraph_format.left_indent = Mm(0 if name=='toc 1' else 9)
+        style.font.bold = name=='toc 1'
+        explicit_fonts(style,'黑体' if name=='toc 1' else '宋体')
     for label, size, before, after in [('CodeMind-FZU',26,120,16),('数据库设计说明书',23,0,26),('Database Design Specification',11,0,55)]:
         paragraph = document.add_paragraph(style='Title' if size == 26 else 'Normal')
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -177,23 +196,27 @@ def create(output):
     paragraph.paragraph_format.first_line_indent = Pt(0)
     for run in paragraph.runs:
         font(run,16,True)
-    field(document.add_paragraph(), 'TOC \\o "1-2" \\h \\z \\u')
+    field(document.add_paragraph(), 'TOC \\o "1-1" \\t "MainSection,2" \\h \\z')
     tokens = json.loads((BASE/'source/document_blocks.json').read_text(encoding='utf-8'))
     i = 0
     foldout = False
+    appendix = False
     while i < len(tokens):
         token = tokens[i]
         if token['type'] == 'heading_open':
             level = int(token['tag'][1])
             if level > 1:
                 heading = text(tokens[i+1]['content'])
+                if level==2:
+                    appendix = heading.startswith('附录')
                 wide_heading = heading.startswith('4 逻辑结构设计') or heading.startswith('4.3 资料治理关系')
                 if wide_heading:
                     section = document.add_section(WD_SECTION_START.NEW_PAGE)
                     configure_section(section,True)
                     section.different_first_page_header_footer = False
                     foldout = True
-                paragraph = document.add_paragraph(heading, style='Heading ' + str(min(3,level-1)))
+                heading_style = 'MainSection' if level==3 and not appendix else 'Heading ' + str(min(3,level-1))
+                paragraph = document.add_paragraph(heading, style=heading_style)
                 if wide_heading:
                     paragraph.paragraph_format.page_break_before = False
             i += 3

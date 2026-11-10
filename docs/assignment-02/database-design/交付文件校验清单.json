@@ -11,8 +11,8 @@
   },
   {
     "path": "AgentX_数据库设计说明书.pdf",
-    "bytes": 3084023,
-    "sha256": "8c98e9b445cee84fb661d38010095cf1bf42797b7888b5410a45baca401c1f4e"
+    "bytes": 3020042,
+    "sha256": "3c84125d762f2dfb6d276fe18f9a2da46addcded78f55be3e16904c2406e0bda"
   },
   {
     "path": "data-dictionary/README.md",
@@ -211,8 +211,8 @@
   },
   {
     "path": "source/AgentX_数据库设计说明书.docx",
-    "bytes": 1986983,
-    "sha256": "84abb2f0f676586fae525695f3414c2f7f81e0d7e17221d93ec30d42a111576f"
+    "bytes": 1985065,
+    "sha256": "9266ba363011a42c0ede24b4b910204bff22c2fae374f2345c2288153621f0a8"
   },
   {
     "path": "source/build_deliverables.py",
@@ -231,23 +231,23 @@
   },
   {
     "path": "source/create_word_specification.py",
-    "bytes": 14136,
-    "sha256": "84a79c8637b89ba446ec293d7f87db4732851201f92426bb4a1a50cb6a6f9f29"
+    "bytes": 15345,
+    "sha256": "28318411338e782c822520f7a288a463e8fde5e19b8c31d8a36e5363feb3a3b2"
   },
   {
     "path": "source/document_build_report.json",
     "bytes": 1664,
-    "sha256": "a6088a7761dd684d40fc01f6494aecda9e8c6bf6515b2201f6bb1eb933198e38"
+    "sha256": "d9f44c5fd9059ab89d66dafd1567ffb7f710e37b7cce15113f447bf41fbae8a8"
   },
   {
     "path": "source/document_layout_report.json",
-    "bytes": 14179,
-    "sha256": "297095107206d64995be2862c8f3d35c9ec9b40d126d8220b014ea4435058c97"
+    "bytes": 14177,
+    "sha256": "b9c55e095c228f0371320de0bd65805428e8a56db69f6144e8247c9cd0334d87"
   },
   {
     "path": "source/document_verification.json",
     "bytes": 395,
-    "sha256": "768377a725be5cb09bdf0cb11c5ad89b3f620caeb7020f6fb82d42b8117498e1"
+    "sha256": "81c11d2941e8798f7ca5510c9757c7b3dad60cf28baabd3250364e0558d19c80"
   },
   {
     "path": "source/finalize_acceptance.py",
@@ -271,8 +271,8 @@
   },
   {
     "path": "source/README.md",
-    "bytes": 2627,
-    "sha256": "b70168a61303c684a7d0a33746d4fb8378b7c0cfcbb8ffa933c01cbea78651c6"
+    "bytes": 2843,
+    "sha256": "8ced23206af4595bf6d8a9737cb50ba128880b960dbe78b136ef1a03ce498c14"
   },
   {
     "path": "source/render_diagrams.py",
@@ -316,8 +316,8 @@
   },
   {
     "path": "source/verify_specification.py",
-    "bytes": 4385,
-    "sha256": "f794b8b4c55f0f4f3c9c1f1e7f5af875b3c4f57026bd510fa2eaf4605e2194cb"
+    "bytes": 4943,
+    "sha256": "9b9202a72157dff9eddb3537459c433c8b6374af52266b76f842e701eb8698db"
   },
   {
     "path": "source/业务方向顺序修正/knowledge-base/入库预览_44条.json",

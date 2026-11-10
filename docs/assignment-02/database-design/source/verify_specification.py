@@ -48,6 +48,7 @@ def verify():
         fields=''.join(x.text or '' for x in root.findall('.//w:instrText',ns))
         assert 'TOC' in fields
         toc_rows=[]
+        toc_titles=[]
         for paragraph in root.findall('.//w:p',ns):
             style=paragraph.find('./w:pPr/w:pStyle',ns)
             if style is not None and style_names.get(style.attrib.get('{'+ns['w']+'}val',''),'') in ('toc 1','toc 2','toc1','toc2'):
@@ -57,7 +58,17 @@ def verify():
                     title,page=match.group(1),int(match.group(2))
                     assert normalized(title) in pages[page-1], '目录页码：'+value
                     toc_rows.append(value)
+                    toc_titles.append(normalized(title))
         assert len(toc_rows)>=40, '目录未完整更新'
+        appendix = False
+        expected_titles=[]
+        for heading in layout['headings']:
+            if heading['level']==1:
+                appendix=heading['title'].startswith('附录')
+                expected_titles.append(normalized(heading['title']))
+            elif heading['level']==2 and not appendix:
+                expected_titles.append(normalized(heading['title']))
+        assert toc_titles==expected_titles, '目录层级应为正文两级、附录一级'
         images=[name for name in archive.namelist() if name.startswith('word/media/') and not name.endswith('/')]
         assert len(images)==6
     result={'status':'passed','checks':['正式封面','Word自动目录及标题页码','全篇页码及总页数','6幅嵌入图形','23表233字段和全部约束','技术输入SHA-256不变','四项实施状态保留','页面文本边界'],

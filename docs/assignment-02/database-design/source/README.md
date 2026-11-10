@@ -21,6 +21,8 @@ python docs/assignment-02/database-design/source/verify_specification.py
 
 正文可以直接修改；数据字典与约束附录由模型生成。Word稿也可人工编辑，提交前在Word中更新整个目录，再导出PDF；重新运行生成脚本将按Markdown源稿重建Word文件。
 
+目录收录正文两级标题及附录一级标题，章标题加粗、节标题缩进。标题字体显式设置为中文黑体、英文及数字Times New Roman，清除主题字体；目录页码由Word更新。
+
 ## 图形重渲染
 
 常规生成使用已提交的渲染缓存。修改关系视图或主动重渲染时，需要Node.js、npm及Chrome/Edge/Chromium：
