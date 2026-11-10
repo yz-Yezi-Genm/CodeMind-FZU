@@ -102,8 +102,8 @@
 <text x="700" y="36" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">CodeMind-FZU 系统技术架构图</text>
 <text x="700" y="76" text-anchor="middle" font-size="19" font-weight="400" fill="#5B6578">分层依赖视图 · 主链路：Web → FastAPI → Agent → 检索/证据核验 → Qwen → 回答复核</text>
 <text x="700" y="1376" text-anchor="middle" font-size="15" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-10  |  Draw.io / SVG / PNG 同源导出</text>
-<rect x="1300" y="22" width="430" height="90" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1316" y="49" font-size="17" font-weight="700" fill="#172033">边界说明</text>
-<text x="1316" y="75" font-size="14" fill="#5B6578">内部：Web / FastAPI / Agent / 检索 / 数据</text>
-<text x="1316" y="96" font-size="14" fill="#5B6578">外部：Qwen API；Tavily 可选</text>
-<text x="1316" y="117" font-size="14" fill="#5B6578">支撑：版本、测试和日志不混入主链路</text>
+<rect x="1300" y="10" width="430" height="100" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1316" y="37" font-size="17" font-weight="700" fill="#172033">边界说明</text>
+<text x="1316" y="63" font-size="14" fill="#5B6578">内部：Web / FastAPI / Agent / 检索 / 数据</text>
+<text x="1316" y="84" font-size="14" fill="#5B6578">外部：Qwen API；Tavily 可选</text>
+<text x="1316" y="105" font-size="14" fill="#5B6578">支撑：版本、测试和日志不混入主链路</text>
 </svg>

@@ -43,7 +43,7 @@
 <polyline points="1450,1180 1430,1180 1430,820 1360,785" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
 <text x="1300" y="876" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">10.3 → 10.3a bindReady</text>
 <polyline points="1720,1190 1730,1190 1730,1050 1740,1050" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1770" y="1126" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.4 切换 activity=vN</text>
+<text x="1770" y="1126" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.4 切换 activeVersion=vN</text>
 <polyline points="1875,1000 1875,820" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1925" y="916" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10.5 Agent 只读 vN</text>
 <polyline points="1720,1190 1730,1190 1730,1215 1740,1215" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
@@ -104,9 +104,9 @@
 <text x="1050" y="41" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">UML 通信图 · 知识资料维护与索引更新</text>
 <text x="1050" y="82" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">资料审核 → CSV/Chroma/BM25 → 双索引闸门 → 测试 → IndexPublisher → Agent</text>
 <text x="1050" y="1291" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-10  |  项目基准 44 条；当前仓库 CSV 31 条仅表示现有索引记录</text>
-<rect x="70" y="85" width="680" height="110" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="86" y="112" font-size="17" font-weight="700" fill="#172033">发布规则</text>
+<rect x="70" y="85" width="680" height="125" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="86" y="112" font-size="17" font-weight="700" fill="#172033">发布规则</text>
 <text x="86" y="138" font-size="14" fill="#5B6578">人工审核 + Chroma PASS + BM25 PASS + 测试通过</text>
-<text x="86" y="159" font-size="14" fill="#5B6578">两个索引统一使用 versionId=vN</text>
-<text x="86" y="180" font-size="14" fill="#5B6578">IndexPublisher 原子切换活动版本指针</text>
-<text x="86" y="201" font-size="14" fill="#5B6578">任一步失败：不发布，继续保留上一可用版本</text>
+<text x="86" y="159" font-size="14" fill="#5B6578">IndexPublisher 提交完整版本发布事务</text>
+<text x="86" y="180" font-size="14" fill="#5B6578">双索引绑定同一 versionId，bindReady 后切换 activeVersion</text>
+<text x="86" y="201" font-size="14" fill="#5B6578">任一步失败：不切换 activeVersion，保留上一可用版本</text>
 </svg>

@@ -21,7 +21,7 @@
 <polyline points="760,620 700,620 700,405" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="650" y="536" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4c 返回追问</text>
 <polyline points="410,315 360,270 230,270 230,315" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="310" y="259" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4d 展示追问</text>
+<text x="330" y="276" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4d 展示追问</text>
 <polyline points="350,400 410,380" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="385" y="451" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">5 补充重提</text>
 <polyline points="1270,390 1270,540" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
@@ -44,14 +44,18 @@
 <text x="1540" y="1166" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8.2 返回结果</text>
 <polyline points="1190,905 1190,720 1265,720 1265,660" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1110" y="726" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 核验证据返回</text>
-<polyline points="1430,640 1670,830" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1450" y="696" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10 问题 + 验证证据</text>
-<polyline points="1600,870 1520,870 1520,1205 1480,1205" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1550" y="1056" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.1 回答草稿</text>
-<polyline points="1480,1205 1550,1205 1550,690 1780,690 1780,560" fill="none" stroke="#B93C4F" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1620" y="736" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">11 复核后结果</text>
-<polyline points="1780,475 1640,475 1640,700 1000,700" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1590" y="676" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 最终响应</text>
+<polyline points="1430,620 1470,620 1470,770 1500,770" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1440" y="726" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10 生成请求</text>
+<polyline points="1750,820 1810,820" fill="none" stroke="#7448D8" stroke-width="3" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text x="1780" y="736" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10a / 10b 请求 / 草稿</text>
+<polyline points="1650,870 1650,970 1500,970 1500,1120 1400,1120 1400,1150" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1550" y="956" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.1 草稿复核</text>
+<polyline points="1180,1205 1120,1205 1120,690 1780,690 1780,560" fill="none" stroke="#B93C4F" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1600" y="676" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">11 复核后结果</text>
+<polyline points="1780,475 1700,475 1700,600 1430,600" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1640" y="526" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 返回 Agent</text>
+<polyline points="1130,630 1060,630" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1095" y="526" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12.1 返回 FastAPI</text>
 <polyline points="760,605 690,605 690,405" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="610" y="436" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">13 返回前端</text>
 <polyline points="410,360 350,385" fill="none" stroke="#1F5EFF" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
@@ -95,9 +99,12 @@
 <rect x="1600" y="1070" width="260" height="100" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
 <text x="1730.0" y="1113" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Tavily（可选）</text>
 <text x="1730.0" y="1145" text-anchor="middle" font-size="16" fill="#5B6578">OnlineCheck</text>
-<rect x="1600" y="830" width="260" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="1730.0" y="873" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Qwen API</text>
-<text x="1730.0" y="905" text-anchor="middle" font-size="16" fill="#5B6578">LLMAdapter</text>
+<rect x="1450" y="770" width="300" height="100" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
+<text x="1600.0" y="813" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">LLMAdapter</text>
+<text x="1600.0" y="845" text-anchor="middle" font-size="16" fill="#5B6578">FastAPI 内部适配器</text>
+<rect x="1810" y="770" width="260" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
+<text x="1940.0" y="813" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Qwen API</text>
+<text x="1940.0" y="845" text-anchor="middle" font-size="16" fill="#5B6578">外部模型服务</text>
 <rect x="1180" y="1150" width="300" height="110" rx="16" fill="#FCEBEF" stroke="#B93C4F" stroke-width="2"/>
 <text x="1330.0" y="1193" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">生成后回答复核</text>
 <text x="1330.0" y="1225" text-anchor="middle" font-size="16" fill="#5B6578">AnswerVerifier</text>

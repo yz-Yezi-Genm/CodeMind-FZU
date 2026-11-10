@@ -19,4 +19,4 @@ Draw.io、SVG 和 PNG 均由 [`../../../source/tools/generate_zhaozilong_diagram
 
 知识维护流程由消息 8d 明确人工审核通过，再进入双索引测试与发布。`IndexPublisher` 提交统一版本后，Chroma 与 BM25 分别返回 `bindReady(vN)`；只有两个索引均完成绑定，`VersionRegistry` 才原子切换活动版本指针。`AgentQueryGateway` 仅向 Agent 暴露完整发布版本。项目整体覆盖五大业务方向；竞赛认定、奖学金申请、推免基本条件是代表性验证任务，不代表业务方向数量。交换出国当前资料不足，不纳入首版。
 
-问答链路将生成前证据筛选和生成后回答复核分开：`EvidenceVerifier` 向 Agent 返回已核验证据，`AnswerVerifier` 复核 Qwen 返回的草稿。
+问答链路将生成前证据筛选和生成后回答复核分开：`EvidenceVerifier` 向 Agent 返回已核验证据；`LLMAdapter` 作为 FastAPI 内部适配器调用外部 `Qwen API`；`AnswerVerifier` 复核草稿后，先返回 `AgentOrchestrator`，再由它返回 `AskController`。

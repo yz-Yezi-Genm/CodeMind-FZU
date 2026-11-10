@@ -44,7 +44,7 @@
         <mxCell id="label_0" value="CodeMind-FZU 系统技术架构图" style="text;html=1;align=center;verticalAlign=middle;fontColor=#172033;fontSize=34;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="292.0" y="-0.5" width="816" height="61" as="geometry"/></mxCell>
         <mxCell id="label_1" value="分层依赖视图 · 主链路：Web → FastAPI → Agent → 检索/证据核验 → Qwen → 回答复核" style="text;html=1;align=center;verticalAlign=middle;fontColor=#5B6578;fontSize=19;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="39.0" y="48.0" width="1322" height="44" as="geometry"/></mxCell>
         <mxCell id="label_2" value="编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-10  |  Draw.io / SVG / PNG 同源导出" style="text;html=1;align=center;verticalAlign=middle;fontColor=#5B6578;fontSize=15;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="115.0" y="1348.0" width="1170" height="44" as="geometry"/></mxCell>
-        <mxCell id="legend_0" value="边界说明&lt;br&gt;内部：Web / FastAPI / Agent / 检索 / 数据&lt;br&gt;外部：Qwen API；Tavily 可选&lt;br&gt;支撑：版本、测试和日志不混入主链路" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#FFFFFF;strokeColor=#EDF1F6;fontFamily=Microsoft YaHei;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1300" y="22" width="430" height="90" as="geometry"/></mxCell>
+        <mxCell id="legend_0" value="边界说明&lt;br&gt;内部：Web / FastAPI / Agent / 检索 / 数据&lt;br&gt;外部：Qwen API；Tavily 可选&lt;br&gt;支撑：版本、测试和日志不混入主链路" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=10;fillColor=#FFFFFF;strokeColor=#EDF1F6;fontFamily=Microsoft YaHei;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1300" y="10" width="430" height="100" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
