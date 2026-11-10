@@ -23,25 +23,27 @@
 <polyline points="1000,840 1100,785" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1050" y="806" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">7b 构建</text>
 <polyline points="1360,540 1380,540 1380,870 1230,870 1230,1000" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1300" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8a 索引状态</text>
+<text x="1450" y="846" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8a 索引状态</text>
 <polyline points="1230,835 1230,1000" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1150" y="866" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8b 索引状态</text>
+<text x="1140" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8b 索引状态</text>
 <polyline points="1100,305 1040,305 1040,1040 1080,1040" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1035" y="486" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">8c 元数据状态</text>
+<polyline points="70,357 30,357 30,1220 1080,1220 1080,1040" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="180" y="1201" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">8d 人工审核通过</text>
 <polyline points="1380,1030 1450,820" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1380" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 两项 PASS 后测试</text>
+<text x="1430" y="936" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9 两项 PASS 后测试</text>
 <polyline points="1450,795 1380,1020" fill="none" stroke="#16845B" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1540" y="856" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9.1 测试结果</text>
+<text x="1580" y="896" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">9.1 测试结果</text>
 <polyline points="1380,1060 1450,1060" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1370" y="976" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 审核+测试通过</text>
+<text x="1415" y="976" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10 审核+测试通过</text>
 <polyline points="1585,1100 1585,1150" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1530" y="1131" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.1 写入完整 vN</text>
-<polyline points="1450,1160 1420,1160 1420,520 1360,540" fill="none" stroke="#7448D8" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1200" y="956" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.2 Chroma=vN</text>
-<polyline points="1450,1180 1430,1180 1430,820 1360,785" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
-<text x="1540" y="936" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">10.3 BM25=vN</text>
+<polyline points="1450,1160 1420,1160 1420,520 1360,540" fill="none" stroke="#7448D8" stroke-width="3" stroke-dasharray="8 6" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text x="1310" y="656" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.2 → 10.2a bindReady</text>
+<polyline points="1450,1180 1430,1180 1430,820 1360,785" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text x="1300" y="876" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">10.3 → 10.3a bindReady</text>
 <polyline points="1720,1190 1730,1190 1730,1050 1740,1050" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1770" y="1126" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.4 切换 activity=vN</text>
+<text x="1770" y="1126" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.4 切换 activeVersion=vN</text>
 <polyline points="1875,1000 1875,820" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1925" y="916" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">10.5 Agent 只读 vN</text>
 <polyline points="1720,1190 1730,1190 1730,1215 1740,1215" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
@@ -49,62 +51,62 @@
 <polyline points="1875,1285 2050,1285 2050,380 640,380" fill="none" stroke="#0D91A8" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="2010" y="576" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">10.7 状态反馈</text>
 <rect x="70" y="310" width="250" height="95" rx="16" fill="#EAF0FF" stroke="#1F5EFF" stroke-width="2"/>
-<text x="195.0" y="344" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:知识库维护者</text>
+<text x="195.0" y="344" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">知识库维护者</text>
 <text x="195.0" y="365" text-anchor="middle" font-size="14" fill="#5B6578">Maintainer</text>
 <rect x="360" y="280" width="280" height="100" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
-<text x="500.0" y="323" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:维护脚本 / 管理端</text>
+<text x="500.0" y="323" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">维护脚本 / 管理端</text>
 <text x="500.0" y="355" text-anchor="middle" font-size="16" fill="#5B6578">IngestionEntry</text>
 <rect x="360" y="670" width="280" height="100" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
-<text x="500.0" y="713" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:元数据与哈希检查</text>
+<text x="500.0" y="713" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">元数据与哈希检查</text>
 <text x="500.0" y="745" text-anchor="middle" font-size="16" fill="#5B6578">MetadataGate</text>
 <rect x="720" y="260" width="280" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="860.0" y="303" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:解析与 OCR</text>
+<text x="860.0" y="303" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">解析与 OCR</text>
 <text x="860.0" y="335" text-anchor="middle" font-size="16" fill="#5B6578">ParserOCR</text>
 <rect x="720" y="520" width="280" height="110" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
-<text x="860.0" y="563" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:本地知识资产</text>
+<text x="860.0" y="563" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">本地知识资产</text>
 <text x="860.0" y="595" text-anchor="middle" font-size="16" fill="#5B6578">LocalKnowledge</text>
 <rect x="720" y="790" width="280" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="860.0" y="833" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:分块与定位</text>
+<text x="860.0" y="833" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">分块与定位</text>
 <text x="860.0" y="865" text-anchor="middle" font-size="16" fill="#5B6578">ChunkBuilder</text>
 <rect x="1100" y="255" width="260" height="95" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
-<text x="1230.0" y="289" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:CSV 元数据索引</text>
+<text x="1230.0" y="289" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">CSV 元数据索引</text>
 <text x="1230.0" y="310" text-anchor="middle" font-size="14" fill="#5B6578">IndexCSV</text>
 <rect x="1100" y="490" width="260" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="1230.0" y="533" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:Chroma 向量库</text>
+<text x="1230.0" y="533" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Chroma 向量库</text>
 <text x="1230.0" y="565" text-anchor="middle" font-size="16" fill="#5B6578">ChromaBuilder</text>
 <rect x="1100" y="735" width="260" height="100" rx="16" fill="#FFF1DF" stroke="#C46A12" stroke-width="2"/>
-<text x="1230.0" y="778" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:BM25 索引</text>
+<text x="1230.0" y="778" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">BM25 索引</text>
 <text x="1230.0" y="810" text-anchor="middle" font-size="16" fill="#5B6578">BM25Builder</text>
 <rect x="1080" y="1000" width="300" height="120" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="1230.0" y="1043" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:质量与发布闸门</text>
+<text x="1230.0" y="1043" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">质量与发布闸门</text>
 <text x="1230.0" y="1075" text-anchor="middle" font-size="16" fill="#5B6578">QualityGate</text>
 <text x="1230.0" y="1102" text-anchor="middle" font-size="16" fill="#5B6578">双索引 PASS + 人工审核</text>
 <rect x="1450" y="720" width="270" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="1585.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:离线评测</text>
+<text x="1585.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">离线评测</text>
 <text x="1585.0" y="795" text-anchor="middle" font-size="16" fill="#5B6578">PoCTestSuite</text>
 <rect x="1450" y="1000" width="270" height="100" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="1585.0" y="1043" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:索引发布器</text>
+<text x="1585.0" y="1043" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">索引发布器</text>
 <text x="1585.0" y="1075" text-anchor="middle" font-size="16" fill="#5B6578">IndexPublisher</text>
 <rect x="1450" y="1150" width="270" height="80" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="1585.0" y="1184" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:活动版本注册表</text>
+<text x="1585.0" y="1184" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">活动版本注册表</text>
 <text x="1585.0" y="1205" text-anchor="middle" font-size="14" fill="#5B6578">VersionRegistry</text>
 <text x="1585.0" y="1221" text-anchor="middle" font-size="14" fill="#5B6578">统一 versionId</text>
 <rect x="1740" y="1000" width="270" height="100" rx="16" fill="#E6F6EF" stroke="#16845B" stroke-width="2"/>
-<text x="1875.0" y="1043" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:Agent 查询入口</text>
+<text x="1875.0" y="1043" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Agent 查询入口</text>
 <text x="1875.0" y="1075" text-anchor="middle" font-size="16" fill="#5B6578">AgentQueryGateway</text>
 <text x="1875.0" y="1095" text-anchor="middle" font-size="16" fill="#5B6578">只读已完整发布版本</text>
 <rect x="1740" y="720" width="270" height="100" rx="16" fill="#EAF0FF" stroke="#1F5EFF" stroke-width="2"/>
-<text x="1875.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">:Agent</text>
+<text x="1875.0" y="763" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Agent</text>
 <text x="1875.0" y="795" text-anchor="middle" font-size="16" fill="#5B6578">Orchestrator</text>
 <rect x="1740" y="1200" width="270" height="85" rx="16" fill="#E4F7FA" stroke="#0D91A8" stroke-width="2"/>
-<text x="1875.0" y="1234" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">:更新报告</text>
+<text x="1875.0" y="1234" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">更新报告</text>
 <text x="1875.0" y="1255" text-anchor="middle" font-size="14" fill="#5B6578">MaintenanceReport</text>
 <text x="1050" y="41" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">UML 通信图 · 知识资料维护与索引更新</text>
 <text x="1050" y="82" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">资料审核 → CSV/Chroma/BM25 → 双索引闸门 → 测试 → IndexPublisher → Agent</text>
-<text x="1050" y="1291" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  项目基准 44 条；当前仓库 CSV 31 条仅表示现有索引记录</text>
-<rect x="70" y="85" width="680" height="110" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="86" y="112" font-size="17" font-weight="700" fill="#172033">发布规则</text>
+<text x="1050" y="1291" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-10  |  项目基准 44 条；当前仓库 CSV 31 条仅表示现有索引记录</text>
+<rect x="70" y="85" width="680" height="125" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="86" y="112" font-size="17" font-weight="700" fill="#172033">发布规则</text>
 <text x="86" y="138" font-size="14" fill="#5B6578">人工审核 + Chroma PASS + BM25 PASS + 测试通过</text>
-<text x="86" y="159" font-size="14" fill="#5B6578">两个索引统一使用 versionId=vN</text>
-<text x="86" y="180" font-size="14" fill="#5B6578">IndexPublisher 原子切换活动版本指针</text>
-<text x="86" y="201" font-size="14" fill="#5B6578">任一步失败：不发布，继续保留上一可用版本</text>
+<text x="86" y="159" font-size="14" fill="#5B6578">IndexPublisher 提交完整版本发布事务</text>
+<text x="86" y="180" font-size="14" fill="#5B6578">双索引绑定同一 versionId，bindReady 后切换 activeVersion</text>
+<text x="86" y="201" font-size="14" fill="#5B6578">任一步失败：不切换 activeVersion，保留上一可用版本</text>
 </svg>
