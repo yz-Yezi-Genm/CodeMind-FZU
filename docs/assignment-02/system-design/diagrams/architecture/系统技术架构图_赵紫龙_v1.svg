@@ -20,10 +20,10 @@
 <text x="910" y="202" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">收录</text>
 <polyline points="500,387 650,387" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="575" y="373" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">API</text>
-<polyline points="875,425 875,505" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="930" y="461" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">任务请求</text>
+<polyline points="680,425 680,470 420,470 420,505" fill="none" stroke="#7448D8" stroke-width="3" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text x="560" y="456" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">API 请求 / 追问返回</text>
 <polyline points="420,547 500,547" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="460" y="493" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">任务 / 缺项</text>
+<text x="460" y="493" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">路由 / 缺项</text>
 <polyline points="650,590 650,800 550,800" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="700" y="686" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">检索</text>
 <polyline points="550,830 750,830" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
@@ -34,10 +34,16 @@
 <text x="1250" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">问题 + 证据</text>
 <polyline points="450,1010 450,880" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="500" y="951" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">读取</text>
-<polyline points="1100,1110 1100,1140 1730,1140 1730,547 1700,547" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1740" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">回答草稿</text>
+<polyline points="880,880 880,1135 1510,1135 1510,1110" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text x="900" y="936" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">Tavily 双向</text>
+<polyline points="1300,1050 1310,1050 1310,590 1700,590 1700,547" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1360" y="906" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">回答草稿</text>
 <polyline points="1500,505 1500,425 1100,425 1100,387" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1300" y="446" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">最终响应</text>
+<polyline points="710,185 710,110 30,110 30,1060 100,1060" fill="none" stroke="#1F5EFF" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<text x="150" y="686" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">登记 / 审核 / 入库</text>
+<polyline points="350,1300 350,1330 850,1330 850,900 550,900 550,850" fill="none" stroke="#7448D8" stroke-width="3" stroke-dasharray="8 6" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<text x="140" y="1166" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">活动 versionId</text>
 <rect x="150" y="185" width="300" height="60" rx="16" fill="#EAF0FF" stroke="#1F5EFF" stroke-width="2"/>
 <text x="300.0" y="219" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">学生用户</text>
 <text x="300.0" y="240" text-anchor="middle" font-size="14" fill="#5B6578">自然语言提问 / 查看引用</text>
@@ -56,9 +62,9 @@
 <text x="875.0" y="405" text-anchor="middle" font-size="14" fill="#5B6578">POST /api/ask</text>
 <text x="875.0" y="419" text-anchor="middle" font-size="14" fill="#5B6578">参数校验 / 异常映射 / 统一响应</text>
 <rect x="100" y="505" width="320" height="85" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
-<text x="260.0" y="539" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">任务识别与主动追问</text>
-<text x="260.0" y="560" text-anchor="middle" font-size="14" fill="#5B6578">TaskRouter · Clarifier</text>
-<text x="260.0" y="577" text-anchor="middle" font-size="14" fill="#5B6578">缺字段时经 FastAPI 返回补充</text>
+<text x="260.0" y="539" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">TaskRouter / Clarifier</text>
+<text x="260.0" y="560" text-anchor="middle" font-size="14" fill="#5B6578">任务分类 / 实体抽取 / 缺项识别</text>
+<text x="260.0" y="577" text-anchor="middle" font-size="14" fill="#5B6578">缺信息时经 FastAPI 追问</text>
 <rect x="500" y="505" width="700" height="85" rx="16" fill="#F0EAFF" stroke="#7448D8" stroke-width="2"/>
 <text x="850.0" y="539" text-anchor="middle" font-size="19" font-weight="700" fill="#172033">AgentOrchestrator</text>
 <text x="850.0" y="560" text-anchor="middle" font-size="14" fill="#5B6578">统一流程编排 / 策略路由</text>
@@ -95,7 +101,7 @@
 <text x="1250.0" y="1283" text-anchor="middle" font-size="17" font-weight="700" fill="#172033">日志、审计与失败降级：保留上一可用版本</text>
 <text x="700" y="36" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">CodeMind-FZU 系统技术架构图</text>
 <text x="700" y="76" text-anchor="middle" font-size="19" font-weight="400" fill="#5B6578">分层依赖视图 · 主链路：Web → FastAPI → Agent → 检索/证据核验 → Qwen → 回答复核</text>
-<text x="700" y="1376" text-anchor="middle" font-size="15" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-09  |  Draw.io / SVG / PNG 同源导出</text>
+<text x="700" y="1376" text-anchor="middle" font-size="15" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-10  |  Draw.io / SVG / PNG 同源导出</text>
 <rect x="1300" y="22" width="430" height="90" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="1316" y="49" font-size="17" font-weight="700" fill="#172033">边界说明</text>
 <text x="1316" y="75" font-size="14" fill="#5B6578">内部：Web / FastAPI / Agent / 检索 / 数据</text>
 <text x="1316" y="96" font-size="14" fill="#5B6578">外部：Qwen API；Tavily 可选</text>

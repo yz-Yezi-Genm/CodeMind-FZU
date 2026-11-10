@@ -21,6 +21,7 @@
 - Web、FastAPI、Agent、混合检索与证据核验构成主业务层；本地知识资产、Qwen 与可选 Tavily 位于资源/外部服务边界。
 - 版本管理、离线测试、日志与失败降级集中放在底部支撑层，不混入主业务调用链路。
 - Tavily、离线 PoC 只在各自边界出现一次；Draw.io、SVG、PNG 均由同一场景模型生成。
+- 图中保留 FastAPI ↔ TaskRouter、Clarifier 追问返回、EvidenceVerifier ↔ Tavily 可选核验、Maintainer → 本地知识资产，以及 VersionRegistry → HybridRetriever 的活动版本绑定关系。
 
 ## 关键约束
 

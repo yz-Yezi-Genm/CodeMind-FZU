@@ -17,6 +17,6 @@
 
 Draw.io、SVG 和 PNG 均由 [`../../../source/tools/generate_zhaozilong_diagrams.py`](../../../source/tools/generate_zhaozilong_diagrams.py) 的同一场景模型生成，避免三种格式的消息连接漂移。
 
-知识维护流程在测试通过后由 `IndexPublisher` 提交统一版本，`VersionRegistry` 原子切换活动版本指针，`AgentQueryGateway` 仅向 Agent 暴露完整发布版本。项目整体覆盖五大业务方向；竞赛认定、奖学金申请、推免基本条件是代表性验证任务，不代表业务方向数量。交换出国当前资料不足，不纳入首版。
+知识维护流程由消息 8d 明确人工审核通过，再进入双索引测试与发布。`IndexPublisher` 提交统一版本后，Chroma 与 BM25 分别返回 `bindReady(vN)`；只有两个索引均完成绑定，`VersionRegistry` 才原子切换活动版本指针。`AgentQueryGateway` 仅向 Agent 暴露完整发布版本。项目整体覆盖五大业务方向；竞赛认定、奖学金申请、推免基本条件是代表性验证任务，不代表业务方向数量。交换出国当前资料不足，不纳入首版。
 
 问答链路将生成前证据筛选和生成后回答复核分开：`EvidenceVerifier` 向 Agent 返回已核验证据，`AnswerVerifier` 复核 Qwen 返回的草稿。

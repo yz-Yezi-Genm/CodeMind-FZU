@@ -16,13 +16,13 @@
 <text x="1090" y="486" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">3 校验分类</text>
 <polyline points="1410,320 1500,320" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="1455" y="304" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4a 缺信息</text>
-<polyline points="1500,310 1430,310 1430,710 1060,710" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<polyline points="1500,310 1430,310 1430,720 1090,720 1090,630 1060,630" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="1260" y="701" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4b 追问请求</text>
-<polyline points="760,620 700,620 700,400 710,370" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<polyline points="760,620 700,620 700,405" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="650" y="536" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4c 返回追问</text>
 <polyline points="410,315 360,270 230,270 230,315" fill="none" stroke="#B93C4F" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
 <text x="310" y="259" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">4d 展示追问</text>
-<polyline points="350,400 420,420" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
+<polyline points="350,400 410,380" fill="none" stroke="#1F5EFF" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="385" y="451" text-anchor="middle" font-size="16" font-weight="700" fill="#1F5EFF">5 补充重提</text>
 <polyline points="1270,390 1270,540" fill="none" stroke="#7448D8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1320" y="471" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">6 路由</text>
@@ -31,11 +31,11 @@
 <polyline points="760,940 560,960" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="660" y="926" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">7.1a 语义</text>
 <polyline points="760,970 560,1180" fill="none" stroke="#C46A12" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="650" y="1086" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">7.1b 关键词</text>
+<text x="640" y="1056" text-anchor="middle" font-size="16" font-weight="700" fill="#C46A12">7.1b 关键词</text>
 <polyline points="560,960 760,1170" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="660" y="1131" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2a 候选</text>
+<text x="700" y="1111" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2a 候选</text>
 <polyline points="560,1200 760,1200" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="660" y="1186" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2b 候选</text>
+<text x="660" y="1216" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">7.2b 候选</text>
 <polyline points="1060,1180 1260,1015" fill="none" stroke="#16845B" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1160" y="1096" text-anchor="middle" font-size="16" font-weight="700" fill="#16845B">8 融合证据</text>
 <polyline points="1480,960 1600,1110" fill="none" stroke="#C46A12" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
@@ -50,8 +50,8 @@
 <text x="1550" y="1056" text-anchor="middle" font-size="16" font-weight="700" fill="#7448D8">10.1 回答草稿</text>
 <polyline points="1480,1205 1550,1205 1550,690 1780,690 1780,560" fill="none" stroke="#B93C4F" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="1620" y="736" text-anchor="middle" font-size="16" font-weight="700" fill="#B93C4F">11 复核后结果</text>
-<polyline points="1780,475 1720,475 1720,710 1060,710" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
-<text x="1540" y="666" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 最终响应</text>
+<polyline points="1780,475 1640,475 1640,700 1000,700" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="1590" y="676" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">12 最终响应</text>
 <polyline points="760,605 690,605 690,405" fill="none" stroke="#0D91A8" stroke-width="3" marker-end="url(#arrow)"/>
 <text x="610" y="436" text-anchor="middle" font-size="16" font-weight="700" fill="#0D91A8">13 返回前端</text>
 <polyline points="410,360 350,385" fill="none" stroke="#1F5EFF" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
@@ -103,7 +103,7 @@
 <text x="1330.0" y="1225" text-anchor="middle" font-size="16" fill="#5B6578">AnswerVerifier</text>
 <text x="1150" y="41" text-anchor="middle" font-size="34" font-weight="700" fill="#172033">UML 通信图 · 官方资料问答</text>
 <text x="1150" y="82" text-anchor="middle" font-size="20" font-weight="400" fill="#5B6578">标准路径：任务识别 → 混合检索 → 证据核验 → Qwen 草稿 → 证据复核 → 返回</text>
-<text x="1150" y="1421" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-08  |  消息编号与通信设计说明逐项一致</text>
+<text x="1150" y="1421" text-anchor="middle" font-size="16" font-weight="400" fill="#5B6578">编制：赵紫龙  |  版本：v1.0  |  日期：2026-11-10  |  消息编号与通信设计说明逐项一致</text>
 <rect x="70" y="85" width="650" height="100" rx="12" fill="#FFFFFF" stroke="#EDF1F6" stroke-width="2"/><text x="86" y="112" font-size="17" font-weight="700" fill="#172033">关键约束</text>
 <text x="86" y="138" font-size="14" fill="#5B6578">4a—4d：追问返回浏览器；5/5.1：用户补充后重新提交</text>
 <text x="86" y="159" font-size="14" fill="#5B6578">8.1/8.2：Tavily 双向；9：证据返回 Agent</text>
