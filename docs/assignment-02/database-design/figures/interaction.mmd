@@ -1,0 +1,47 @@
+erDiagram
+    accTitle: CodeMind Interaction Relational View
+    accDescr: Selected key fields and within domain foreign keys. Complete cross domain constraints are listed in Appendix B.
+    users {
+        uuid id PK "required"
+    }
+    conversation_sessions {
+        uuid id PK "required"
+        uuid user_id FK "nullable"
+    }
+    interaction_messages {
+        uuid id PK "required"
+        uuid session_id FK "required"
+    }
+    agent_tasks {
+        uuid id PK "required"
+        uuid request_message_id FK "required"
+        uuid session_id FK "required"
+        string request_role FK "required"
+    }
+    task_results {
+        uuid id PK "required"
+        uuid task_id FK "required"
+        uuid session_id FK "required"
+    }
+    result_citations {
+        uuid id PK "required"
+        uuid result_id FK "required"
+        uuid version_id FK "required"
+        uuid chunk_id FK "nullable"
+    }
+    message_result_links {
+        uuid message_id PK,FK "required"
+        uuid result_id PK,FK "required"
+        uuid session_id FK "required"
+        string message_role FK "required"
+    }
+    users o|--o{ conversation_sessions : "F17"
+    conversation_sessions ||--o{ interaction_messages : "F18"
+    interaction_messages ||--o{ agent_tasks : "F19"
+    conversation_sessions ||--o{ agent_tasks : "F20"
+    conversation_sessions ||--o{ task_results : "F21"
+    agent_tasks ||--o{ task_results : "F22"
+    task_results ||--o{ result_citations : "F24"
+    interaction_messages ||--o{ message_result_links : "F30"
+    task_results ||--o{ message_result_links : "F31"
+    conversation_sessions ||--o{ message_result_links : "F32"

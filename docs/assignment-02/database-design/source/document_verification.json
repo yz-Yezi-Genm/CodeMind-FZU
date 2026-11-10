@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "checks": [
+    "正式封面",
+    "Word自动目录及标题页码",
+    "全篇页码及总页数",
+    "6幅嵌入图形",
+    "23表233字段和全部约束",
+    "技术输入SHA-256不变",
+    "四项实施状态保留",
+    "页面文本边界"
+  ],
+  "pages": 59,
+  "toc_entries_verified": 76,
+  "embedded_figures": 6,
+  "database_experiments_rerun": false
+}

@@ -1,76 +1,40 @@
-# 数据库设计说明书与自动化工具源码
+# 正式说明书生成与技术源文件
 
-本目录包含 CodeMind-FZU 数据库详细设计的全套自动化构建、校验与文档生成脚本，旨在保障交付物的高可复现性与工程规范。
+## 文档生成链
 
----
+1. `数据库设计说明书_正文.md`维护正式正文；`build_specification.py`读取v1.2模型与既有记录，整理完整附录
+2. `render_diagrams.py`从既有模型生成文档视图，并将Mermaid渲染为PNG和SVG；源稿及渲染结果保存在`../figures/`
+3. `create_word_specification.py`设置Word封面、标题样式、自动目录、图表、页眉页脚和折页
+4. `update_fields_export.ps1`通过独立Microsoft Word实例更新字段和目录，并导出PDF
+5. `verify_specification.py`核对目录与实际页码、图形、字段约束、技术输入校验值及实施状态
+6. `finalize_acceptance.py`生成正式说明书、核对并打包，不运行数据库实验
 
-## 📂 源码与数据结构说明
+从仓库根目录执行：
 
-- **`models.py`**：基于 SQLAlchemy 2.0 命令式映射规范编写的 23 张表 ORM 模型映射（采用 `registry.map_imperatively` 与类定义解耦）。包含完整主键、复合唯一约束、Check 约束与关系属性。UUID 主键由应用层调用端生成，`updated_at` 由业务服务显式维护，未在数据库配置自动更新触发器。
-- **`build_deliverables.py`**：衍生交付物构建脚本。自动从数据字典与模型生成 PostgreSQL 16 候选技术基线下的 DDL（`sql/01_schema.sql`）、种子数据（`sql/02_review_seed_44.sql`）、数据字典 Markdown 以及业务方向覆盖清单。
-  - **支持文件内容 SHA-256 严谨计算**：当政策资料物理文件存在时正常计算内容哈希；当文件不存在时严格置为 NULL (`None`)，绝不使用路径字符串生成伪哈希。
-  - **支持多种数据根目录优先级检索**：
-    1. CLI 参数 `--data-dir <path>`
-    2. 环境变量 `CODEMIND_KB_ROOT`
-    3. 外部资料目录 `audit_materials/knowledge/知识库/政策资料`
-    4. 本目录内置完整44条索引夹具 `fixtures/`（干净克隆默认使用）
-    5. 仓库内旧目录 `knowledge_base/政策资料`（仅作为无夹具时的后备来源）。
-- **`generate_pdf.py`**：基于 `markdown-it-py` 和无头浏览器（Edge / Chrome / Chromium）的说明书 PDF 自动化编译脚本。
-  - 支持 CLI 参数 `--browser <path>` 或环境变量 `CODEMIND_BROWSER_PATH`。
-  - 支持 Windows / macOS / Linux 常见浏览器可执行文件跨平台自动检测。
-- **`validate_deliverables.py`**：离线全项核验脚本。
-  - 严格断言五大业务方向的代码、名称与 `sort_order`（1~5）顺序，防止生成回退。
-  - SQLite 全表建表及核心资料导入验证：创建全部23张表，当前44条资料fixture实际向8张核心资料表插入数据；其余15张表未通过同一份fixture导入，相关约束另由单元测试覆盖。
-  - 自动执行 `pglast` 对 PostgreSQL DDL 与 Seed 进行 AST 语法树解析。
-  - 自动执行 21 项自动化单元测试。
-- **`fixtures/`**：内置最小测试数据夹具（包含 44 条资料完整元数据 CSV），确保克隆仓库的队员开箱即可复现全套流程。
-- **`test_models.py` & `test_import_rules.py`**：21 项单元测试用例，覆盖默认数据源选择、显式配置优先级、跨版本外键拦截、不可级联删除、Check 约束、时间精度解析以及文件真实 SHA-256 计算与缺失置空逻辑。
-- **`requirements-review.txt`**：运行本目录工具链的完整 Python 依赖清单。
-
----
-
-## 🛠️ 复现与运行指南
-
-### 1. 安装依赖
-```bash
-pip install -r docs/assignment-02/database-design/source/requirements-review.txt
-```
-
-### 2. 重新构建交付物（生成 DDL、数据字典与种子数据）
-```bash
-# 默认使用自动检测（若无外部资料则自动使用 fixtures 夹具）
-python docs/assignment-02/database-design/source/build_deliverables.py
-
-# 或显式指定政策资料目录
-python docs/assignment-02/database-design/source/build_deliverables.py --data-dir "path/to/data"
-```
-
-### 3. 执行全量验证与单元测试
-```bash
-python docs/assignment-02/database-design/source/validate_deliverables.py
-```
-运行完成后将输出验证报告并更新 `validation_report.json`。
-
-### 4. 重新编译生成最终版 PDF 说明书
-```bash
-# 自动检测本地 Edge 或 Chrome 浏览器并编译
+```powershell
+python -m pip install -r docs/assignment-02/database-design/source/requirements-document.txt
 python docs/assignment-02/database-design/source/generate_pdf.py
-
-# 或指定自定义浏览器路径
-python docs/assignment-02/database-design/source/generate_pdf.py --browser "C:\Program Files\Google\Chrome\Application\chrome.exe"
+python docs/assignment-02/database-design/source/verify_specification.py
 ```
-PDF 输出位置：`docs/assignment-02/database-design/CodeMind-FZU_数据库设计说明书.pdf`。
 
-### 5. 更新当前审核稿、PDF、校验清单及压缩包
-```bash
-python docs/assignment-02/database-design/source/finalize_acceptance.py
+输出为`../AgentX_数据库设计说明书.pdf`及本目录下的`AgentX_数据库设计说明书.docx`。需要完整交付包时，运行`finalize_acceptance.py`。
+
+正文可以直接修改；数据字典与约束附录由模型生成。Word稿也可人工编辑，提交前在Word中更新整个目录，再导出PDF；重新运行生成脚本将按Markdown源稿重建Word文件。
+
+## 图形重渲染
+
+常规生成使用已提交的渲染缓存。修改关系视图或主动重渲染时，需要Node.js、npm及Chrome/Edge/Chromium：
+
+```powershell
+python docs/assignment-02/database-design/source/generate_pdf.py --rerender-diagrams
 ```
-该命令先在保留仓库旧索引的临时目录中验证默认选择fixture，再生成当前资料预览并执行21项测试，最后更新审核稿、PDF及逐文件校验的压缩包。需安装上述依赖并具备可用浏览器。
 
-fixture仅含44条索引，不含149个物理文件。版本级`extraction_status`记录原索引的43条已提取、1条待OCR；文件级`processing_status`描述当前环境，缺失时为`failed`，`sha256`为空，备注保留原索引状态。原核查记录不代表Agent回答资格，检索仍为`blocked`。
+渲染器固定为`@mermaid-js/mermaid-cli@11.12.0`。可通过`CODEMIND_BROWSER_PATH`指定浏览器，或以`CODEMIND_MMDC`指定已有的Mermaid CLI。文档生成使用当前Python；需要单独的Word创作运行环境时，可设置`CODEMIND_DOCX_PYTHON`。
 
-压缩包独立解压后，在包目录运行`python source/finalize_acceptance.py`即可完成同一流程，不依赖仓库外的31条旧索引；新压缩包输出到解压目录的上一层，避免把旧压缩包再次打进包内。
+## 已确认的数据库源文件
 
-`--data-dir`或`CODEMIND_KB_ROOT`显式指定目录时，目录不存在或缺少索引会直接报错，不会静默改用fixture。可用索引须保留44条37列的冻结口径。
+`models.py`、`build_deliverables.py`、`validate_deliverables.py`及两个`test_*.py`文件继续保留v1.2技术用途。`validation_report.json`记录既有21项测试、SQLite创建23张表并向8张核心表插入资料fixture的结果。
 
-`业务方向顺序修正/`是丁晓炜提交的历史输入快照，随包保留以支持概念设计文档中的原始链接；不作为当前生成入口。正式生成、验证和打包分别使用本目录的`build_deliverables.py`、`validate_deliverables.py`和`finalize_acceptance.py`。
+本轮文档生成不调用上述数据库构建与测试程序。原始fixture为44条37列，未包含149个物理文件；版本级提取登记与文件级物理状态分别管理。详细设计与验证原文继续保留在对应技术目录。
+
+`业务方向顺序修正/`为丁晓炜提交的历史输入快照，供查阅原对接链接；当前文档与图形以本生成链为准。

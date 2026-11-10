@@ -1,0 +1,78 @@
+flowchart TB
+    accTitle: Complete CodeMind Database Relationship Overview
+    accDescr: All twenty three tables grouped by domain with forty foreign key groups. F numbers match Appendix B.
+    subgraph core["知识库核心"]
+        direction LR
+        knowledge_categories["knowledge_<br/>categories"]
+        knowledge_documents["knowledge_<br/>documents"]
+        document_versions["document_<br/>versions"]
+        document_files["document_<br/>files"]
+        applicability_rules["applicability_<br/>rules"]
+        applicability_rule_values["applicability_<br/>rule_<br/>values"]
+        knowledge_chunks["knowledge_<br/>chunks"]
+    end
+    subgraph governance["资料治理"]
+        direction LR
+        business_directions["business_<br/>directions"]
+        document_business_directions["document_<br/>business_<br/>directions"]
+        verification_records["verification_<br/>records"]
+        verification_tasks["verification_<br/>tasks"]
+        document_milestones["document_<br/>milestones"]
+        document_file_sources["document_<br/>file_<br/>sources"]
+        document_version_relations["document_<br/>version_<br/>relations"]
+    end
+    subgraph interaction["交互与结果"]
+        direction LR
+        users["users"]
+        conversation_sessions["conversation_<br/>sessions"]
+        interaction_messages["interaction_<br/>messages"]
+        agent_tasks["agent_<br/>tasks"]
+        task_results["task_<br/>results"]
+        result_citations["result_<br/>citations"]
+        message_result_links["message_<br/>result_<br/>links"]
+    end
+    subgraph feedback["反馈"]
+        direction LR
+        answer_feedback["answer_<br/>feedback"]
+        feedback_review_links["feedback_<br/>review_<br/>links"]
+    end
+    knowledge_categories -->|F01| knowledge_documents
+    knowledge_documents -->|F02| document_versions
+    document_versions -->|F03| document_files
+    document_versions -->|F04| applicability_rules
+    applicability_rules -->|F05| applicability_rule_values
+    document_files -->|F06| knowledge_chunks
+    document_files -->|F07| knowledge_chunks
+    document_versions -->|F08| knowledge_chunks
+    business_directions -->|F09| document_business_directions
+    knowledge_documents -->|F10| document_business_directions
+    document_files -->|F11| verification_records
+    document_versions -->|F12| verification_records
+    verification_records -->|F13| verification_tasks
+    verification_records -->|F14| verification_tasks
+    document_files -->|F15| verification_tasks
+    document_versions -->|F16| verification_tasks
+    users -->|F17| conversation_sessions
+    conversation_sessions -->|F18| interaction_messages
+    interaction_messages -->|F19| agent_tasks
+    conversation_sessions -->|F20| agent_tasks
+    conversation_sessions -->|F21| task_results
+    agent_tasks -->|F22| task_results
+    knowledge_chunks -->|F23| result_citations
+    task_results -->|F24| result_citations
+    document_versions -->|F25| result_citations
+    document_versions -->|F26| document_milestones
+    document_files -->|F27| document_file_sources
+    document_files -->|F28| document_file_sources
+    document_versions -->|F29| document_file_sources
+    interaction_messages -->|F30| message_result_links
+    task_results -->|F31| message_result_links
+    conversation_sessions -->|F32| message_result_links
+    document_versions -->|F33| document_version_relations
+    document_versions -->|F34| document_version_relations
+    interaction_messages -->|F35| answer_feedback
+    conversation_sessions -->|F36| answer_feedback
+    document_versions -->|F37| answer_feedback
+    answer_feedback -->|F38| feedback_review_links
+    verification_tasks -->|F39| feedback_review_links
+    document_versions -->|F40| feedback_review_links
