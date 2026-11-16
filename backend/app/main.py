@@ -1,0 +1,100 @@
+"""Minimal FastAPI contract shell.
+
+The health endpoint is executable. The ask endpoint returns a standardized
+503 until an AgentService implementation is injected by the application layer.
+"""
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from uuid import uuid4
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+from backend.contracts.models import (
+    AgentRequest,
+    ApiErrorDetail,
+    ApiErrorResponse,
+    AskRequest,
+    AskResponse,
+    HealthResponse,
+)
+from backend.contracts.protocols import AgentService
+
+
+def create_app(agent_service: AgentService | None = None) -> FastAPI:
+    app = FastAPI(
+        title="CodeMind-FZU API",
+        version="0.1.0",
+        description="Alpha interface contract shell; business services are connected separately.",
+    )
+    app.state.agent_service = agent_service
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error_handler(
+        request: Request,
+        exc: RequestValidationError,
+    ) -> JSONResponse:
+        body = ApiErrorResponse(
+            request_id=uuid4(),
+            error=ApiErrorDetail(
+                code="INVALID_REQUEST",
+                message="请求参数不符合接口规范，请检查字段和数据类型。",
+                retryable=False,
+            ),
+        )
+        return JSONResponse(status_code=422, content=body.model_dump(mode="json"))
+
+    @app.get("/api/v1/health", response_model=HealthResponse, tags=["system"])
+    async def health() -> HealthResponse:
+        return HealthResponse(
+            status="ok",
+            service="codemind-fzu-api",
+            version=app.version,
+            timestamp=datetime.now(timezone.utc),
+        )
+
+    @app.post(
+        "/api/v1/ask",
+        response_model=AskResponse,
+        responses={503: {"model": ApiErrorResponse}},
+        tags=["assistant"],
+    )
+    async def ask(payload: AskRequest, request: Request):
+        request_id = uuid4()
+        conversation_id = payload.conversation_id or uuid4()
+        service: AgentService | None = request.app.state.agent_service
+
+        if service is None:
+            body = ApiErrorResponse(
+                request_id=request_id,
+                error=ApiErrorDetail(
+                    code="SERVICE_NOT_CONFIGURED",
+                    message="Agent 服务尚未接入；当前接口仅提供契约入口。",
+                    retryable=True,
+                ),
+            )
+            return JSONResponse(status_code=503, content=body.model_dump(mode="json"))
+
+        result = await service.run(
+            AgentRequest(
+                request_id=request_id,
+                conversation_id=conversation_id,
+                query=payload.query,
+            )
+        )
+        return AskResponse(
+            request_id=request_id,
+            conversation_id=conversation_id,
+            status=result.status,
+            answer=result.answer,
+            answer_mode=result.answer_mode,
+            clarifying_question=result.clarifying_question,
+            citations=result.citations,
+            warnings=result.warnings,
+            created_at=datetime.now(timezone.utc),
+        )
+
+
+app = create_app()
