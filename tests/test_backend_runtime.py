@@ -38,6 +38,11 @@ class InvalidAgentService:
         return {"status": "answered"}
 
 
+class RuntimeFailureAgentService:
+    async def run(self, _request):
+        raise RuntimeError("unexpected internal detail")
+
+
 class BackendRuntimeTests(unittest.TestCase):
     def setUp(self):
         self.settings = AppSettings(
@@ -139,6 +144,30 @@ class BackendRuntimeTests(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()["error"]["code"], "INTERNAL_ERROR")
         self.assertNotIn("AgentService.run", response.text)
+        self.assertNotIn("Traceback", response.text)
+
+    def test_runtime_error_keeps_request_id_and_cors_headers(self):
+        client = TestClient(
+            create_app(RuntimeFailureAgentService(), settings=self.settings),
+            raise_server_exceptions=False,
+        )
+
+        response = client.post(
+            "/api/v1/ask",
+            json={"query": "测试 RuntimeError"},
+            headers={"Origin": "http://localhost:5173"},
+        )
+
+        self.assertEqual(response.status_code, 500)
+        body = response.json()
+        self.assertEqual(body["error"]["code"], "INTERNAL_ERROR")
+        UUID(body["request_id"])
+        self.assertEqual(body["request_id"], response.headers["X-Request-ID"])
+        self.assertEqual(
+            response.headers["Access-Control-Allow-Origin"],
+            "http://localhost:5173",
+        )
+        self.assertNotIn("unexpected internal detail", response.text)
         self.assertNotIn("Traceback", response.text)
 
     def test_wildcard_cors_origin_is_rejected(self):

@@ -86,7 +86,7 @@ python -m uvicorn backend.app.dev:app --port 8000
 最近一次结果：
 
 ```text
-Ran 29 tests in 0.957s
+Ran 30 tests in 0.948s
 OK
 ```
 
@@ -98,7 +98,8 @@ OK
 4. AgentRequest/AgentResult 包装及 ID 传递；
 5. CORS 允许、拒绝和通配符配置拒绝；
 6. Agent 异常与内部类型错误脱敏；
-7. Qwen 成功、超时、429、5xx、重试和缺失密钥。
+7. Agent 抛出普通 `RuntimeError` 时，500 响应的错误包、`request_id`、`X-Request-ID` 与 CORS 头；
+8. Qwen 成功、超时、429、5xx、重试和缺失密钥。
 
 另使用真实 Uvicorn 进程启动 `backend.app.dev:app`，在
 `http://127.0.0.1:8765` 完成冒烟验证：

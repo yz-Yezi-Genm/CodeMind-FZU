@@ -56,6 +56,27 @@ def _error_response(
     )
 
 
+def _service_error_response(request: Request, exc: ServiceError) -> JSONResponse:
+    public_message = (
+        "服务处理请求时发生内部错误。"
+        if exc.code == "INTERNAL_ERROR"
+        else exc.message
+    )
+    if exc.code == "INTERNAL_ERROR":
+        logger.error(
+            "Internal service contract error request_id=%s detail=%s",
+            _request_id(request),
+            exc.message,
+        )
+    return _error_response(
+        _request_id(request),
+        status_code=exc.http_status,
+        code=exc.code,
+        message=public_message,
+        retryable=exc.retryable,
+    )
+
+
 def create_app(
     agent_service: AgentService | None = None,
     *,
@@ -105,24 +126,7 @@ def create_app(
         request: Request,
         exc: ServiceError,
     ) -> JSONResponse:
-        public_message = (
-            "服务处理请求时发生内部错误。"
-            if exc.code == "INTERNAL_ERROR"
-            else exc.message
-        )
-        if exc.code == "INTERNAL_ERROR":
-            logger.error(
-                "Internal service contract error request_id=%s detail=%s",
-                _request_id(request),
-                exc.message,
-            )
-        return _error_response(
-            _request_id(request),
-            status_code=exc.http_status,
-            code=exc.code,
-            message=public_message,
-            retryable=exc.retryable,
-        )
+        return _service_error_response(request, exc)
 
     @app.exception_handler(TimeoutError)
     async def timeout_error_handler(request: Request, _exc: TimeoutError) -> JSONResponse:
@@ -196,13 +200,37 @@ def create_app(
                 retryable=True,
             )
 
-        result = await service.run(
-            AgentRequest(
-                request_id=request_id,
-                conversation_id=conversation_id,
-                query=payload.query,
+        try:
+            result = await service.run(
+                AgentRequest(
+                    request_id=request_id,
+                    conversation_id=conversation_id,
+                    query=payload.query,
+                )
             )
-        )
+        except ServiceError as exc:
+            return _service_error_response(request, exc)
+        except TimeoutError:
+            return _error_response(
+                request_id,
+                status_code=504,
+                code="MODEL_TIMEOUT",
+                message="上游服务响应超时，请稍后重试。",
+                retryable=True,
+            )
+        except Exception as exc:
+            logger.exception(
+                "Unhandled AgentService error request_id=%s type=%s",
+                request_id,
+                type(exc).__name__,
+            )
+            return _error_response(
+                request_id,
+                status_code=500,
+                code="INTERNAL_ERROR",
+                message="服务处理请求时发生内部错误。",
+            )
+
         if not isinstance(result, AgentResult):
             raise ServiceContractError("AgentService.run() 必须返回 AgentResult。")
 

@@ -93,6 +93,7 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - `conversation_id` 和 `request_id` 传递；
 - CORS 允许/拒绝与非法通配符配置；
 - Agent 服务异常和错误返回脱敏；
+- Agent 抛出普通 `RuntimeError` 时仍经过 CORS/request ID 中间件；
 - Qwen 成功、超时、限流、重试、不可用及缺失密钥。
 
 运行依赖还使用以下方式做了干净环境验证：新建临时虚拟环境，仅安装

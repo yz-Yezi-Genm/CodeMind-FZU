@@ -53,7 +53,7 @@ Agent 可通过 `create_qwen_client_from_env()` 获取实现了 `LLMClient` 协�
 最近一次完整测试结果：
 
 ```text
-Ran 29 tests in 0.957s
+Ran 30 tests in 0.948s
 OK
 ```
 
