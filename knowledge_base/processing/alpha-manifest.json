@@ -1,0 +1,27 @@
+{
+  "preview_path": "docs/assignment-02/database-design/knowledge-base/入库预览_44条.json",
+  "max_chunk_chars": 1200,
+  "samples": [
+    {
+      "key": "competition-recognition-2026",
+      "scenario": "竞赛认定",
+      "record_code": "福大-2026-竞赛项目级别认定",
+      "file_path": "knowledge_base/政策资料/正文资料/学校/福州大学_2026_大学生学科竞赛级别认定结果.md",
+      "limitation": "沿用已有网页正文及三份DOCX附件的提取稿，未重新解析或逐项复核附件；目录行、合并单元格和脚注待复核。用于竞赛学分认定，不直接推导奖学金等级或学院综评分值；教师绩效条款不属于学生问答范围。"
+    },
+    {
+      "key": "scholarship-2026",
+      "scenario": "奖学金",
+      "record_code": "福大-2026-本科奖学金",
+      "file_path": "knowledge_base/政策资料/正文资料/学校/福州大学_2026_本科生奖学金评定管理办法.md",
+      "limitation": "改用已有网页正文提取稿，保留第1至15条；本次不确认提取完整性或政策时效。金额、比例、资格排除条款和学院配套细则仍待人工核验。"
+    },
+    {
+      "key": "recommendation-eligibility-2027",
+      "scenario": "推免",
+      "record_code": "计算机学院-2027-推免资格推荐",
+      "file_path": "knowledge_base/政策资料/正文资料/学院/计算机学院_2027_本科推免资格推荐工作方案.md",
+      "limitation": "改用已有学院本科推免推荐方案PDF四页提取稿，属于2027届推荐资格资料。原有核查仅覆盖部分内容，第4页计分表待版式及语义复核；申请期已过，只作该届流程及低年级准备参考，不能套用未来年度。"
+    }
+  ]
+}

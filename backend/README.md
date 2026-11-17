@@ -124,3 +124,16 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - 管理端业务 API 和认证授权。
 
 数据库设计中的资料默认 `retrieval_status=blocked`。解析、入库或建立索引均不会自动开放正式问答检索。
+
+## 文档解析（Alpha）
+
+`backend.document_processing.TextDocumentParser` 实现现有 `DocumentParser` 协议，返回公共 `DocumentPackage`。支持 Markdown/TXT、标题层级、片段编号、行号/字符定位和哈希；输出全部保持 `retrieval_status=blocked`。文件业务角色可用构造参数`file_role`或CLI的`--file-role`显式指定；已知业务角色时应传入，未传时保留原默认值。PDF及其他格式仅登记待处理，不伪造正文。
+
+```bash
+python -m scripts.parse_alpha_documents
+python -m scripts.check_document_processing
+```
+
+三个场景样例位于 `knowledge_base/processed/alpha/`，使用2026竞赛级别认定、2026奖学金办法及学院2027届本科推免推荐方案的已有正文提取稿，共23片段。完整使用方法、核验边界和索引交接见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。正文提取稿仍待政策与附件核验，实际索引联调尚未完成。
+
+以上补充了“当前边界”中的Markdown/TXT离线文档解析；PDF/OCR、文件存储服务、真实资料入库与索引仍待对应模块完成。
