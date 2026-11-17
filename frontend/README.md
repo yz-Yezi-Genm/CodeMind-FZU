@@ -2,7 +2,7 @@
 
 CodeMind-FZU 前端工程骨架：**Vite + 原生 TypeScript 多页面应用（HTML + CSS + TypeScript）**，不引入 React、Vue 等大型框架。
 
-当前阶段只提供学生端与后台管理端的工程入口、公共 API 封装与类型定义，具体业务页面由对应负责人继续开发。
+学生端首页提供四类校园问答入口，并通过公共 API 完成问答、追问和来源查看。两端共用请求封装与类型定义。
 
 ## 环境要求
 
@@ -70,7 +70,7 @@ frontend/
 ├── index.html              # 学生端入口
 ├── admin/index.html        # 后台管理端入口
 ├── src/
-│   ├── student/main.ts     # 学生端脚本
+│   ├── student/           # 学生端问答交互、页面样式与图标
 │   ├── admin/main.ts       # 管理端脚本
 │   └── shared/
 │       ├── api.ts          # /api/v1 请求封装（health / ask）
@@ -88,7 +88,7 @@ frontend/
 
 - 公共类型以 `docs/assignment-03/interface-contract-v1.md` 与 `backend/contracts/models.py` 为准，不要在前端复制或私改字段与状态值。
 - 两个页面共用 `src/shared/api.ts`，新增接口请先确认后端契约，再在 `api.ts` 中集中封装。
-- 本阶段只验证工程可启动、可构建、可与后端通信；业务页面由吴欣键、洪添军、林彦翔等对应负责人开发。
+- 学生端的启动方式、问答验收场景与截图见[学生端联调记录](../docs/assignment-03/student-integration/README.md)。
 
 ## 常见问题
 
