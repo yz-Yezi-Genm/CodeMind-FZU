@@ -1,0 +1,69 @@
+@startuml
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+skinparam nodesep 24
+skinparam ranksep 30
+hide circle
+title 知识入库与索引类图（整合稿）
+
+class MetadataGate {
+  + check(metadata)
+}
+class ParserOCR {
+  + parse(file)
+  + markOCR(file)
+}
+class LocalKnowledge {
+  + saveRaw(file)
+  + saveClean(text)
+}
+class IndexCSV {
+  + update(record)
+}
+class ChunkBuilder {
+  + chunk(version)
+}
+class ChromaBuilder {
+  + build(versionId)
+}
+class BM25Builder {
+  + build(versionId)
+}
+class QualityGate {
+  + gate(version)
+}
+class PoCTestSuite {
+  + run(version)
+}
+class ManualReview <<人工审核>> {
+  + review(version)
+}
+class IndexPublisher {
+  + publish(version)
+}
+class VersionRegistry {
+  + bind(versionId)
+  + switch(versionId)
+}
+class AgentQueryGateway {
+  + activeIndex()
+}
+
+MetadataGate --> LocalKnowledge : save
+ParserOCR --> LocalKnowledge : save
+MetadataGate --> IndexCSV : update
+IndexCSV --> QualityGate : 元数据状态
+ChunkBuilder --> LocalKnowledge : read
+ChunkBuilder --> ChromaBuilder : chunks
+ChunkBuilder --> BM25Builder : chunks
+ChromaBuilder --> QualityGate : 索引状态
+BM25Builder --> QualityGate : 索引状态
+QualityGate --> PoCTestSuite : run
+PoCTestSuite --> QualityGate : 测试结果
+ManualReview --> QualityGate : 审核结果
+QualityGate --> IndexPublisher : 双索引PASS+测试通过+审核通过
+IndexPublisher --> VersionRegistry : bind
+VersionRegistry --> AgentQueryGateway : activeIndex
+
+@enduml

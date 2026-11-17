@@ -1,0 +1,27 @@
+{
+  "document": "AgentX_数据库设计说明书.pdf",
+  "editable_word": "source/AgentX_数据库设计说明书.docx",
+  "version": "V1.3",
+  "compiled_on": "2026-11-10",
+  "pages": 58,
+  "toc_count": 1,
+  "technical_inputs_unchanged": true,
+  "database_experiments_rerun": false,
+  "tables": 23,
+  "fields": 233,
+  "foreign_key_groups": 40,
+  "protected_input_sha256": {
+    "source/models.py": "58724c1f3023596aa9f9f33702ab7dc94195d921136e2f4c8949a0519bf16188",
+    "sql/01_schema.sql": "5a0a770fa3fa6c69fd21e0190392aa0beed4d9e513779058d3ce9898775ebdc3",
+    "sql/02_review_seed_44.sql": "7e2ce5e56497c7c3b46fe5d9e43b0b29e1f803967a6b523e9eedb78f7952d11f",
+    "source/fixtures/知识库索引_44条_fixture.csv": "085df07a08067c6ac6deb8b264867c3898e7b6b9a5957e9ef7749ee321ac4ce7",
+    "source/validation_report.json": "a7cbedc282b9845a736b2cec0215ea999bc7ea1eec7f3aba4717c9e4b313733b",
+    "knowledge-base/入库预览_44条.json": "69a3b39f40cb57edf17c9570e890de2f7a1bf2fafc70f3af3a78d0e3ad62b4d4",
+    "source/test_models.py": "82a153331dac595c1d615d6f079f3ede8418f174f2acca793f07228da720afa6",
+    "source/test_import_rules.py": "f78ddda24ff4bd8691035b28c3f0d0a7b82507c0b0c40c7cd2ce455fb0d8db89",
+    "data-dictionary/数据字典_v1.2.md": "51aadfc682dc2ef47cba38896f5a5b7d2d1d1e270bf8abba2c2e0b97cd687d38",
+    "data-dictionary/约束与索引设计_v1.2.md": "20b6cab31d37facf4009b3eeb2fa7208f0bfd96af81f9271360a2bae03cdf209",
+    "orm/ORM映射说明_v1.2.md": "3eb83a4b6f85279fb0a62fa13c4665ddea129cce2f38111078e4da0335c80a63",
+    "relational-model/关系数据模型_v1.2.md": "d4f5faceb2e15b4d69d6d59c39fff9e8d149025c4007ae449826741749d0e649"
+  }
+}

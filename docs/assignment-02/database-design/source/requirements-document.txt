@@ -1,0 +1,4 @@
+-r requirements-review.txt
+python-docx>=1.1,<2
+Pillow>=10
+PyMuPDF>=1.24,<2

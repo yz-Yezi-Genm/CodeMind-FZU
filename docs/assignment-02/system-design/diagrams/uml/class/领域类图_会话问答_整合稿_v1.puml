@@ -1,0 +1,62 @@
+@startuml
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+skinparam nodesep 22
+skinparam ranksep 28
+hide circle
+title 核心领域类图（会话与问答任务 · 整合稿）
+
+class User {
+  + id : UUID
+  + external_subject : str
+  + status : str
+}
+class ConversationSession {
+  + id : UUID
+  + user_id : UUID [可空]
+  + title : str
+}
+class InteractionMessage {
+  + id : UUID
+  + role : str
+  + content : text
+}
+class AgentTask {
+  + id : UUID
+  + request_message_id : UUID
+  + task_type : str
+  + status : str
+}
+class TaskResult {
+  + id : UUID
+  + result_stage : str
+  + answer_mode : str
+}
+class ResultCitation {
+  + id : UUID
+  + version_id : UUID
+  + chunk_id : UUID [可空]
+}
+class AnswerFeedback {
+  + id : UUID
+  + feedback_type : str
+  + status : str
+}
+class DocumentVersion <<引用>> {
+  + id : UUID
+}
+class KnowledgeChunk <<引用>> {
+  + id : UUID
+}
+
+User "0..1" -- "*" ConversationSession : user_id 可空，支持匿名
+ConversationSession "1" -- "*" InteractionMessage
+InteractionMessage "1" -- "*" AgentTask : 触发
+AgentTask "1" -- "*" TaskResult
+TaskResult "1" -- "*" ResultCitation
+InteractionMessage "1" -- "*" AnswerFeedback : 反馈
+ResultCitation "*" -- "1" DocumentVersion : 引用确定版本
+ResultCitation "*" -- "0..1" KnowledgeChunk : 片段可选
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+skinparam nodesep 22
+skinparam ranksep 28
+hide circle
+title 核心领域类图（领域知识库 · 整合稿）
+
+class KnowledgeCategory {
+  + id : UUID
+  + name : str
+}
+class KnowledgeDocument {
+  + id : UUID
+  + title : str
+  + document_type : str
+}
+class DocumentVersion {
+  + id : UUID
+  + version_no : str
+  + policy_status : str
+  + retrieval_status : str
+}
+class DocumentFile {
+  + id : UUID
+  + file_role : str
+  + sha256 : str
+}
+class ApplicabilityRule {
+  + id : UUID
+  + purpose : str
+}
+class KnowledgeChunk {
+  + id : UUID
+  + content : text
+  + locator : str
+}
+class VerificationRecord {
+  + id : UUID
+  + check_type : str
+  + outcome : str
+}
+
+KnowledgeCategory "1" -- "*" KnowledgeDocument
+KnowledgeDocument "1" -- "*" DocumentVersion
+DocumentVersion "1" -- "*" DocumentFile
+DocumentVersion "1" -- "*" ApplicabilityRule
+DocumentVersion "1" -- "*" KnowledgeChunk
+DocumentFile "1" -- "*" KnowledgeChunk : 来源
+DocumentVersion "1" -- "*" VerificationRecord
+
+@enduml

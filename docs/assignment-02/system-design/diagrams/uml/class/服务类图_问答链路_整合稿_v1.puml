@@ -1,0 +1,71 @@
+@startuml
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 14
+skinparam classAttributeIconSize 0
+skinparam nodesep 22
+skinparam ranksep 28
+hide circle
+title 问答链路服务类图（整合稿）
+
+class Frontend <<Web前端>> {
+  + render(response)
+}
+class AskController {
+  + handleAsk(request)
+  + handleHealth()
+}
+class TaskRouter {
+  + classify(question)
+  + extract(text)
+}
+class Clarifier {
+  + clarify(missingFields)
+}
+class AgentOrchestrator {
+  + orchestrate(task)
+}
+class HybridRetriever {
+  + retrieve(queryPlan)
+}
+class RRFRanker {
+  + fuse(candidates)
+}
+class EvidenceVerifier {
+  + verify(candidates)
+}
+class AnswerVerifier {
+  + verify(draft, citations)
+}
+class AnswerComposer {
+  + compose(checkedAnswer)
+}
+class LLMAdapter {
+  + generate(question, evidence)
+}
+class 本地索引 <<Chroma + BM25>> {
+  + vectorSearch(q)
+  + keywordSearch(q)
+}
+class 外部服务 <<Qwen / Tavily>> {
+  + generate()
+  + search()
+}
+
+Frontend --> AskController : /api/ask
+AskController --> TaskRouter : classify
+AskController --> AgentOrchestrator : orchestrate
+TaskRouter --> Clarifier : 信息不足时追问
+AgentOrchestrator --> HybridRetriever : retrieve
+HybridRetriever --> 本地索引 : 双路召回
+HybridRetriever --> RRFRanker : fuse
+RRFRanker --> EvidenceVerifier : verify
+EvidenceVerifier --> 外部服务 : 联网核验(可选)
+AgentOrchestrator --> LLMAdapter : generate
+LLMAdapter --> 外部服务 : Qwen 生成
+LLMAdapter --> AnswerVerifier : 草稿复核
+AnswerVerifier --> AnswerComposer : compose
+AnswerComposer --> AgentOrchestrator : 返回结果
+AgentOrchestrator --> AskController : 响应
+AskController --> Frontend : render
+
+@enduml
