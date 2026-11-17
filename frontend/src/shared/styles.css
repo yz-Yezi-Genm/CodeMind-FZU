@@ -132,6 +132,18 @@ body {
   font-size: 13px;
 }
 
+.ask-result {
+  white-space: normal;
+}
+
+.ask-result article p {
+  white-space: pre-wrap;
+}
+
+.ask-result summary {
+  cursor: pointer;
+}
+
 .hint {
   color: #57606a;
   font-size: 13px;
