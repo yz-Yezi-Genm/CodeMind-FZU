@@ -82,6 +82,21 @@ class BackendRuntimeTests(unittest.TestCase):
             "http://localhost:5173",
         )
 
+    def test_patch_cors_is_enabled_for_admin_contracts(self):
+        client = TestClient(create_app(settings=self.settings))
+
+        response = client.options(
+            "/api/v1/admin/documents/example",
+            headers={
+                "Origin": "http://localhost:5173",
+                "Access-Control-Request-Method": "PATCH",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("PATCH", response.headers["access-control-allow-methods"])
+
     def test_unlisted_cors_origin_is_not_allowed(self):
         client = TestClient(create_app(settings=self.settings))
 

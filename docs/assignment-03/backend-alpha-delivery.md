@@ -9,7 +9,7 @@
 
 | 要求 | 实现 |
 | --- | --- |
-| 前后端 CORS | 使用显式来源列表，禁止 `*`，支持 `CORS_ALLOW_ORIGINS` 覆盖 |
+| 前后端 CORS | 使用显式来源列表，禁止 `*`，允许 `PATCH`，支持 `CORS_ALLOW_ORIGINS` 覆盖 |
 | 现有 API 稳定 | 保持 `/api/v1/health` 和 `/api/v1/ask`，复用公共 Pydantic 模型 |
 | 接入 AgentService | 保留 `create_app(agent_service=...)` 注入；调用 `AgentService.run()` 并包装为 `AskResponse` |
 | 保留 Mock 入口 | `backend.app.dev:app` 继续注入 `MockAgentService` |
@@ -71,7 +71,7 @@ python -m uvicorn backend.app.dev:app --port 8000
 - 使用 OpenAI-compatible `chat/completions` 请求格式；
 - 复用公共 `LLMGenerateRequest` 与 `LLMResult`；
 - API Key 仅从 `QWEN_API_KEY` 读取，且从对象 repr 中隐藏；
-- 支持超时和最多 3 次有限重试；
+- 网络异常与 HTTP 状态共用一个重试计数，最多执行 `QWEN_MAX_RETRIES + 1` 次请求；
 - 对 401/403、408、429、5xx 和非法响应进行安全错误映射；
 - 本次未执行真实付费模型调用，使用 `httpx.MockTransport` 验证请求与响应契约。
 
@@ -86,7 +86,7 @@ python -m uvicorn backend.app.dev:app --port 8000
 最近一次结果：
 
 ```text
-Ran 27 tests in 0.559s
+Ran 29 tests in 0.957s
 OK
 ```
 
@@ -105,9 +105,13 @@ OK
 
 - `GET /api/v1/health` 返回 `200`，`status=ok`；
 - `POST /api/v1/ask` 返回 `200`、`status=answered` 和 Mock 演示回答；
-- 来自 `http://localhost:5173` 的 CORS 预检返回
-  `Access-Control-Allow-Methods: GET, POST, OPTIONS`；
+- 来自 `http://localhost:5173` 的 CORS 预检支持
+  `GET, POST, PATCH, OPTIONS`；
 - 响应包含 `X-Request-ID`。
+
+依赖验证：新建临时虚拟环境，仅安装 `backend/requirements.txt`；确认
+`httpx 0.28.1`、`fastapi 0.163.1` 可导入，并成功启动
+`backend.app.dev:app`、访问 `/api/v1/health`。
 
 ## 6. 未改变项
 

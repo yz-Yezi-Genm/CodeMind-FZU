@@ -43,6 +43,7 @@ Agent 可通过 `create_qwen_client_from_env()` 获取实现了 `LLMClient` 协�
 | 成功响应 | 提取 content、model、usage | PASS |
 | 请求构造 | URL、Bearer 头、messages、temperature、max_tokens 正确 | PASS |
 | 503 后重试 | 重试一次并返回成功 | PASS |
+| 503 + 网络超时混合异常 | `max_retries=1` 时总请求次数严格为 2 | PASS |
 | 请求超时 | 转为 `LLMTimeoutError` | PASS |
 | HTTP 429 | 转为 `LLMRateLimitedError` | PASS |
 | HTTP 500 | 转为 `LLMUnavailableError` | PASS |
@@ -52,12 +53,13 @@ Agent 可通过 `create_qwen_client_from_env()` 获取实现了 `LLMClient` 协�
 最近一次完整测试结果：
 
 ```text
-Ran 27 tests in 0.559s
+Ran 29 tests in 0.957s
 OK
 ```
 
 ## 5. 边界
 
 - 本轮验证的是适配器契约、异常映射和重试，不代表真实 Qwen 输出质量；
+- 网络错误与 HTTP 5xx/429 共用同一重试预算，不会叠加扩大请求次数；
 - 真实调用需要团队在本地配置 API Key 后单独执行；
 - 正式回答中的引用仍只能来自 Retriever 返回且经业务核验的证据。

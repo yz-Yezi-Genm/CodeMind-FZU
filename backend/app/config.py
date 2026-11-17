@@ -60,7 +60,7 @@ class AppSettings:
     """Application settings loaded from environment variables."""
 
     cors_allow_origins: tuple[str, ...] = DEFAULT_CORS_ALLOW_ORIGINS
-    cors_allow_methods: tuple[str, ...] = ("GET", "POST", "OPTIONS")
+    cors_allow_methods: tuple[str, ...] = ("GET", "POST", "PATCH", "OPTIONS")
     cors_allow_headers: tuple[str, ...] = ("Content-Type", "Authorization")
 
     @classmethod

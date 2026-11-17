@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 import os
 from dataclasses import dataclass, field
-from typing import Any
 from urllib.parse import urlsplit
 
 import httpx
@@ -119,7 +118,23 @@ class QwenLLMClient:
 
         try:
             for attempt in range(self._settings.max_retries + 1):
-                response = await self._post(client, payload, headers, attempt)
+                try:
+                    response = await client.post(
+                        self.endpoint,
+                        json=payload,
+                        headers=headers,
+                    )
+                except httpx.TimeoutException as exc:
+                    if attempt < self._settings.max_retries:
+                        await asyncio.sleep(0.25 * (2**attempt))
+                        continue
+                    raise LLMTimeoutError() from exc
+                except httpx.RequestError as exc:
+                    if attempt < self._settings.max_retries:
+                        await asyncio.sleep(0.25 * (2**attempt))
+                        continue
+                    raise LLMUnavailableError() from exc
+
                 if response.status_code < 400:
                     return self._parse_response(response)
 
@@ -135,26 +150,6 @@ class QwenLLMClient:
         finally:
             if owns_client:
                 await client.aclose()
-
-    async def _post(
-        self,
-        client: httpx.AsyncClient,
-        payload: dict[str, Any],
-        headers: dict[str, str],
-        attempt: int,
-    ) -> httpx.Response:
-        try:
-            return await client.post(self.endpoint, json=payload, headers=headers)
-        except httpx.TimeoutException as exc:
-            if attempt < self._settings.max_retries:
-                await asyncio.sleep(0.25 * (2**attempt))
-                return await self._post(client, payload, headers, attempt + 1)
-            raise LLMTimeoutError() from exc
-        except httpx.RequestError as exc:
-            if attempt < self._settings.max_retries:
-                await asyncio.sleep(0.25 * (2**attempt))
-                return await self._post(client, payload, headers, attempt + 1)
-            raise LLMUnavailableError() from exc
 
     def _parse_response(self, response: httpx.Response) -> LLMResult:
         try:

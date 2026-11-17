@@ -100,6 +100,33 @@ class QwenClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(calls, 2)
         self.assertEqual(result.content, "重试成功")
 
+    async def test_mixed_failures_share_one_retry_budget(self):
+        calls = 0
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(503, json={"error": "temporary"})
+            raise httpx.ReadTimeout("timed out", request=request)
+
+        async with httpx.AsyncClient(
+            transport=httpx.MockTransport(handler)
+        ) as http_client:
+            client = QwenLLMClient(
+                QwenSettings(
+                    api_key="test-key",
+                    base_url="https://qwen.example/v1",
+                    model="qwen-test",
+                    max_retries=1,
+                ),
+                http_client=http_client,
+            )
+            with self.assertRaises(LLMTimeoutError):
+                await client.generate(self.request())
+
+        self.assertEqual(calls, 2)
+
     async def test_timeout_maps_to_sanitized_service_error(self):
         def handler(request: httpx.Request) -> httpx.Response:
             raise httpx.ReadTimeout("timed out", request=request)

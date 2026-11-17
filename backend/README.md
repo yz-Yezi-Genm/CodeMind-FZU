@@ -54,6 +54,7 @@ CORS_ALLOW_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
 来源格式非法或配置为 `*` 时，应用会在启动阶段拒绝配置。
+允许的方法为 `GET`、`POST`、`PATCH`、`OPTIONS`，其中 `PATCH` 预留给后续后台元数据修改接口。
 
 ## 环境变量与 Qwen
 
@@ -75,6 +76,9 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 
 `backend.services.qwen_client.QwenLLMClient` 实现公共 `LLMClient.generate()` 协议，不修改公共 `LLMGenerateRequest` / `LLMResult`。适配器处理超时、有限重试、限流和上游异常，并将错误转换为可安全返回的服务错误。
 
+`httpx` 已包含在正式依赖 `backend/requirements.txt` 中，因为
+`backend.services` 在导入时会加载 Qwen 适配器；只安装运行依赖即可启动 API。
+
 ## 测试
 
 ```bash
@@ -90,6 +94,9 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - CORS 允许/拒绝与非法通配符配置；
 - Agent 服务异常和错误返回脱敏；
 - Qwen 成功、超时、限流、重试、不可用及缺失密钥。
+
+运行依赖还使用以下方式做了干净环境验证：新建临时虚拟环境，仅安装
+`backend/requirements.txt`，确认 `httpx` 可导入并以 Uvicorn 启动健康检查。
 
 ## 公共契约
 
