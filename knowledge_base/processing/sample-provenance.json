@@ -29,7 +29,8 @@
       "archive_relative_key": "原始资料/学院/计算机学院_2027_本科推免资格推荐工作方案.pdf",
       "sha256": "39e96e8a22588c1b1b1d8fed10144df40df417b54a64ed1278395c6f85ed8fa7",
       "byte_size": 230304,
-      "crlf_count": 658
+      "crlf_count": null,
+      "crlf_count_note": "不适用：PDF为二进制格式，不统计文本行结束符。"
     },
     {
       "record_code": "计算机学院-2027-推免资格推荐",
@@ -65,7 +66,8 @@
       "archive_relative_key": "原始资料/学校/福州大学_2026_学科竞赛级别直接认定一览表.docx",
       "sha256": "99e64a99830e59198843a26a9a2b2db19f326b777000ba1c43721fb57ec300ff",
       "byte_size": 29013,
-      "crlf_count": 1
+      "crlf_count": null,
+      "crlf_count_note": "不适用：DOCX为二进制格式，不统计文本行结束符。"
     },
     {
       "record_code": "福大-2026-竞赛项目级别认定",
@@ -74,7 +76,8 @@
       "archive_relative_key": "原始资料/学校/福州大学_2026_学科竞赛级别认定一览表.docx",
       "sha256": "596c62ee1f2694b08f421605275e0eb53161bdd5e247a40f149af2feef94704c",
       "byte_size": 36064,
-      "crlf_count": 0
+      "crlf_count": null,
+      "crlf_count_note": "不适用：DOCX为二进制格式，不统计文本行结束符。"
     },
     {
       "record_code": "福大-2026-竞赛项目级别认定",
@@ -83,7 +86,8 @@
       "archive_relative_key": "原始资料/学校/福州大学_2026_体育类竞赛级别认定一览表.docx",
       "sha256": "07a6abe9417a03e122118d28e1e302937a03ebe41c89261902ab932b21d7dd57",
       "byte_size": 15371,
-      "crlf_count": 0
+      "crlf_count": null,
+      "crlf_count_note": "不适用：DOCX为二进制格式，不统计文本行结束符。"
     },
     {
       "record_code": "福大-2026-竞赛项目级别认定",

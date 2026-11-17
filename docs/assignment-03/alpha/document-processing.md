@@ -58,6 +58,7 @@ Markdown开头存在`---`元数据头时跳过到闭合的`---`或`...`，不把
 - `category_name`仍是七类主分类；`business_direction_codes`沿用预览中的`POLICY_AFFAIRS`、`EDUCATION_CAREER`、`COMPETITION_RESEARCH`等已有代码，不自行改名。
 - 解析成功只把本次输入文件的`extraction_status`标记为`extracted`；这不表示资料是全文、条款正确、附件完整或政策当前有效。
 - 来源核验和时效核验不因解析而升级。竞赛与推免来源状态沿用`partial`，奖学金沿用`pending`；三个样例时效均为`pending`，原有核查文字继续保留。`partial`仅表示历史上有部分核查记录。
+- 样例生成时，若时效为pending且原policy_status为“当前有效”，导出表述为“时效待核验（原归档标签：当前有效）”；import_snapshot中的原始值保留，不改44条预览或原件。
 - **所有输出强制`retrieval_status=blocked`，`index_status=pending`**；即使调用者传入合法的enabled元数据，输出也保持blocked，不修改调用者原对象。
 - 行号从1开始；字符区间为左闭右开`[char_start, char_end)`，基于解码、去BOM、统一LF后的输入全文。行号包含被跳过的元数据头，便于回到原文件核对。
 - `original_file_key`、`original_locator`默认null。样例包保留可找到的官方原件/附件文件记录，但尚未核实逐段原件定位，不把整理稿行号冒充官方网页段落或PDF页码。
@@ -89,6 +90,8 @@ Markdown开头存在`---`元数据头时跳过到闭合的`---`或`...`，不把
 三个正文样例共23片段，全部blocked，关联文件均已在本次修订中补齐。[解析前后对比](document-processing-comparison.md)列出来源、输入/输出、逐片段定位；[机器汇总](../../../knowledge_base/processed/alpha/summary.json)保留哈希和统计。旧的创新学分、推免复试资料继续作为原始知识库资料保留，但不再用来代替本次核心样例；旧的两个演示解析包已移除，避免交接时混用。
 
 本次从已有本地知识库归档补入11个与样例对应的文件，包括3份正文提取稿及对应的整理稿、网页和附件。[归档文件校验记录](../../../knowledge_base/processing/sample-provenance.json)记录相对来源键、角色、实际字节数和SHA-256，文件未改写。新增归档文件使用`.gitattributes`的`-text`保留原始CRLF字节，原有样例文本的LF规则继续保留；解析坐标仍按解码后统一LF计算。归档副本中的“当前有效”等历史标签不是本次时效结论，解析器跳过该元数据头，沿用44条预览中的核验字段。
+
+归档记录的crlf_count仅统计文本文件；PDF、DOCX为二进制格式，该值为null，另附“不适用”说明，不把二进制字节模式解释为文本行数。
 
 仓库现有31条CSV与44条离线预览仍存在范围差异；本次只补齐三个样例所需文件，不修改原44条编号、总量、历史核查记录或全量CSV，也不声称44条已经正式入库。
 

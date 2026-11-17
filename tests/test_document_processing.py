@@ -413,6 +413,11 @@ class RepositoryPackageTests(unittest.TestCase):
             raw = (root / item["storage_key"]).read_bytes()
             self.assertEqual(sha256(raw).hexdigest(), item["sha256"])
             self.assertEqual(len(raw), item["byte_size"])
+            if Path(item["storage_key"]).suffix.lower() in {".pdf", ".docx"}:
+                self.assertIsNone(item["crlf_count"])
+                self.assertIn("不适用", item["crlf_count_note"])
+            else:
+                self.assertEqual(item["crlf_count"], raw.count(b"\r\n"))
 
     def test_sample_generation_is_repeatable_in_an_isolated_checkout(self):
         from scripts.parse_alpha_documents import build_samples, MANIFEST, OUTPUT, REPORT
@@ -431,7 +436,15 @@ class RepositoryPackageTests(unittest.TestCase):
                 target = isolated / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(root / relative, target)
+            preview_before = (isolated / manifest["preview_path"]).read_bytes()
             first = build_samples(isolated)
+            scholarship = next(package for package in first
+                               if package.metadata.record_code == "福大-2026-本科奖学金")
+            self.assertEqual(scholarship.metadata.policy_status, "时效待核验（原归档标签：当前有效）")
+            self.assertEqual(scholarship.metadata.timeliness_verification_status, "pending")
+            self.assertEqual(scholarship.metadata.import_snapshot["状态"], "当前有效")
+            self.assertEqual(scholarship.metadata.retrieval_status, "blocked")
+            self.assertEqual((isolated / manifest["preview_path"]).read_bytes(), preview_before)
             snapshot = {p.relative_to(isolated): p.read_bytes() for p in (isolated / OUTPUT).glob("*.json")}
             report = (isolated / REPORT).read_bytes()
             self.assertEqual(build_samples(isolated), first)

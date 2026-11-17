@@ -55,6 +55,10 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
                                       if x["document_id"] == document["id"]],
             retrieval_status="blocked",
         )
+        # An imported archive label is not a present-day timeliness conclusion.
+        # Keep its original value in import_snapshot and leave the preview intact.
+        if data.get("timeliness_verification_status") == "pending" and data.get("policy_status") == "当前有效":
+            data["policy_status"] = "时效待核验（原归档标签：当前有效）"
         notes = [version.get("verification_note"), version.get("legacy_verification_text"), sample["limitation"]]
         data["verification_note"] = "\n".join(x for x in notes if x)
         metadata = DocumentMetadata.model_validate(data)

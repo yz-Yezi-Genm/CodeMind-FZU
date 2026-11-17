@@ -1,5 +1,25 @@
 <repository>\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
   from starlette.testclient import TestClient as TestClient  # noqa
+test_agent_result_is_wrapped_with_shared_ids (test_backend_runtime.BackendRuntimeTests.test_agent_result_is_wrapped_with_shared_ids) ... ok
+test_agent_service_error_uses_contract_envelope (test_backend_runtime.BackendRuntimeTests.test_agent_service_error_uses_contract_envelope) ... ok
+test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests.test_allowed_cors_origin) ... ok
+test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests.test_cors_origins_can_be_overridden_from_environment) ... ok
+test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests.test_dev_entry_keeps_mock_agent_enabled) ... ok
+test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests.test_health_and_request_id_header) ... ok
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=68f5a8fb-68e1-4cdc-8f93-8d5b5ce2cebc detail=AgentService.run() 必须返回 AgentResult。
+ok
+test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests.test_patch_cors_is_enabled_for_admin_contracts) ... ok
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=85efb3fb-a733-437c-af87-e53e370afdea type=RuntimeError
+Traceback (most recent call last):
+  File "<repository>\backend\app\main.py", line 204, in ask
+    result = await service.run(
+             ^^^^^^^^^^^^^^^^^^
+  File "<repository>\tests\test_backend_runtime.py", line 43, in run
+    raise RuntimeError("unexpected internal detail")
+RuntimeError: unexpected internal detail
+ok
+test_unlisted_cors_origin_is_not_allowed (test_backend_runtime.BackendRuntimeTests.test_unlisted_cors_origin_is_not_allowed) ... ok
+test_wildcard_cors_origin_is_rejected (test_backend_runtime.BackendRuntimeTests.test_wildcard_cors_origin_is_rejected) ... ok
 test_binary_control_character_in_txt_is_rejected (test_document_processing.DocumentProcessingTests.test_binary_control_character_in_txt_is_rejected) ... ok
 test_bom_crlf_unicode_filename_hash_and_source_reference (test_document_processing.DocumentProcessingTests.test_bom_crlf_unicode_filename_hash_and_source_reference) ... ok
 test_cli_does_not_overwrite_input (test_document_processing.DocumentProcessingTests.test_cli_does_not_overwrite_input) ... ok
@@ -50,8 +70,16 @@ test_health_endpoint (test_mock_agent_api.MockAgentApiTests.test_health_endpoint
 test_insufficient_evidence (test_mock_agent_api.MockAgentApiTests.test_insufficient_evidence) ... ok
 test_invalid_request (test_mock_agent_api.MockAgentApiTests.test_invalid_request) ... ok
 test_normal_answer (test_mock_agent_api.MockAgentApiTests.test_normal_answer) ... ok
+test_missing_api_key_fails_before_network_call (test_qwen_client.QwenClientTests.test_missing_api_key_fails_before_network_call) ... ok
+test_mixed_failures_share_one_retry_budget (test_qwen_client.QwenClientTests.test_mixed_failures_share_one_retry_budget) ... ok
+test_rate_limit_maps_to_rate_limited_error (test_qwen_client.QwenClientTests.test_rate_limit_maps_to_rate_limited_error) ... ok
+test_retryable_status_is_retried (test_qwen_client.QwenClientTests.test_retryable_status_is_retried) ... ok
+test_server_failure_maps_to_unavailable_error (test_qwen_client.QwenClientTests.test_server_failure_maps_to_unavailable_error) ... ok
+test_settings_do_not_expose_api_key (test_qwen_client.QwenClientTests.test_settings_do_not_expose_api_key) ... ok
+test_success_response_is_adapted (test_qwen_client.QwenClientTests.test_success_response_is_adapted) ... ok
+test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests.test_timeout_maps_to_sanitized_service_error) ... ok
 
 ----------------------------------------------------------------------
-Ran 50 tests in 4.672s
+Ran 69 tests in 4.730s
 
 OK (skipped=1)
