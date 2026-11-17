@@ -1,2 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Keep the Alpha sample inputs byte-identical across Windows/Linux checkouts.
+knowledge_base/政策资料/整理资料/学校/福州大学_创新创业实践与素质拓展学分认定办法.md text eol=lf
+knowledge_base/政策资料/整理资料/学校/福州大学_2026_本科生奖学金评定管理办法.md text eol=lf
+knowledge_base/政策资料/整理资料/学院/计算机学院_2026_2027_推免复试方案.md text eol=lf
+knowledge_base/政策资料/原始资料/学校/福州大学_创新创业实践与素质拓展学分认定办法.html text eol=lf
+knowledge_base/政策资料/原始资料/学校/福州大学_2026_本科生奖学金评定管理办法.html text eol=lf
+knowledge_base/政策资料/原始资料/学院/计算机学院_2026_2027_推免复试方案.html text eol=lf
+docs/assignment-02/database-design/knowledge-base/入库预览_44条.json text eol=lf

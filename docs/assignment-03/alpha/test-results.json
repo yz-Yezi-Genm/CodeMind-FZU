@@ -1,0 +1,24 @@
+{
+  "command": "python -m scripts.check_document_processing",
+  "tested_at": "2026-11-17T09:48:40.857051+00:00",
+  "python": "3.12.14",
+  "platform": "Windows",
+  "dependencies": {
+    "pydantic": "2.14.3",
+    "fastapi": "0.163.1",
+    "httpx": "0.28.1",
+    "starlette": "1.10.0"
+  },
+  "tests_run": 40,
+  "passed": 39,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_document_processing.DocumentProcessingTests.test_symlink_escaping_storage_root_is_rejected",
+      "reason": "当前操作系统账户不允许创建符号链接"
+    }
+  ],
+  "successful": true,
+  "note": "实际执行全仓库unittest；解析通过不表示已做政策核验、入库或检索接入。"
+}

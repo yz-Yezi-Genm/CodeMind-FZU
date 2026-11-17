@@ -1,6 +1,6 @@
 # Backend 接口骨架
 
-本目录当前提供 CodeMind-FZU Alpha 阶段的公共 Pydantic v2 数据模型、Python Protocol 接口和最小 FastAPI 契约入口，不包含真实 Agent、数据库、向量检索、Qwen 调用或管理端业务实现。
+本目录当前提供 CodeMind-FZU Alpha 阶段的公共 Pydantic v2 数据模型、Python Protocol 接口、最小 FastAPI 契约入口和 Markdown/TXT 离线文档解析，不包含真实 Agent、数据库、向量检索、Qwen 调用或管理端业务实现。
 
 ## 环境与启动
 
@@ -32,11 +32,22 @@ python -m uvicorn backend.app.main:app --reload
 
 各成员应直接复用公共模型，不要在自己的模块中复制定义同名 DTO。公共字段、状态值或函数签名需要修改时，先向罗宇泽提出并等待统一更新。
 
+## 文档解析（Alpha）
+
+`backend.document_processing.TextDocumentParser` 实现现有 `DocumentParser` 协议，返回公共 `DocumentPackage`。支持 Markdown/TXT、标题层级、片段编号、行号/字符定位和哈希；输出全部保持 `retrieval_status=blocked`。PDF及其他格式仅登记待处理，不伪造正文。
+
+```bash
+python -m scripts.parse_alpha_documents
+python -m scripts.check_document_processing
+```
+
+三个场景样例位于 `knowledge_base/processed/alpha/`。完整使用方法、核验边界和索引交接见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。奖学金及推免样例目前是摘要/简要说明，不能作为已核验的完整政策。
+
 ## 当前未实现内容
 
 - Agent 工作流和对话历史持久化；
 - Qwen 真实调用及密钥配置；
-- 文档解析、文件存储和资料入库；
+- PDF/OCR与复杂附件解析、文件存储服务和资料实际入库；
 - PostgreSQL/SQLAlchemy 在线连接与迁移；
 - Chroma、BM25、RRF 实际检索；
 - 管理端业务 API 和认证授权。

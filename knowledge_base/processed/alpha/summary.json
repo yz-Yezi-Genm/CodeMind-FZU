@@ -1,0 +1,56 @@
+{
+  "metadata_source": "docs/assignment-02/database-design/knowledge-base/入库预览_44条.json",
+  "metadata_source_sha256": "69a3b39f40cb57edf17c9570e890de2f7a1bf2fafc70f3af3a78d0e3ad62b4d4",
+  "max_chunk_chars": 1200,
+  "sample_count": 3,
+  "samples": [
+    {
+      "key": "competition-credit",
+      "scenario": "竞赛认定",
+      "record_code": "福大-2024-创新创业学分认定",
+      "input_key": "knowledge_base/政策资料/整理资料/学校/福州大学_创新创业实践与素质拓展学分认定办法.md",
+      "input_sha256": "4ba5238dffde8b388066376d1bd473c10a368977b6266aae47046bd0e0b4156b",
+      "input_chars": 7466,
+      "chunk_chars": 7007,
+      "chunk_count": 9,
+      "file_count": 2,
+      "missing_registered_files": [],
+      "source_verification_status": "pending",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "limitation": "整理稿含提取正文和分值表，但仍待原文语义与表格复核；创新学分办法不等于2026竞赛等级目录，也不等于奖学金奖励目录。"
+    },
+    {
+      "key": "scholarship-2026",
+      "scenario": "奖学金",
+      "record_code": "福大-2026-本科奖学金",
+      "input_key": "knowledge_base/政策资料/整理资料/学校/福州大学_2026_本科生奖学金评定管理办法.md",
+      "input_sha256": "8241127bac6ace2b29a551b2ce7bf6464b1c4be0d05f1baa482711a89246ffb1",
+      "input_chars": 734,
+      "chunk_chars": 440,
+      "chunk_count": 1,
+      "file_count": 2,
+      "missing_registered_files": [],
+      "source_verification_status": "pending",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "limitation": "仓库当前文件为人工整理摘要，不是完整官方正文；金额、比例及附件须另行复核，本次仅验证摘要文件的解析流程。"
+    },
+    {
+      "key": "recommendation-interview-2027",
+      "scenario": "推免",
+      "record_code": "计算机学院-2026-推免复试参考",
+      "input_key": "knowledge_base/政策资料/整理资料/学院/计算机学院_2026_2027_推免复试方案.md",
+      "input_sha256": "4e6bbec16d887e49d7691745a96f4ac4c3bdc015fc3f93415d06a08c59e1cce1",
+      "input_chars": 433,
+      "chunk_chars": 94,
+      "chunk_count": 1,
+      "file_count": 3,
+      "missing_registered_files": [],
+      "source_verification_status": "pending",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "limitation": "仓库当前文件为简要说明，且属于接收推免复试资料；不能用于判断本校推免资格或替代学院推荐工作方案，也不能把当年条件套用于其他年度。"
+    }
+  ]
+}
