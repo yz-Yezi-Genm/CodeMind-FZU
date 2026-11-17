@@ -8,7 +8,7 @@ import sys
 import tempfile
 import unittest
 
-from backend.contracts.models import DocumentMetadata, DocumentPackage
+from backend.contracts.models import DocumentMetadata, DocumentPackage, FileRole
 from backend.contracts.protocols import DocumentParser
 from backend.document_processing import DocumentProcessingError, TextDocumentParser
 
@@ -102,6 +102,48 @@ class DocumentProcessingTests(unittest.TestCase):
         self.assertEqual(package.chunks[0].source_file_key, file.storage_key)
         self.assertEqual(file.media_type, "text/markdown")
         self.assert_locations(package, text)
+
+    def test_markdown_explicit_extracted_role_preserves_content_and_metadata(self):
+        text = "# 政策正文\n提取文字。"
+        path = self.write(text)
+        before = self.metadata.model_dump()
+        parser: DocumentParser = TextDocumentParser(self.root, file_role=FileRole.EXTRACTED)
+        package = parser.parse_document(path, self.metadata)
+        self.assertEqual(package.files[0].file_role, FileRole.EXTRACTED)
+        self.assertEqual(package.files[0].processing_status, "extracted")
+        self.assertEqual(package.chunks[0].content, text)
+        self.assertEqual(package.metadata.retrieval_status, "blocked")
+        self.assertEqual(self.metadata.model_dump(), before)
+        self.assert_locations(package, text)
+
+    def test_markdown_explicit_curated_role_is_not_overridden_by_front_matter(self):
+        path = self.write("---\nfile_role: extracted\n---\n# 人工整理\n核对说明。")
+        package = TextDocumentParser(self.root, file_role="curated").parse_document(path, self.metadata)
+        self.assertEqual(package.files[0].file_role, FileRole.CURATED)
+        self.assertEqual(package.chunks[0].content, "# 人工整理\n核对说明。")
+        self.assertEqual(package.metadata.retrieval_status, "blocked")
+
+    def test_docx_explicit_attachment_role_does_not_enable_extraction(self):
+        path = self.root / "attachment.docx"
+        path.write_bytes(b"PK\x00\x00")
+        package = TextDocumentParser(self.root, file_role="attachment").parse_document(path, self.metadata)
+        self.assertEqual(package.files[0].file_role, FileRole.ATTACHMENT)
+        self.assertEqual(package.files[0].sha256, sha256(path.read_bytes()).hexdigest())
+        self.assertEqual(package.files[0].processing_status, "saved")
+        self.assertEqual(package.chunks, [])
+        self.assertEqual(package.metadata.extraction_status, "pending")
+        self.assertEqual(package.metadata.retrieval_status, "blocked")
+
+    def test_invalid_explicit_file_role_is_rejected(self):
+        for role in ("unknown", "", "EXTRACTED"):
+            with self.subTest(role=role), self.assertRaises(ValueError):
+                TextDocumentParser(self.root, file_role=role)
+
+    def test_omitted_file_role_preserves_legacy_defaults(self):
+        for name, role in (("legacy.md", "curated"), ("legacy.txt", "extracted"), ("legacy.docx", "original")):
+            with self.subTest(name=name):
+                package = self.parser.parse_document(self.write("正文", name), self.metadata)
+                self.assertEqual(package.files[0].file_role, role)
 
     def test_setext_headings_and_fenced_hash_are_handled(self):
         text = "总则\n===\n正文\n条件\n---\n```python\n# 代码不是标题\n```\n附则\n---\n尾句。"
@@ -243,6 +285,42 @@ class DocumentProcessingTests(unittest.TestCase):
         failure = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(failure.returncode, 1)
         self.assertIn("DOCUMENT_NOT_FOUND", failure.stderr)
+
+    def test_cli_explicit_markdown_and_docx_roles(self):
+        meta = self.root / "metadata.json"
+        meta.write_text(self.metadata.model_dump_json(), encoding="utf-8")
+        for name, role in (("extracted.md", "extracted"), ("curated.md", "curated"), ("attachment.docx", "attachment")):
+            with self.subTest(role=role):
+                path = self.write("# 正文\n示例文字。", name)
+                if path.suffix == ".docx":
+                    path.write_bytes(b"PK\x00\x00")
+                output = self.root / (name + ".json")
+                result = subprocess.run(
+                    [sys.executable, "-X", "utf8", "-m", "backend.document_processing", str(path),
+                     "--metadata", str(meta), "--storage-root", str(self.root), "--output", str(output),
+                     "--file-role", role], capture_output=True, text=True, encoding="utf-8",
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                package = DocumentPackage.model_validate_json(output.read_text(encoding="utf-8"))
+                self.assertEqual(package.files[0].file_role, role)
+                self.assertEqual(package.files[0].sha256, sha256(path.read_bytes()).hexdigest())
+                self.assertEqual(package.metadata.retrieval_status, "blocked")
+                self.assertEqual(bool(package.chunks), path.suffix == ".md")
+                self.assertEqual(package.metadata.extraction_status, "pending" if path.suffix == ".docx" else "extracted")
+
+    def test_cli_invalid_file_role_exits_before_writing_output(self):
+        path = self.write("正文")
+        meta = self.root / "metadata.json"
+        meta.write_text(self.metadata.model_dump_json(), encoding="utf-8")
+        output = self.root / "invalid-role.json"
+        result = subprocess.run(
+            [sys.executable, "-X", "utf8", "-m", "backend.document_processing", str(path),
+             "--metadata", str(meta), "--storage-root", str(self.root), "--output", str(output),
+             "--file-role", "unknown"], capture_output=True, text=True, encoding="utf-8",
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("--file-role", result.stderr)
+        self.assertFalse(output.exists())
 
     def test_cli_does_not_overwrite_input(self):
         path = self.write("原始正文不能被覆盖。")

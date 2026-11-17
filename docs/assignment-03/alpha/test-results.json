@@ -1,6 +1,6 @@
 {
   "command": "python -m scripts.check_document_processing",
-  "tested_at": "2026-11-17T11:06:23.652425+00:00",
+  "tested_at": "2026-11-17T11:44:12.710131+00:00",
   "python": "3.12.14",
   "platform": "Windows",
   "dependencies": {
@@ -9,8 +9,8 @@
     "httpx": "0.28.1",
     "starlette": "1.10.0"
   },
-  "tests_run": 43,
-  "passed": 42,
+  "tests_run": 50,
+  "passed": 49,
   "failures": 0,
   "errors": 0,
   "skipped": [

@@ -34,7 +34,7 @@ python -m uvicorn backend.app.main:app --reload
 
 ## 文档解析（Alpha）
 
-`backend.document_processing.TextDocumentParser` 实现现有 `DocumentParser` 协议，返回公共 `DocumentPackage`。支持 Markdown/TXT、标题层级、片段编号、行号/字符定位和哈希；输出全部保持 `retrieval_status=blocked`。PDF及其他格式仅登记待处理，不伪造正文。
+`backend.document_processing.TextDocumentParser` 实现现有 `DocumentParser` 协议，返回公共 `DocumentPackage`。支持 Markdown/TXT、标题层级、片段编号、行号/字符定位和哈希；输出全部保持 `retrieval_status=blocked`。文件业务角色可用构造参数`file_role`或CLI的`--file-role`显式指定；已知业务角色时应传入，未传时保留原默认值。PDF及其他格式仅登记待处理，不伪造正文。
 
 ```bash
 python -m scripts.parse_alpha_documents

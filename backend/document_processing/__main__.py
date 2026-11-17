@@ -5,7 +5,7 @@ import sys
 
 from pydantic import ValidationError
 
-from backend.contracts.models import DocumentMetadata
+from backend.contracts.models import DocumentMetadata, FileRole
 from .parser import DocumentProcessingError, TextDocumentParser
 
 
@@ -17,11 +17,14 @@ def main() -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--max-chunk-chars", type=int, default=1200)
     parser.add_argument("--encoding", default="utf-8-sig")
+    parser.add_argument("--file-role", choices=[role.value for role in FileRole],
+                        help="显式指定业务角色；未提供时仅沿用原来的格式默认值")
     args = parser.parse_args()
     try:
         metadata = DocumentMetadata.model_validate_json(args.metadata.read_text(encoding="utf-8-sig"))
         package = TextDocumentParser(
             args.storage_root, max_chunk_chars=args.max_chunk_chars, encoding=args.encoding,
+            file_role=args.file_role,
         ).parse_document(args.file_path, metadata)
         # Do not overwrite an input file when a caller mistakes --output for a directory.
         source = args.file_path if args.file_path.is_absolute() else args.storage_root / args.file_path

@@ -33,7 +33,6 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
     versions = {x["record_code"]: x for x in preview["document_versions"]}
     categories = {x["id"]: x["name"] for x in preview["knowledge_categories"]}
     directions = {x["id"]: x["code"] for x in preview["business_directions"]}
-    parser = TextDocumentParser(root, max_chunk_chars=manifest["max_chunk_chars"])
     packages, summaries = [], []
     report = [
         "# Alpha 文档解析前后对比", "",
@@ -61,15 +60,15 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
         metadata = DocumentMetadata.model_validate(data)
         input_path = root / sample["file_path"]
         original_bytes = input_path.read_bytes()
-        package = parser.parse_document(input_path, metadata)
-        # The generic MD parser defaults to curated. These files are registered
-        # extracted bodies in the existing preview, so retain that declared role.
         registered = {row["storage_key"]: row for row in preview["document_files"]
                       if row["version_id"] == version["id"]}
-        files = [ParsedFile.model_validate({
-            **file.model_dump(),
-            "file_role": registered.get(file.storage_key, {}).get("file_role", file.file_role),
-        }) for file in package.files]
+        # Supply the business role before parsing; do not patch the result later.
+        parser = TextDocumentParser(
+            root, max_chunk_chars=manifest["max_chunk_chars"],
+            file_role=registered[sample["file_path"]]["file_role"],
+        )
+        package = parser.parse_document(input_path, metadata)
+        files = list(package.files)
         missing_keys = []
         for row in preview["document_files"]:
             if row["version_id"] != version["id"] or row["storage_key"] == sample["file_path"]:

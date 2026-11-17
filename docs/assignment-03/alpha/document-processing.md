@@ -1,6 +1,6 @@
 # Alpha 文档解析与知识资料处理
 
-日期：2026-11-17。模块：文档解析与资料处理。状态：已实现离线解析及样例验证，通过[PR #19](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/19)提交审核，待真实索引联调。
+日期：2026-11-17。模块：文档解析与资料处理。本轮显式文件角色修订通过独立分支随[PR #19](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/19)提交复核。真实索引联调仍待完成。
 
 ## 1. 任务范围与接口依据
 
@@ -41,7 +41,7 @@ JSON 样例/交给 KnowledgeIndexer（本模块不执行入库或索引）
 | 切片 | 默认最多1200个字符；优先标题分节，然后选段落、换行或句末边界；极长单行硬切，最后一段不丢失 |
 | 标题层级 | 识别1—6级 ATX 标题与 Setext 标题；围栏代码中的 `#` 不当标题；完整路径写入现有 `locator_note` |
 | 片段编号 | 每份输入文件内从1连续编号，写入 `chunk_no`；重跑同一输入和配置得到相同结果 |
-| 文件归属 | `source_file_key` 对应包内 `ParsedFile.storage_key`；MD登记为curated，TXT登记为extracted |
+| 文件归属 | `source_file_key` 对应包内 `ParsedFile.storage_key`；业务角色通过构造参数`file_role`显式传入，不与扩展名绑定 |
 | 定位 | `locator` 保存输入文件行号和标题路径；`locator_note` 保存行号、字符区间和层级JSON字符串 |
 | 文件核对 | SHA-256按原始文件字节计算；不改写输入文件 |
 | 路径 | 文件必须在配置根目录内；storage_key为相对POSIX路径，不输出本机绝对路径 |
@@ -111,10 +111,14 @@ python -m scripts.check_document_processing
 单文件CLI示例（输入MD和元数据JSON均已在仓库）：
 
 ```bash
-python -m backend.document_processing "knowledge_base/政策资料/正文资料/学校/福州大学_2026_本科生奖学金评定管理办法.md" --storage-root . --metadata knowledge_base/processed/alpha/scholarship-2026.metadata.json --output output/parsed-scholarship.json
+python -m backend.document_processing "knowledge_base/政策资料/正文资料/学校/福州大学_2026_本科生奖学金评定管理办法.md" --storage-root . --metadata knowledge_base/processed/alpha/scholarship-2026.metadata.json --output output/parsed-scholarship.json --file-role extracted
 ```
 
-`--max-chunk-chars`可配置片段长度，`--encoding`可显式指定编码。输出JSON不能覆盖正文或元数据输入文件。CLI正常返回0；处理失败返回1，参数错误返回2。原件路径不会出现在错误消息中。通用CLI按格式将MD登记为curated；批处理按已有预览把这三份正文的文件角色校正为extracted，并补上原件、附件及整理稿。需要与本次交接包完全一致时使用批处理命令。
+`--max-chunk-chars`可配置片段长度，`--encoding`可显式指定编码。输出JSON不能覆盖正文或元数据输入文件。CLI正常返回0；处理失败返回1，参数错误返回2。原件路径不会出现在错误消息中。
+
+文件角色是业务属性。通过`TextDocumentParser(root, file_role="extracted")`或CLI的`--file-role`传入，使用现有`FileRole`枚举的original、attachment、extracted、curated四个值；Python也接受该枚举实例。非法角色会被拒绝，Markdown元数据头不能覆盖角色。为兼容原调用，未传角色时仍沿用旧默认值：MD为curated、TXT为extracted、其他格式为original；已有业务登记时应显式传入，默认值不能替代业务判断。
+
+批处理从44条预览读取角色，在调用解析器前传入，三个Markdown正文直接返回extracted，不再事后修改解析结果。角色不会改变格式支持：指定DOCX为attachment仍只登记文件，正文待处理、chunks为空、检索保持blocked；不表示已支持DOCX解析。
 
 ## 6. 异常与未支持格式
 
@@ -139,7 +143,7 @@ from backend.contracts.models import DocumentPackage
 from backend.contracts.protocols import DocumentParser, KnowledgeIndexer
 from backend.document_processing import TextDocumentParser
 
-parser: DocumentParser = TextDocumentParser(Path("."))
+parser: DocumentParser = TextDocumentParser(Path("."), file_role="extracted")
 package = parser.parse_document(file_path, metadata)
 
 # 文件交接时可重新验证同一个公共模型
@@ -157,7 +161,7 @@ package = DocumentPackage.model_validate_json(json_path.read_text(encoding="utf-
 
 ## 8. 测试与成果
 
-测试覆盖Markdown/TXT、标题跳级和同级切换、围栏代码、BOM/CRLF、中文路径、长行与中文长文无丢字、表格原文字保留、元数据不变、强制blocked、JSON契约回读、可重复结果、文件哈希、待OCR、PDF/DOCX待处理、空文件/乱码/越界/大小限制以及CLI正常和异常退出。
+测试覆盖Markdown/TXT、标题跳级和同级切换、围栏代码、BOM/CRLF、中文路径、长行与中文长文无丢字、表格原文字保留、元数据不变、强制blocked、JSON契约回读、可重复结果、文件哈希、待OCR、PDF/DOCX待处理、空文件/乱码/越界/大小限制以及CLI正常和异常退出。本轮新增直接解析和CLI的Markdown extracted、Markdown curated、DOCX attachment测试，包含非法角色拒绝和旧默认值兼容性。
 
 测试结果以 [test-results.json](test-results.json) 和 [测试日志](document-processing-tests.txt) 为准。Windows无符号链接创建权限时，对应测试明确跳过；普通越界路径测试仍执行。全仓库已有接口/API测试一并运行，未修改其预期。
 

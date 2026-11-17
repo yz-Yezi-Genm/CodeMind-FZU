@@ -44,6 +44,8 @@ class TextDocumentParser:
     Relative file paths resolve against storage_root. The output contains relative
     POSIX storage keys only. The caller supplies trusted, reviewed-as-appropriate
     metadata; a file's YAML header cannot override it or enable retrieval.
+    file_role is an explicit business label; suffix defaults only preserve older
+    callers. It does not select a decoder or grant support for another format.
     """
 
     def __init__(
@@ -53,6 +55,7 @@ class TextDocumentParser:
         max_chunk_chars: int = 1200,
         encoding: str = "utf-8-sig",
         max_file_bytes: int = 10 * 1024 * 1024,
+        file_role: FileRole | str | None = None,
     ):
         self.storage_root = Path(storage_root).resolve(strict=True)
         if not self.storage_root.is_dir():
@@ -62,6 +65,7 @@ class TextDocumentParser:
         self.max_chunk_chars = max_chunk_chars
         self.encoding = encoding
         self.max_file_bytes = max_file_bytes
+        self.file_role = FileRole(file_role) if file_role is not None else None
 
     def parse_document(
         self, file_path: Path, metadata: DocumentMetadata,
@@ -88,8 +92,9 @@ class TextDocumentParser:
         suffix = path.suffix.lower()
         supported = suffix in {".md", ".markdown", ".txt"}
         file = ParsedFile(
-            file_role=(FileRole.CURATED if suffix in {".md", ".markdown"}
-                       else FileRole.EXTRACTED if suffix == ".txt" else FileRole.ORIGINAL),
+            file_role=(self.file_role if self.file_role is not None else
+                       FileRole.CURATED if suffix in {".md", ".markdown"} else
+                       FileRole.EXTRACTED if suffix == ".txt" else FileRole.ORIGINAL),
             storage_key=storage_key,
             original_name=path.name,
             media_type={".md": "text/markdown", ".markdown": "text/markdown", ".txt": "text/plain"}.get(

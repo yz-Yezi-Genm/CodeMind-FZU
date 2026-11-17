@@ -1,6 +1,6 @@
 # 文档解析与索引模块联调交接清单
 
-当前状态：已完成离线解析和公共模型验证，尚未调用真实索引器，尚未完成双方联调。本次成果通过独立分支及PR提交审核，不直接修改main。
+当前状态：已完成离线解析和公共模型验证，尚未调用真实索引器，尚未完成双方联调。本轮显式文件角色修订通过独立分支及PR提交复核。
 
 ## 交给索引模块的内容
 
@@ -28,7 +28,7 @@ async def ingest_package(indexer: KnowledgeIndexer, json_path: Path) -> IndexRes
     return await indexer.index_document(package)
 ```
 
-通用解析入口仍是`TextDocumentParser.parse_document(file_path, metadata)`。样例批处理在此基础上沿用44条预览中的文件角色，并把同版本原件、附件和整理稿装入同一个包。
+通用解析入口仍是`TextDocumentParser.parse_document(file_path, metadata)`；初始化时用`TextDocumentParser(root, file_role="extracted")`显式指定业务角色。样例批处理在解析前传入44条预览中的角色，不再事后修正，并把同版本原件、附件和整理稿装入同一个包。
 
 ## 联调时需要确认
 

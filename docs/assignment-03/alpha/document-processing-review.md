@@ -1,6 +1,13 @@
 # Alpha 文档处理：修订与待办
 
-日期：2026-11-17。本次修订通过独立分支`codex/alpha-document-processing`随[PR #19](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/19)提交审核，不直接修改main。公共接口与状态值保持原样。
+日期：2026-11-17。本轮文件角色修订通过独立分支随[PR #19](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/19)提交复核。公共模型与`parse_document(file_path, metadata)`协议保持原样。
+
+## 本轮审核项：显式文件角色
+
+- 解析器增加构造参数`file_role`，CLI增加`--file-role`，直接使用现有FileRole枚举；角色不再必须与扩展名对应。
+- 批处理在解析前传入登记角色，移除事后修正。未指定时保留旧默认值，已有业务登记时应显式传入。
+- 新增Markdown extracted、Markdown curated、DOCX attachment的直接解析和CLI测试，同时检查非法值及默认兼容性。
+- 指定attachment不会让DOCX进入正文解析；待处理状态、空片段及blocked边界保留。没有新增格式支持。
 
 ## 已补齐的问题
 
@@ -22,7 +29,7 @@
 | --- | --- | --- |
 | 文档解析模块源码 | 已完成本地实现；支持Markdown/TXT | [解析模块](../../../backend/document_processing/parser.py) |
 | 至少三个代表性资料解析结果 | 已完成；竞赛、奖学金、推免共23片段 | [机器汇总](../../../knowledge_base/processed/alpha/summary.json) |
-| 单元测试，包含正常与异常 | 已执行43项：42通过、1因Windows符号链接权限跳过、0失败/错误 | [测试结果](test-results.json)、[测试日志](document-processing-tests.txt) |
+| 单元测试，包含正常与异常 | 已执行50项：49通过、1因Windows符号链接权限跳过、0失败/错误 | [测试结果](test-results.json)、[测试日志](document-processing-tests.txt) |
 | 解析前后对比 | 已更新；包含输入路径、来源、状态及片段定位 | [解析对比](document-processing-comparison.md) |
 | 指定交付文档 | 已更新 | [文档处理说明](document-processing.md) |
 | 与真实KnowledgeIndexer对接 | 待联调，当前仓库只有协议，没有实际实现 | [联调交接清单](document-processing-handoff.md) |
