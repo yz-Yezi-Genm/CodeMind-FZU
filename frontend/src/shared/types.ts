@@ -23,7 +23,7 @@ export interface HealthResponse {
 
 export interface AskRequest {
   query: string;
-  conversation_id?: string;
+  conversation_id?: string | null;
 }
 
 export interface WarningItem {
@@ -43,9 +43,10 @@ export interface Citation {
   locator?: string | null;
   original_locator?: string | null;
   excerpt: string;
-  source_verification_status: string;
-  timeliness_verification_status: string;
-  retrieval_status: string;
+  source_verification_status: 'pending' | 'partial' | 'verified' | 'failed';
+  timeliness_verification_status:
+    | 'pending' | 'current' | 'historical' | 'superseded' | 'expired' | 'uncertain';
+  retrieval_status: 'blocked' | 'review_only' | 'enabled';
 }
 
 export interface AskResponse {
