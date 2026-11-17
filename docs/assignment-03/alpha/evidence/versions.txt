@@ -3,3 +3,6 @@ fastapi 0.162.5
 pydantic 2.14.3
 uvicorn 0.54.0
 httpx 0.28.1
+Node v24.18.0
+npm 11.16.0
+OS Windows-10-10.0.26200-SP0

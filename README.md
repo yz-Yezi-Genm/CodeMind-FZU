@@ -39,7 +39,7 @@ Tavily 联网检索为**可选扩展**，只能作为经核验的补充来源；
 
 | 层次 | 计划技术 / 职责 |
 | --- | --- |
-| 学生端 Web | HTML / CSS / JavaScript；问答输入、条件补充、引用与异常状态展示 |
+| 学生端 Web | **Vite + 原生 TypeScript（HTML + CSS）** 多页面应用；问答输入、条件补充、引用与异常状态展示 |
 | 后端 API | Python、FastAPI；请求校验、Agent 调用、统一响应 |
 | Agent 编排 | 任务识别、Clarifier 追问、检索调度、证据核验、回答复核 |
 | 本地检索 | Chroma + BM25 + RRF；两路召回、融合排序与去重 |
@@ -97,17 +97,16 @@ Chroma / BM25 并行检索 → RRF 融合排序
 ```text
 CodeMind-FZU/
 ├── README.md                       # 项目简介与开发路线
+├── backend/                        # FastAPI 接口骨架、Mock Agent、Qwen 适配器
+├── frontend/                       # Vite + 原生 TypeScript 多页面应用（学生端 / 管理端）
 ├── knowledge_base/                 # 官方资料登记、整理稿、索引与采集工具
+├── tests/                          # 后端契约、运行时与 Qwen 适配测试
 └── docs/
-    └── assignment-02/
-        ├── prototype/              # 学生端、管理端与交互流程原型
-        ├── system-design/          # 系统设计说明书、架构与 UML 图
-        ├── database-design/        # ER 图、关系模型、DDL、ORM、数据字典
-        ├── collaboration/          # 团队协作记录
-        └── blog/                   # 课程团队博客内容
+    ├── assignment-02/              # 原型、系统设计、数据库设计、协作与博客
+    └── assignment-03/              # Alpha 接口规范、运行说明与联调记录
 ```
 
-目前仓库已包含 Alpha 阶段的后端接口骨架与 Mock Agent，可按 [Alpha 阶段运行说明](docs/assignment-03/alpha/run-guide.md) 在本地启动并验证；前端运行说明待前端代码合入后补充。数据库生成、核验工具请按各自子目录 README 操作。
+本仓库已包含 Alpha 阶段的 FastAPI 接口骨架、Mock Agent、Qwen 适配器与 Vite + TypeScript 前端工程。按 [Alpha 阶段运行说明](docs/assignment-03/alpha/run-guide.md) 可在本地启动前后端并完成联调；前端业务页面仍在开发中。数据库生成、核验工具请按各自子目录 README 操作。
 
 ## 六、v1.0 开发计划（四周）
 

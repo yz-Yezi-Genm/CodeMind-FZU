@@ -1,6 +1,6 @@
 {
-  "request_id": "017a532a-600d-49e6-852d-df2b2bd3689c",
-  "conversation_id": "e908b4e1-e2dd-447c-a2d5-f14ef698acfc",
+  "request_id": "b1157748-9dc2-4c15-91ec-2daa039a5979",
+  "conversation_id": "ad945279-84be-42fc-b6bb-bd3e8d718a43",
   "status": "answered",
   "answer": "[Mock 演示] 已收到你的问题：大二申请院级奖学金需要什么条件？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。",
   "answer_mode": null,
@@ -12,5 +12,5 @@
       "message": "当前响应由 MockAgentService 生成，未调用真实模型和知识库。"
     }
   ],
-  "created_at": "2026-11-17T11:05:49.542230Z"
+  "created_at": "2026-11-17T13:50:32.807846Z"
 }

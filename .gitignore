@@ -15,3 +15,21 @@ __pycache__/
 
 # IDE configuration
 .idea/
+.vscode/
+
+# Frontend (Vite + TypeScript)
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+frontend/.vite/
+*.local
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
