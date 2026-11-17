@@ -1,6 +1,6 @@
 # Alpha 文档解析与知识资料处理
 
-日期：2026-11-17。模块：丁晓炜负责的文档解析与资料处理。状态：已实现离线解析及样例验证，待 PR 审核和索引模块联调。
+日期：2026-11-17。模块：文档解析与资料处理。状态：已实现离线解析及样例验证，通过[PR #19](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/19)提交审核，待真实索引联调。
 
 ## 1. 任务范围与接口依据
 
@@ -17,7 +17,7 @@ def parse_document(
 
 本周支持 Markdown（`.md`/`.markdown`）和 TXT。优先处理竞赛认定、奖学金、推免三个场景；三个场景不是新业务方向，也不替代七类主题分类。
 
-课程作业链接：[Alpha 作业](https://edu.cnblogs.com/campus/fzu/2026-01SoftwareEngineeringandSoftwareEngineeringPractice/homework/16793)。开发时普通读取及浏览器访问均跳转博客园登录页，尚未核实作业页面正文；本交付按已提供的个人任务要求和仓库正式契约落实，不声称已验证课程所有提交要求。
+课程作业链接：[Alpha 作业](https://edu.cnblogs.com/campus/fzu/2026-01SoftwareEngineeringandSoftwareEngineeringPractice/homework/16793)。已在用户自行登录后只读核对正文：团队需提交冲刺计划、冲刺总结、Vlog及答辩材料，记录实际工作、测试和协作过程。本模块为团队提供可复现的代码、数据和测试证据，不代表团队整体交付已完成；未执行课程提交操作。个人开发细节以队长任务及仓库正式接口为准。
 
 ## 2. 已实现的处理流程
 
@@ -57,7 +57,7 @@ Markdown开头存在`---`元数据头时跳过到闭合的`---`或`...`，不把
 - 样例元数据来自已入仓库的 [44条离线预览](../../assignment-02/database-design/knowledge-base/入库预览_44条.json)，仅选取公共模型已有字段；完整原登记值保留在`import_snapshot`。预览不是运行中的数据库。
 - `category_name`仍是七类主分类；`business_direction_codes`沿用预览中的`POLICY_AFFAIRS`、`EDUCATION_CAREER`、`COMPETITION_RESEARCH`等已有代码，不自行改名。
 - 解析成功只把本次输入文件的`extraction_status`标记为`extracted`；这不表示资料是全文、条款正确、附件完整或政策当前有效。
-- 来源核验和时效核验不因解析而升级。三个样例仍为`pending`/`pending`，原有登记状态和核验文字继续保留。
+- 来源核验和时效核验不因解析而升级。竞赛与推免来源状态沿用`partial`，奖学金沿用`pending`；三个样例时效均为`pending`，原有核查文字继续保留。`partial`仅表示历史上有部分核查记录。
 - **所有输出强制`retrieval_status=blocked`，`index_status=pending`**；即使调用者传入合法的enabled元数据，输出也保持blocked，不修改调用者原对象。
 - 行号从1开始；字符区间为左闭右开`[char_start, char_end)`，基于解码、去BOM、统一LF后的输入全文。行号包含被跳过的元数据头，便于回到原文件核对。
 - `original_file_key`、`original_locator`默认null。样例包保留可找到的官方原件/附件文件记录，但尚未核实逐段原件定位，不把整理稿行号冒充官方网页段落或PDF页码。
@@ -80,15 +80,17 @@ Markdown开头存在`---`元数据头时跳过到闭合的`---`或`...`，不把
 
 ## 4. 三个代表性资料及实际覆盖
 
-| 场景 | 现有资料 | 登记发布日期 | 实际内容与限制 | 片段数 |
+| 场景 | 本次解析的正文提取稿 | 登记发布日期 | 实际内容与限制 | 片段数 |
 | --- | --- | --- | --- | ---: |
-| 竞赛认定 | [创新创业实践与素质拓展学分认定办法](../../../knowledge_base/政策资料/整理资料/学校/福州大学_创新创业实践与素质拓展学分认定办法.md) | 2024-05-30 | 含提取正文和分值表，待语义复核；不是2026竞赛目录 | 9 |
-| 奖学金 | [2026本科生奖学金评定管理办法](../../../knowledge_base/政策资料/整理资料/学校/福州大学_2026_本科生奖学金评定管理办法.md) | 2026-05-18 | 当前是人工整理摘要，金额和比例待核验；不冒充完整官方正文 | 1 |
-| 推免 | [学院2027推免复试方案整理稿](../../../knowledge_base/政策资料/整理资料/学院/计算机学院_2026_2027_推免复试方案.md) | 2026-09-17 | 当前是简要说明；接收推免复试不是本校推荐资格审查 | 1 |
+| 竞赛认定 | [2026大学生学科竞赛级别认定结果](../../../knowledge_base/政策资料/正文资料/学校/福州大学_2026_大学生学科竞赛级别认定结果.md) | 2026-03-06 | 网页及三份DOCX附件已有提取文字；目录行、表格和用途待复核，不直接推导奖学金或综评分值 | 13 |
+| 奖学金 | [2026本科生奖学金评定管理办法](../../../knowledge_base/政策资料/正文资料/学校/福州大学_2026_本科生奖学金评定管理办法.md) | 2026-05-18 | 改用已有正文提取稿；关键金额、比例、资格条款及学院细则待核验 | 4 |
+| 推免 | [学院2027届本科推免资格推荐工作方案](../../../knowledge_base/政策资料/正文资料/学院/计算机学院_2027_本科推免资格推荐工作方案.md) | 2026-09-08 | 属于本科推荐资格方案，保留PDF四页提取文字；第4页计分表待复核，申请期已过 | 6 |
 
-三个样例来自仓库现有文件，共11片段；全部blocked。[解析前后对比](document-processing-comparison.md)列出来源、输入/输出、逐片段定位及文字样例；[机器汇总](../../../knowledge_base/processed/alpha/summary.json)保留哈希和统计。`.gitattributes`只为这些样例相关的文本输入和元数据预览固定LF换行，使Windows/Linux克隆后的实际字节哈希可复现；未修改任何政策文字或历史核查哈希。本次ParsedFile哈希是当前仓库字节哈希，不能替代原始采集快照哈希。
+三个正文样例共23片段，全部blocked，关联文件均已在本次修订中补齐。[解析前后对比](document-processing-comparison.md)列出来源、输入/输出、逐片段定位；[机器汇总](../../../knowledge_base/processed/alpha/summary.json)保留哈希和统计。旧的创新学分、推免复试资料继续作为原始知识库资料保留，但不再用来代替本次核心样例；旧的两个演示解析包已移除，避免交接时混用。
 
-仓库现有31条CSV与设计里的44条离线预览存在范围差异；预览中部分`正文资料/`、新竞赛目录、学院推免推荐方案等物理文件尚未提交。缺失文件不伪造记录。本次不额外导入个人电脑的未审核资料，也不声称已经完成44条正式入库。
+本次从已有本地知识库归档补入11个与样例对应的文件，包括3份正文提取稿及对应的整理稿、网页和附件。[归档文件校验记录](../../../knowledge_base/processing/sample-provenance.json)记录相对来源键、角色、实际字节数和SHA-256，文件未改写。新增归档文件使用`.gitattributes`的`-text`保留原始CRLF字节，原有样例文本的LF规则继续保留；解析坐标仍按解码后统一LF计算。归档副本中的“当前有效”等历史标签不是本次时效结论，解析器跳过该元数据头，沿用44条预览中的核验字段。
+
+仓库现有31条CSV与44条离线预览仍存在范围差异；本次只补齐三个样例所需文件，不修改原44条编号、总量、历史核查记录或全量CSV，也不声称44条已经正式入库。
 
 ## 5. 运行与复现
 
@@ -109,10 +111,10 @@ python -m scripts.check_document_processing
 单文件CLI示例（输入MD和元数据JSON均已在仓库）：
 
 ```bash
-python -m backend.document_processing "knowledge_base/政策资料/整理资料/学校/福州大学_2026_本科生奖学金评定管理办法.md" --storage-root . --metadata knowledge_base/processed/alpha/scholarship-2026.metadata.json --output output/parsed-scholarship.json
+python -m backend.document_processing "knowledge_base/政策资料/正文资料/学校/福州大学_2026_本科生奖学金评定管理办法.md" --storage-root . --metadata knowledge_base/processed/alpha/scholarship-2026.metadata.json --output output/parsed-scholarship.json
 ```
 
-`--max-chunk-chars`可配置片段长度，`--encoding`可显式指定编码。输出JSON不能覆盖正文或元数据输入文件。CLI正常返回0；处理失败返回1，参数错误返回2。原件路径不会出现在错误消息中。
+`--max-chunk-chars`可配置片段长度，`--encoding`可显式指定编码。输出JSON不能覆盖正文或元数据输入文件。CLI正常返回0；处理失败返回1，参数错误返回2。原件路径不会出现在错误消息中。通用CLI按格式将MD登记为curated；批处理按已有预览把这三份正文的文件角色校正为extracted，并补上原件、附件及整理稿。需要与本次交接包完全一致时使用批处理命令。
 
 ## 6. 异常与未支持格式
 
@@ -170,4 +172,6 @@ package = DocumentPackage.model_validate_json(json_path.read_text(encoding="utf-
 | 前后对比 | 本目录`document-processing-comparison.md` |
 | 交接文档 | 本文件 |
 
-已完成：离线Markdown/TXT解析、元数据沿用、标题/定位/切片、格式待处理标记、三个场景的可复现样例、测试和记录。未完成：政策/附件逐条核验、OCR、缺失全文补充、数据库导入、Chroma/BM25/RRF索引接入、Agent真实问答，以及课程网页登录后的正文核对。
+已完成：离线Markdown/TXT解析、元数据沿用、标题/定位/切片、格式待处理标记、三个场景的正文样例及关联文件补齐、前后对比、测试和课程要求只读核对。未完成：政策时效与附件逐条核验、OCR、44条全量正文审核、数据库导入、Chroma/BM25/RRF索引接入和Agent真实问答。
+
+具体修订与剩余工作见[修订与待办](document-processing-review.md)；真实索引对接见[联调交接清单](document-processing-handoff.md)。不能将JSON可回读或单元测试通过写成真实索引联调通过。

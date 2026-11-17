@@ -41,7 +41,7 @@ python -m scripts.parse_alpha_documents
 python -m scripts.check_document_processing
 ```
 
-三个场景样例位于 `knowledge_base/processed/alpha/`。完整使用方法、核验边界和索引交接见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。奖学金及推免样例目前是摘要/简要说明，不能作为已核验的完整政策。
+三个场景样例位于 `knowledge_base/processed/alpha/`，使用2026竞赛级别认定、2026奖学金办法及学院2027届本科推免推荐方案的已有正文提取稿，共23片段。完整使用方法、核验边界和索引交接见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。正文提取稿仍待政策与附件核验，实际索引联调尚未完成。
 
 ## 当前未实现内容
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 from hashlib import sha256
 import json
+import mimetypes
 from pathlib import Path
 
 from backend.contracts.models import DocumentMetadata, DocumentPackage, ParsedFile
@@ -36,7 +37,7 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
     packages, summaries = [], []
     report = [
         "# Alpha 文档解析前后对比", "",
-        "本文件由 `python -m scripts.parse_alpha_documents` 离线生成。输入是现有整理稿；"
+        "本文件由 `python -m scripts.parse_alpha_documents` 离线生成。输入是已有正文提取稿；"
         "输出是公共 `DocumentPackage`。未执行官网核验、数据库写入、索引或正式检索开放。", "",
         "字符统计和行号均基于 UTF-8 解码、移除 BOM、统一 LF 换行后的文本；哈希针对原始文件字节。", "",
         "| 场景 | 输入字符数（含元数据头） | 切片字符数（去边缘空白） | 片段数 | 解析后状态 |",
@@ -61,10 +62,17 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
         input_path = root / sample["file_path"]
         original_bytes = input_path.read_bytes()
         package = parser.parse_document(input_path, metadata)
-        files = list(package.files)
+        # The generic MD parser defaults to curated. These files are registered
+        # extracted bodies in the existing preview, so retain that declared role.
+        registered = {row["storage_key"]: row for row in preview["document_files"]
+                      if row["version_id"] == version["id"]}
+        files = [ParsedFile.model_validate({
+            **file.model_dump(),
+            "file_role": registered.get(file.storage_key, {}).get("file_role", file.file_role),
+        }) for file in package.files]
         missing_keys = []
         for row in preview["document_files"]:
-            if row["version_id"] != version["id"] or row["file_role"] not in {"original", "attachment"}:
+            if row["version_id"] != version["id"] or row["storage_key"] == sample["file_path"]:
                 continue
             key = row["storage_key"]
             candidate = (root / key).resolve()
@@ -75,6 +83,7 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
                 continue
             files.append(ParsedFile(
                 file_role=row["file_role"], storage_key=key, original_name=candidate.name,
+                media_type=mimetypes.guess_type(candidate.name)[0] or "application/octet-stream",
                 sha256=sha256(candidate.read_bytes()).hexdigest(), processing_status="saved",
                 source_url=version["source_url"] if row["file_role"] == "original" else None,
             ))
@@ -105,10 +114,10 @@ def build_samples(root: Path = ROOT) -> list[DocumentPackage]:
             "", f'## {sample["scenario"]}：{metadata.title}', "",
             f'- 资料编号：`{metadata.record_code}`；版本：`{metadata.version_no}`（离线导入版本，非官方版次）。',
             f'- 官方登记链接：[{metadata.publisher or "来源"}]({metadata.source_url})；登记发布日期：{metadata.published_on}。',
-            f'- 输入：[现有整理稿](../../../{sample["file_path"]})。',
+            f'- 输入：[已有正文提取稿](../../../{sample["file_path"]})。',
             f'- 输出：[DocumentPackage](../../../{OUTPUT.as_posix()}/{sample["key"]}.json)。',
             f'- 资料限制：{sample["limitation"]}',
-            '- 核验状态：来源 pending、时效 pending；正式检索 blocked。',
+            f'- 核验状态：来源 {summary["source_verification_status"]}、时效 {summary["timeliness_verification_status"]}；正式检索 blocked。',
             '- 原始文件仅作留档；片段到官方原件的逐段对应未核实，original_file_key/original_locator 均为 null。',
             f'- 已登记但当前仓库缺失的关联文件：{len(missing_keys)}；缺失文件不伪造 ParsedFile/哈希。',
             "", "输入片段（保留原有标题和文字）：", "", "```markdown",

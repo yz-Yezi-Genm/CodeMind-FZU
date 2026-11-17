@@ -2,6 +2,7 @@
 from hashlib import sha256
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -269,6 +270,8 @@ class RepositoryPackageTests(unittest.TestCase):
     def test_checked_in_three_scenarios_match_contract_and_source_files(self):
         root = Path(__file__).resolve().parents[1]
         manifest = json.loads((root / "knowledge_base/processing/alpha-manifest.json").read_text(encoding="utf-8"))
+        preview = json.loads((root / manifest["preview_path"]).read_text(encoding="utf-8-sig"))
+        versions = {row["record_code"]: row for row in preview["document_versions"]}
         self.assertEqual({x["scenario"] for x in manifest["samples"]}, {"竞赛认定", "奖学金", "推免"})
         for sample in manifest["samples"]:
             with self.subTest(sample=sample["key"]):
@@ -278,11 +281,21 @@ class RepositoryPackageTests(unittest.TestCase):
                 self.assertEqual(package.metadata.record_code, sample["record_code"])
                 self.assertEqual(package.metadata.retrieval_status, "blocked")
                 self.assertTrue(package.chunks)
-                self.assertEqual(package.metadata.source_verification_status, "pending")
-                self.assertEqual(package.metadata.timeliness_verification_status, "pending")
+                version = versions[sample["record_code"]]
+                self.assertEqual(package.metadata.source_verification_status, version["source_verification_status"])
+                self.assertEqual(package.metadata.timeliness_verification_status, version["timeliness_verification_status"])
+                input_metadata = DocumentMetadata.model_validate_json(
+                    (root / f'knowledge_base/processed/alpha/{sample["key"]}.metadata.json').read_text(encoding="utf-8")
+                )
+                for field in ("publisher", "source_url", "published_on", "applicability_raw", "import_snapshot"):
+                    self.assertEqual(getattr(package.metadata, field), getattr(input_metadata, field))
+                registered = {row["storage_key"]: row for row in preview["document_files"]
+                              if row["version_id"] == version["id"]}
+                self.assertEqual({file.storage_key for file in package.files}, set(registered))
                 for file in package.files:
                     self.assertFalse(Path(file.storage_key).is_absolute())
                     self.assertEqual(file.sha256, sha256((root / file.storage_key).read_bytes()).hexdigest())
+                    self.assertEqual(file.file_role, registered[file.storage_key]["file_role"])
                 text = (root / sample["file_path"]).read_text(encoding="utf-8-sig")
                 for chunk in package.chunks:
                     note = json.loads(chunk.locator_note)
@@ -290,6 +303,62 @@ class RepositoryPackageTests(unittest.TestCase):
                     self.assertEqual(chunk.source_file_key, sample["file_path"])
                     self.assertIsNone(chunk.original_locator)
                     self.assertEqual(chunk.index_status, "pending")
+
+    def test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility(self):
+        root = Path(__file__).resolve().parents[1]
+        manifest = json.loads((root / "knowledge_base/processing/alpha-manifest.json").read_text(encoding="utf-8"))
+        expected = {
+            "竞赛认定": ("福大-2026-竞赛项目级别认定", "校教〔2026〕9号"),
+            "奖学金": ("福大-2026-本科奖学金", "第十五条"),
+            "推免": ("计算机学院-2027-推免资格推荐", "PDF第4页"),
+        }
+        for sample in manifest["samples"]:
+            package = DocumentPackage.model_validate_json(
+                (root / f'knowledge_base/processed/alpha/{sample["key"]}.json').read_text(encoding="utf-8")
+            )
+            record_code, marker = expected[sample["scenario"]]
+            self.assertEqual(package.metadata.record_code, record_code)
+            text = (root / sample["file_path"]).read_text(encoding="utf-8-sig")
+            body = text.partition("\n---\n")[2]  # The known fixture's closing metadata delimiter.
+            self.assertTrue(body)
+            combined = "".join(chunk.content for chunk in package.chunks)
+            self.assertIn(marker, combined)
+            # Covers real long tables/page text, not just artificial short inputs.
+            self.assertEqual("".join(combined.split()), "".join(body.split()))
+            self.assertTrue(all(len(chunk.content) <= manifest["max_chunk_chars"] for chunk in package.chunks))
+
+    def test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification(self):
+        root = Path(__file__).resolve().parents[1]
+        provenance = json.loads((root / "knowledge_base/processing/sample-provenance.json").read_text(encoding="utf-8"))
+        self.assertFalse(provenance["policy_verification_performed"])
+        for item in provenance["files"]:
+            raw = (root / item["storage_key"]).read_bytes()
+            self.assertEqual(sha256(raw).hexdigest(), item["sha256"])
+            self.assertEqual(len(raw), item["byte_size"])
+
+    def test_sample_generation_is_repeatable_in_an_isolated_checkout(self):
+        from scripts.parse_alpha_documents import build_samples, MANIFEST, OUTPUT, REPORT
+
+        root = Path(__file__).resolve().parents[1]
+        manifest = json.loads((root / MANIFEST).read_text(encoding="utf-8"))
+        paths = {MANIFEST.as_posix(), manifest["preview_path"]}
+        for sample in manifest["samples"]:
+            package = DocumentPackage.model_validate_json(
+                (root / OUTPUT / (sample["key"] + ".json")).read_text(encoding="utf-8")
+            )
+            paths.update(file.storage_key for file in package.files)
+        with tempfile.TemporaryDirectory() as directory:
+            isolated = Path(directory)
+            for relative in paths:
+                target = isolated / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(root / relative, target)
+            first = build_samples(isolated)
+            snapshot = {p.relative_to(isolated): p.read_bytes() for p in (isolated / OUTPUT).glob("*.json")}
+            report = (isolated / REPORT).read_bytes()
+            self.assertEqual(build_samples(isolated), first)
+            self.assertEqual({p.relative_to(isolated): p.read_bytes() for p in (isolated / OUTPUT).glob("*.json")}, snapshot)
+            self.assertEqual((isolated / REPORT).read_bytes(), report)
 
 
 if __name__ == "__main__":

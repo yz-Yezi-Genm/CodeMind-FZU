@@ -29,6 +29,9 @@ test_unbroken_line_is_bounded_and_keeps_final_character (test_document_processin
 test_unclosed_front_matter_is_rejected (test_document_processing.DocumentProcessingTests.test_unclosed_front_matter_is_rejected) ... ok
 test_unknown_pdf_type_is_pending_not_assumed_scanned (test_document_processing.DocumentProcessingTests.test_unknown_pdf_type_is_pending_not_assumed_scanned) ... ok
 test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files) ... ok
+test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification (test_document_processing.RepositoryPackageTests.test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification) ... ok
+test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility (test_document_processing.RepositoryPackageTests.test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility) ... ok
+test_sample_generation_is_repeatable_in_an_isolated_checkout (test_document_processing.RepositoryPackageTests.test_sample_generation_is_repeatable_in_an_isolated_checkout) ... ok
 test_contract_models_serialize_dates (test_interface_contracts.InterfaceContractTests.test_contract_models_serialize_dates) ... ok
 test_document_metadata_defaults_to_blocked (test_interface_contracts.InterfaceContractTests.test_document_metadata_defaults_to_blocked) ... ok
 test_document_package_rejects_unknown_chunk_file (test_interface_contracts.InterfaceContractTests.test_document_package_rejects_unknown_chunk_file) ... ok
@@ -42,6 +45,6 @@ test_invalid_request (test_mock_agent_api.MockAgentApiTests.test_invalid_request
 test_normal_answer (test_mock_agent_api.MockAgentApiTests.test_normal_answer) ... ok
 
 ----------------------------------------------------------------------
-Ran 40 tests in 1.426s
+Ran 43 tests in 2.590s
 
 OK (skipped=1)
