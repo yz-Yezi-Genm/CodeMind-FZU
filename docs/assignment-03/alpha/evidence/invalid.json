@@ -1,5 +1,5 @@
 {
-  "request_id": "475629ee-3761-469a-9f7a-87fd5693d1a0",
+  "request_id": "6c684b5d-1359-4823-a763-0c76520c9fb0",
   "error": {
     "code": "INVALID_REQUEST",
     "message": "请求参数不符合接口规范，请检查字段和数据类型。",
