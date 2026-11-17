@@ -4,6 +4,9 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="title" value="CodeMind-FZU 问答调用流程图" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#222222;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1600" height="34" as="geometry" />
+        </mxCell>
         <mxCell id="n0" value="学生提问（浏览器）" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="560" y="70" width="480" height="48" as="geometry" />
         </mxCell>
@@ -103,6 +106,9 @@
         <mxCell id="e12" style="endArrow=none;html=1;strokeColor=#f9ab00;dashed=1;" edge="1" parent="1">
           <mxPoint x="1150" y="645" as="sourcePoint" />
           <mxPoint x="1040" y="789" as="targetPoint" />
+        </mxCell>
+        <mxCell id="footer" value="编制：林世颖 | 日期：2026-11-18 | 状态口径以 Alpha 接口规范 V1.0 为准" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="0" y="830" width="1600" height="20" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
