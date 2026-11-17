@@ -279,14 +279,27 @@ npm run dev
 python -m unittest discover -s tests -v
 ```
 
-本次结果：**Ran 30 tests，OK**（约 1.5 秒）。
+本次结果：**Ran 69 tests，68 passed、1 skipped、0 failed**（约 10 秒）。
+
+> 其中 1 项跳过是 Windows 下符号链接权限限制（`test_symlink_escaping_storage_root_is_rejected`），属预期环境差异。
 
 覆盖：
 
 - `test_interface_contracts.py`：公共契约、检索状态约束；
 - `test_mock_agent_api.py`：健康检查、正常回答、追问、证据不足、参数校验、默认入口 503；
 - `test_backend_runtime.py`：CORS、错误 envelope、Agent 适配、request_id 传递；
-- `test_qwen_client.py`：Qwen 适配器的成功、超时、限流、重试、缺失密钥等。
+- `test_qwen_client.py`：Qwen 适配器的成功、超时、限流、重试、缺失密钥等；
+- `test_document_processing.py`：Alpha 文档解析、分块、元数据与三个样例包的契约校验。
+
+### 8.1 文档解析检查脚本
+
+同步 #19 后，还可以直接运行文档处理专用检查（会执行全仓库测试并输出 JSON 报告）：
+
+```powershell
+python -m scripts.check_document_processing
+```
+
+本次结果：`tests_run=69`、`passed=68`、`failures=0`、`successful=true`，退出码 0。
 
 > 测试中可能出现 `StarletteDeprecationWarning`（httpx TestClient 弃用提示），不影响结果；后续升级 Starlette 时统一处理。
 
@@ -305,7 +318,8 @@ python -m unittest discover -s tests -v
 | 前端 `npm install` + `npm run dev` | 启动成功（5173） | `screenshots/frontend-student.png`、`frontend-admin.png` |
 | 前端经代理调用后端 | 200，返回 Mock 回答 | `evidence/vite-proxy-ask.json`、`vite-proxy-health.json` |
 | `npm run build` | 成功，产出两个页面 | `evidence/frontend-build.txt` |
-| Python 测试 | 30 项全部通过 | `evidence/tests.txt` |
+| Python 测试 | 69 项执行，68 通过、1 跳过、0 失败 | `evidence/tests.txt` |
+| `scripts.check_document_processing` | `successful=true`，退出码 0 | 终端输出（tests_run=69） |
 | 汇总截图 | — | `screenshots/api-demo.png` |
 
 ---
@@ -407,3 +421,4 @@ Vite 已固定 `host: '127.0.0.1'`，请使用文档中的 `127.0.0.1` 地址；
 |---|---|---|
 | 2026-11-17 | 初版：后端干净环境、Mock 启动、接口与测试验证 | 薛锦荣 |
 | 2026-11-17 | 增加 Vite + TypeScript 前端工程、代理联调、构建与双端启动说明；测试更新为 30 项 | 薛锦荣 |
+| 2026-11-17 | 同步 #19 文档解析成果，测试更新为 69 项（68 通过 / 1 跳过），补充文档解析检查脚本说明 | 薛锦荣 |

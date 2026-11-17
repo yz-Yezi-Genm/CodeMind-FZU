@@ -13,7 +13,7 @@ dist/assets/dom-wLHvWk9j.css     1.86 kB │ gzip: 0.76 kB
 dist/assets/admin-n1lqLG43.js    1.09 kB │ gzip: 0.84 kB │ map: 2.22 kB
 dist/assets/dom-oBXkyw2u.js      1.88 kB │ gzip: 1.03 kB │ map: 3.39 kB
 dist/assets/student-C7KicaeQ.js  2.36 kB │ gzip: 1.47 kB │ map: 5.72 kB
-✓ built in 248ms
+✓ built in 374ms
 
 
 exit=0
