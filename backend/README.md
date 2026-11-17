@@ -14,7 +14,12 @@ python -m venv .venv
 source .venv/bin/activate
 
 python -m pip install -r backend/requirements.txt
+
+# 默认入口（未注入真实 Agent，/api/v1/ask 返回 503，属预期）
 python -m uvicorn backend.app.main:app --reload --port 8000
+
+# Mock Agent 演示入口（用于前后端联调）
+python -m uvicorn backend.app.dev:app --reload --port 8000
 ```
 
 访问：
@@ -38,6 +43,8 @@ python -m uvicorn backend.app.dev:app --reload --port 8000
 - `answered`、`needs_clarification`、`insufficient_evidence` 三种状态由公共契约统一约束
 
 默认入口和 Mock 入口共用同一套路由、校验、错误 envelope、CORS 与 Agent 适配逻辑。
+
+完整的环境安装、启动、测试与常见问题见 [Alpha 阶段运行说明](../docs/assignment-03/alpha/run-guide.md)。
 
 ## CORS
 
