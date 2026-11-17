@@ -1,0 +1,2 @@
+﻿# 命令：Select-String -Path backend/app/*.py -Pattern 'admin'
+结果：backend/app/ 下没有任何 admin 路由定义（管理接口尚未实现）。

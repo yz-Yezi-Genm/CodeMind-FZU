@@ -1,8 +1,13 @@
 import type {
+  AdminDocumentMetadataPatch,
   ApiErrorResponse,
   AskRequest,
   AskResponse,
+  DocumentListResponse,
+  DocumentSummary,
+  DocumentUploadResponse,
   HealthResponse,
+  ReindexResponse,
 } from './types';
 
 const API_BASE = '/api/v1';
@@ -77,4 +82,103 @@ export async function ask(payload: AskRequest): Promise<AskResponse> {
     throw new ApiError(200, 'INVALID_RESPONSE', '问答接口返回了无效或空数据，请稍后重试。');
   }
   return response;
+}
+
+/* ==========================================================================
+ * 后台管理端接口（契约 10 节）。Alpha 阶段后端尚未实现，
+ * 调用失败会抛 ApiError，由页面降级到模拟数据并明确提示。
+ * ========================================================================== */
+
+export interface AdminDocumentQuery {
+  page: number;
+  page_size: number;
+}
+
+function assertDocumentList(data: DocumentListResponse): DocumentListResponse {
+  const validItems = Array.isArray(data.items)
+    && data.items.every((item) => typeof item?.document_id === 'string' && typeof item?.title === 'string');
+  const validEnvelope = Number.isInteger(data.total) && data.total >= 0
+    && Number.isInteger(data.page) && data.page >= 1
+    && Number.isInteger(data.page_size) && data.page_size >= 1;
+  if (!validItems || !validEnvelope) {
+    throw new ApiError(200, 'INVALID_RESPONSE', '资料列表接口返回了无效分页数据。');
+  }
+  return data;
+}
+
+/** GET /api/v1/admin/documents：资料分页列表。 */
+export async function listAdminDocuments(query: AdminDocumentQuery): Promise<DocumentListResponse> {
+  const search = new URLSearchParams({
+    page: String(query.page),
+    page_size: String(query.page_size),
+  });
+  const data = await request<DocumentListResponse>(`/admin/documents?${search.toString()}`);
+  return assertDocumentList(data);
+}
+
+/** GET /api/v1/admin/documents/{document_id}：资料详情与处理状态。 */
+export async function getAdminDocument(documentId: string): Promise<DocumentSummary> {
+  const data = await request<DocumentSummary>(`/admin/documents/${encodeURIComponent(documentId)}`);
+  if (!data.document_id || !data.title) {
+    throw new ApiError(200, 'INVALID_RESPONSE', '资料详情接口返回了无效数据。');
+  }
+  return data;
+}
+
+/**
+ * POST /api/v1/admin/documents：上传/登记资料并触发解析。
+ * 契约未细化请求体格式，这里按 multipart/form-data 提交文件 + 元数据字段，
+ * 待与丁晓炜（文档解析）、赵紫龙（HTTP API）对齐后调整。
+ */
+export async function uploadAdminDocument(
+  file: File,
+  metadata: Record<string, string>,
+): Promise<DocumentUploadResponse> {
+  const body = new FormData();
+  body.append('file', file);
+  for (const [key, value] of Object.entries(metadata)) {
+    if (value.trim()) {
+      body.append(key, value);
+    }
+  }
+  const data = await request<DocumentUploadResponse>('/admin/documents', {
+    method: 'POST',
+    body,
+  });
+  if (!data.document_id || typeof data.status !== 'string') {
+    throw new ApiError(200, 'INVALID_RESPONSE', '上传接口返回了无效数据。');
+  }
+  return data;
+}
+
+/**
+ * PATCH /api/v1/admin/documents/{document_id}：修改允许维护的元数据。
+ * 契约只给了方法名与路径，没有定义更新 DTO；这里提交白名单字段，
+ * 待组长在 V1.1 补齐 DocumentMetadataUpdate 后调整。
+ */
+export async function updateAdminDocumentMetadata(
+  documentId: string,
+  patch: AdminDocumentMetadataPatch,
+): Promise<DocumentSummary> {
+  const data = await request<DocumentSummary>(`/admin/documents/${encodeURIComponent(documentId)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  });
+  if (!data.document_id) {
+    throw new ApiError(200, 'INVALID_RESPONSE', '元数据更新接口返回了无效数据。');
+  }
+  return data;
+}
+
+/** POST /api/v1/admin/documents/{document_id}/reindex：重新构建索引。 */
+export async function reindexAdminDocument(documentId: string): Promise<ReindexResponse> {
+  const data = await request<ReindexResponse>(
+    `/admin/documents/${encodeURIComponent(documentId)}/reindex`,
+    { method: 'POST' },
+  );
+  if (!data.document_id || typeof data.status !== 'string') {
+    throw new ApiError(200, 'INVALID_RESPONSE', '重建索引接口返回了无效数据。');
+  }
+  return data;
 }
