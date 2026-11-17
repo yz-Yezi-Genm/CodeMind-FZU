@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>CodeMind-FZU Alpha Mock Agent 验证</title>
+<style>
+body{font-family:"Microsoft YaHei",Arial,sans-serif;margin:28px;background:#f6f8fa;color:#1f2328}
+h1{font-size:24px;margin:0 0 6px}
+.sub{color:#57606a;margin-bottom:18px}
+h2{font-size:16px;margin:18px 0 8px}
+.code{font-family:Consolas,monospace;font-size:13px;background:#ddf4ff;padding:2px 8px;border-radius:6px;margin-left:8px}
+pre{background:#fff;border:1px solid #d0d7de;border-radius:8px;padding:12px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:break-all}
+.env{background:#fff;border:1px solid #d0d7de;border-radius:8px;padding:12px;font-family:Consolas,monospace;font-size:13px;white-space:pre}
+.ok{color:#1a7f37;font-weight:600}
+</style></head><body>
+<h1>CodeMind-FZU Alpha 阶段 · Mock Agent API 本机验证</h1>
+<div class="sub">验证时间：2026-11-17 · 启动命令：python -m uvicorn backend.app.dev:app --reload</div>
+<section><h2>运行环境 <span class="code">venv · Python 3.10</span></h2><div class="env">Python 3.10.11
+fastapi 0.162.5
+pydantic 2.14.3
+uvicorn 0.54.0
+httpx 0.28.1
+</div></section>
+<section><h2>健康检查 GET /api/v1/health <span class="code">HTTP 200</span></h2><pre>{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;service&quot;: &quot;codemind-fzu-api&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-11-17T11:05:49.528697Z&quot;
+}</pre></section><section><h2>正常回答 POST /api/v1/ask <span class="code">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;017a532a-600d-49e6-852d-df2b2bd3689c&quot;,
+  &quot;conversation_id&quot;: &quot;e908b4e1-e2dd-447c-a2d5-f14ef698acfc&quot;,
+  &quot;status&quot;: &quot;answered&quot;,
+  &quot;answer&quot;: &quot;[Mock 演示] 已收到你的问题：大二申请院级奖学金需要什么条件？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。&quot;,
+  &quot;answer_mode&quot;: null,
+  &quot;clarifying_question&quot;: null,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_AGENT&quot;,
+      &quot;message&quot;: &quot;当前响应由 MockAgentService 生成，未调用真实模型和知识库。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T11:05:49.542230Z&quot;
+}</pre></section><section><h2>追问分支 POST /api/v1/ask <span class="code">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;d6f72830-85c5-4ab1-9b20-269d1ce72201&quot;,
+  &quot;conversation_id&quot;: &quot;441af751-ec6b-4b32-811c-aba9ae494d0e&quot;,
+  &quot;status&quot;: &quot;needs_clarification&quot;,
+  &quot;answer&quot;: null,
+  &quot;answer_mode&quot;: null,
+  &quot;clarifying_question&quot;: &quot;请问你咨询的是哪一学年的相关政策？&quot;,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_AGENT&quot;,
+      &quot;message&quot;: &quot;当前使用模拟 Agent。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T11:05:49.573814Z&quot;
+}</pre></section><section><h2>证据不足分支 POST /api/v1/ask <span class="code">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;b7e2a9d6-285b-43e1-bb65-abc41b8c0c8a&quot;,
+  &quot;conversation_id&quot;: &quot;537c6efa-6ec3-4611-a0b4-8d5ee3d8a720&quot;,
+  &quot;status&quot;: &quot;insufficient_evidence&quot;,
+  &quot;answer&quot;: &quot;目前尚未接入真实知识库，无法提供经过核验的政策结论。&quot;,
+  &quot;answer_mode&quot;: &quot;insufficient_data&quot;,
+  &quot;clarifying_question&quot;: null,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_NO_EVIDENCE&quot;,
+      &quot;message&quot;: &quot;当前没有可用于正式回答的真实证据。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T11:05:49.604148Z&quot;
+}</pre></section><section><h2>参数校验失败 POST /api/v1/ask <span class="code">HTTP 422</span></h2><pre>{
+  &quot;request_id&quot;: &quot;401f887c-53f5-48a2-8ee3-3cc6c9b77540&quot;,
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;INVALID_REQUEST&quot;,
+    &quot;message&quot;: &quot;请求参数不符合接口规范，请检查字段和数据类型。&quot;,
+    &quot;retryable&quot;: false
+  }
+}</pre></section>
+<section><h2>自动化测试 <span class="code ok">11 tests OK</span></h2><pre>test_default_app_does_not_enable_mock (test_mock_agent_api.MockAgentApiTests) ... ok
+test_health_endpoint (test_mock_agent_api.MockAgentApiTests) ... ok
+test_insufficient_evidence (test_mock_agent_api.MockAgentApiTests) ... ok
+test_invalid_request (test_mock_agent_api.MockAgentApiTests) ... ok
+test_normal_answer (test_mock_agent_api.MockAgentApiTests) ... ok
+----------------------------------------------------------------------
+Ran 11 tests in 0.091s
+OK</pre></section>
+</body></html>

@@ -14,6 +14,11 @@ python -m venv .venv
 source .venv/bin/activate
 
 python -m pip install -r backend/requirements.txt
+
+# Mock Agent（推荐，用于前后端联调）
+python -m uvicorn backend.app.dev:app --reload
+
+# 默认骨架（未注入 Agent，/api/v1/ask 返回 503，属预期）
 python -m uvicorn backend.app.main:app --reload
 ```
 
@@ -22,7 +27,9 @@ python -m uvicorn backend.app.main:app --reload
 - OpenAPI 页面：`http://127.0.0.1:8000/docs`
 - 问答入口：`POST http://127.0.0.1:8000/api/v1/ask`
 
-健康检查可直接运行。问答入口在注入真实 `AgentService` 前会返回统一格式的 `503 SERVICE_NOT_CONFIGURED`，不会返回伪造回答。
+`backend.app.dev:app` 注入了 `MockAgentService`，可返回模拟回答、追问与证据不足等状态，用于前端联调。`backend.app.main:app` 未注入 Agent，问答入口会返回统一格式的 `503 SERVICE_NOT_CONFIGURED`，不会返回伪造回答。
+
+完整的环境安装、启动、测试与常见问题见 [Alpha 阶段运行说明](../docs/assignment-03/alpha/run-guide.md)。
 
 ## 公共契约
 

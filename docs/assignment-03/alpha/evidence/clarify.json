@@ -1,0 +1,16 @@
+{
+  "request_id": "d6f72830-85c5-4ab1-9b20-269d1ce72201",
+  "conversation_id": "441af751-ec6b-4b32-811c-aba9ae494d0e",
+  "status": "needs_clarification",
+  "answer": null,
+  "answer_mode": null,
+  "clarifying_question": "请问你咨询的是哪一学年的相关政策？",
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前使用模拟 Agent。"
+    }
+  ],
+  "created_at": "2026-11-17T11:05:49.573814Z"
+}

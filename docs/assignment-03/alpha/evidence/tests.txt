@@ -1,0 +1,21 @@
+
+C:\Users\29303\Desktop\������ҵ\CodeMind-FZU\.venv\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_contract_models_serialize_dates (test_interface_contracts.InterfaceContractTests) ... ok
+test_document_metadata_defaults_to_blocked (test_interface_contracts.InterfaceContractTests) ... ok
+test_document_package_rejects_unknown_chunk_file (test_interface_contracts.InterfaceContractTests) ... ok
+test_enabled_retrieval_accepts_verified_metadata (test_interface_contracts.InterfaceContractTests) ... ok
+test_enabled_retrieval_requires_review_prerequisites (test_interface_contracts.InterfaceContractTests) ... ok
+test_clarification (test_mock_agent_api.MockAgentApiTests) ... ok
+test_default_app_does_not_enable_mock (test_mock_agent_api.MockAgentApiTests) ... ok
+test_health_endpoint (test_mock_agent_api.MockAgentApiTests) ... ok
+test_insufficient_evidence (test_mock_agent_api.MockAgentApiTests) ... ok
+test_invalid_request (test_mock_agent_api.MockAgentApiTests) ... ok
+test_normal_answer (test_mock_agent_api.MockAgentApiTests) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.091s
+
+OK
+
+exit=0
