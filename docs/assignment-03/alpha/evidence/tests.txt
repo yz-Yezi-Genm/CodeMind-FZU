@@ -1,0 +1,48 @@
+
+<user-path>:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_agent_result_is_wrapped_with_shared_ids (test_backend_runtime.BackendRuntimeTests) ... ok
+test_agent_service_error_uses_contract_envelope (test_backend_runtime.BackendRuntimeTests) ... ok
+test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests) ... ok
+test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests) ... ok
+test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests) ... ok
+test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests) ... ok
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests) ... Internal service contract error request_id=b967fca1-3a53-4ce3-a805-1e7f62fd23cf detail=AgentService.run() ���뷵�� AgentResult��
+ok
+test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests) ... ok
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests) ... Unhandled AgentService error request_id=30cd8988-0f2f-490c-9797-8d02dd5aaf4e type=RuntimeError
+Traceback (most recent call last):
+  File "<user-path> line 204, in ask
+    result = await service.run(
+  File "<user-path> line 43, in run
+    raise RuntimeError("unexpected internal detail")
+RuntimeError: unexpected internal detail
+ok
+test_unlisted_cors_origin_is_not_allowed (test_backend_runtime.BackendRuntimeTests) ... ok
+test_wildcard_cors_origin_is_rejected (test_backend_runtime.BackendRuntimeTests) ... ok
+test_contract_models_serialize_dates (test_interface_contracts.InterfaceContractTests) ... ok
+test_document_metadata_defaults_to_blocked (test_interface_contracts.InterfaceContractTests) ... ok
+test_document_package_rejects_unknown_chunk_file (test_interface_contracts.InterfaceContractTests) ... ok
+test_enabled_retrieval_accepts_verified_metadata (test_interface_contracts.InterfaceContractTests) ... ok
+test_enabled_retrieval_requires_review_prerequisites (test_interface_contracts.InterfaceContractTests) ... ok
+test_clarification (test_mock_agent_api.MockAgentApiTests) ... ok
+test_default_app_does_not_enable_mock (test_mock_agent_api.MockAgentApiTests) ... ok
+test_health_endpoint (test_mock_agent_api.MockAgentApiTests) ... ok
+test_insufficient_evidence (test_mock_agent_api.MockAgentApiTests) ... ok
+test_invalid_request (test_mock_agent_api.MockAgentApiTests) ... ok
+test_normal_answer (test_mock_agent_api.MockAgentApiTests) ... ok
+test_missing_api_key_fails_before_network_call (test_qwen_client.QwenClientTests) ... ok
+test_mixed_failures_share_one_retry_budget (test_qwen_client.QwenClientTests) ... ok
+test_rate_limit_maps_to_rate_limited_error (test_qwen_client.QwenClientTests) ... ok
+test_retryable_status_is_retried (test_qwen_client.QwenClientTests) ... ok
+test_server_failure_maps_to_unavailable_error (test_qwen_client.QwenClientTests) ... ok
+test_settings_do_not_expose_api_key (test_qwen_client.QwenClientTests) ... ok
+test_success_response_is_adapted (test_qwen_client.QwenClientTests) ... ok
+test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 1.607s
+
+OK
+
+exit=0

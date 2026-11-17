@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>CodeMind-FZU Alpha 环境验证</title>
+<style>
+body{font-family:"Microsoft YaHei",Arial,sans-serif;margin:28px;background:#f6f8fa;color:#1f2328}
+h1{font-size:24px;margin:0 0 6px} .sub{color:#57606a;margin-bottom:18px}
+h2{font-size:16px;margin:18px 0 8px}
+.code{font-family:Consolas,monospace;font-size:13px;background:#ddf4ff;padding:2px 8px;border-radius:6px;margin-left:8px}
+pre{background:#fff;border:1px solid #d0d7de;border-radius:8px;padding:12px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:break-all}
+.env{background:#fff;border:1px solid #d0d7de;border-radius:8px;padding:12px;font-family:Consolas,monospace;font-size:13px;white-space:pre}
+.ok{color:#1a7f37;font-weight:600}
+</style></head><body>
+<h1>CodeMind-FZU Alpha 阶段 · 前后端环境验证</h1>
+<div class="sub">2026-11-17 · 后端 python -m uvicorn backend.app.dev:app --reload · 前端 npm run dev（5173，/api 代理到 8000）</div>
+<section><h2>运行环境 <span class="code">Python 3.10 venv · Node 24</span></h2><div class="env">Python 3.10.11
+fastapi 0.162.5
+pydantic 2.14.3
+uvicorn 0.54.0
+httpx 0.28.1
+Node v24.18.0
+npm 11.16.0
+OS Windows-10-10.0.26200-SP0
+</div></section>
+<section><h2>健康检查 GET /api/v1/health <span class="code">HTTP 200</span></h2><pre>{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;service&quot;: &quot;codemind-fzu-api&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-11-17T13:50:32.802759Z&quot;
+}</pre></section><section><h2>正常回答 POST /api/v1/ask <span class="code">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;b1157748-9dc2-4c15-91ec-2daa039a5979&quot;,
+  &quot;conversation_id&quot;: &quot;ad945279-84be-42fc-b6bb-bd3e8d718a43&quot;,
+  &quot;status&quot;: &quot;answered&quot;,
+  &quot;answer&quot;: &quot;[Mock 演示] 已收到你的问题：大二申请院级奖学金需要什么条件？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。&quot;,
+  &quot;answer_mode&quot;: null,
+  &quot;clarifying_question&quot;: null,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_AGENT&quot;,
+      &quot;message&quot;: &quot;当前响应由 MockAgentService 生成，未调用真实模型和知识库。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T13:50:32.807846Z&quot;
+}</pre></section><section><h2>追问分支 POST /api/v1/ask <span class="code">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;f484b8dd-4ee2-4f14-9e83-b7f87dbfc68f&quot;,
+  &quot;conversation_id&quot;: &quot;e7143351-2916-4570-a45f-83e380bf5f32&quot;,
+  &quot;status&quot;: &quot;needs_clarification&quot;,
+  &quot;answer&quot;: null,
+  &quot;answer_mode&quot;: null,
+  &quot;clarifying_question&quot;: &quot;请问你咨询的是哪一学年的相关政策？&quot;,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_AGENT&quot;,
+      &quot;message&quot;: &quot;当前使用模拟 Agent。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T13:50:32.813458Z&quot;
+}</pre></section><section><h2>证据不足分支 POST /api/v1/ask <span class="code">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;a9a7e69b-6150-4d51-b62d-529ceb4a14ef&quot;,
+  &quot;conversation_id&quot;: &quot;0826969a-9afd-48bf-8508-38eec0f05936&quot;,
+  &quot;status&quot;: &quot;insufficient_evidence&quot;,
+  &quot;answer&quot;: &quot;目前尚未接入真实知识库，无法提供经过核验的政策结论。&quot;,
+  &quot;answer_mode&quot;: &quot;insufficient_data&quot;,
+  &quot;clarifying_question&quot;: null,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_NO_EVIDENCE&quot;,
+      &quot;message&quot;: &quot;当前没有可用于正式回答的真实证据。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T13:50:32.817723Z&quot;
+}</pre></section><section><h2>参数校验失败 POST /api/v1/ask <span class="code">HTTP 422</span></h2><pre>{
+  &quot;request_id&quot;: &quot;475629ee-3761-469a-9f7a-87fd5693d1a0&quot;,
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;INVALID_REQUEST&quot;,
+    &quot;message&quot;: &quot;请求参数不符合接口规范，请检查字段和数据类型。&quot;,
+    &quot;retryable&quot;: false
+  }
+}</pre></section>
+<section><h2>Vite 代理联调 POST /api/v1/ask（经 5173） <span class="code ok">HTTP 200</span></h2><pre>{
+  &quot;request_id&quot;: &quot;c13ce737-ef1f-4b6a-ac4e-34b327cce599&quot;,
+  &quot;conversation_id&quot;: &quot;634473f1-4018-47c8-940b-d3889928e4ac&quot;,
+  &quot;status&quot;: &quot;answered&quot;,
+  &quot;answer&quot;: &quot;[Mock 演示] 已收到你的问题：通过 Vite 代理调用 Mock Agent\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。&quot;,
+  &quot;answer_mode&quot;: null,
+  &quot;clarifying_question&quot;: null,
+  &quot;citations&quot;: [],
+  &quot;warnings&quot;: [
+    {
+      &quot;code&quot;: &quot;MOCK_AGENT&quot;,
+      &quot;message&quot;: &quot;当前响应由 MockAgentService 生成，未调用真实模型和知识库。&quot;
+    }
+  ],
+  &quot;created_at&quot;: &quot;2026-11-17T13:50:32.837840Z&quot;
+}</pre></section>
+<section><h2>自动化测试 <span class="code ok">30 tests OK</span></h2><pre>----------------------------------------------------------------------
+Ran 30 tests in 1.607s
+OK
+exit=0</pre></section>
+<section><h2>前端生产构建 <span class="code ok">npm run build</span></h2><pre>
+&gt; codemind-fzu-frontend@0.1.0 build
+&gt; tsc --noEmit &amp;&amp; vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 8 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  0.55 kB │ gzip: 0.37 kB
+dist/admin/index.html            0.55 kB │ gzip: 0.37 kB
+dist/assets/dom-wLHvWk9j.css     1.86 kB │ gzip: 0.76 kB
+dist/assets/admin-n1lqLG43.js    1.09 kB │ gzip: 0.84 kB │ map: 2.22 kB
+dist/assets/dom-oBXkyw2u.js      1.88 kB │ gzip: 1.03 kB │ map: 3.39 kB
+dist/assets/student-C7KicaeQ.js  2.36 kB │ gzip: 1.47 kB │ map: 5.72 kB
+✓ built in 248ms
+
+
+exit=0
+</pre></section>
+</body></html>
