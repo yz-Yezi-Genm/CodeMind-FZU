@@ -1,0 +1,66 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageWidth="1600" pageHeight="830" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n0" value="学生浏览器（学生端前端）&#10;问题输入 · 回答与引用展示 · 追问交互 · 反馈" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="70" width="400" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="FastAPI 后端&#10;HTTP 入口 · 请求校验 · ID 管理 · Agent 调用入口 · 错误处理与 CORS" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#34a853;strokeColor=#1b5e20;fontColor=#ffffff;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="170" width="600" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="Agent 工作流" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#9c27b0;strokeColor=#4a148c;fontColor=#ffffff;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="290" width="800" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="业务规则配置&#10;场景与追问规则" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="355" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="Retriever 检索&#10;RetrievalRequest → RetrievedChunk" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="660" y="355" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="LLMClient（Qwen 适配）&#10;LLMGenerateRequest → LLMResult" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="890" y="355" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="数据资源层" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e3f2fd;strokeColor=#1976d2;fontColor=#0d47a1;fontSize=13;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="250" y="480" width="1100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" value="关系数据库&#10;PostgreSQL 16 + SQLAlchemy 2.0（候选基线）" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="515" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" value="向量 / 全文检索索引&#10;嵌入模型与部署方案待定" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="650" y="515" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" value="知识库资料文件&#10;原件 · 附件 · 提取正文 · 整理稿" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="515" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n10" value="后台管理端&#10;管理页面 · DocumentAdminService&#10;资料列表 / 详情 / 元数据 / 导入 / 重索引" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="640" width="340" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n11" value="管理服务链路&#10;DocumentParser 文档解析&#10;KnowledgeIndexer 入库与索引" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="640" width="340" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" style="endArrow=none;html=1;strokeColor=#34a853;" edge="1" parent="1">
+          <mxPoint x="800" y="134" as="sourcePoint" />
+          <mxPoint x="800" y="170" as="targetPoint" />
+        </mxCell>
+        <mxCell id="e1" style="endArrow=none;html=1;strokeColor=#34a853;" edge="1" parent="1">
+          <mxPoint x="800" y="240" as="sourcePoint" />
+          <mxPoint x="800" y="290" as="targetPoint" />
+        </mxCell>
+        <mxCell id="e2" style="endArrow=none;html=1;strokeColor=#9c27b0;" edge="1" parent="1">
+          <mxPoint x="800" y="420" as="sourcePoint" />
+          <mxPoint x="800" y="480" as="targetPoint" />
+        </mxCell>
+        <mxCell id="e3" style="endArrow=none;html=1;strokeColor=#f9ab00;" edge="1" parent="1">
+          <mxPoint x="730" y="580" as="sourcePoint" />
+          <mxPoint x="730" y="640" as="targetPoint" />
+        </mxCell>
+        <mxCell id="e4" style="endArrow=none;html=1;strokeColor=#f9ab00;" edge="1" parent="1">
+          <mxPoint x="440" y="700" as="sourcePoint" />
+          <mxPoint x="560" y="700" as="targetPoint" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
