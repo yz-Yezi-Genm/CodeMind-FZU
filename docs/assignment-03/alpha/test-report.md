@@ -32,14 +32,17 @@ python -m unittest discover -s tests -v
 | 指标 | 数值 |
 | --- | --- |
 | 测试用例总数 | 117 |
-| 通过 | 111 |
-| 错误（error） | 4 |
+| 通过 | 116 |
 | 失败（fail） | 0 |
+| 错误（error） | 0 |
 | 跳过（skip） | 1 |
 
-> 4 个 error 全部来自 `test_document_processing.py` 的 `RepositoryPackageTests`，
-> 原因是本地测试环境缺少 `knowledge_base/` 与 `scripts/` 资料文件（`FileNotFoundError`），
-> **属于环境未就绪，不是测试代码或被测代码的缺陷**。详见第 6 节。
+> 唯一 1 个 skip 来自 `test_document_processing.DocumentProcessingTests.test_symlink_escaping_storage_root_is_rejected`，
+> 原因是当前 Windows 账户不允许创建符号链接（`当前操作系统账户不允许创建符号链接`），
+> 属环境权限限制，非测试代码或被测代码缺陷。
+>
+> 执行环境（来自 `python -m scripts.check_document_processing`）：Python 3.13.14、pydantic 2.13.5、
+> fastapi 0.141.1、httpx 0.28.1，平台 Windows。
 
 ---
 
@@ -112,13 +115,9 @@ python -m unittest discover -s tests -v
   由吴诗莹（Agent）与罗宇泽（规范）确认后在真实 Agent 实现中补全。
 - **状态**：待协调，暂不改动公共字段（遵守「不擅自修改公共字段」要求）。
 
-### 问题 2（环境）· 文档处理资料文件未随仓库就绪
-
-- **现象**：`RepositoryPackageTests` 依赖 `knowledge_base/processing/alpha-manifest.json`
-  与 `scripts.parse_alpha_documents`，本地与测试环境缺这些文件，4 个用例 error。
-- **归属**：丁晓炜（文档解析）、王智洋（资料入库）。
-- **影响**：不影响本周「问答闭环」测试结论，但影响整体套件的「全绿」判定。
-- **建议**：资料文件随对应模块分支一并入库，或为环境型用例加 `skipIf` 保护。
+> 注：早期测试曾在不完整的工作区（缺少 `knowledge_base/` 与 `scripts/`）中运行，
+> 导致 `RepositoryPackageTests` 出现 4 个 `FileNotFoundError`。在完整仓库重新执行后，
+> 这些用例全部通过，故不再作为问题列出。
 
 ---
 
@@ -159,9 +158,9 @@ python -m unittest discover -s tests -v
    六大场景全部通过，`answered`/`needs_clarification`/`insufficient_evidence` 三状态机行为正确。
 2. **错误处理统一且安全**：所有错误走统一 `ApiErrorResponse` envelope，且不泄露内部堆栈、密钥、
    数据库连接串或本地路径。
-3. **无失败（fail）用例**，4 个 error 均为环境缺资料文件导致，非代码缺陷。
+3. **无失败（fail）、无错误（error）用例**，唯一 1 个 skip 为 Windows 账户符号链接权限限制，非代码缺陷。
 4. **待推进**：真实 Agent、检索、前端联调、后台管理、会话持久化、鉴权等内容将在后续里程碑补测。
 
 ---
 
-*报告人：颜俊宇 · 2026-11-17*
+*报告人：颜俊宇 · 2026-11-18*

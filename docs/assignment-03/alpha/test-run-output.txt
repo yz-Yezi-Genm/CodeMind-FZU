@@ -1,4 +1,4 @@
-C:\Users\m1781\.workbuddy\binaries\python\envs\fluxdemo\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+<venv>\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
   from starlette.testclient import TestClient as TestClient  # noqa
 test_extra_unknown_field_is_rejected (test_api_validation.AskInputValidationTests.test_extra_unknown_field_is_rejected) ... ok
 test_missing_query_field_is_rejected (test_api_validation.AskInputValidationTests.test_missing_query_field_is_rejected) ... ok
@@ -16,18 +16,18 @@ test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests.test_allowed_
 test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests.test_cors_origins_can_be_overridden_from_environment) ... ok
 test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests.test_dev_entry_keeps_mock_agent_enabled) ... ok
 test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests.test_health_and_request_id_header) ... ok
-test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=7ea76d2a-81c8-4c72-8929-2c379831028b detail=AgentService.run() 必须返回 AgentResult。
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=5dedb9e9-3611-4e23-add1-4beee751e966 detail=AgentService.run() 必须返回 AgentResult。
 ok
 test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests.test_patch_cors_is_enabled_for_admin_contracts) ... ok
-test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=5eaf6496-a782-47e8-aa6c-568b6b596538 type=RuntimeError
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=b1078071-dab3-4c86-94cb-4e7f1593bbce type=RuntimeError
 Traceback (most recent call last):
-  File "C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\CodeMind-FZU\backend\app\main.py", line 204, in ask
+  File "<repository>\backend\app\main.py", line 204, in ask
     result = await service.run(
              ^^^^^^^^^^^^^^^^^^
     ...<5 lines>...
     )
     ^
-  File "C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\CodeMind-FZU\tests\test_backend_runtime.py", line 43, in run
+  File "<repository>\tests\test_backend_runtime.py", line 43, in run
     raise RuntimeError("unexpected internal detail")
 RuntimeError: unexpected internal detail
 ok
@@ -68,10 +68,10 @@ test_txt_with_markdown_like_text_is_not_treated_as_headings (test_document_proce
 test_unbroken_line_is_bounded_and_keeps_final_character (test_document_processing.DocumentProcessingTests.test_unbroken_line_is_bounded_and_keeps_final_character) ... ok
 test_unclosed_front_matter_is_rejected (test_document_processing.DocumentProcessingTests.test_unclosed_front_matter_is_rejected) ... ok
 test_unknown_pdf_type_is_pending_not_assumed_scanned (test_document_processing.DocumentProcessingTests.test_unknown_pdf_type_is_pending_not_assumed_scanned) ... ok
-test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files) ... ERROR
-test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification (test_document_processing.RepositoryPackageTests.test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification) ... ERROR
-test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility (test_document_processing.RepositoryPackageTests.test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility) ... ERROR
-test_sample_generation_is_repeatable_in_an_isolated_checkout (test_document_processing.RepositoryPackageTests.test_sample_generation_is_repeatable_in_an_isolated_checkout) ... ERROR
+test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files) ... ok
+test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification (test_document_processing.RepositoryPackageTests.test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification) ... ok
+test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility (test_document_processing.RepositoryPackageTests.test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility) ... ok
+test_sample_generation_is_repeatable_in_an_isolated_checkout (test_document_processing.RepositoryPackageTests.test_sample_generation_is_repeatable_in_an_isolated_checkout) ... ok
 test_list_response_pagination (test_interface_contracts.AdminContractTests.test_list_response_pagination) ... ok
 test_page_size_max_100 (test_interface_contracts.AdminContractTests.test_page_size_max_100) ... ok
 test_reindex_response (test_interface_contracts.AdminContractTests.test_reindex_response) ... ok
@@ -130,69 +130,7 @@ test_settings_do_not_expose_api_key (test_qwen_client.QwenClientTests.test_setti
 test_success_response_is_adapted (test_qwen_client.QwenClientTests.test_success_response_is_adapted) ... ok
 test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests.test_timeout_maps_to_sanitized_service_error) ... ok
 
-======================================================================
-ERROR: test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files)
 ----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\CodeMind-FZU\tests\test_document_processing.py", line 350, in test_checked_in_three_scenarios_match_contract_and_source_files
-    manifest = json.loads((root / "knowledge_base/processing/alpha-manifest.json").read_text(encoding="utf-8"))
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_local.py", line 546, in read_text
-    return PathBase.read_text(self, encoding, errors, newline)
-           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_abc.py", line 632, in read_text
-    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
-         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_local.py", line 537, in open
-    return io.open(self, mode, buffering, encoding, errors, newline)
-           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\m1781\\WorkBuddy\\2026-11-17-21-57-05\\CodeMind-FZU\\knowledge_base\\processing\\alpha-manifest.json'
+Ran 117 tests in 8.125s
 
-======================================================================
-ERROR: test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification (test_document_processing.RepositoryPackageTests.test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\CodeMind-FZU\tests\test_document_processing.py", line 410, in test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification
-    provenance = json.loads((root / "knowledge_base/processing/sample-provenance.json").read_text(encoding="utf-8"))
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_local.py", line 546, in read_text
-    return PathBase.read_text(self, encoding, errors, newline)
-           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_abc.py", line 632, in read_text
-    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
-         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_local.py", line 537, in open
-    return io.open(self, mode, buffering, encoding, errors, newline)
-           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\m1781\\WorkBuddy\\2026-11-17-21-57-05\\CodeMind-FZU\\knowledge_base\\processing\\sample-provenance.json'
-
-======================================================================
-ERROR: test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility (test_document_processing.RepositoryPackageTests.test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\CodeMind-FZU\tests\test_document_processing.py", line 387, in test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility
-    manifest = json.loads((root / "knowledge_base/processing/alpha-manifest.json").read_text(encoding="utf-8"))
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_local.py", line 546, in read_text
-    return PathBase.read_text(self, encoding, errors, newline)
-           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_abc.py", line 632, in read_text
-    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
-         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\m1781\.workbuddy\binaries\python\versions\3.13.12\Lib\pathlib\_local.py", line 537, in open
-    return io.open(self, mode, buffering, encoding, errors, newline)
-           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\m1781\\WorkBuddy\\2026-11-17-21-57-05\\CodeMind-FZU\\knowledge_base\\processing\\alpha-manifest.json'
-
-======================================================================
-ERROR: test_sample_generation_is_repeatable_in_an_isolated_checkout (test_document_processing.RepositoryPackageTests.test_sample_generation_is_repeatable_in_an_isolated_checkout)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\CodeMind-FZU\tests\test_document_processing.py", line 423, in test_sample_generation_is_repeatable_in_an_isolated_checkout
-    from scripts.parse_alpha_documents import build_samples, MANIFEST, OUTPUT, REPORT
-ModuleNotFoundError: No module named 'scripts'
-
-----------------------------------------------------------------------
-Ran 117 tests in 9.524s
-
-FAILED (errors=4, skipped=1)
+OK (skipped=1)
