@@ -114,11 +114,12 @@ class AgentWorkflow:
         today = self.today()
         historical_year = False
         for start, end, period in target_years:
-            # Alpha routing convention: September through August, so a range
-            # such as 2025-2026学年 ends on 2026-08-31, not 2026-12-31.
-            # This boundary does not verify actual policy/application deadlines.
+            # FZU calendar boundary confirmed in PR #24: the 2026-2027
+            # academic year starts on 2026-08-31, so 2025-2026 ends August 30.
+            # Alpha uses this FZU-specific rollover, not a universal academic
+            # year rule; it does not verify policy/application deadlines.
             period_end = (
-                date(int(end), 8, 31)
+                date(int(end), 8, 30)
                 if end and period == "学年"
                 else date(int(end or start), 12, 31)
             )

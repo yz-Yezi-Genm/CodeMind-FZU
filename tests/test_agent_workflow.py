@@ -262,9 +262,10 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
                 self.llm.generate.assert_awaited_once()
 
     async def test_academic_year_end_boundary(self):
-        # Alpha routing convention: a cross-year academic period ends August 31.
+        # FZU's 2026-2027 calendar starts August 31 (PR #24 review baseline).
         for current_date, expected_status in [
-            (date(2026, 8, 31), "answered"),
+            (date(2026, 8, 30), "answered"),
+            (date(2026, 8, 31), "insufficient_evidence"),
             (date(2026, 9, 1), "insufficient_evidence"),
         ]:
             with self.subTest(current_date=current_date):
