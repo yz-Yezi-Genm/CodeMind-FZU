@@ -31,8 +31,8 @@ python -m unittest discover -s tests -v
 
 | 指标 | 数值 |
 | --- | --- |
-| 测试用例总数 | 117 |
-| 通过 | 116 |
+| 测试用例总数 | 153 |
+| 通过 | 152 |
 | 失败（fail） | 0 |
 | 错误（error） | 0 |
 | 跳过（skip） | 1 |
@@ -40,6 +40,9 @@ python -m unittest discover -s tests -v
 > 唯一 1 个 skip 来自 `test_document_processing.DocumentProcessingTests.test_symlink_escaping_storage_root_is_rejected`，
 > 原因是当前 Windows 账户不允许创建符号链接（`当前操作系统账户不允许创建符号链接`），
 > 属环境权限限制，非测试代码或被测代码缺陷。
+>
+> 153 个用例包含：吴诗莹新增的 Agent 工作流测试 36 个（`test_agent_workflow.py` 30 + `test_agent_workflow_api.py` 3 +
+> `test_agent_workflow_qwen.py` 3），以及本报告的 API/契约测试 117 个。
 >
 > 执行环境（来自 `python -m scripts.check_document_processing`）：Python 3.13.14、pydantic 2.13.5、
 > fastapi 0.141.1、httpx 0.28.1，平台 Windows。
@@ -115,10 +118,6 @@ python -m unittest discover -s tests -v
   由吴诗莹（Agent）与罗宇泽（规范）确认后在真实 Agent 实现中补全。
 - **状态**：待协调，暂不改动公共字段（遵守「不擅自修改公共字段」要求）。
 
-> 注：早期测试曾在不完整的工作区（缺少 `knowledge_base/` 与 `scripts/`）中运行，
-> 导致 `RepositoryPackageTests` 出现 4 个 `FileNotFoundError`。在完整仓库重新执行后，
-> 这些用例全部通过，故不再作为问题列出。
-
 ---
 
 ## 5. 尚未覆盖的内容（如实说明）
@@ -127,13 +126,16 @@ python -m unittest discover -s tests -v
 
 | 未覆盖项 | 原因 | 计划 |
 | --- | --- | --- |
-| 真实 Agent 工作流（任务识别/追问/证据核验） | 真实 Agent（吴诗莹）尚未接入，当前仅 Mock | M2 后半段 Agent 落地后补集成测试 |
-| 检索模块（Chroma/BM25/RRF） | 检索器（王智洋）未接入 | 检索联调后补 `Retriever` 集成测试 |
+| 检索模块（Chroma/BM25/RRF） | 真实检索器（王智洋）尚未接入，`AgentWorkflow` 依赖注入的 mock Retriever | 检索联调后补 `Retriever` 集成测试 |
 | 真实 Qwen 调用 | 仅测试了适配器的错误映射与脱敏，未真实联网 | 保留为集成测试，避免测试依赖外部模型 |
 | 前端浏览器端测试（吴欣键/洪添军） | 前端尚未完成 | 前端完成后按任务清单二逐项验证 |
 | 后台管理 API（林彦翔） | 管理端 API 尚未实现（契约已定义） | 后台开发阶段实现后补测 |
 | 会话持久化 | 本阶段尚未实现，`conversation_id` 由后端临时生成 | 持久化落地后补测多轮会话 |
 | 认证/授权 | 规范明确当前未接入 | 接入后补测鉴权边界 |
+
+> 说明：吴诗莹的 Agent 工作流（`backend/services/agent_workflow.py` 的 `AgentWorkflow`）已合入 main，
+> 并自带 36 个测试（`test_agent_workflow*.py`），故「Agent 工作流」本身已不在此未覆盖清单中；
+> 但其依赖的真实 `Retriever` 与真实 `LLMClient` 仍待接入，见上表。
 
 ---
 
@@ -159,7 +161,7 @@ python -m unittest discover -s tests -v
 2. **错误处理统一且安全**：所有错误走统一 `ApiErrorResponse` envelope，且不泄露内部堆栈、密钥、
    数据库连接串或本地路径。
 3. **无失败（fail）、无错误（error）用例**，唯一 1 个 skip 为 Windows 账户符号链接权限限制，非代码缺陷。
-4. **待推进**：真实 Agent、检索、前端联调、后台管理、会话持久化、鉴权等内容将在后续里程碑补测。
+4. **待推进**：真实检索器（Chroma/BM25）、真实 Qwen 调用、前端联调、后台管理、会话持久化、鉴权等内容将在后续里程碑补测（Agent 工作流本身已随 PR #24 合入并有 36 个测试）。
 
 ---
 

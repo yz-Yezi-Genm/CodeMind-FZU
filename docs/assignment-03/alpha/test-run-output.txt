@@ -1,5 +1,52 @@
 <venv>\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
   from starlette.testclient import TestClient as TestClient  # noqa
+test_4000_character_contract_query_is_not_silently_truncated (test_agent_workflow.AgentWorkflowTests.test_4000_character_contract_query_is_not_silently_truncated) ... ok
+test_academic_year_end_boundary (test_agent_workflow.AgentWorkflowTests.test_academic_year_end_boundary) ... ok
+test_answer_uses_exact_retrieval_metadata_and_excerpt (test_agent_workflow.AgentWorkflowTests.test_answer_uses_exact_retrieval_metadata_and_excerpt) ... ok
+test_assistant_history_cannot_fill_slots_or_supply_policy (test_agent_workflow.AgentWorkflowTests.test_assistant_history_cannot_fill_slots_or_supply_policy) ... ok
+test_bad_or_fabricated_model_outputs_are_rejected (test_agent_workflow.AgentWorkflowTests.test_bad_or_fabricated_model_outputs_are_rejected) ... ok
+test_both_dependencies_have_timeouts (test_agent_workflow.AgentWorkflowTests.test_both_dependencies_have_timeouts) ... Retriever failed; request_id=b761ced8-3534-4ac0-9312-8f6a246d2d62
+ok
+test_business_verifier_can_only_tighten_evidence_gate (test_agent_workflow.AgentWorkflowTests.test_business_verifier_can_only_tighten_evidence_gate) ... ok
+test_business_verifier_failure_is_conservative (test_agent_workflow.AgentWorkflowTests.test_business_verifier_failure_is_conservative) ... Evidence validation failed; request_id=a2f17e36-04df-4818-90a9-0627315e9cf4
+ok
+test_cancellation_is_not_swallowed (test_agent_workflow.AgentWorkflowTests.test_cancellation_is_not_swallowed) ... ok
+test_citations_follow_selected_subset_and_order (test_agent_workflow.AgentWorkflowTests.test_citations_follow_selected_subset_and_order) ... ok
+test_conflicting_duplicate_id_is_rejected (test_agent_workflow.AgentWorkflowTests.test_conflicting_duplicate_id_is_rejected) ... Evidence validation failed; request_id=7be6fcb4-f128-4b36-80c4-80c99bb18c68
+ok
+test_current_academic_year_ranges_can_reach_generation (test_agent_workflow.AgentWorkflowTests.test_current_academic_year_ranges_can_reach_generation) ... ok
+test_duplicate_chunks_are_deduplicated (test_agent_workflow.AgentWorkflowTests.test_duplicate_chunks_are_deduplicated) ... ok
+test_empty_evidence_never_calls_llm (test_agent_workflow.AgentWorkflowTests.test_empty_evidence_never_calls_llm) ... ok
+test_ended_academic_year_ranges_are_unsupported (test_agent_workflow.AgentWorkflowTests.test_ended_academic_year_ranges_are_unsupported) ... ok
+test_evidence_budget_is_enforced (test_agent_workflow.AgentWorkflowTests.test_evidence_budget_is_enforced) ... ok
+test_followup_uses_user_history_for_query_and_slots (test_agent_workflow.AgentWorkflowTests.test_followup_uses_user_history_for_query_and_slots) ... ok
+test_grade_is_not_academic_year (test_agent_workflow.AgentWorkflowTests.test_grade_is_not_academic_year) ... ok
+test_historical_requests_fail_closed (test_agent_workflow.AgentWorkflowTests.test_historical_requests_fail_closed) ... ok
+test_history_overflow_is_not_silently_truncated (test_agent_workflow.AgentWorkflowTests.test_history_overflow_is_not_silently_truncated) ... ok
+test_ineligible_evidence_and_forged_models_fail_closed (test_agent_workflow.AgentWorkflowTests.test_ineligible_evidence_and_forged_models_fail_closed) ... Evidence validation failed; request_id=d1abba79-8a16-47fd-8293-ee10c6c8a75a
+Evidence validation failed; request_id=5bbb659f-2d20-4efc-a341-943bc09cdd1c
+Evidence validation failed; request_id=878b09d7-2d37-42a2-847a-6059f11e7de2
+ok
+test_invalid_configuration_is_rejected (test_agent_workflow.AgentWorkflowTests.test_invalid_configuration_is_rejected) ... ok
+test_missing_year_clarifies_without_dependencies (test_agent_workflow.AgentWorkflowTests.test_missing_year_clarifies_without_dependencies) ... ok
+test_mixed_evidence_sends_only_eligible_chunks (test_agent_workflow.AgentWorkflowTests.test_mixed_evidence_sends_only_eligible_chunks) ... ok
+test_multiple_current_versions_are_rejected (test_agent_workflow.AgentWorkflowTests.test_multiple_current_versions_are_rejected) ... ok
+test_personal_and_deadline_claims_need_business_verifier (test_agent_workflow.AgentWorkflowTests.test_personal_and_deadline_claims_need_business_verifier) ... ok
+test_personal_question_requires_grade (test_agent_workflow.AgentWorkflowTests.test_personal_question_requires_grade) ... ok
+test_retrieval_and_generation_errors_do_not_leak_details (test_agent_workflow.AgentWorkflowTests.test_retrieval_and_generation_errors_do_not_leak_details) ... Retriever failed; request_id=3066f69d-1a5b-455e-b3a7-b8c0ee695f1f
+LLM failed; request_id=cb7f6440-d755-465d-8ab4-5f0c373bb4df
+ok
+test_vague_topic_clarifies (test_agent_workflow.AgentWorkflowTests.test_vague_topic_clarifies) ... ok
+test_wrong_provider_return_types_are_rejected (test_agent_workflow.AgentWorkflowTests.test_wrong_provider_return_types_are_rejected) ... Evidence validation failed; request_id=4d9fd0ae-b690-4701-9cb6-054133c7a4a5
+Evidence validation failed; request_id=feca0fc2-d946-44cd-ba6c-85bed2677182
+Evidence validation failed; request_id=5591ddba-7e3e-4619-ab5a-50511bce2f85
+ok
+test_backend_preserves_conversation_id (test_agent_workflow_api.AgentWorkflowApiTests.test_backend_preserves_conversation_id) ... ok
+test_injected_workflow_returns_all_three_contract_statuses (test_agent_workflow_api.AgentWorkflowApiTests.test_injected_workflow_returns_all_three_contract_statuses) ... ok
+test_invalid_http_query_still_returns_existing_error_envelope (test_agent_workflow_api.AgentWorkflowApiTests.test_invalid_http_query_still_returns_existing_error_envelope) ... ok
+test_existing_qwen_adapter_can_supply_verified_extractive_answer (test_agent_workflow_qwen.AgentWorkflowQwenTests.test_existing_qwen_adapter_can_supply_verified_extractive_answer) ... ok
+test_model_failures_keep_backend_error_codes_instead_of_business_status (test_agent_workflow_qwen.AgentWorkflowQwenTests.test_model_failures_keep_backend_error_codes_instead_of_business_status) ... ok
+test_qwen_free_text_cannot_bypass_workflow_evidence_verification (test_agent_workflow_qwen.AgentWorkflowQwenTests.test_qwen_free_text_cannot_bypass_workflow_evidence_verification) ... ok
 test_extra_unknown_field_is_rejected (test_api_validation.AskInputValidationTests.test_extra_unknown_field_is_rejected) ... ok
 test_missing_query_field_is_rejected (test_api_validation.AskInputValidationTests.test_missing_query_field_is_rejected) ... ok
 test_non_json_body_is_rejected (test_api_validation.AskInputValidationTests.test_non_json_body_is_rejected) ... ok
@@ -16,10 +63,10 @@ test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests.test_allowed_
 test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests.test_cors_origins_can_be_overridden_from_environment) ... ok
 test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests.test_dev_entry_keeps_mock_agent_enabled) ... ok
 test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests.test_health_and_request_id_header) ... ok
-test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=5dedb9e9-3611-4e23-add1-4beee751e966 detail=AgentService.run() 必须返回 AgentResult。
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=65bc95af-8da8-492c-a80e-74c09e2be200 detail=AgentService.run() 必须返回 AgentResult。
 ok
 test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests.test_patch_cors_is_enabled_for_admin_contracts) ... ok
-test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=b1078071-dab3-4c86-94cb-4e7f1593bbce type=RuntimeError
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=a662fe35-01ba-406a-b0b7-a8220c27b119 type=RuntimeError
 Traceback (most recent call last):
   File "<repository>\backend\app\main.py", line 204, in ask
     result = await service.run(
@@ -131,6 +178,6 @@ test_success_response_is_adapted (test_qwen_client.QwenClientTests.test_success_
 test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests.test_timeout_maps_to_sanitized_service_error) ... ok
 
 ----------------------------------------------------------------------
-Ran 117 tests in 8.125s
+Ran 153 tests in 10.257s
 
 OK (skipped=1)
