@@ -1,0 +1,13 @@
+评审意见回归验证（Edge headless + CDP，真实浏览器执行页面模块）
+时间：2026-11-18T12:16:30.892Z
+
+PASS  危险协议（javascript/data/file）一律拒绝  — {"js":null,"data":null,"file":null}
+PASS  http/https 链接保留且规范化  — {"http":"http://jwch.fzu.edu.cn/a","https":"https://jwch.fzu.edu.cn/info/1036/14836.htm"}
+PASS  空串与非法 URL 返回 null
+PASS  详情弹窗对 javascript: 链接不渲染 <a>，改按纯文本并说明原因  — 含 <a href="javascript ？false
+PASS  模拟数据模式：统计卡与说明都标注模拟数据
+PASS  真实接口模式：不再出现"模拟数据"字样  — ok
+PASS  Toast 把 HTML 当纯文本渲染（无注入元素、无脚本执行）  — img=0, __xss=undefined
+PASS  Toast 保留原始文案（用户填的标题按字面显示，未丢字）  — 已保存资料元数据：<img src=x onerror="window.__xss=1">
+
+合计 8 项，通过 8 项，失败 0 项
