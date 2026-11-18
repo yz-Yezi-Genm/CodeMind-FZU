@@ -34,7 +34,7 @@ python -X utf8 -m unittest discover -s tests -v
 
 [合成包](examples/retrieval-synthetic-packages.json)使用 `example.invalid` 作为虚构来源。[合成查询日志](evidence/retrieval-synthetic.json)记录完整结果。[真实包日志](evidence/retrieval-real-blocked.json)记录三个包的索引状态、文件数及空结果。
 
-[后端测试记录](evidence/retrieval-tests.txt)共 80 项，79 项通过，1 项因 Windows 当前账户无法创建符号链接而跳过，0 失败。新增检索测试 11 项，覆盖排序、追溯、过滤、文件损坏、重建撤回和真实资料隔离。原数据库设计的 ORM 和导入规则 21 项测试也通过。
+[后端测试记录](evidence/retrieval-tests.txt)共 81 项，80 项通过，1 项因 Windows 当前账户无法创建符号链接而跳过，0 失败。新增检索测试 12 项，覆盖排序、跨文件片段身份、追溯、过滤、文件损坏、重建撤回和真实资料隔离。原数据库设计的 ORM 和导入规则 21 项测试也通过。
 
 ## 联调与接入
 
@@ -57,6 +57,13 @@ async def index_and_retrieve(root: Path, package_path: Path, query: str):
 ```
 
 将 `store` 作为 `retriever` 传入吴诗莹的 `AgentWorkflow` 即可。已用她的工作分支提交 `ed50c69` 做离线联调。三项真实资料查询均得到 `insufficient_evidence`，且模型调用次数为 0。合成奖学金查询得到一条引用，标题、来源、整理稿定位及原件定位均与片段一致。联调使用固定模型替身及测试用追问和适用性回调。[Agent 联调记录](evidence/retrieval-agent-check.txt)。
+
+在仓库根目录复跑四项 Agent 联调用例。已获取对应 Git 提交时，可以直接运行第二条命令。
+
+```bash
+git fetch origin feat/alpha-agent-workflow-wushiying
+python -X utf8 -m scripts.check_retrieval_agent
+```
 
 ## 当前限制
 

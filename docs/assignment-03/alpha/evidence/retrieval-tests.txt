@@ -7,10 +7,10 @@ test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests.test_allowed_
 test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests.test_cors_origins_can_be_overridden_from_environment) ... ok
 test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests.test_dev_entry_keeps_mock_agent_enabled) ... ok
 test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests.test_health_and_request_id_header) ... ok
-test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=665f72fd-e4c5-4528-a25b-7a5b7c0d86a3 detail=AgentService.run() 必须返回 AgentResult。
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=e70fae92-05f9-4b63-bd87-d89485f1d5d2 detail=AgentService.run() 必须返回 AgentResult。
 ok
 test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests.test_patch_cors_is_enabled_for_admin_contracts) ... ok
-test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=dc9c67c7-82de-4ae8-8844-2054676fbc54 type=RuntimeError
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=15593b90-ecb5-4f96-aba0-dd021dd03236 type=RuntimeError
 Traceback (most recent call last):
   File "<repository>\backend\app\main.py", line 204, in ask
     result = await service.run(
@@ -69,6 +69,7 @@ test_document_package_rejects_unknown_chunk_file (test_interface_contracts.Inter
 test_enabled_retrieval_accepts_verified_metadata (test_interface_contracts.InterfaceContractTests.test_enabled_retrieval_accepts_verified_metadata) ... ok
 test_enabled_retrieval_requires_review_prerequisites (test_interface_contracts.InterfaceContractTests.test_enabled_retrieval_requires_review_prerequisites) ... ok
 test_bad_chunk_references_and_duplicate_numbers_are_rejected (test_local_retrieval.LocalRetrievalTests.test_bad_chunk_references_and_duplicate_numbers_are_rejected) ... ok
+test_chunk_numbers_are_scoped_to_their_source_file (test_local_retrieval.LocalRetrievalTests.test_chunk_numbers_are_scoped_to_their_source_file) ... ok
 test_disabled_chunks_stay_unsearchable (test_local_retrieval.LocalRetrievalTests.test_disabled_chunks_stay_unsearchable) ... ok
 test_local_files_are_checked_before_indexing (test_local_retrieval.LocalRetrievalTests.test_local_files_are_checked_before_indexing) ... ok
 test_mutating_package_or_results_does_not_change_index (test_local_retrieval.LocalRetrievalTests.test_mutating_package_or_results_does_not_change_index) ... ok
@@ -95,10 +96,10 @@ test_success_response_is_adapted (test_qwen_client.QwenClientTests.test_success_
 test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests.test_timeout_maps_to_sanitized_service_error) ... ok
 
 ----------------------------------------------------------------------
-Ran 80 tests in 8.392s
+Ran 81 tests in 8.656s
 
 OK (skipped=1)
 
 $ python -X utf8 -m pytest docs/assignment-02/database-design/source/test_models.py docs/assignment-02/database-design/source/test_import_rules.py -q
 .....................                                                    [100%]
-21 passed in 1.16s
+21 passed in 1.13s

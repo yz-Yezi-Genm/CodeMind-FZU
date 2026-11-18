@@ -139,6 +139,22 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
             await self.indexer.index_document(package)
         self.assertEqual(await self.search(), [])
 
+    async def test_chunk_numbers_are_scoped_to_their_source_file(self):
+        package = sample()
+        package.files.append(ParsedFile(
+            file_role="extracted", storage_key="attachment.md", original_name="attachment.md"
+        ))
+        package.chunks.append(ParsedChunk(
+            chunk_no=1,
+            source_file_key="attachment.md",
+            content="奖学金实践证明示例。",
+        ))
+        result = await self.indexer.index_document(package)
+        self.assertEqual(result.indexed_count, 3)
+        hits = await self.search("奖学金")
+        self.assertEqual(len({hit.file_id for hit in hits}), 2)
+        self.assertEqual(len({hit.chunk_id for hit in hits}), 3)
+
     async def test_disabled_chunks_stay_unsearchable(self):
         package = sample()
         package.chunks[0].index_status = ChunkIndexStatus.DISABLED
