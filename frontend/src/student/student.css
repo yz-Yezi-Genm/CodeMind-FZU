@@ -177,7 +177,7 @@
   line-height: 1.2;
 }
 
-.student-welcome p {
+.student-welcome p:not(.student-welcome-eyebrow) {
   color: var(--student-muted);
   margin: 10px 0 0;
 }
@@ -336,7 +336,6 @@
 
 .student-form textarea {
   width: 100%;
-  min-height: 64px;
   min-height: 58px;
   padding: 7px 6px;
   resize: vertical;
