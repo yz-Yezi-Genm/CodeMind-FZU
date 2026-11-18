@@ -16,7 +16,7 @@
       "retrieval_status": "enabled"
     },
     "files": [
-      {"file_role": "extracted", "storage_key": "synthetic/scholarship.md", "original_name": "scholarship.md"},
+      {"file_role": "extracted", "storage_key": "synthetic/scholarship.md", "original_name": "scholarship.md", "processing_status": "extracted"},
       {"file_role": "original", "storage_key": "synthetic/scholarship.pdf", "original_name": "scholarship.pdf"}
     ],
     "chunks": [
@@ -52,7 +52,7 @@
       "retrieval_status": "enabled"
     },
     "files": [
-      {"file_role": "extracted", "storage_key": "synthetic/competition.md", "original_name": "competition.md"}
+      {"file_role": "extracted", "storage_key": "synthetic/competition.md", "original_name": "competition.md", "processing_status": "extracted"}
     ],
     "chunks": [
       {
@@ -76,7 +76,7 @@
       "retrieval_status": "blocked"
     },
     "files": [
-      {"file_role": "extracted", "storage_key": "synthetic/blocked.md", "original_name": "blocked.md"}
+      {"file_role": "extracted", "storage_key": "synthetic/blocked.md", "original_name": "blocked.md", "processing_status": "extracted"}
     ],
     "chunks": [
       {

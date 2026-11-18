@@ -6,8 +6,9 @@ from tempfile import TemporaryDirectory
 from pydantic import ValidationError
 
 from backend.contracts import (
-    ChunkIndexStatus, DocumentMetadata, DocumentPackage, IndexingStatus, KnowledgeIndexer,
-    ParsedChunk, ParsedFile, RetrievalRequest, RetrievalStatus, Retriever,
+    ChunkIndexStatus, DocumentMetadata, DocumentPackage, FileProcessingStatus,
+    IndexingStatus, KnowledgeIndexer, ParsedChunk, ParsedFile, RetrievalRequest,
+    RetrievalStatus, Retriever,
 )
 from backend.retrieval.local import LocalBM25Retriever
 
@@ -30,7 +31,10 @@ def sample(record_code="TEST-1", **metadata_updates):
     return DocumentPackage(
         metadata=DocumentMetadata(**(metadata | metadata_updates)),
         files=[
-            ParsedFile(file_role="extracted", storage_key="text.md", original_name="text.md"),
+            ParsedFile(
+                file_role="extracted", storage_key="text.md", original_name="text.md",
+                processing_status=FileProcessingStatus.EXTRACTED,
+            ),
             ParsedFile(file_role="original", storage_key="policy.pdf", original_name="policy.pdf"),
         ],
         chunks=[
@@ -142,7 +146,8 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
     async def test_chunk_numbers_are_scoped_to_their_source_file(self):
         package = sample()
         package.files.append(ParsedFile(
-            file_role="extracted", storage_key="attachment.md", original_name="attachment.md"
+            file_role="extracted", storage_key="attachment.md", original_name="attachment.md",
+            processing_status=FileProcessingStatus.EXTRACTED,
         ))
         package.chunks.append(ParsedChunk(
             chunk_no=1,
@@ -163,6 +168,53 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.indexed_count, 1)
         self.assertEqual(await self.search("提交申请"), [])
         self.assertEqual(len(await self.search("奖学金")), 1)
+
+    async def test_unprocessed_source_files_are_skipped_in_mixed_package(self):
+        for status in (
+            FileProcessingStatus.FAILED, FileProcessingStatus.NEEDS_OCR,
+            FileProcessingStatus.SAVED,
+        ):
+            with self.subTest(status=status):
+                package = sample()
+                package.files.append(ParsedFile(
+                    file_role="extracted", storage_key="unready.md", original_name="unready.md",
+                    processing_status=status,
+                ))
+                package.chunks[0].source_file_key = "unready.md"
+
+                result = await self.indexer.index_document(package)
+                self.assertEqual(result.status, IndexingStatus.PARTIAL)
+                self.assertEqual((result.chunk_count, result.indexed_count), (2, 1))
+                self.assertEqual([item.code for item in result.warnings], [
+                    "SOURCE_FILE_NOT_READY",
+                ])
+                self.assertIn("unready.md", result.warnings[0].message)
+                self.assertIn(status.value, result.warnings[0].message)
+                self.assertEqual(await self.search("提交申请"), [])
+                hits = await self.search("奖学金")
+                self.assertEqual([hit.content for hit in hits], [package.chunks[1].content])
+
+    async def test_reindex_clears_old_hits_when_all_source_chunks_are_skipped(self):
+        package = sample()
+        await self.indexer.index_document(package)
+        self.assertTrue(await self.search())
+        package.files[0].processing_status = FileProcessingStatus.NEEDS_OCR
+
+        result = await self.indexer.index_document(package)
+        self.assertEqual(result.status, IndexingStatus.PARTIAL)
+        self.assertEqual((result.chunk_count, result.indexed_count), (2, 0))
+        self.assertEqual([item.code for item in result.warnings], ["SOURCE_FILE_NOT_READY"])
+        self.assertIn("2 个片段", result.warnings[0].message)
+        self.assertEqual(await self.search(), [])
+
+    async def test_reviewed_source_remains_searchable(self):
+        package = sample()
+        package.files[0].processing_status = FileProcessingStatus.REVIEWED
+        result = await self.indexer.index_document(package)
+        self.assertEqual(result.status, IndexingStatus.INDEXED)
+        self.assertEqual(result.indexed_count, 2)
+        self.assertEqual(result.warnings, [])
+        self.assertEqual(len(await self.search()), 2)
 
     async def test_rejects_invalid_storage_location(self):
         for key in ("../outside.md", "/rooted.md", "C:/outside.md", "sub/../text.md"):

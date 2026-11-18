@@ -16,6 +16,7 @@ from backend.contracts import (
     ChunkIndexStatus,
     DocumentMetadata,
     DocumentPackage,
+    FileProcessingStatus,
     IndexResult,
     IndexingStatus,
     ParsedChunk,
@@ -29,6 +30,7 @@ _HAN = r"\u3400-\u4dbf\u4e00-\u9fff\U00020000-\U000323af"
 _TOKEN_RUNS = re.compile(fr"(?P<han>[{_HAN}]+)|(?:(?![{_HAN}])[^\W_])+")
 _K1 = 1.2
 _B = 0.75
+_INDEXABLE_FILE_STATUSES = {FileProcessingStatus.EXTRACTED, FileProcessingStatus.REVIEWED}
 
 
 def _terms(text: str) -> list[str]:
@@ -119,10 +121,12 @@ class LocalBM25Retriever:
         metadata = snapshot.metadata
         document_id = _local_id("document", metadata.record_code)
         version_id = _local_id("version", str(document_id), metadata.version_no)
-        file_ids = {}
+        source_files = {}
         for file in snapshot.files:
             _check_storage_key(file.storage_key)
-            file_ids[file.storage_key] = _local_id("file", str(version_id), file.storage_key)
+            source_files[file.storage_key] = (
+                _local_id("file", str(version_id), file.storage_key), file.processing_status
+            )
 
         seen = set()
         for chunk in snapshot.chunks:
@@ -146,10 +150,16 @@ class LocalBM25Retriever:
             )
 
         entries = []
+        skipped_sources: Counter[str] = Counter()
+        skipped_disabled = False
         for chunk in snapshot.chunks:
             if chunk.index_status == ChunkIndexStatus.DISABLED:
+                skipped_disabled = True
                 continue
-            file_id = file_ids[chunk.source_file_key]
+            file_id, processing_status = source_files[chunk.source_file_key]
+            if processing_status not in _INDEXABLE_FILE_STATUSES:
+                skipped_sources[chunk.source_file_key] += 1
+                continue
             terms = _terms(chunk.content)
             entries.append(_IndexedChunk(
                 parsed=chunk,
@@ -159,12 +169,20 @@ class LocalBM25Retriever:
                 length=len(terms),
             ))
 
-        status = IndexingStatus.INDEXED
-        if len(entries) != len(snapshot.chunks):
-            status = IndexingStatus.PARTIAL
+        if skipped_disabled:
             warnings.append(WarningItem(
                 code="DISABLED_CHUNKS_SKIPPED", message="禁用片段未加入索引。"
             ))
+        for storage_key, count in skipped_sources.items():
+            _, processing_status = source_files[storage_key]
+            warnings.append(WarningItem(
+                code="SOURCE_FILE_NOT_READY",
+                message=(
+                    f"来源文件 processing_status={processing_status.value}，"
+                    f"跳过 {count} 个片段：{storage_key[:880]}"
+                ),
+            ))
+        status = IndexingStatus.PARTIAL if warnings else IndexingStatus.INDEXED
         self._versions[version_id] = _IndexedVersion(
             metadata, document_id, version_id, tuple(entries)
         )
