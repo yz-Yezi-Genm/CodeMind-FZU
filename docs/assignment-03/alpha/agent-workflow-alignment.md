@@ -1,5 +1,7 @@
 # Agent 上传前对齐核查｜吴诗莹
 
+> 本文档记录 PR #24 创建前的上传准备核查情况。其中测试数量及分支状态为当时的历史记录，不代表当前最新状态。最新测试结果以 [evidence/test-record.md](evidence/test-record.md) 为准，目前完整测试为 105 项，104 项通过、1 项跳过；[PR #24](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/24) 已创建并持续更新。
+
 核查日期：2026-11-18（Asia/Shanghai）  
 仓库：https://github.com/yz-Yezi-Genm/CodeMind-FZU  
 本次获取的远程 main：`3baee665b1fded80b20e4926c0132e0fb7c086b9`
