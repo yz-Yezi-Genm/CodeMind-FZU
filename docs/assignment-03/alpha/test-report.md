@@ -42,7 +42,7 @@ python -m unittest discover -s tests -v
 > 属环境权限限制，非测试代码或被测代码缺陷。
 >
 > 153 个用例包含：吴诗莹新增的 Agent 工作流测试 36 个（`test_agent_workflow.py` 30 + `test_agent_workflow_api.py` 3 +
-> `test_agent_workflow_qwen.py` 3），以及本报告的 API/契约测试 117 个。
+> `test_agent_workflow_qwen.py` 3），以及本报告的其他后端 API、接口契约、文档处理、运行时和 Qwen 适配器测试 117 个。
 >
 > 执行环境（来自 `python -m scripts.check_document_processing`）：Python 3.13.14、pydantic 2.13.5、
 > fastapi 0.141.1、httpx 0.28.1，平台 Windows。
