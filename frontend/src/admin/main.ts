@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 后台管理端入口（林彦翔 · Alpha 冲刺）
  *
  * 本轮只落地「管理概览 + 知识库资料管理」。后台管理 API（契约第 10 节）尚未实现，
@@ -15,8 +15,8 @@ import {
   updateAdminDocumentMetadata,
   uploadAdminDocument,
 } from '../shared/api';
-import { requireElement } from '../shared/dom';
-import type { AdminDocument, AdminDocumentMetadataPatch } from '../shared/types';
+import { escapeHtml, requireElement } from '../shared/dom';
+import type { AdminDocument, AdminDocumentMetadataPatch, DocumentSummary } from '../shared/types';
 import {
   DEFAULT_PAGE_SIZE,
   categoryOptions,
@@ -106,21 +106,21 @@ function findDocument(id: string | null): AdminDocument | null {
   return state.documents.find((doc) => doc.document_id === id) ?? null;
 }
 
-/** 契约 DocumentSummary → 页面行。契约未暴露的字段在接口模式下只能留空。 */
-function toAdminDocument(summary: AdminDocument): AdminDocument {
+/** 契约 DocumentSummary → 页面行。契约未暴露的字段在接口模式下留空，不臆造取值。 */
+function toAdminDocument(summary: DocumentSummary): AdminDocument {
   return {
     ...summary,
-    publisher: summary.publisher ?? null,
-    responsible_department: summary.responsible_department ?? null,
-    document_number: summary.document_number ?? null,
-    source_url: summary.source_url ?? null,
-    published_on: summary.published_on ?? null,
-    effective_on: summary.effective_on ?? null,
-    deadline_on: summary.deadline_on ?? null,
-    policy_status: summary.policy_status ?? null,
-    applicability: summary.applicability ?? { grade: null, major: null, target: null },
-    verification_note: summary.verification_note ?? null,
-    verified_on: summary.verified_on ?? null,
+    publisher: null,
+    responsible_department: null,
+    document_number: null,
+    source_url: null,
+    published_on: null,
+    effective_on: null,
+    deadline_on: null,
+    policy_status: null,
+    applicability: { grade: null, major: null, target: null },
+    verification_note: null,
+    verified_on: null,
   };
 }
 
@@ -134,7 +134,7 @@ function showNotice(notice: Notice): void {
   if (!root) return;
   root.innerHTML = `
     <div class="toast toast--${notice.type}" role="status">
-      <span class="toast-text">${notice.text}</span>
+      <span class="toast-text">${escapeHtml(notice.text)}</span>
       <button type="button" class="toast-close" data-action="dismiss-toast" aria-label="关闭提示">×</button>
     </div>`;
   if (noticeTimer !== null) {
@@ -167,7 +167,12 @@ function renderView(): void {
   if (!host) return;
   if (state.view === 'dashboard') {
     const stats = computeStats(state.documents);
-    host.innerHTML = renderDashboard(stats, '数据口径：前端内置模拟数据，非数据库读取。');
+    host.innerHTML = renderDashboard(stats, {
+      source: state.source,
+      note: state.source === 'demo'
+        ? '数据口径：前端内置模拟数据，非数据库读取。'
+        : '数据口径：后端接口返回。',
+    });
   } else {
     host.innerHTML = renderDocumentsView({
       documents: state.documents,
@@ -351,7 +356,7 @@ async function bootstrap(): Promise<void> {
     const response = await listAdminDocuments({ page: 1, page_size: MAX_PAGE_SIZE });
     state.source = 'api';
     state.apiNotice = null;
-    state.documents = response.items.map((item) => toAdminDocument(item as AdminDocument));
+    state.documents = response.items.map(toAdminDocument);
     state.totalBeforeFilter = state.documents.length;
   } catch (error) {
     state.source = 'demo';

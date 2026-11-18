@@ -132,7 +132,11 @@ node <脚本> http://127.0.0.1:4180/admin/index.html <截图目录> <证据文�
 
 9 项全部通过：列表 20 条与分页、状态筛选命中 3 条、叠加类别筛选收敛到 2 条、搜索空态、详情弹窗四个状态、编辑保存走演示模式、上传缺文件校验、重建索引失败不伪造结果、Esc 关闭弹窗。原始输出见 [`evidence/interaction-tests.txt`](evidence/interaction-tests.txt)。
 
-### 3. 类型检查与构建
+### 3. 评审意见回归验证（真实浏览器执行页面模块）
+
+`node` 脚本驱动 Edge + CDP，在页面里 `import('/src/admin/render.ts')` 直接调用相关函数，8 项全部通过：危险协议（`javascript:` / `data:` / `file:`）被拒绝、`http`/`https` 保留并规范化、详情弹窗对危险链接不渲染 `<a>`、Toast 把用户输入当纯文本渲染（无注入元素、无脚本执行）、首页数据来源提示随 `state.source` 切换。原始输出见 [`evidence/review-fixes.txt`](evidence/review-fixes.txt)。
+
+### 4. 类型检查与构建
 
 见 [`evidence/typecheck.txt`](evidence/typecheck.txt) 与 [`evidence/build.txt`](evidence/build.txt)：`tsc --noEmit` 无错误；构建产出 `dist/admin/index.html`、`dist/assets/admin-*.js`（约 73 KB）与 `admin-*.css`（约 12 KB），学生端入口同时正常产出。
 

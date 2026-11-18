@@ -49,6 +49,36 @@ function dash(value: string | null | undefined): string {
   return text ? escapeHtml(text) : '<span class="dash">—</span>';
 }
 
+/**
+ * 来源链接只允许 http / https，避免 javascript:、data:、file: 等协议
+ * 被渲染成可点击链接。非法或缺失的链接不渲染 <a>，改按纯文本展示。
+ */
+export function safeHttpUrl(url: string | null | undefined): string | null {
+  const raw = (url ?? '').trim();
+  if (!raw) return null;
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return null;
+    }
+    return parsed.href;
+  } catch {
+    return null;
+  }
+}
+
+function renderSourceLink(url: string | null | undefined): string {
+  const safe = safeHttpUrl(url);
+  if (safe) {
+    return `<a class="ext-link" href="${escapeHtml(safe)}" target="_blank" rel="noreferrer noopener">${escapeHtml(safe)}</a>`;
+  }
+  const raw = (url ?? '').trim();
+  if (!raw) {
+    return '<span class="dash">—</span>';
+  }
+  return `${escapeHtml(raw)} <span class="link-blocked">（非 HTTP/HTTPS 链接，未渲染为可点击链接）</span>`;
+}
+
 /** 页面外壳：侧栏 + 顶栏 + 内容容器。只在视图切换时整体重绘。 */
 export function renderShell(options: {
   view: AdminView;
@@ -123,7 +153,14 @@ export function renderShell(options: {
 }
 
 /** 首页：统计卡 + 待办 + 状态分布。 */
-export function renderDashboard(stats: AdminStats, mockMetaNotice: string): string {
+export interface DashboardOptions {
+  source: DataSource;
+  /** 数据口径说明：模拟数据与后端接口不能共用同一句文案。 */
+  note: string;
+}
+
+export function renderDashboard(stats: AdminStats, options: DashboardOptions): string {
+  const totalHint = options.source === 'demo' ? '当前模拟数据集' : '后端接口返回';
   const pending = [
     {
       title: `来源核验待完成 ${stats.sourcePending + stats.sourcePartial} 条`,
@@ -189,7 +226,7 @@ export function renderDashboard(stats: AdminStats, mockMetaNotice: string): stri
     </section>
 
     <section class="stat-grid" aria-label="资料状态统计">
-      ${card('资料总数', stats.total, '当前模拟数据集', '')}
+      ${card('资料总数', stats.total, totalHint, '')}
       ${card('来源待核验', stats.sourcePending, `另有部分核验 ${stats.sourcePartial} 条`, stats.sourcePending > 0 ? 'warn' : '')}
       ${card('已开放检索', stats.retrievalEnabled, `仅审核可见 ${stats.retrievalReviewOnly} 条`, '')}
       ${card('正文提取异常', stats.extractionNeedsOcr, '扫描件需要 OCR', stats.extractionNeedsOcr > 0 ? 'warn' : '')}
@@ -206,7 +243,7 @@ export function renderDashboard(stats: AdminStats, mockMetaNotice: string): stri
     <section class="card">
       <header class="card-head">
         <h3>状态分布</h3>
-        <p class="card-sub">四个维度独立记录，互不替代。<span class="muted">${escapeHtml(mockMetaNotice)}</span></p>
+        <p class="card-sub">四个维度独立记录，互不替代。<span class="muted">${escapeHtml(options.note)}</span></p>
       </header>
       <div class="dist-list">${distribution}</div>
     </section>
@@ -459,9 +496,7 @@ export function renderDetailModal(doc: AdminDocument, demoMode: boolean): string
         </dl>
         <div class="def-row def-row--wide">
           <dt>来源链接</dt>
-          <dd>${doc.source_url
-            ? `<a class="ext-link" href="${escapeHtml(doc.source_url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(doc.source_url)}</a>`
-            : '<span class="dash">—</span>'}</dd>
+          <dd>${renderSourceLink(doc.source_url)}</dd>
         </div>
         <div class="def-row def-row--wide">
           <dt>核查说明</dt>

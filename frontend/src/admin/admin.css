@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 后台管理端样式（林彦翔）
  *
  * 颜色、字号、行高、圆角、尺寸均已按 Figma「agent原型」后台画板（26 后台 · 资料审核，
@@ -980,6 +980,13 @@
   font-size: 12px;
   line-height: 14.4px;
   word-break: break-all;
+}
+
+/* 非 http/https 的来源链接不渲染成可点击链接，这里说明原因 */
+.link-blocked {
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 14.4px;
 }
 
 .modal-hint {

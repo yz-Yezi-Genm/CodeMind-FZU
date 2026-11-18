@@ -141,8 +141,11 @@ export interface ReindexResponse {
  * 应删除本接口，直接使用契约字段。
  */
 export interface DocumentDetailExtras {
-  /** 数据库主键；契约 DocumentSummary 未暴露，详情/重建索引入口按需使用。 */
-  version_id: string;
+  /**
+   * 数据库主键。契约 `DocumentSummary` 未暴露，接口模式下取不到，
+   * 因此可选；编辑/重建索引入口按 `document_id` 工作，不依赖该字段。
+   */
+  version_id?: string;
   publisher: string | null;
   responsible_department: string | null;
   document_number: string | null;
