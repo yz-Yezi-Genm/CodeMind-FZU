@@ -1,0 +1,145 @@
+D:\se_teamalpha\CodeMind-FZU\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_4000_character_contract_query_is_not_silently_truncated (test_agent_workflow.AgentWorkflowTests.test_4000_character_contract_query_is_not_silently_truncated) ... ok
+test_answer_uses_exact_retrieval_metadata_and_excerpt (test_agent_workflow.AgentWorkflowTests.test_answer_uses_exact_retrieval_metadata_and_excerpt) ... ok
+test_assistant_history_cannot_fill_slots_or_supply_policy (test_agent_workflow.AgentWorkflowTests.test_assistant_history_cannot_fill_slots_or_supply_policy) ... ok
+test_bad_or_fabricated_model_outputs_are_rejected (test_agent_workflow.AgentWorkflowTests.test_bad_or_fabricated_model_outputs_are_rejected) ... ok
+test_both_dependencies_have_timeouts (test_agent_workflow.AgentWorkflowTests.test_both_dependencies_have_timeouts) ... Retriever failed; request_id=026e8d59-e2ba-42bb-9e3a-0b6cf9ca8ecc
+ok
+test_business_verifier_can_only_tighten_evidence_gate (test_agent_workflow.AgentWorkflowTests.test_business_verifier_can_only_tighten_evidence_gate) ... ok
+test_business_verifier_failure_is_conservative (test_agent_workflow.AgentWorkflowTests.test_business_verifier_failure_is_conservative) ... Evidence validation failed; request_id=597392bc-ecbe-470d-b599-045cdc0e5995
+ok
+test_cancellation_is_not_swallowed (test_agent_workflow.AgentWorkflowTests.test_cancellation_is_not_swallowed) ... ok
+test_citations_follow_selected_subset_and_order (test_agent_workflow.AgentWorkflowTests.test_citations_follow_selected_subset_and_order) ... ok
+test_conflicting_duplicate_id_is_rejected (test_agent_workflow.AgentWorkflowTests.test_conflicting_duplicate_id_is_rejected) ... Evidence validation failed; request_id=d23869cd-783b-4150-826d-9c122d21a22b
+ok
+test_duplicate_chunks_are_deduplicated (test_agent_workflow.AgentWorkflowTests.test_duplicate_chunks_are_deduplicated) ... ok
+test_empty_evidence_never_calls_llm (test_agent_workflow.AgentWorkflowTests.test_empty_evidence_never_calls_llm) ... ok
+test_evidence_budget_is_enforced (test_agent_workflow.AgentWorkflowTests.test_evidence_budget_is_enforced) ... ok
+test_followup_uses_user_history_for_query_and_slots (test_agent_workflow.AgentWorkflowTests.test_followup_uses_user_history_for_query_and_slots) ... ok
+test_grade_is_not_academic_year (test_agent_workflow.AgentWorkflowTests.test_grade_is_not_academic_year) ... ok
+test_historical_requests_fail_closed (test_agent_workflow.AgentWorkflowTests.test_historical_requests_fail_closed) ... ok
+test_history_overflow_is_not_silently_truncated (test_agent_workflow.AgentWorkflowTests.test_history_overflow_is_not_silently_truncated) ... ok
+test_ineligible_evidence_and_forged_models_fail_closed (test_agent_workflow.AgentWorkflowTests.test_ineligible_evidence_and_forged_models_fail_closed) ... Evidence validation failed; request_id=b5105d66-9b0f-46e2-b7f2-346b3170c119
+Evidence validation failed; request_id=8fa6e921-7418-4be9-ae72-b6ff31a2dda0
+Evidence validation failed; request_id=429a1916-e9dc-4492-8320-43d982d78afe
+ok
+test_invalid_configuration_is_rejected (test_agent_workflow.AgentWorkflowTests.test_invalid_configuration_is_rejected) ... ok
+test_missing_year_clarifies_without_dependencies (test_agent_workflow.AgentWorkflowTests.test_missing_year_clarifies_without_dependencies) ... ok
+test_mixed_evidence_sends_only_eligible_chunks (test_agent_workflow.AgentWorkflowTests.test_mixed_evidence_sends_only_eligible_chunks) ... ok
+test_multiple_current_versions_are_rejected (test_agent_workflow.AgentWorkflowTests.test_multiple_current_versions_are_rejected) ... ok
+test_personal_and_deadline_claims_need_business_verifier (test_agent_workflow.AgentWorkflowTests.test_personal_and_deadline_claims_need_business_verifier) ... ok
+test_personal_question_requires_grade (test_agent_workflow.AgentWorkflowTests.test_personal_question_requires_grade) ... ok
+test_retrieval_and_generation_errors_do_not_leak_details (test_agent_workflow.AgentWorkflowTests.test_retrieval_and_generation_errors_do_not_leak_details) ... Retriever failed; request_id=0441b6cb-6aef-42af-bfab-659c0b7771dd
+LLM failed; request_id=01486054-5913-45e1-afbd-01f6fcfd3c0b
+ok
+test_vague_topic_clarifies (test_agent_workflow.AgentWorkflowTests.test_vague_topic_clarifies) ... ok
+test_wrong_provider_return_types_are_rejected (test_agent_workflow.AgentWorkflowTests.test_wrong_provider_return_types_are_rejected) ... Evidence validation failed; request_id=5bd003fb-51d9-4109-a81a-7432bb0edb8b
+Evidence validation failed; request_id=5a3148b9-ca2c-4469-8b02-2c523568dabb
+Evidence validation failed; request_id=0c79bc8b-3cf0-4b64-a2a2-91855ca5bd9a
+ok
+test_backend_preserves_conversation_id (test_agent_workflow_api.AgentWorkflowApiTests.test_backend_preserves_conversation_id) ... ok
+test_injected_workflow_returns_all_three_contract_statuses (test_agent_workflow_api.AgentWorkflowApiTests.test_injected_workflow_returns_all_three_contract_statuses) ... ok
+test_invalid_http_query_still_returns_existing_error_envelope (test_agent_workflow_api.AgentWorkflowApiTests.test_invalid_http_query_still_returns_existing_error_envelope) ... ok
+test_existing_qwen_adapter_can_supply_verified_extractive_answer (test_agent_workflow_qwen.AgentWorkflowQwenTests.test_existing_qwen_adapter_can_supply_verified_extractive_answer) ... ok
+test_model_failures_keep_backend_error_codes_instead_of_business_status (test_agent_workflow_qwen.AgentWorkflowQwenTests.test_model_failures_keep_backend_error_codes_instead_of_business_status) ... ok
+test_qwen_free_text_cannot_bypass_workflow_evidence_verification (test_agent_workflow_qwen.AgentWorkflowQwenTests.test_qwen_free_text_cannot_bypass_workflow_evidence_verification) ... ok
+test_agent_result_is_wrapped_with_shared_ids (test_backend_runtime.BackendRuntimeTests.test_agent_result_is_wrapped_with_shared_ids) ... ok
+test_agent_service_error_uses_contract_envelope (test_backend_runtime.BackendRuntimeTests.test_agent_service_error_uses_contract_envelope) ... ok
+test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests.test_allowed_cors_origin) ... ok
+test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests.test_cors_origins_can_be_overridden_from_environment) ... ok
+test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests.test_dev_entry_keeps_mock_agent_enabled) ... ok
+test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests.test_health_and_request_id_header) ... ok
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=104f8fb5-7ab1-4c9f-9167-045538617d08 detail=AgentService.run() 必须返回 AgentResult。
+ok
+test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests.test_patch_cors_is_enabled_for_admin_contracts) ... ok
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=5d27e6d7-e7e1-441b-9a08-154da9dd7f58 type=RuntimeError
+Traceback (most recent call last):
+  File "D:\se_teamalpha\CodeMind-FZU\backend\app\main.py", line 204, in ask
+    result = await service.run(
+             ^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "D:\se_teamalpha\CodeMind-FZU\tests\test_backend_runtime.py", line 43, in run
+    raise RuntimeError("unexpected internal detail")
+RuntimeError: unexpected internal detail
+ok
+test_unlisted_cors_origin_is_not_allowed (test_backend_runtime.BackendRuntimeTests.test_unlisted_cors_origin_is_not_allowed) ... ok
+test_wildcard_cors_origin_is_rejected (test_backend_runtime.BackendRuntimeTests.test_wildcard_cors_origin_is_rejected) ... ok
+test_binary_control_character_in_txt_is_rejected (test_document_processing.DocumentProcessingTests.test_binary_control_character_in_txt_is_rejected) ... ok
+test_bom_crlf_unicode_filename_hash_and_source_reference (test_document_processing.DocumentProcessingTests.test_bom_crlf_unicode_filename_hash_and_source_reference) ... ok
+test_cli_does_not_overwrite_input (test_document_processing.DocumentProcessingTests.test_cli_does_not_overwrite_input) ... ok
+test_cli_explicit_markdown_and_docx_roles (test_document_processing.DocumentProcessingTests.test_cli_explicit_markdown_and_docx_roles) ... ok
+test_cli_invalid_file_role_exits_before_writing_output (test_document_processing.DocumentProcessingTests.test_cli_invalid_file_role_exits_before_writing_output) ... ok
+test_cli_success_and_exception_exit_codes (test_document_processing.DocumentProcessingTests.test_cli_success_and_exception_exit_codes) ... ok
+test_declared_gb18030_is_supported (test_document_processing.DocumentProcessingTests.test_declared_gb18030_is_supported) ... ok
+test_directory_traversal_is_rejected_before_read (test_document_processing.DocumentProcessingTests.test_directory_traversal_is_rejected_before_read) ... ok
+test_docx_explicit_attachment_role_does_not_enable_extraction (test_document_processing.DocumentProcessingTests.test_docx_explicit_attachment_role_does_not_enable_extraction) ... ok
+test_docx_is_registered_pending_without_extracting_zip_bytes (test_document_processing.DocumentProcessingTests.test_docx_is_registered_pending_without_extracting_zip_bytes) ... ok
+test_empty_or_front_matter_only_file_is_rejected (test_document_processing.DocumentProcessingTests.test_empty_or_front_matter_only_file_is_rejected) ... ok
+test_even_explicit_enabled_metadata_is_returned_blocked (test_document_processing.DocumentProcessingTests.test_even_explicit_enabled_metadata_is_returned_blocked) ... ok
+test_file_size_limit_and_invalid_chunk_limit (test_document_processing.DocumentProcessingTests.test_file_size_limit_and_invalid_chunk_limit) ... ok
+test_heading_level_gaps_and_same_level_siblings (test_document_processing.DocumentProcessingTests.test_heading_level_gaps_and_same_level_siblings) ... ok
+test_invalid_encoding_is_not_silently_replaced (test_document_processing.DocumentProcessingTests.test_invalid_encoding_is_not_silently_replaced) ... ok
+test_invalid_explicit_file_role_is_rejected (test_document_processing.DocumentProcessingTests.test_invalid_explicit_file_role_is_rejected) ... ok
+test_long_chinese_paragraph_no_text_loss_or_duplicate_and_sequential_numbers (test_document_processing.DocumentProcessingTests.test_long_chinese_paragraph_no_text_loss_or_duplicate_and_sequential_numbers) ... ok
+test_markdown_explicit_curated_role_is_not_overridden_by_front_matter (test_document_processing.DocumentProcessingTests.test_markdown_explicit_curated_role_is_not_overridden_by_front_matter) ... ok
+test_markdown_explicit_extracted_role_preserves_content_and_metadata (test_document_processing.DocumentProcessingTests.test_markdown_explicit_extracted_role_preserves_content_and_metadata) ... ok
+test_markdown_front_matter_hierarchy_and_real_line_numbers (test_document_processing.DocumentProcessingTests.test_markdown_front_matter_hierarchy_and_real_line_numbers) ... ok
+test_markdown_ocr_placeholder_is_not_treated_as_extracted_policy (test_document_processing.DocumentProcessingTests.test_markdown_ocr_placeholder_is_not_treated_as_extracted_policy) ... ok
+test_markdown_table_text_and_values_are_preserved (test_document_processing.DocumentProcessingTests.test_markdown_table_text_and_values_are_preserved) ... ok
+test_metadata_is_not_mutated_and_verification_is_not_promoted (test_document_processing.DocumentProcessingTests.test_metadata_is_not_mutated_and_verification_is_not_promoted) ... ok
+test_missing_file (test_document_processing.DocumentProcessingTests.test_missing_file) ... ok
+test_omitted_file_role_preserves_legacy_defaults (test_document_processing.DocumentProcessingTests.test_omitted_file_role_preserves_legacy_defaults) ... ok
+test_parse_twice_is_identical_and_json_validates_against_public_contract (test_document_processing.DocumentProcessingTests.test_parse_twice_is_identical_and_json_validates_against_public_contract) ... ok
+test_pdf_waiting_for_ocr_produces_no_fabricated_chunks (test_document_processing.DocumentProcessingTests.test_pdf_waiting_for_ocr_produces_no_fabricated_chunks) ... ok
+test_relative_path_resolves_against_root (test_document_processing.DocumentProcessingTests.test_relative_path_resolves_against_root) ... ok
+test_review_only_also_remains_blocked_in_this_parser (test_document_processing.DocumentProcessingTests.test_review_only_also_remains_blocked_in_this_parser) ... ok
+test_setext_headings_and_fenced_hash_are_handled (test_document_processing.DocumentProcessingTests.test_setext_headings_and_fenced_hash_are_handled) ... ok
+test_symlink_escaping_storage_root_is_rejected (test_document_processing.DocumentProcessingTests.test_symlink_escaping_storage_root_is_rejected) ... skipped '当前操作系统账户不允许创建符号链接'
+test_txt_with_markdown_like_text_is_not_treated_as_headings (test_document_processing.DocumentProcessingTests.test_txt_with_markdown_like_text_is_not_treated_as_headings) ... ok
+test_unbroken_line_is_bounded_and_keeps_final_character (test_document_processing.DocumentProcessingTests.test_unbroken_line_is_bounded_and_keeps_final_character) ... ok
+test_unclosed_front_matter_is_rejected (test_document_processing.DocumentProcessingTests.test_unclosed_front_matter_is_rejected) ... ok
+test_unknown_pdf_type_is_pending_not_assumed_scanned (test_document_processing.DocumentProcessingTests.test_unknown_pdf_type_is_pending_not_assumed_scanned) ... ok
+test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files) ... 
+  test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files) (sample='scholarship-2026') ... FAIL
+test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification (test_document_processing.RepositoryPackageTests.test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification) ... ok
+test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility (test_document_processing.RepositoryPackageTests.test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility) ... ok
+test_sample_generation_is_repeatable_in_an_isolated_checkout (test_document_processing.RepositoryPackageTests.test_sample_generation_is_repeatable_in_an_isolated_checkout) ... ok
+test_contract_models_serialize_dates (test_interface_contracts.InterfaceContractTests.test_contract_models_serialize_dates) ... ok
+test_document_metadata_defaults_to_blocked (test_interface_contracts.InterfaceContractTests.test_document_metadata_defaults_to_blocked) ... ok
+test_document_package_rejects_unknown_chunk_file (test_interface_contracts.InterfaceContractTests.test_document_package_rejects_unknown_chunk_file) ... ok
+test_enabled_retrieval_accepts_verified_metadata (test_interface_contracts.InterfaceContractTests.test_enabled_retrieval_accepts_verified_metadata) ... ok
+test_enabled_retrieval_requires_review_prerequisites (test_interface_contracts.InterfaceContractTests.test_enabled_retrieval_requires_review_prerequisites) ... ok
+test_clarification (test_mock_agent_api.MockAgentApiTests.test_clarification) ... ok
+test_default_app_does_not_enable_mock (test_mock_agent_api.MockAgentApiTests.test_default_app_does_not_enable_mock) ... ok
+test_health_endpoint (test_mock_agent_api.MockAgentApiTests.test_health_endpoint) ... ok
+test_insufficient_evidence (test_mock_agent_api.MockAgentApiTests.test_insufficient_evidence) ... ok
+test_invalid_request (test_mock_agent_api.MockAgentApiTests.test_invalid_request) ... ok
+test_normal_answer (test_mock_agent_api.MockAgentApiTests.test_normal_answer) ... ok
+test_missing_api_key_fails_before_network_call (test_qwen_client.QwenClientTests.test_missing_api_key_fails_before_network_call) ... ok
+test_mixed_failures_share_one_retry_budget (test_qwen_client.QwenClientTests.test_mixed_failures_share_one_retry_budget) ... ok
+test_rate_limit_maps_to_rate_limited_error (test_qwen_client.QwenClientTests.test_rate_limit_maps_to_rate_limited_error) ... ok
+test_retryable_status_is_retried (test_qwen_client.QwenClientTests.test_retryable_status_is_retried) ... ok
+test_server_failure_maps_to_unavailable_error (test_qwen_client.QwenClientTests.test_server_failure_maps_to_unavailable_error) ... ok
+test_settings_do_not_expose_api_key (test_qwen_client.QwenClientTests.test_settings_do_not_expose_api_key) ... ok
+test_success_response_is_adapted (test_qwen_client.QwenClientTests.test_success_response_is_adapted) ... ok
+test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests.test_timeout_maps_to_sanitized_service_error) ... ok
+
+======================================================================
+FAIL: test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests.test_checked_in_three_scenarios_match_contract_and_source_files) (sample='scholarship-2026')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\se_teamalpha\CodeMind-FZU\tests\test_document_processing.py", line 375, in test_checked_in_three_scenarios_match_contract_and_source_files
+    self.assertEqual(file.sha256, sha256((root / file.storage_key).read_bytes()).hexdigest())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'a979ba14520f885b66344a91726e9f9ba90656b83a6a5d9ef2556b3a07baa675' != 'cdbb5410575e98f7bcd2a868dedaee1bf535ebb26c5de83c42e731771b90dc8c'
+- a979ba14520f885b66344a91726e9f9ba90656b83a6a5d9ef2556b3a07baa675
++ cdbb5410575e98f7bcd2a868dedaee1bf535ebb26c5de83c42e731771b90dc8c
+
+
+----------------------------------------------------------------------
+Ran 102 tests in 5.329s
+
+FAILED (failures=1, skipped=1)

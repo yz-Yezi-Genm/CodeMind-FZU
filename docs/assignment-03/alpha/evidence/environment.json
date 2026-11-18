@@ -1,0 +1,33 @@
+{
+  "started_at_asia_shanghai": "2026-11-18T09:15:37.642670+08:00",
+  "finished_at_asia_shanghai": "2026-11-18T09:15:42.751773+08:00",
+  "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "base_commit": "3baee665b1fded80b20e4926c0132e0fb7c086b9",
+  "branch": "feat/alpha-agent-workflow-wushiying",
+  "scope": "Offline fake Retriever/LLM only; no real Qwen or KB integration.",
+  "runs": [
+    {
+      "name": "unittest",
+      "args": [
+        "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "demo",
+      "args": [
+        "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+        "-m",
+        "examples.agent_workflow_demo"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

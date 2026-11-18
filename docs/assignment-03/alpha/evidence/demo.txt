@@ -1,0 +1,63 @@
+{
+  "demo_only": true,
+  "scenario": "缺少必要信息",
+  "result": {
+    "status": "needs_clarification",
+    "answer": null,
+    "answer_mode": null,
+    "clarifying_question": "请问你咨询的是哪一学年的评定？",
+    "citations": [],
+    "warnings": []
+  }
+}
+{
+  "demo_only": true,
+  "scenario": "没有有效证据",
+  "result": {
+    "status": "insufficient_evidence",
+    "answer": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。",
+    "answer_mode": "insufficient_data",
+    "clarifying_question": null,
+    "citations": [],
+    "warnings": [
+      {
+        "code": "NO_ELIGIBLE_EVIDENCE",
+        "message": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。"
+      }
+    ]
+  }
+}
+{
+  "demo_only": true,
+  "scenario": "有证据进入生成",
+  "result": {
+    "status": "answered",
+    "answer": "已核验资料中与本问题相关的原文如下：\n[1] 【模拟资料，非学校政策】测试流程：先阅读选课说明，再核对课程信息。",
+    "answer_mode": "current_policy",
+    "clarifying_question": null,
+    "citations": [
+      {
+        "document_id": "00000000-0000-0000-0000-000000000066",
+        "version_id": "00000000-0000-0000-0000-000000000067",
+        "chunk_id": "00000000-0000-0000-0000-000000000065",
+        "title": "【模拟资料】测试用选课说明（非学校政策）",
+        "publisher": "离线测试替身",
+        "source_url": "https://example.invalid/agent-workflow-demo",
+        "published_on": "2026-01-01",
+        "effective_on": null,
+        "locator": null,
+        "original_locator": null,
+        "excerpt": "【模拟资料，非学校政策】测试流程：先阅读选课说明，再核对课程信息。",
+        "source_verification_status": "verified",
+        "timeliness_verification_status": "current",
+        "retrieval_status": "enabled"
+      }
+    ],
+    "warnings": [
+      {
+        "code": "ALPHA_EXTRACTIVE_ANSWER",
+        "message": "Alpha 版仅展示模型选取并逐字核对的证据原文；不据此推断个人资格、办理开放时间或未载明的条件。"
+      }
+    ]
+  }
+}

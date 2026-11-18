@@ -1,0 +1,20 @@
+flowchart TD
+    A[接收公共 AgentRequest] --> B{缺少必要信息？}
+    B -->|是| C[needs_clarification：一个关键追问]
+    B -->|否| D{历史或个人适用性等尚无法核验？}
+    D -->|是| I[insufficient_evidence / insufficient_data]
+    D -->|否| E[构造 RetrievalRequest：保留用户问题及用户历史]
+    E --> F[await Retriever.retrieve]
+    F --> G[重验公共模型、来源、时效、日期、去重及版本]
+    G --> H{有可用证据且未超预算？}
+    H -->|否| I
+    H -->|是| J[构造 LLMGenerateRequest：问题和真实证据]
+    J --> K[await LLMClient.generate：选择并排列完整原文]
+    K --> L{JSON 合法、ID 真实、原文完全一致？}
+    L -->|否| I
+    L -->|是| M[从实际采用片段构造 Citation]
+    M --> N[answered / current_policy：摘录回答及限制提示]
+    E -.->|问题超过检索长度| I
+    F -.->|异常或超时| I
+    G -.->|违约、版本或片段冲突| I
+    K -.->|异常或超时| I
