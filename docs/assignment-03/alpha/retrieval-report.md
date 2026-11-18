@@ -34,6 +34,8 @@ python -X utf8 -m unittest discover -s tests -v
 
 [合成包](examples/retrieval-synthetic-packages.json)使用 `example.invalid` 作为虚构来源。[合成查询日志](evidence/retrieval-synthetic.json)记录完整结果。[真实包日志](evidence/retrieval-real-blocked.json)记录三个包的索引状态、文件数及空结果。
 
+[PowerShell 验收截图](evidence/retrieval-powershell.png)记录了合成奖学金命中与 `top_k`、真实资料索引后的零命中，以及 12 项检索测试通过的结果。
+
 [后端测试记录](evidence/retrieval-tests.txt)共 81 项，80 项通过，1 项因 Windows 当前账户无法创建符号链接而跳过，0 失败。新增检索测试 12 项，覆盖排序、跨文件片段身份、追溯、过滤、文件损坏、重建撤回和真实资料隔离。原数据库设计的 ORM 和导入规则 21 项测试也通过。
 
 ## 联调与接入
