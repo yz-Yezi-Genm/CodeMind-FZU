@@ -239,6 +239,50 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result.warnings[0].code, "UNSUPPORTED_POLICY_MODE")
         self.llm.generate.assert_not_awaited()
 
+    async def test_ended_academic_year_ranges_are_unsupported(self):
+        for year_range in ["2025-2026", "2025—2026", "2025–2026", "2025 - 2026 "]:
+            with self.subTest(year_range=year_range):
+                result = await self.service.run(self.request(f"{year_range}学年奖学金怎么申请？"))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.answer_mode, "insufficient_data")
+                self.assertEqual(result.warnings[0].code, "UNSUPPORTED_POLICY_MODE")
+                self.assertEqual(result.citations, [])
+        self.retriever.retrieve.assert_not_awaited()
+        self.llm.generate.assert_not_awaited()
+
+    async def test_current_academic_year_ranges_can_reach_generation(self):
+        for year_range in ["2026-2027", "2026—2027", "2026–2027", "2026 - 2027 "]:
+            with self.subTest(year_range=year_range):
+                self.retriever.retrieve.reset_mock()
+                self.llm.generate.reset_mock()
+                result = await self.service.run(self.request(f"{year_range}学年奖学金怎么申请？"))
+                self.assertEqual(result.status, "answered")
+                self.assertNotIn("UNSUPPORTED_POLICY_MODE", [item.code for item in result.warnings])
+                self.retriever.retrieve.assert_awaited_once()
+                self.llm.generate.assert_awaited_once()
+
+    async def test_academic_year_end_boundary(self):
+        # Alpha routing convention: a cross-year academic period ends August 31.
+        for current_date, expected_status in [
+            (date(2026, 8, 31), "answered"),
+            (date(2026, 9, 1), "insufficient_evidence"),
+        ]:
+            with self.subTest(current_date=current_date):
+                self.retriever.retrieve.reset_mock()
+                self.llm.generate.reset_mock()
+                service = AgentWorkflow(
+                    self.retriever, self.llm, today=lambda: current_date,
+                )
+                result = await service.run(self.request("2025-2026学年奖学金怎么申请？"))
+                self.assertEqual(result.status, expected_status)
+                if expected_status == "insufficient_evidence":
+                    self.assertEqual(result.warnings[0].code, "UNSUPPORTED_POLICY_MODE")
+                    self.retriever.retrieve.assert_not_awaited()
+                    self.llm.generate.assert_not_awaited()
+                else:
+                    self.retriever.retrieve.assert_awaited_once()
+                    self.llm.generate.assert_awaited_once()
+
     async def test_business_verifier_can_only_tighten_evidence_gate(self):
         service = AgentWorkflow(self.retriever, self.llm, evidence_check=lambda req, chunk: False)
         result = await service.run(self.request())

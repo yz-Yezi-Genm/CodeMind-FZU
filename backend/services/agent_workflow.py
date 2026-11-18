@@ -108,8 +108,23 @@ class AgentWorkflow:
         context = _user_context(request)
         # V1 has no target-year, applicability, deadline or version-relation
         # fields. Do not pretend to verify historical/personal/current-window claims.
-        target_years = re.findall(r"(20\d{2})(?:[-—至/](20\d{2}))?\s*(?:学年|年)", context)
-        historical_year = any(int(end or start) < self.today().year for start, end in target_years)
+        target_years = re.findall(
+            r"(20\d{2})(?:\s*[-—–至/]\s*(20\d{2}))?\s*(学年|年)", context,
+        )
+        today = self.today()
+        historical_year = False
+        for start, end, period in target_years:
+            # Alpha routing convention: September through August, so a range
+            # such as 2025-2026学年 ends on 2026-08-31, not 2026-12-31.
+            # This boundary does not verify actual policy/application deadlines.
+            period_end = (
+                date(int(end), 8, 31)
+                if end and period == "学年"
+                else date(int(end or start), 12, 31)
+            )
+            if today > period_end:
+                historical_year = True
+                break
         if re.search(r"历史|往年|旧版|当年", context) or historical_year:
             return _insufficient("UNSUPPORTED_POLICY_MODE", "Alpha 工作流暂不判断历史版本适用性，请由业务人员核对具体年份和版本。")
         if _PERSONAL.search(context) or re.search(r"截止|现在.*(?:申请|报名|办理)|还能|开放|冲突|矛盾", context):
