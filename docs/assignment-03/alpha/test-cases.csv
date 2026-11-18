@@ -31,5 +31,5 @@ TC-029,test_interface_contracts.py,test_enabled_retrieval_requires_review_prereq
 TC-030,test_interface_contracts.py,test_enabled_retrieval_accepts_verified_metadata,契约模型,构造完整核验元数据+enabled,校验通过且retrieval_status=enabled,符合,通过,
 TC-031,test_interface_contracts.py,test_document_package_rejects_unknown_chunk_file,契约模型,构造chunk引用不存在file,DocumentPackage校验失败,符合,通过,
 TC-032,test_interface_contracts.py,test_contract_models_serialize_dates,契约模型,构造含日期元数据,日期序列化为YYYY-MM-DD,符合,通过,
-TC-033,test_document_processing.py,RepositoryPackageTests(4个用例),文档处理,依赖knowledge_base/与scripts/资料文件,校验资料文件一致性,ERROR(FileNotFoundError),未通过,缺少资料文件属于环境未就绪非代码缺陷;待资料模块合并后复测
-TC-034,test_document_processing.py,其余35个用例,文档处理,解析/切片/入库等,按契约校验,通过,通过,丁晓炜/王智洋模块
+TC-033,test_document_processing.py,RepositoryPackageTests(4个用例),文档处理,依赖knowledge_base/与scripts/资料文件,校验资料文件一致性,4个用例全部通过,通过,资料文件已随仓库就绪;此前FileNotFoundError已解决
+TC-034,test_document_processing.py,DocumentProcessingTests其余35个用例,文档处理,解析/切片/入库等,按契约校验,通过,通过,丁晓炜/王智洋模块;其中1个symlink用例因Windows账户权限跳过
