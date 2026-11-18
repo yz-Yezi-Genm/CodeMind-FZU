@@ -120,7 +120,7 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - Qwen 真实网络调用需要本地配置 API Key，本次使用 MockTransport 完成适配器测试；
 - 文档解析、文件存储和资料入库；
 - PostgreSQL/SQLAlchemy 在线连接与迁移；
-- Chroma、BM25、RRF 实际检索；
+- Chroma 和 RRF 混合检索；
 - 管理端业务 API 和认证授权。
 
 数据库设计中的资料默认 `retrieval_status=blocked`。解析、入库或建立索引均不会自动开放正式问答检索。
@@ -134,6 +134,18 @@ python -m scripts.parse_alpha_documents
 python -m scripts.check_document_processing
 ```
 
-三个场景样例位于 `knowledge_base/processed/alpha/`，使用2026竞赛级别认定、2026奖学金办法及学院2027届本科推免推荐方案的已有正文提取稿，共23片段。完整使用方法、核验边界和索引交接见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。正文提取稿仍待政策与附件核验，实际索引联调尚未完成。
+三个场景样例位于 `knowledge_base/processed/alpha/`，共 23 个片段，均已通过内存索引联调。正文和附件仍待政策核验，问答检索保持关闭。使用方法见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。
 
-以上补充了“当前边界”中的Markdown/TXT离线文档解析；PDF/OCR、文件存储服务、真实资料入库与索引仍待对应模块完成。
+PDF/OCR、文件存储服务和持久化入库仍待接入。
+
+## 本地知识检索（Alpha）
+
+`backend.retrieval.LocalBM25Retriever` 实现 `KnowledgeIndexer` 和 `Retriever`。两个接口共用同一内存实例。配置 `file_root` 可检查真实资料文件及登记的 SHA-256。检索仅返回已明确开放的资料片段，并保留文档、版本和来源定位。
+
+```bash
+python -X utf8 -m scripts.demo_local_retrieval
+python -X utf8 -m scripts.demo_local_retrieval --real
+python -X utf8 -m unittest discover -s tests -p test_local_retrieval.py -v
+```
+
+默认示例用合成资料演示有命中和无命中两种情况。`--real` 校验仓库的三个真实资料包，预期问答检索均为空。接入方式和运行记录见 [检索报告](../docs/assignment-03/alpha/retrieval-report.md)。

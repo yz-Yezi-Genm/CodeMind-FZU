@@ -1,0 +1,157 @@
+{
+  "dataset": "synthetic",
+  "index": [
+    {
+      "record_code": "SYNTH-SCHOLARSHIP",
+      "retrieval_status": "enabled",
+      "file_count": 2,
+      "document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548",
+      "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0",
+      "status": "indexed",
+      "chunk_count": 2,
+      "indexed_count": 2,
+      "warnings": []
+    },
+    {
+      "record_code": "SYNTH-COMPETITION",
+      "retrieval_status": "enabled",
+      "file_count": 1,
+      "document_id": "4d0b3b48-e9d7-585a-99fb-88025225feed",
+      "version_id": "df3d07ba-c591-5c85-8fe6-67bc7b87cd72",
+      "status": "indexed",
+      "chunk_count": 1,
+      "indexed_count": 1,
+      "warnings": []
+    },
+    {
+      "record_code": "SYNTH-BLOCKED",
+      "retrieval_status": "blocked",
+      "file_count": 1,
+      "document_id": "2fb327df-6a41-5180-a4d7-e3865201b5ad",
+      "version_id": "b8901d37-d80d-5bb6-95fa-f0c43217ca0a",
+      "status": "indexed",
+      "chunk_count": 1,
+      "indexed_count": 1,
+      "warnings": []
+    }
+  ],
+  "queries": [
+    {
+      "request": {
+        "query": "星桥奖学金申请需要什么",
+        "top_k": 2,
+        "category_name": "综评与奖学金"
+      },
+      "hits": [
+        {
+          "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159",
+          "document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548",
+          "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0",
+          "file_id": "d542439a-8a03-5a56-b3dd-5f5a66d4e6a8",
+          "content": "星桥奖学金申请需要提交申请表和实践记录。",
+          "title": "合成测试资料：星桥奖学金",
+          "publisher": "合成测试机构",
+          "source_url": "https://example.invalid/alpha/scholarship",
+          "published_on": null,
+          "effective_on": null,
+          "locator": "第 2 行",
+          "original_locator": "第 1 页",
+          "score": 3.680293,
+          "retrieval_method": "bm25",
+          "source_verification_status": "verified",
+          "timeliness_verification_status": "current",
+          "retrieval_status": "enabled"
+        },
+        {
+          "chunk_id": "e9c6affe-77ef-59c4-b817-ebc0b8dfc2f0",
+          "document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548",
+          "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0",
+          "file_id": "d542439a-8a03-5a56-b3dd-5f5a66d4e6a8",
+          "content": "星桥奖学金评审结果将在演示平台公示。",
+          "title": "合成测试资料：星桥奖学金",
+          "publisher": "合成测试机构",
+          "source_url": "https://example.invalid/alpha/scholarship",
+          "published_on": null,
+          "effective_on": null,
+          "locator": "第 3 行",
+          "original_locator": null,
+          "score": 0.747269,
+          "retrieval_method": "bm25",
+          "source_verification_status": "verified",
+          "timeliness_verification_status": "current",
+          "retrieval_status": "enabled"
+        }
+      ]
+    },
+    {
+      "request": {
+        "query": "星桥奖学金申请需要什么",
+        "top_k": 1,
+        "category_name": "综评与奖学金"
+      },
+      "hits": [
+        {
+          "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159",
+          "document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548",
+          "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0",
+          "file_id": "d542439a-8a03-5a56-b3dd-5f5a66d4e6a8",
+          "content": "星桥奖学金申请需要提交申请表和实践记录。",
+          "title": "合成测试资料：星桥奖学金",
+          "publisher": "合成测试机构",
+          "source_url": "https://example.invalid/alpha/scholarship",
+          "published_on": null,
+          "effective_on": null,
+          "locator": "第 2 行",
+          "original_locator": "第 1 页",
+          "score": 3.680293,
+          "retrieval_method": "bm25",
+          "source_verification_status": "verified",
+          "timeliness_verification_status": "current",
+          "retrieval_status": "enabled"
+        }
+      ]
+    },
+    {
+      "request": {
+        "query": "云帆竞赛认定",
+        "top_k": 5,
+        "business_direction_code": "COMPETITION_RESEARCH"
+      },
+      "hits": [
+        {
+          "chunk_id": "52229484-2b69-5a42-97e8-9f6af41bfc71",
+          "document_id": "4d0b3b48-e9d7-585a-99fb-88025225feed",
+          "version_id": "df3d07ba-c591-5c85-8fe6-67bc7b87cd72",
+          "file_id": "eb047d86-e582-5667-ae1e-6c85cadbf388",
+          "content": "云帆竞赛认定需要提交参赛证明和获奖记录。",
+          "title": "合成测试资料：云帆竞赛认定",
+          "publisher": null,
+          "source_url": "https://example.invalid/alpha/competition",
+          "published_on": null,
+          "effective_on": null,
+          "locator": "第 5 行",
+          "original_locator": null,
+          "score": 1.43841,
+          "retrieval_method": "bm25",
+          "source_verification_status": "verified",
+          "timeliness_verification_status": "current",
+          "retrieval_status": "enabled"
+        }
+      ]
+    },
+    {
+      "request": {
+        "query": "月面推免",
+        "top_k": 5
+      },
+      "hits": []
+    },
+    {
+      "request": {
+        "query": "量子纠缠",
+        "top_k": 5
+      },
+      "hits": []
+    }
+  ]
+}

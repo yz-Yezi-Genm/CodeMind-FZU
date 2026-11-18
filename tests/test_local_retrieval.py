@@ -1,0 +1,197 @@
+import unittest
+from hashlib import sha256
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from pydantic import ValidationError
+
+from backend.contracts import (
+    ChunkIndexStatus, DocumentMetadata, DocumentPackage, IndexingStatus, KnowledgeIndexer,
+    ParsedChunk, ParsedFile, RetrievalRequest, RetrievalStatus, Retriever,
+)
+from backend.retrieval.local import LocalBM25Retriever
+
+
+def sample(record_code="TEST-1", **metadata_updates):
+    metadata = {
+        "title": "合成资料",
+        "document_type": "测试",
+        "category_name": "综评与奖学金",
+        "business_direction_codes": ["POLICY_AFFAIRS"],
+        "record_code": record_code,
+        "version_no": "v1",
+        "source_url": "https://example.invalid/policy",
+        "source_verification_status": "verified",
+        "timeliness_verification_status": "current",
+        "extraction_status": "extracted",
+        "v1_inclusion_status": "included",
+        "retrieval_status": "enabled",
+    }
+    return DocumentPackage(
+        metadata=DocumentMetadata(**(metadata | metadata_updates)),
+        files=[
+            ParsedFile(file_role="extracted", storage_key="text.md", original_name="text.md"),
+            ParsedFile(file_role="original", storage_key="policy.pdf", original_name="policy.pdf"),
+        ],
+        chunks=[
+            ParsedChunk(
+                chunk_no=1, content="奖学金申请需要提交申请表。",
+                source_file_key="text.md", original_file_key="policy.pdf",
+                locator="第 2 行", original_locator="第 3 页",
+            ),
+            ParsedChunk(chunk_no=2, content="奖学金名单公示。", source_file_key="text.md"),
+        ],
+    )
+
+
+class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
+    def setUp(self):
+        self.store = LocalBM25Retriever()
+        self.indexer: KnowledgeIndexer = self.store
+        self.retriever: Retriever = self.store
+
+    async def search(self, query="奖学金申请", **filters):
+        return await self.retriever.retrieve(RetrievalRequest(query=query, **filters))
+
+    async def test_rank_and_trace_matching_chunks(self):
+        package = sample()
+        indexed = await self.indexer.index_document(package)
+        hits = await self.search()
+        self.assertEqual(indexed.status, IndexingStatus.INDEXED)
+        self.assertEqual(indexed.indexed_count, 2)
+        self.assertEqual(len(hits), 2)
+        self.assertGreater(hits[0].score, hits[1].score)
+        self.assertGreater(hits[1].score, 0)
+        self.assertEqual(await self.search(top_k=1), hits[:1])
+        best = hits[0]
+        self.assertEqual((best.document_id, best.version_id), (indexed.document_id, indexed.version_id))
+        self.assertEqual(best.content, package.chunks[0].content)
+        self.assertEqual(best.title, package.metadata.title)
+        self.assertEqual(best.source_url, package.metadata.source_url)
+        self.assertEqual(best.locator, "第 2 行")
+        self.assertEqual(best.original_locator, "第 3 页")
+        self.assertIsNone(hits[1].original_locator)
+        self.assertEqual(best.retrieval_status, RetrievalStatus.ENABLED)
+        self.assertNotEqual(best.chunk_id, hits[1].chunk_id)
+        self.assertEqual(best.file_id, hits[1].file_id)
+
+    async def test_request_filters_and_no_match(self):
+        self.assertEqual(await self.search(), [])
+        await self.indexer.index_document(sample())
+        self.assertEqual(await self.search("量子纠缠"), [])
+        self.assertEqual(await self.search("？！"), [])
+        self.assertEqual(await self.search(category_name="培养方案与学位要求"), [])
+        self.assertEqual(await self.search(business_direction_code="CAREER"), [])
+        self.assertTrue(await self.search(
+            category_name="综评与奖学金", business_direction_code="POLICY_AFFAIRS"
+        ))
+
+    async def test_unopened_packages_do_not_affect_results_or_scores(self):
+        await self.indexer.index_document(sample())
+        initial = await self.search()
+        for status in ("blocked", "review_only"):
+            package = sample(status, retrieval_status=status)
+            result = await self.indexer.index_document(package)
+            self.assertEqual(result.indexed_count, 2)
+            self.assertEqual(package.metadata.retrieval_status, status)
+        self.assertEqual(await self.search(), initial)
+
+    async def test_reindex_replaces_version_and_revokes_access(self):
+        package = sample()
+        first = await self.indexer.index_document(package)
+        hits = await self.search()
+        self.assertEqual(await self.indexer.index_document(package), first)
+        self.assertEqual(await self.search(), hits)
+        package.chunks.pop()
+        await self.indexer.index_document(package)
+        self.assertEqual([hit.chunk_id for hit in await self.search()], [hits[0].chunk_id])
+        package.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await self.indexer.index_document(package)
+        self.assertEqual(await self.search(), [])
+
+    async def test_unvalidated_mutations_cannot_open_a_package(self):
+        package = sample(source_verification_status="pending", retrieval_status="blocked")
+        package.metadata.retrieval_status = RetrievalStatus.ENABLED
+        with self.assertRaises(ValidationError):
+            await self.indexer.index_document(package)
+        self.assertEqual(await self.search(), [])
+
+    async def test_mutating_package_or_results_does_not_change_index(self):
+        package = sample(retrieval_status="review_only")
+        await self.indexer.index_document(package)
+        package.metadata.retrieval_status = RetrievalStatus.ENABLED
+        self.assertEqual(await self.search(), [])
+        await self.indexer.index_document(package)
+        hits = await self.search()
+        exposed = await self.search()
+        exposed[0].content = "已修改"
+        package.chunks[0].content = "也被修改"
+        self.assertEqual(await self.search(), hits)
+
+    async def test_bad_chunk_references_and_duplicate_numbers_are_rejected(self):
+        package = sample()
+        package.chunks[0].original_file_key = "unknown.pdf"
+        with self.assertRaises(ValidationError):
+            await self.indexer.index_document(package)
+        package.chunks[0].original_file_key = None
+        package.chunks[1].chunk_no = 1
+        with self.assertRaisesRegex(ValueError, "chunk_no"):
+            await self.indexer.index_document(package)
+        self.assertEqual(await self.search(), [])
+
+    async def test_disabled_chunks_stay_unsearchable(self):
+        package = sample()
+        package.chunks[0].index_status = ChunkIndexStatus.DISABLED
+        result = await self.indexer.index_document(package)
+        self.assertEqual(result.status, IndexingStatus.PARTIAL)
+        self.assertEqual(result.indexed_count, 1)
+        self.assertEqual(await self.search("提交申请"), [])
+        self.assertEqual(len(await self.search("奖学金")), 1)
+
+    async def test_rejects_invalid_storage_location(self):
+        for key in ("../outside.md", "/rooted.md", "C:/outside.md", "sub/../text.md"):
+            with self.subTest(key=key):
+                package = sample()
+                package.files[1].storage_key = key
+                package.chunks[0].original_file_key = key
+                with self.assertRaisesRegex(ValueError, "storage_key"):
+                    await self.indexer.index_document(package)
+
+    async def test_local_files_are_checked_before_indexing(self):
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            store = LocalBM25Retriever(file_root=root)
+            package = sample()
+            (root / "policy.pdf").write_bytes(b"synthetic original")
+            (root / "text.md").write_bytes(b"synthetic text")
+            package.files[0].sha256 = sha256(b"synthetic text").hexdigest()
+            result = await store.index_document(package)
+            self.assertEqual(result.status, IndexingStatus.INDEXED)
+
+            (root / "text.md").write_bytes(b"changed")
+            (root / "policy.pdf").unlink()
+            result = await store.index_document(package)
+            self.assertEqual(result.status, IndexingStatus.FAILED)
+            self.assertEqual(result.indexed_count, 0)
+            self.assertEqual({item.code for item in result.warnings}, {
+                "FILE_HASH_MISMATCH", "FILE_UNAVAILABLE",
+            })
+            self.assertEqual(await store.retrieve(RetrievalRequest(query="奖学金")), [])
+
+    async def test_real_parser_handoff_indexes_without_exposing_policies(self):
+        root = Path(__file__).resolve().parents[1]
+        store = LocalBM25Retriever(file_root=root)
+        cases = (
+            ("competition-recognition-2026", 13, "竞赛认定"),
+            ("scholarship-2026", 4, "奖学金"),
+            ("recommendation-eligibility-2027", 6, "推免"),
+        )
+        for stem, count, query in cases:
+            with self.subTest(package=stem):
+                path = root / "knowledge_base/processed/alpha" / (stem + ".json")
+                package = DocumentPackage.model_validate_json(path.read_bytes())
+                result = await store.index_document(package)
+                self.assertEqual(result.status, IndexingStatus.INDEXED, result.warnings)
+                self.assertEqual(result.indexed_count, count)
+                self.assertEqual(package.metadata.retrieval_status, RetrievalStatus.BLOCKED)
+                self.assertEqual(await store.retrieve(RetrievalRequest(query=query)), [])
