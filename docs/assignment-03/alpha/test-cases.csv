@@ -1,0 +1,35 @@
+﻿用例ID,测试文件,测试用例,场景分类,输入,预期结果,实际结果,是否通过,备注
+TC-001,test_backend_runtime.py,test_health_and_request_id_header,健康检查,GET /api/v1/health,返回200且X-Request-ID为合法UUID,返回200且X-Request-ID为合法UUID,通过,
+TC-002,test_mock_agent_api.py,test_health_endpoint,健康检查,GET /api/v1/health,返回200,返回200,通过,
+TC-003,test_api_validation.py,test_health_returns_200_and_all_required_fields,健康检查,GET /api/v1/health,status=ok/service=codemind-fzu-api/version=0.1.0/timestamp为带时区UTC ISO8601,四字段全部符合规范,通过,本周新增
+TC-004,test_api_validation.py,test_health_has_no_extra_fields,健康检查,GET /api/v1/health,仅包含status/service/version/timestamp四字段,无多余字段,通过,本周新增
+TC-005,test_api_validation.py,test_health_request_id_header_is_valid_uuid,健康检查,GET /api/v1/health,X-Request-ID为合法UUID,为合法UUID,通过,本周新增
+TC-006,test_mock_agent_api.py,test_normal_answer,正常问答,POST /api/v1/ask query=测试一下Mock Agent,返回200且status=answered且answer含内容,status=answered且answer含"Mock演示",通过,
+TC-007,test_backend_runtime.py,test_dev_entry_keeps_mock_agent_enabled,正常问答,POST /api/v1/ask query=Mock入口验证(dev入口),返回200且status=answered,返回200且status=answered,通过,
+TC-008,test_backend_runtime.py,test_agent_result_is_wrapped_with_shared_ids,正常问答,POST /api/v1/ask query=测试问题,request_id/conversation_id在请求与响应间一致,ID一致,通过,
+TC-009,test_mock_agent_api.py,test_clarification,追问场景,POST /api/v1/ask query=__mock_clarify__,返回needs_clarification且answer=null且clarifying_question非空,符合,通过,
+TC-010,test_mock_agent_api.py,test_insufficient_evidence,证据不足,POST /api/v1/ask query=__mock_insufficient__,返回insufficient_evidence且answer_mode=insufficient_data,符合,通过,
+TC-011,test_mock_agent_api.py,test_invalid_request,异常输入,POST /api/v1/ask query=(空字符串),返回422且error.code=INVALID_REQUEST,符合,通过,
+TC-012,test_api_validation.py,test_overlong_query_is_rejected_with_422,异常输入,POST /api/v1/ask query=4001个字符,返回422且error.code=INVALID_REQUEST,符合,通过,本周新增
+TC-013,test_api_validation.py,test_query_exactly_4000_chars_is_accepted,异常输入边界,POST /api/v1/ask query=4000个字符,返回200且status=answered,符合,通过,本周新增
+TC-014,test_api_validation.py,test_missing_query_field_is_rejected,异常输入,POST /api/v1/ask body={},返回422且error.code=INVALID_REQUEST,符合,通过,本周新增
+TC-015,test_api_validation.py,test_query_wrong_type_is_rejected,异常输入,POST /api/v1/ask query=12345(数字),返回422且error.code=INVALID_REQUEST,符合,通过,本周新增
+TC-016,test_api_validation.py,test_extra_unknown_field_is_rejected,异常输入,POST /api/v1/ask query=正常+unexpected=多余字段,返回422(extra=forbid),符合,通过,本周新增
+TC-017,test_api_validation.py,test_non_json_body_is_rejected,异常输入,POST /api/v1/ask body=这不是JSON,返回422且error.code=INVALID_REQUEST,符合,通过,本周新增
+TC-018,test_mock_agent_api.py,test_default_app_does_not_enable_mock,Agent未注入,POST /api/v1/ask(create_app()无agent),返回503且error.code=SERVICE_NOT_CONFIGURED,符合,通过,
+TC-019,test_api_validation.py,test_503_envelope_is_complete_and_sanitized,Agent未注入,POST /api/v1/ask(create_app()无agent),返回503且envelope含request_id/code/retryable/message且不泄露堆栈,符合,通过,本周新增
+TC-020,test_backend_runtime.py,test_agent_service_error_uses_contract_envelope,错误契约,Agent抛ServiceError(code=RETRIEVAL_FAILED),返回503且error.code=RETRIEVAL_FAILED且retryable=true,符合,通过,
+TC-021,test_backend_runtime.py,test_invalid_agent_return_type_is_hidden_as_internal_error,错误契约,Agent返回dict而非AgentResult,返回500且error.code=INTERNAL_ERROR且不泄露详情,符合,通过,
+TC-022,test_backend_runtime.py,test_runtime_error_keeps_request_id_and_cors_headers,错误契约,Agent抛RuntimeError,返回500且保留request_id和CORS头且不泄露堆栈,符合,通过,
+TC-023,test_qwen_client.py,test_missing_api_key_fails_before_network_call,LLM配置,未配置QWEN_API_KEY,抛出LLMConfigurationError(不发起网络请求),符合,通过,
+TC-024,test_qwen_client.py,test_success_response_is_adapted,LLM适配,模拟成功响应,返回LLMResult(content/model/usage),符合,通过,
+TC-025,test_qwen_client.py,test_timeout_maps_to_sanitized_service_error,LLM错误,模拟超时,抛出LLMTimeoutError(不泄露敏感信息),符合,通过,
+TC-026,test_qwen_client.py,test_rate_limit_maps_to_rate_limited_error,LLM错误,模拟429,抛出LLMRateLimitedError,符合,通过,
+TC-027,test_qwen_client.py,test_settings_do_not_expose_api_key,LLM安全,访问QwenSettings,不暴露API Key,符合,通过,
+TC-028,test_interface_contracts.py,test_document_metadata_defaults_to_blocked,契约模型,构造DocumentMetadata默认值,retrieval_status=blocked,符合,通过,
+TC-029,test_interface_contracts.py,test_enabled_retrieval_requires_review_prerequisites,契约模型,构造retrieval_status=enabled但缺前置条件,抛出ValidationError,符合,通过,
+TC-030,test_interface_contracts.py,test_enabled_retrieval_accepts_verified_metadata,契约模型,构造完整核验元数据+enabled,校验通过且retrieval_status=enabled,符合,通过,
+TC-031,test_interface_contracts.py,test_document_package_rejects_unknown_chunk_file,契约模型,构造chunk引用不存在file,DocumentPackage校验失败,符合,通过,
+TC-032,test_interface_contracts.py,test_contract_models_serialize_dates,契约模型,构造含日期元数据,日期序列化为YYYY-MM-DD,符合,通过,
+TC-033,test_document_processing.py,RepositoryPackageTests(4个用例),文档处理,依赖knowledge_base/与scripts/资料文件,校验资料文件一致性,4个用例全部通过,通过,资料文件已随仓库就绪;此前FileNotFoundError已解决
+TC-034,test_document_processing.py,DocumentProcessingTests其余35个用例,文档处理,解析/切片/入库等,按契约校验,34个通过1个跳过,通过,丁晓炜/王智洋模块;其中1个symlink用例因Windows账户权限跳过
