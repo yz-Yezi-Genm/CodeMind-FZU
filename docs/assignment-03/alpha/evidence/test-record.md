@@ -4,9 +4,9 @@
 执行日期：2026-11-18（Asia/Shanghai）  
 开始：15:22:33 +08:00；结束：15:22:40 +08:00
 
-代码基线：`323e8c2b94e852461aa5b2b5bfd6a1f031a0a2c1`，加本轮福大校历边界修正的工作区改动
+测试时的代码基线：`323e8c2b94e852461aa5b2b5bfd6a1f031a0a2c1`，加福大校历边界修正的工作区改动；该修正及测试证据现已随提交 `8392be7` 提交并推送到 PR #24。
 
-分支：`feat/alpha-agent-workflow-wushiying`（现有 PR #24 的修订，待本次提交与推送）
+分支：`feat/alpha-agent-workflow-wushiying`（现有 PR #24 的修订，已提交并推送）
 
 ## 环境
 
@@ -75,6 +75,6 @@ needs_clarification / insufficient_evidence / answered
 - Agent 检索及模型返回内容为测试替身。新增组合测试使用实际已合并的 Qwen 适配器代码、模拟 HTTP；没有真实付费 Qwen、联网检索、Chroma/BM25/RRF 或真实政策人工核验。此记录证明工作流与接口逻辑，不证明完整产品上线或真实政策问答质量。
 - 原始测试输出中的 `Retriever failed`、`LLM failed`、`Evidence validation failed` 来自故意模拟的异常场景；对应测试均为 `ok`。
 - 当前上游 Starlette 对现有 httpx 测试客户端给出弃用提示，不影响本轮通过；没有为此擅自修改团队依赖规范。
-- 本轮仅修正工作流、对应边界测试及测试证据，公共接口、后端主入口和资料状态未改动；已有 PR #24，待用户将本次修改推送到原分支。
+- 本轮仅修正工作流、对应边界测试及测试证据，公共接口、后端主入口和资料状态未改动；修改已通过提交 `8392be7` 推送到原分支并更新现有 PR #24。
 - 业务追问规则、真实检索器和模型注入方式的人工协作确认待完成，见主交付文档中的对接清单。
 - 初次同步后回归曾因本地旧 CRLF 换行导致资料哈希失败；对照远程 Git blob 修复本地检出字节后复测通过，无资料内容或 Git blob 变更。初次输出完整保留于 [unittest-before-lf-refresh.txt](unittest-before-lf-refresh.txt)。完整核查见 [上传前对齐核查](../agent-workflow-alignment.md)。
