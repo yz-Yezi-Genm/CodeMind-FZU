@@ -1,0 +1,33 @@
+{
+  "started_at_asia_shanghai": "2026-11-19T20:00:00.812635+08:00",
+  "finished_at_asia_shanghai": "2026-11-19T20:00:08.504412+08:00",
+  "base_commit": "f5fcabce29fbbec1e02e29bb6c2eb28c92785bf3",
+  "branch": "feat/alpha-agent-integration",
+  "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+  "dependencies": {
+    "fastapi": "0.163.1",
+    "pydantic": "2.14.3",
+    "httpx": "0.28.1",
+    "uvicorn": "0.54.0"
+  },
+  "command": [
+    "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "exit_code": 0,
+  "test_layers": {
+    "AgentWorkflowTests / AgentWorkflowApiTests": "Mock or demo dependencies",
+    "AgentWorkflowQwenTests": "Real Qwen adapter with mock HTTP, demo retriever",
+    "LocalRetrieverQwenIntegrationTests": "Real BM25, indexing, file/hash validation, Qwen adapter and FastAPI; synthetic corpus / test callbacks / mock HTTP",
+    "real_policy_check": "Three real unchanged blocked corpora, actual index/hash validation and safety refusal; no Qwen call",
+    "DeliveredBusinessRulesTests": "Actual business functions, skipped until delivered",
+    "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required"
+  }
+}

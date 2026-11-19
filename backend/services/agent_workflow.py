@@ -10,20 +10,22 @@ import json
 import logging
 import math
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from datetime import date
+from pathlib import Path
 from uuid import UUID
 
 from pydantic import ValidationError
 
 from backend.contracts.models import (
-    AgentRequest, AgentResult, AnswerMode, AnswerStatus, Citation,
+    AgentRequest, AgentResult, AnswerMode, AnswerStatus, Citation, DocumentPackage,
+    IndexingStatus,
     LLMGenerateRequest, LLMMessage, LLMResult, LLMRole, RetrievalRequest,
     RetrievedChunk, RetrievalStatus, SourceVerificationStatus,
     TimelinessVerificationStatus, WarningItem,
 )
 from backend.contracts.protocols import LLMClient, Retriever
-from backend.services.errors import LLMTimeoutError, ServiceError
+from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 
 logger = logging.getLogger(__name__)
 ClarificationRule = Callable[[AgentRequest], str | None]
@@ -88,6 +90,10 @@ class AgentWorkflow:
             raise ValueError("timeout_seconds must be positive and finite")
         if max_evidence_chars < 1:
             raise ValueError("max_evidence_chars must be positive")
+        if not callable(clarification_rule):
+            raise ValueError("clarification_rule must be callable")
+        if evidence_check is not None and not callable(evidence_check):
+            raise ValueError("evidence_check must be callable")
         self.retriever = retriever
         self.llm_client = llm_client
         self.clarification_rule = clarification_rule
@@ -98,7 +104,13 @@ class AgentWorkflow:
         self.today = today
 
     async def run(self, request: AgentRequest) -> AgentResult:
-        question = self.clarification_rule(request)
+        try:
+            question = self.clarification_rule(request.model_copy(deep=True))
+            if question is not None and (not isinstance(question, str) or not question.strip()):
+                raise ValueError("Clarification rule must return a nonblank question or None")
+        except Exception:
+            logger.warning("Clarification rule failed; request_id=%s", request.request_id)
+            return _insufficient("CLARIFICATION_RULE_FAILED", "必要信息检查暂时不可用，本次不生成政策答案。")
         if question:
             return AgentResult(
                 status=AnswerStatus.NEEDS_CLARIFICATION,
@@ -157,11 +169,24 @@ class AgentWorkflow:
                 # snapshot and apply gates again even if an adapter returns models.
                 if not isinstance(raw, RetrievedChunk):
                     raise ValueError("Unexpected retrieval item type")
-                chunk = RetrievedChunk.model_validate(raw.model_dump())
+                snapshot = raw.model_dump()
+                # Validate the public base contract even for a typed extension,
+                # then retain that extension for the business owner's callback.
+                RetrievedChunk.model_validate({
+                    key: value for key, value in snapshot.items()
+                    if key in RetrievedChunk.model_fields
+                })
+                chunk = type(raw).model_validate(snapshot)
                 if not self._eligible(chunk):
                     continue
-                if self.evidence_check is not None and not self.evidence_check(request, chunk):
-                    continue
+                if self.evidence_check is not None:
+                    applicable = self.evidence_check(
+                        request.model_copy(deep=True), chunk.model_copy(deep=True),
+                    )
+                    if not isinstance(applicable, bool):
+                        raise ValueError("Evidence rule must return bool")
+                    if not applicable:
+                        continue
                 if chunk.chunk_id in seen:
                     if chunk != seen[chunk.chunk_id]:
                         raise ValueError("Conflicting duplicate chunk identity")
@@ -191,9 +216,9 @@ class AgentWorkflow:
             raise
         except TimeoutError as exc:
             raise LLMTimeoutError() from exc
-        except Exception:
+        except Exception as exc:
             logger.warning("LLM failed; request_id=%s", request.request_id)
-            return _insufficient("GENERATION_UNAVAILABLE", "回答组织服务暂时不可用，本次未生成正式回答，请稍后重试。")
+            raise LLMUnavailableError() from exc
 
         try:
             if not isinstance(generated, LLMResult):
@@ -247,7 +272,15 @@ class AgentWorkflow:
 
     @staticmethod
     def _verify_selection(content: str, chunks: list[RetrievedChunk]) -> list[Citation]:
-        payload = json.loads(content)
+        def unique_keys(pairs):
+            result = {}
+            for key, value in pairs:
+                if key in result:
+                    raise ValueError("Repeated JSON key")
+                result[key] = value
+            return result
+
+        payload = json.loads(content, object_pairs_hook=unique_keys)
         if not isinstance(payload, dict) or set(payload) != {"evidence"}:
             raise ValueError("Invalid generation shape")
         selected = payload["evidence"]
@@ -266,6 +299,62 @@ class AgentWorkflow:
             if item["quote"] != chunk.content:
                 raise ValueError("Quote differs from full source content")
             used.add(chunk_id)
-            fields = chunk.model_dump(exclude={"file_id", "content", "score", "retrieval_method"})
+            # Internal applicability/deadline fields belong to retrieval/rules,
+            # and must not leak into the extra=forbid public Citation contract.
+            fields = chunk.model_dump(include=set(Citation.model_fields) - {"excerpt"})
             citations.append(Citation(**fields, excerpt=chunk.content))
         return citations
+
+
+async def create_alpha_workflow(
+    packages: Iterable[DocumentPackage],
+    *,
+    file_root: Path,
+    llm_client: LLMClient | None = None,
+    clarification_rule: ClarificationRule | None = None,
+    evidence_check: EvidenceCheck | None = None,
+    top_k: int = 5,
+    timeout_seconds: float = 30.0,
+    max_evidence_chars: int = 24000,
+    today: Callable[[], date] = date.today,
+) -> AgentWorkflow:
+    """Assemble the real local retriever, business callbacks and Qwen adapter.
+
+    The default rule module is owned by the business team. Missing delivery is
+    a configuration error, never a silent fallback to the legacy demo rules.
+    Explicit callbacks/client support owner handoff and labelled offline tests.
+    Packages retain their reviewed/blocked state; indexing is not approval.
+    Inject the result with create_app(agent_service=workflow,
+    llm_client=workflow.llm_client). The caller loads its approved package list.
+    """
+    from importlib import import_module
+
+    from backend.retrieval.local import LocalBM25Retriever
+    from backend.services.errors import LLMConfigurationError
+    from backend.services.qwen_client import create_qwen_client_from_env
+
+    if (clarification_rule is None) != (evidence_check is None):
+        raise ValueError("Provide both business callbacks or neither")
+    if clarification_rule is None:
+        try:
+            rules = import_module("backend.services.alpha_business_rules")
+            clarification_rule = rules.alpha_clarification_rule
+            evidence_check = rules.alpha_evidence_check
+        except (ImportError, AttributeError) as exc:
+            raise LLMConfigurationError("Alpha 业务规则模块未就绪，不能启用正式工作流。") from exc
+
+    retriever = LocalBM25Retriever(file_root=file_root)
+    workflow = AgentWorkflow(
+        retriever, llm_client if llm_client is not None else create_qwen_client_from_env(),
+        clarification_rule=clarification_rule, evidence_check=evidence_check,
+        top_k=top_k, timeout_seconds=timeout_seconds,
+        max_evidence_chars=max_evidence_chars, today=today,
+    )
+    for package in packages:
+        indexed = await retriever.index_document(package)
+        if indexed.status != IndexingStatus.INDEXED:
+            raise ServiceError(
+                "政策资料未完整通过索引检查，不能启用正式工作流。",
+                code="SERVICE_NOT_CONFIGURED", http_status=503,
+            )
+    return workflow

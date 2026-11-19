@@ -8,10 +8,10 @@ from uuid import uuid4
 
 from backend.contracts.models import (
     AgentRequest, AgentResult, AnswerStatus, ConversationTurn, LLMResult,
-    RetrievalStatus, SourceVerificationStatus, TimelinessVerificationStatus,
+    RetrievedChunk, RetrievalStatus, SourceVerificationStatus, TimelinessVerificationStatus,
 )
 from backend.services.agent_workflow import AgentWorkflow
-from backend.services.errors import LLMTimeoutError
+from backend.services.errors import LLMTimeoutError, LLMUnavailableError
 from examples.agent_workflow_demo import demo_chunk
 
 
@@ -190,9 +190,9 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.llm.generate.assert_not_awaited()
         self.retriever.retrieve.side_effect = None
         self.llm.generate.side_effect = RuntimeError("private-credential")
-        result = await self.service.run(self.request())
-        self.assertEqual(result.warnings[0].code, "GENERATION_UNAVAILABLE")
-        self.assertNotIn("private-credential", result.model_dump_json())
+        with self.assertRaises(LLMUnavailableError) as raised:
+            await self.service.run(self.request())
+        self.assertNotIn("private-credential", str(raised.exception))
 
     async def test_both_dependencies_have_timeouts(self):
         async def slow(*args):
@@ -210,6 +210,28 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.retriever.retrieve.side_effect = asyncio.CancelledError
         with self.assertRaises(asyncio.CancelledError):
             await self.service.run(self.request())
+
+    async def test_model_cancellation_is_not_swallowed(self):
+        self.llm.generate.side_effect = asyncio.CancelledError
+        with self.assertRaises(asyncio.CancelledError):
+            await self.service.run(self.request())
+
+    async def test_model_cannot_select_filtered_or_previous_round_evidence(self):
+        rejected = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4()})
+        self.retriever.retrieve.return_value = [self.chunk, rejected]
+        self.llm.generate.return_value = self.selection(rejected)
+        service = AgentWorkflow(
+            self.retriever, self.llm,
+            evidence_check=lambda req, chunk: chunk.chunk_id != rejected.chunk_id,
+        )
+        result = await service.run(self.request())
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.retriever.retrieve.return_value = [rejected]
+        self.llm.generate.return_value = self.selection(self.chunk)
+        result = await self.service.run(self.request())
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
 
     async def test_4000_character_contract_query_is_not_silently_truncated(self):
         result = await self.service.run(self.request("选课" + "问" * 3998))
@@ -303,9 +325,131 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("private-detail", result.model_dump_json())
         self.llm.generate.assert_not_awaited()
 
+    async def test_clarification_rule_errors_and_wrong_types_stop_dependencies(self):
+        def broken(request):
+            raise RuntimeError("private-rule-detail")
+        for rule in [broken, lambda _: False, lambda _: " ", lambda _: []]:
+            with self.subTest(rule=rule):
+                service = AgentWorkflow(self.retriever, self.llm, clarification_rule=rule)
+                result = await service.run(self.request())
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.warnings[0].code, "CLARIFICATION_RULE_FAILED")
+                self.assertNotIn("private-rule-detail", result.model_dump_json())
+        self.retriever.retrieve.assert_not_awaited()
+        self.llm.generate.assert_not_awaited()
+
+    async def test_evidence_rule_requires_boolean_not_truthy_unknown(self):
+        for unknown in [None, "unknown", "false", 1, {"applicable": True}]:
+            with self.subTest(unknown=unknown):
+                service = AgentWorkflow(
+                    self.retriever, self.llm, evidence_check=lambda *_: unknown,
+                )
+                result = await service.run(self.request())
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.warnings[0].code, "INVALID_RETRIEVAL_RESULT")
+        self.llm.generate.assert_not_awaited()
+
+    async def test_rules_cannot_mutate_request_or_verified_source(self):
+        original = self.chunk.model_dump()
+        request = self.request()
+
+        def clarification(candidate):
+            candidate.query = "被回调替换的问题"
+            return None
+
+        def evidence(candidate, chunk):
+            candidate.query = "被回调替换的问题"
+            chunk.content = "被回调替换的政策条件"
+            chunk.source_url = "https://example.invalid/replaced"
+            return True
+
+        service = AgentWorkflow(
+            self.retriever, self.llm, clarification_rule=clarification,
+            evidence_check=evidence,
+        )
+        result = await service.run(request)
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(request.query, "选课有哪些步骤？")
+        self.assertEqual(self.chunk.model_dump(), original)
+        self.assertEqual(result.citations[0].excerpt, self.chunk.content)
+        self.assertEqual(result.citations[0].source_url, self.chunk.source_url)
+        self.assertEqual(self.retriever.retrieve.call_args.args[0].query, request.query)
+
+    async def test_extended_chunk_metadata_reaches_rules_and_prompt_not_citation(self):
+        # Provisional test-only fields: this does not change the shared contract
+        # or claim agreement with retrieval/business owners.
+        class ExtendedChunk(RetrievedChunk):
+            applicability_raw: dict[str, str]
+            deadline_on: date | None
+            policy_year: int | None
+
+        extended = ExtendedChunk(
+            **self.chunk.model_dump(), applicability_raw={"scope": "test-only"},
+            deadline_on=date(2026, 12, 31), policy_year=2026,
+        )
+        self.retriever.retrieve.return_value = [extended]
+        observed = []
+
+        def evidence(request, chunk):
+            observed.append(chunk)
+            return chunk.applicability_raw == {"scope": "test-only"}
+
+        service = AgentWorkflow(self.retriever, self.llm, evidence_check=evidence)
+        result = await service.run(self.request())
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(observed, [extended])
+        sent = json.loads(self.llm.generate.call_args.args[0].messages[-1].content)["evidence"][0]
+        self.assertEqual(sent["policy_year"], 2026)
+        self.assertEqual(sent["deadline_on"], "2026-12-31")
+        self.assertNotIn("policy_year", result.citations[0].model_dump())
+        self.assertEqual(result.citations[0].excerpt, extended.content)
+
+    async def test_year_scope_mismatch_and_unknown_fail_before_model(self):
+        class ScopedChunk(RetrievedChunk):
+            policy_year: int | None
+            scope: str | None
+
+        # This is a callback contract test, not the owner's business rules.
+        def fixture_evidence(request, chunk):
+            return chunk.policy_year == 2026 and chunk.scope == "undergraduate"
+
+        for year, scope in [(2025, "undergraduate"), (2026, "graduate"), (None, None)]:
+            with self.subTest(year=year, scope=scope):
+                self.retriever.retrieve.return_value = [ScopedChunk(
+                    **self.chunk.model_dump(), policy_year=year, scope=scope,
+                )]
+                service = AgentWorkflow(self.retriever, self.llm, evidence_check=fixture_evidence)
+                result = await service.run(self.request("2026年校级奖学金申请条件是什么？"))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.llm.generate.assert_not_awaited()
+
+    async def test_ambiguous_json_and_partially_forged_selections_are_rejected(self):
+        other = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4()})
+        self.retriever.retrieve.return_value = [self.chunk, other]
+        valid = {"chunk_id": str(self.chunk.chunk_id), "quote": self.chunk.content}
+        encoded = json.dumps(valid)
+        outputs = [
+            '{"evidence":[],"evidence":[' + encoded + ']}',
+            '{"evidence":[{"chunk_id":"unknown",' + encoded[1:] + ']}',
+            json.dumps({"evidence": [valid, valid]}),
+            json.dumps({"evidence": [valid, {"chunk_id": str(other.chunk_id), "quote": "篡改"}]}),
+            json.dumps({"evidence": [{**valid, "quote": self.chunk.content + " "}]}),
+            json.dumps({"evidence": [{**valid, "quote": self.chunk.content.replace("。", ".")}]}),
+            json.dumps({"evidence": [{**valid, "quote": [self.chunk.content]}]}),
+        ]
+        for output in outputs:
+            with self.subTest(output=output):
+                self.llm.generate.return_value = LLMResult(model="TEST-FAKE", content=output)
+                result = await self.service.run(self.request())
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+                self.assertNotIn(self.chunk.content, result.answer)
+
     def test_invalid_configuration_is_rejected(self):
         for options in [{"top_k": 0}, {"top_k": 21}, {"timeout_seconds": 0},
-                        {"timeout_seconds": float("nan")}, {"max_evidence_chars": 0}]:
+                        {"timeout_seconds": float("nan")}, {"max_evidence_chars": 0},
+                        {"clarification_rule": None}, {"evidence_check": "not-callable"}]:
             with self.subTest(options=options), self.assertRaises(ValueError):
                 AgentWorkflow(self.retriever, self.llm, **options)
 
