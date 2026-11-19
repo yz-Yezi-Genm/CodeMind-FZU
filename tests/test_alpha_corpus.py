@@ -132,6 +132,8 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
             approved_dir.mkdir()
 
             _write_approved_package(root, approved_dir, "ok.json", record_code="OK-1")
+            (approved_dir / "summary.json").write_text('{"ignored": true}', encoding="utf-8")
+            (approved_dir / "ok.metadata.json").write_text('{"ignored": true}', encoding="utf-8")
             _write_approved_package(
                 root, approved_dir, "blocked.json", record_code="BLK-1", retrieval_status="blocked"
             )

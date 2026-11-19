@@ -106,7 +106,7 @@ def _discover_entries(
         return resolved_corpus, candidates, skipped
 
     for path in sorted(resolved_corpus.glob("*.json")):
-        if path.name == "manifest.json":
+        if path.name in {"manifest.json", "summary.json"} or path.name.endswith(".metadata.json"):
             continue
         resolved_pkg = path.resolve(strict=True)
         if not resolved_pkg.is_relative_to(resolved_corpus) or not resolved_pkg.is_file():
