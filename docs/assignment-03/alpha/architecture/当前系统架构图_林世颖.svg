@@ -1,75 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="890" viewBox="0 0 1600 890" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 890" width="1600" height="890">
 <rect width="1600" height="890" fill="#ffffff"/>
-<text x="800.0" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#222222">CodeMind-FZU 当前实际架构图（Alpha · 基于 main 分支代码）</text>
-<line x1="520" y1="160" x2="520" y2="185" stroke="#34a853" stroke-width="2"/>
-<line x1="1040" y1="160" x2="1040" y2="185" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<line x1="800" y1="325" x2="800" y2="375" stroke="#1976d2" stroke-width="2"/>
-<line x1="625" y1="451" x2="260" y2="490" stroke="#1976d2" stroke-width="2"/>
-<line x1="800" y1="451" x2="610" y2="490" stroke="#1976d2" stroke-width="2"/>
-<line x1="975" y1="451" x2="960" y2="490" stroke="#1976d2" stroke-width="2"/>
-<line x1="1170" y1="451" x2="1310" y2="490" stroke="#1976d2" stroke-width="2"/>
-<rect x="320" y="56" width="180" height="30" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="410.0" y="75.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">已实现（代码落地）</text>
-<rect x="560" y="56" width="180" height="30" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="650.0" y="75.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#757575">仅契约 / 尚未实现</text>
-<rect x="800" y="56" width="180" height="30" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
-<text x="890.0" y="75.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#0d47a1">公共契约层</text>
-<rect x="330" y="104" width="380" height="56" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="520.0" y="118.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">学生端前端（Vite + TS 骨架 · 问答联调页）</text>
-<text x="520.0" y="136.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">健康检查 / 问答提交 / 三状态与引用渲染</text>
-<text x="520.0" y="154.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">反馈仅本地标记，完整业务页面待开发</text>
-<rect x="850" y="104" width="380" height="56" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="1040.0" y="118.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#757575">管理端前端（工程入口占位）</text>
-<text x="1040.0" y="136.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#757575">仅健康检查与骨架说明</text>
-<text x="1040.0" y="154.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#757575">业务页面待后续开发</text>
-<rect x="430" y="185" width="740" height="140" rx="8" fill="#34a853" stroke="#1b5e20" stroke-width="2"/>
-<text x="800.0" y="207" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#ffffff">FastAPI 后端骨架（已实现）</text>
-<rect x="460" y="235" width="210" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="565.0" y="257.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">GET /api/v1/health</text>
-<rect x="695" y="235" width="210" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="257.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">POST /api/v1/ask 契约入口</text>
-<rect x="930" y="235" width="210" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="1035.0" y="257.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">CORS / 请求 ID / 错误处理</text>
-<text x="800.0" y="309.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#1b5e20">未注入 Agent 时返回 503 SERVICE_NOT_CONFIGURED，不伪造回答</text>
-<rect x="430" y="375" width="740" height="80" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
-<text x="800.0" y="397" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="700" fill="#0d47a1">公共契约层</text>
-<rect x="460" y="411" width="330" height="34" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
-<text x="625.0" y="432.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">models.py 公共 DTO 与状态枚举</text>
-<rect x="820" y="411" width="330" height="34" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
-<text x="985.0" y="432.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">protocols.py 六个模块协议边界</text>
-<rect x="100" y="490" width="320" height="96" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="260.0" y="515.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">MockAgentService（已实现）</text>
-<text x="260.0" y="533.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">dev 入口注入；三状态演示</text>
-<text x="260.0" y="551.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">answered / needs_clarification /</text>
-<text x="260.0" y="569.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">insufficient_evidence</text>
-<rect x="450" y="490" width="320" height="96" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="610.0" y="524.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">QwenLLMClient（适配器已实现）</text>
-<text x="610.0" y="542.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">实现 LLMClient 协议；超时/重试/限流</text>
-<text x="610.0" y="560.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Key 仅环境变量；未接真实付费调用</text>
-<rect x="800" y="490" width="320" height="96" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="960.0" y="524.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">TextDocumentParser（已实现）</text>
-<text x="960.0" y="542.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Markdown/TXT 解析与切片</text>
-<text x="960.0" y="560.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#333333">不写库、不索引、不开放检索</text>
-<rect x="1150" y="490" width="320" height="96" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="1310.0" y="533.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">errors.py（已实现）</text>
-<text x="1310.0" y="551.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#333333">服务错误与公共错误码映射</text>
-<rect x="100" y="610" width="1400" height="160" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="800.0" y="632" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="700" fill="#757575">仅契约 / 尚未实现</text>
-<rect x="130" y="655" width="200" height="44" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="230.0" y="681.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#757575">真实 Agent 工作流</text>
-<rect x="360" y="655" width="200" height="44" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="460.0" y="681.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#757575">Retriever 检索</text>
-<rect x="590" y="655" width="200" height="44" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="690.0" y="681.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#757575">数据库 / ORM 在线接入</text>
-<rect x="820" y="655" width="230" height="44" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="935.0" y="681.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#757575">KnowledgeIndexer 入库与索引</text>
-<rect x="1080" y="655" width="200" height="44" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="1180.0" y="681.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#757575">后台管理端与管理 API</text>
-<rect x="1310" y="655" width="160" height="44" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="1390.0" y="681.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" fill="#757575">认证授权</text>
-<text x="430.0" y="742.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#757575">认证授权尚未接入；管理 API 仅限本地 / 受控测试环境</text>
-<text x="1120.0" y="742.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="11" fill="#757575">知识库资料已收集，但未入库、未索引、未核验，默认 retrieval_status=blocked</text>
-<rect x="430" y="792" width="740" height="44" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="818.0" text-anchor="middle" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#333333">tests/ 契约、接口、Mock、适配器与解析器测试（已实现）</text>
-<text x="800.0" y="872" text-anchor="middle" font-size="11" fill="#888888">编制：林世颖 | 日期：2026-11-18 | 依据：main 分支实际代码与 Alpha 接口规范 V1.0</text>
+<text x="800.0" y="35" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="18" font-weight="bold" fill="#333333">CodeMind-FZU 当前实际架构图（Alpha · 基于 main 分支代码）</text>
+<line x1="450" y1="152" x2="480" y2="176" stroke="#34a853" stroke-width="2"/>
+<line x1="1150" y1="152" x2="1120" y2="176" stroke="#34a853" stroke-width="2"/>
+<line x1="800" y1="210" x2="800" y2="316" stroke="#1976d2" stroke-width="2"/>
+<line x1="800" y1="396" x2="800" y2="416" stroke="#1976d2" stroke-width="2"/>
+<line x1="800" y1="608" x2="800" y2="628" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<rect x="320" y="44" width="180" height="26" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="410.0" y="61.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">已实现（代码落地）</text>
+<rect x="540" y="44" width="200" height="26" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="640.0" y="61.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#757575">仅契约 / 尚未实现</text>
+<rect x="780" y="44" width="180" height="26" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+<text x="870.0" y="61.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">公共契约层</text>
+<rect x="120" y="88" width="660" height="64" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="450.0" y="115.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">学生端前端（已实现）</text>
+<text x="450.0" y="133.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">健康检查 · 问答提交 · 三状态与引用渲染 · 追问展示 · 反馈本地标记</text>
+<rect x="820" y="88" width="660" height="64" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1150.0" y="115.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">管理端前端（已实现）</text>
+<text x="1150.0" y="133.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">管理概览 · 资料列表/筛选/详情/编辑/上传/重索引弹窗；真实 API 失败时降级前端模拟数据</text>
+<rect x="320" y="176" width="960" height="34" rx="8" fill="#34a853" stroke="#1b5e20" stroke-width="2"/>
+<text x="800.0" y="197.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">FastAPI 后端骨架（已实现）</text>
+<rect x="340" y="224" width="290" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="485.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">GET /api/v1/health</text>
+<rect x="655" y="224" width="290" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">POST /api/v1/ask 契约入口</text>
+<rect x="970" y="224" width="290" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1115.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">CORS · 请求 ID · 统一错误信封</text>
+<text x="800.0" y="288.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">Agent 未注入时返回 503 SERVICE_NOT_CONFIGURED，不伪造回答</text>
+<rect x="320" y="316" width="960" height="34" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+<text x="800.0" y="337.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#0d47a1">公共契约层（已落地）</text>
+<rect x="340" y="360" width="450" height="36" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="565.0" y="382.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">models.py 公共 DTO 与状态枚举</text>
+<rect x="810" y="360" width="450" height="36" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="1035.0" y="382.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">protocols.py 六个模块协议边界</text>
+<text x="800.0" y="432.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#6a1b9a">已落地服务与适配器</text>
+<rect x="120" y="448" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="335.0" y="478.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">MockAgentService</text>
+<text x="335.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">三状态 answered / needs_clarification / insufficient_evidence 演示</text>
+<rect x="585" y="448" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="478.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">QwenLLMClient</text>
+<text x="800.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">实现 LLMClient 协议；超时/重试/限流/错误映射；真实付费模型未接通</text>
+<rect x="1050" y="448" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1265.0" y="478.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">errors.py</text>
+<text x="1265.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">服务错误类型与公共错误码映射</text>
+<rect x="120" y="530" width="430" height="78" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="335.0" y="546.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentWorkflow</text>
+<text x="335.0" y="564.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentService.run 结构实现</text>
+<text x="335.0" y="582.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">追问规则 · 证据门槛 · 版本冲突校验</text>
+<text x="335.0" y="600.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">引用逐字核验；不持久化会话</text>
+<rect x="585" y="530" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="560.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">LocalBM25Retriever</text>
+<text x="800.0" y="578.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">本地 BM25 检索 + 内存入库索引；仅暴露 enabled 状态片段；无持久化存储</text>
+<rect x="1050" y="530" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1265.0" y="560.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">TextDocumentParser</text>
+<text x="1265.0" y="578.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Markdown/TXT 解码、标题切片、定位与哈希；不联网/不写库/不建索引/不开放检索</text>
+<rect x="100" y="628" width="1400" height="160" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="650" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#757575">仅契约 / 尚未实现</text>
+<rect x="130" y="668" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="345.0" y="687.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">管理后端服务与管理 API</text>
+<text x="345.0" y="705.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">DocumentAdminService：列表/详情/导入/重索引后端与管理 HTTP 接口未实现</text>
+<rect x="585" y="668" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="687.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">真实 LLM 付费调用</text>
+<text x="800.0" y="705.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">适配器仅离线协议测试，API Key 未配置、未接通真实模型</text>
+<rect x="1040" y="668" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="1255.0" y="687.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">关系数据库 / ORM 持久化</text>
+<text x="1255.0" y="705.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">未引入 SQLAlchemy 与数据库驱动；当前检索为内存索引，无在线持久化库</text>
+<rect x="130" y="724" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="345.0" y="743.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">向量 / 全文持久化索引</text>
+<text x="345.0" y="761.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">持久化索引与嵌入模型部署方案待定</text>
+<rect x="585" y="724" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="743.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">对话历史持久化</text>
+<text x="800.0" y="761.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">AgentRequest.history 契约已定义；未接存储与跨会话恢复</text>
+<rect x="1040" y="724" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="1255.0" y="743.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">认证授权</text>
+<text x="1255.0" y="761.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">未接入；管理 API 在鉴权完成前仅限本地或受控测试环境</text>
+<text x="800.0" y="812.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#999999">知识库资料已收集；未完成政策核验、未开放检索，默认 retrieval_status=blocked；PDF/DOCX/OCR 解析待完成</text>
+<rect x="100" y="828" width="1400" height="30" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="847.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">tests/ 契约与接口测试：153 项运行，152 通过，0 失败，1 跳过（系统账户不允许创建符号链接）</text>
+<text x="800.0" y="872" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-19 | 依据：main 分支实际代码与 Alpha 接口规范 V1.0</text>
 </svg>
