@@ -10,7 +10,9 @@
 
 我已用你们现有 `LocalBM25Retriever(file_root=仓库根目录)` 实测5包全部成功离线建立索引，4组查询在正式 `retrieve()` 中均返回0条，符合当前限制。检查记录在 `docs/assignment-03/alpha/evidence/policy-review-check.json`；这只是技术兼容检查，未完成正式问答效果验收。
 
-请帮忙确认：按清单接收公共JSON、保持复核状态、原始引用和新版本号的方式是否满足你的入库/索引模块；是否还需要单独的交付清单字段。若需要调整公共模型，我们一起向组长提出，不各自改接口。你确认前，我会把对接记录保持“待确认”。
+2026-11-19用户转述王智洋的接收反馈：5份候选包、371个片段的模型格式、SHA-256、字符区间与原件定位映射全部通过，blocked/review_only正式问答隔离正常，代码对接没有问题。此处记录的是对方反馈，不冒充本模块重新执行了他的验收。
+
+后续待办已转为人工核验放行、正式包交付及三场景真实命中验收；如需要调整公共模型，仍共同向组长提出，不各自改接口。
 
 详细核验结果在 `docs/assignment-03/alpha/policy-verification-matrix.md`。正式放行资料将与本轮候选包分开，人工签核完成后再交付 `approved/` 中的版本。
 
@@ -53,6 +55,15 @@ async def receive():
 | 完整性 | 所有 `ParsedFile.sha256` 按原始文件字节计算；[原件映射](../../../knowledge_base/processing/policy-review/2026-11-19/chunk-source-map.json)逐片段可追溯 |
 | 检索门禁 | 本轮包仅 blocked/review_only；保留原生成脚本blocked默认值；无自动批准、自动enabled或生产库写入 |
 
+## 统一加载入口的衔接
+
+2026-11-19核对王智洋的[PR #35](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/35)分支代码：`backend/retrieval/alpha_corpus.py`支持 `approved/manifest.json` 和目录内直接放包JSON两种方式。该PR此时尚未合并main，不能表述为main运行入口已接入。
+
+- 若使用manifest，`packages[].package`须指向 `approved/` 内的包；以仓库根为file_root时使用仓库相对路径。不能原样复制仍指向 `pending-review/` 的候选清单。
+- 入口会跳过非enabled包；若manifest条目或 `metadata.temporal_notes` 已有 `human_approved` 且不为true，也会跳过。本轮候选包显式为false，单改 `retrieval_status` 不会通过接收检查。
+- 正式放行时应在完成实际人工审核后，保留审核者、日期、版本、原件哈希、范围和用途等记录，再生成一致的正式包/manifest。不得通过删掉未审核标记来规避限制。
+- 该分支还提供只读 `get_document_metadata(version_id)`、`get_parsed_chunk(chunk_id)`，可让业务规则读取原有元数据与定位，公共RetrievedChunk不必由我们擅自扩展。下游合并及规则接入完成情况仍需对应成员确认。
+
 ## 五份包及当前状态
 
 | JSON文件 | 方向 | 片段 | 当前状态 | 主要限制 |
@@ -70,7 +81,8 @@ async def receive():
 | 与现有公共模型兼容 | 已通过本地校验 |
 | 用现有BM25模块接收并校验所有引用文件 | 已通过本地离线检查，非生产入库 |
 | 正式检索门禁 | 已确认5包均不出现在正式检索结果 |
-| 本说明转发给王智洋 | **由用户转发；没有代发消息** |
-| 王智洋对格式、用途、版本方式的确认 | **待对方确认** |
+| 对方接收反馈 | **2026-11-19用户已提供王智洋的验收反馈**；本模块没有代发消息 |
+| 王智洋对候选包格式、文件校验、定位与门禁的验收 | **对方反馈通过**，覆盖5包371片段；不是政策内容或人工放行结论 |
+| approved统一加载入口 | **PR #35分支代码已核对**，当时尚未合并main；支持manifest或直接JSON，仍需实际审核放行包 |
 | 人工签核及正式资料放行 | **待完成** |
 | Agent/Qwen真实端到端验收 | **不属于本轮已完成结论**；由对应成员基于审核后的真实资料联调 |
