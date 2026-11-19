@@ -48,3 +48,4 @@ npm run dev
 
 - [桌面端截图（1440px）](screenshots/10-ui-polish-desktop.png)
 - [移动端截图（390px）](screenshots/11-ui-polish-mobile-390.png)
+- [构建成功输出截图](screenshots/12-build-success.png)
