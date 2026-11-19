@@ -49,3 +49,34 @@ npm run dev
 - [桌面端截图（1440px）](screenshots/10-ui-polish-desktop.png)
 - [移动端截图（390px）](screenshots/11-ui-polish-mobile-390.png)
 - [构建成功输出截图](screenshots/12-build-success.png)
+
+## 2026-11-20 联调预验收
+
+洪添军在 Windows 和 Edge 上完成本轮学生端 API 联调和浏览器回归。学生端以 `main` 的 `f5fcabc` 为基线，测试时使用 `7-htj` 上相同的文件内容。后端在临时目录组合 [PR #32](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/32) 的 Agent 工作流（`730f88a`）和 [PR #34](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/34) 的 FastAPI 运行组装与会话存储（`548a27d`）。
+
+浏览器通过 Vite 代理调用本地 FastAPI 的 `GET /api/v1/health` 和 `POST /api/v1/ask`。问答请求只传 `query` 和 `conversation_id`。运行组装使用 LocalBM25Retriever、AgentWorkflow、Qwen 适配器及内存会话；政策输入使用 #34 的合成测试资料，Qwen HTTP 响应由本地替身提供。手机端长文本压力场景使用浏览器拦截注入的契约响应。
+
+| 场景 | 输入或操作 | 实测结果 |
+| --- | --- | --- |
+| 空白输入 | 输入空格后点击发送 | 显示输入提示，发出 0 次问答请求。 |
+| 主动追问 | 新对话输入「奖学金有哪些类别？」 | 首轮请求的 `conversation_id` 为 `null`，后端返回 `needs_clarification`。测试环境采用工作流默认回调。[桌面截图](screenshots/pr32-pr34/01-desktop-clarification.png) |
+| 多轮续接与连续提交 | 在同一会话补充「2026年。」，在模型替身延迟期间再次点发送并按 Enter | 输入、发送和新建对话处于等待状态。本轮只发出 1 次请求，服务端使用此前的奖学金主题返回 `answered`，页面保留两轮消息。 |
+| 引用与来源 | 展开回答中的引用，点击「查看原始来源」，再收起 | 标题和摘录与 API 响应一致，展开与收起正常。浏览器在新标签打开合成来源 URL，目标页面由测试拦截提供。[桌面截图](screenshots/pr32-pr34/02-desktop-answered-citation.png) |
+| 会话隔离 | 新建对话后单独输入「2026年。」 | 请求传 `null`，返回新 ID 和 `needs_clarification`，前一会话的奖学金主题未被沿用。 |
+| 证据不足与引用拒绝 | 询问「2099年推免条件是什么？」；另开会话让替身改写奖学金证据 | 两轮都返回 `insufficient_evidence` 且无引用。改写场景收到 `UNSUPPORTED_GENERATION` 警告。[桌面截图](screenshots/pr32-pr34/03-desktop-insufficient.png) |
+| 模型异常 | 让 Qwen 替身分别触发超时和不可用 | 实际 FastAPI 返回 `504 MODEL_TIMEOUT` 和 `503 MODEL_UNAVAILABLE`。页面显示错误并恢复发送，超时后保留原问题。[超时截图](screenshots/pr32-pr34/04-desktop-model-timeout.png) |
+| 断网与重试 | 中断一次浏览器问答请求，再恢复连接并重发原问题 | 失败后保留输入，恢复后重试成功，只新增一轮问答。 |
+| 手机端长文本 | 在 390px 视口查看首页，再发送长问题并展开三条测试引用中的一条 | 首页、长回答和引用卡片均无横向溢出，引用和发送控件可操作。[手机首页](screenshots/pr32-pr34/05-mobile-390-home.png) · [长回答截图](screenshots/pr32-pr34/06-mobile-390-long-answer.png) |
+
+### 构建与后端检查
+
+在仓库 `frontend/` 执行 `npm run build`，类型检查和两个 Vite 页面入口均构建通过。在临时组合目录执行下列现有测试，发现 77 项，其中 75 项通过、2 项跳过。跳过项涉及正式业务规则模块和真实 Qwen 联网。
+
+```powershell
+python -X utf8 -m unittest tests.test_agent_workflow tests.test_agent_workflow_api tests.test_agent_workflow_qwen tests.test_backend_runtime -q
+```
+
+### 缺陷与正式验收待办
+
+- 已测场景未发现需要修复的学生端交互问题。测试中的「先追问学年」来自默认回调，正式奖学金场景仍需由 Agent 与业务规则负责人确认追问顺序。
+- 待可用的正式后端接入审核通过的资料包、正式业务规则和真实 Qwen 后，补测竞赛认定、奖学金和推免三个场景。验收时补上真实来源跳转、多轮上下文和三种状态截图，确认模型错误仍走现有 HTTP 错误契约。
