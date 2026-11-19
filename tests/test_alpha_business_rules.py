@@ -1,0 +1,508 @@
+"""Alpha 业务规则单元测试：追问、证据适用性与工作流联调。"""
+
+from __future__ import annotations
+
+import json
+import uuid
+from datetime import date
+
+import pytest
+
+from backend.contracts.models import (
+    AgentRequest,
+    AnswerMode,
+    AnswerStatus,
+    ConversationTurn,
+    DocumentMetadata,
+    ExtractionStatus,
+    InclusionStatus,
+    LLMResult,
+    LLMRole,
+    RetrievalRequest,
+    RetrievalStatus,
+    RetrievedChunk,
+    SourceVerificationStatus,
+    TimelinessVerificationStatus,
+)
+from backend.services.agent_workflow import AgentWorkflow
+from backend.services.alpha_business_rules import (
+    QUESTION_AWARD_GRADE,
+    QUESTION_DEPT_AWARD,
+    QUESTION_FIRST_UNIT,
+    QUESTION_FORMAT,
+    QUESTION_GRADE,
+    QUESTION_LEVEL,
+    QUESTION_ORDER,
+    QUESTION_PROFESSION,
+    QUESTION_PURPOSE,
+    QUESTION_RECOMMENDATION_OBJECT,
+    QUESTION_SCHOLARSHIP_CATEGORY,
+    QUESTION_SEMESTER,
+    QUESTION_TOP_EIGHT,
+    QUESTION_TOPIC,
+    alpha_clarification_rule,
+    build_alpha_evidence_check,
+)
+
+TODAY = date(2026, 11, 19)
+
+
+def _request(query: str, *, history: list[str] | None = None) -> AgentRequest:
+    turns = [
+        ConversationTurn(role=LLMRole.USER, content=item) for item in (history or [])
+    ]
+    return AgentRequest(
+        request_id=uuid.UUID(int=1),
+        conversation_id=uuid.UUID(int=2),
+        query=query,
+        history=turns,
+    )
+
+
+def _chunk(
+    *,
+    title: str,
+    content: str,
+    index: int = 1,
+    timeliness: TimelinessVerificationStatus = TimelinessVerificationStatus.CURRENT,
+    source: SourceVerificationStatus = SourceVerificationStatus.VERIFIED,
+    published_on: date | None = date(2026, 5, 18),
+) -> RetrievedChunk:
+    return RetrievedChunk(
+        chunk_id=uuid.UUID(int=100 + index),
+        document_id=uuid.UUID(int=200 + index),
+        version_id=uuid.UUID(int=300 + index),
+        file_id=uuid.UUID(int=400 + index),
+        content=content,
+        title=title,
+        publisher="福州大学",
+        source_url="https://example.invalid/policy",
+        published_on=published_on,
+        effective_on=None,
+        locator="第 7 条",
+        original_locator=None,
+        score=1.0,
+        retrieval_method="bm25",
+        source_verification_status=source,
+        timeliness_verification_status=timeliness,
+        retrieval_status=RetrievalStatus.ENABLED,
+    )
+
+
+def _meta(
+    chunk: RetrievedChunk,
+    *,
+    record_code: str,
+    title: str | None = None,
+    applicability: dict[str, str] | None = None,
+    deadline: date | None = None,
+) -> DocumentMetadata:
+    return DocumentMetadata(
+        title=title or chunk.title,
+        document_type="规范性文件",
+        category_name="综评与奖学金",
+        record_code=record_code,
+        version_no="import-1",
+        source_url=chunk.source_url,
+        publisher=chunk.publisher,
+        published_on=chunk.published_on,
+        deadline_on=deadline,
+        applicability_raw=applicability,
+        policy_status="当前有效",
+        source_verification_status=SourceVerificationStatus.VERIFIED,
+        timeliness_verification_status=TimelinessVerificationStatus.CURRENT,
+        extraction_status=ExtractionStatus.EXTRACTED,
+        v1_inclusion_status=InclusionStatus.INCLUDED,
+        retrieval_status=RetrievalStatus.ENABLED,
+    )
+
+
+CREDIT_BYLAW = _chunk(
+    index=1,
+    title="福州大学本科生创新创业实践与素质拓展学分认定管理实施办法",
+    content="国家级竞赛集体项目二等奖原始分 2 分；同一竞赛同一作品同年度只取最高一项。",
+)
+EVALUATION_BYLAW = _chunk(
+    index=2,
+    title="福州大学本科生综合素质评价实施办法",
+    content="竞赛成果按 A+、A、A-、B、C 五档计分；校级最高等级奖 2 分、院级 1.5 分。",
+)
+SCHOOL_SCHOLARSHIP = _chunk(
+    index=3,
+    title="福州大学本科生奖学金评定管理办法",
+    content="除任意选修课外有课程不及格者不具备参评资格；优秀学生综合奖学金一等奖 1500 元。",
+)
+DEPT_SCHOLARSHIP = _chunk(
+    index=4,
+    title="关于做好福州大学计算机与大数据学院各类院级奖学金评选工作的通知",
+    content="学科竞赛类爱国者之星奖学金 5000 元、5 名，评选年度获省级三等奖以上。",
+    timeliness=TimelinessVerificationStatus.HISTORICAL,
+)
+RECOMMENDATION_REVIEW = _chunk(
+    index=5,
+    title="计算机与大数据学院 2027 年推免复试方案及实施细则",
+    content="复试为现场机试 40 分加现场面试 60 分；计算机技术专业型硕士招生 57 人。",
+    timeliness=TimelinessVerificationStatus.HISTORICAL,
+)
+CATALOG = _chunk(
+    index=6,
+    title="关于公布大学生学科竞赛级别认定结果的通知（2026年版）",
+    content="全国大学生数学建模竞赛认定为国家级 A 类赛事。",
+)
+SUPERSEDED_SCHOLARSHIP = _chunk(
+    index=7,
+    title="福州大学本科生奖学金管理办法（2024）",
+    content="优秀学生综合奖学金一等奖 1200 元。",
+    timeliness=TimelinessVerificationStatus.SUPERSEDED,
+)
+LANQIAO = _chunk(
+    index=9,
+    title="第十七届蓝桥杯报名通知",
+    content="蓝桥杯省赛报名时间为 2026 年 3 月，报名通知不作为学分认定依据。",
+)
+
+
+def _lookup_for(*pairs: tuple[RetrievedChunk, DocumentMetadata]):
+    mapping = {chunk.version_id: meta for chunk, meta in pairs}
+    return lambda version_id: mapping.get(version_id)
+
+
+def _full_lookup():
+    return _lookup_for(
+        (CREDIT_BYLAW, _meta(
+            CREDIT_BYLAW,
+            record_code="福大-2024-创新创业学分认定",
+            applicability={"适用年级": "全体本科生", "适用专业": "全校相关本科专业"},
+        )),
+        (EVALUATION_BYLAW, _meta(
+            EVALUATION_BYLAW,
+            record_code="福大-2026-综评",
+            applicability={"适用年级": "全体本科生", "适用专业": ""},
+        )),
+        (SCHOOL_SCHOLARSHIP, _meta(
+            SCHOOL_SCHOLARSHIP,
+            record_code="福大-2026-本科奖学金",
+            applicability={"适用年级": "全体本科生", "适用专业": ""},
+        )),
+        (DEPT_SCHOLARSHIP, _meta(
+            DEPT_SCHOLARSHIP,
+            record_code="计算机学院-2026-院级奖学金",
+            applicability={"适用年级": "全体本科生", "适用专业": "学院各专业"},
+            deadline=date(2026, 4, 26),
+        )),
+        (RECOMMENDATION_REVIEW, _meta(
+            RECOMMENDATION_REVIEW,
+            record_code="计算机学院-2026-推免复试参考",
+            applicability={
+                "适用年级": "2027届应届本科毕业生；大一至大三仅升学准备参考",
+                "适用专业": "计算机科学与技术、软件工程、人工智能、数据科学与大数据技术",
+            },
+        )),
+        (CATALOG, _meta(
+            CATALOG,
+            record_code="福大-2026-竞赛项目级别认定",
+            applicability={"适用年级": "全体本科生", "适用专业": "全校相关本科专业"},
+        )),
+        (SUPERSEDED_SCHOLARSHIP, _meta(
+            SUPERSEDED_SCHOLARSHIP,
+            record_code="福大-2024-本科奖学金",
+            applicability={"适用年级": "全体本科生", "适用专业": ""},
+        )),
+        (LANQIAO, _meta(
+            LANQIAO,
+            record_code="计算机学院-2026-蓝桥杯",
+            applicability={"适用年级": "全体本科生", "适用专业": "全校相关本科专业"},
+        )),
+    )
+
+
+# ---------------------------------------------------------------- 追问规则
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("怎么办？", QUESTION_TOPIC),
+        ("我拿了个奖，能加学分吗？", QUESTION_PURPOSE),
+        ("全国大学生数学建模竞赛国家二等奖，团队作品，我为第一完成人，创新学分原始分是多少？", None),
+        (
+            "综测里我们团队的校级竞赛最高等级奖，成果是上一学期取得的、"
+            "福州大学为第一署名单位，能加多少分？",
+            QUESTION_ORDER,
+        ),
+        ("蓝桥杯省赛二等奖在综测里能加几分？", None),
+        ("这个比赛在不在教务处的认定目录里？", None),
+        ("竞赛获奖在推免时能加多少分？", None),
+    ],
+)
+def test_competition_clarification(query: str, expected: str | None) -> None:
+    assert alpha_clarification_rule(_request(query)) == expected
+
+
+def test_credit_team_needs_top_eight() -> None:
+    query = "我们团队参加挑战杯拿了省部级一等奖，能认定多少创新学分？"
+    assert alpha_clarification_rule(_request(query)) == QUESTION_TOP_EIGHT
+
+
+def test_evaluation_team_needs_semester_and_unit() -> None:
+    query = "综测里我们团队参加校级竞赛拿了最高等级奖，我是第一完成人，能加多少分？"
+    assert alpha_clarification_rule(_request(query)) == QUESTION_SEMESTER
+
+    query_with_semester = (
+        "综测里我们团队参加校级竞赛拿了最高等级奖，我是第一完成人，上一学期拿的。"
+    )
+    assert alpha_clarification_rule(_request(query_with_semester)) == QUESTION_FIRST_UNIT
+
+
+def test_competition_needs_level_and_grade() -> None:
+    assert alpha_clarification_rule(_request("数学建模竞赛拿奖了，创新学分能认定多少？")) == QUESTION_LEVEL
+    assert (
+        alpha_clarification_rule(_request("数学建模竞赛国家级奖，创新学分能认定多少？"))
+        == QUESTION_AWARD_GRADE
+    )
+    assert (
+        alpha_clarification_rule(_request("数学建模竞赛国家级二等奖，创新学分能认定多少？"))
+        == QUESTION_FORMAT
+    )
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("我能申请奖学金吗？", QUESTION_SCHOLARSHIP_CATEGORY),
+        ("优秀学生综合奖学金一等奖要什么条件？", None),
+        ("申请奖学金有哪些情况会直接没有资格？", None),
+        ("我是大二，上学期有一门必修挂了，还能评奖学金吗？", None),
+        ("院级奖学金有什么条件？", QUESTION_DEPT_AWARD),
+        ("2027 年院级奖学金什么时候截止？", None),
+        ("2026 学年优秀学生综合奖学金一等奖是什么标准？", None),
+        ("院级学科竞赛类的爱国者之星奖学金，金额、名额和条件是什么？", None),
+    ],
+)
+def test_scholarship_clarification(query: str, expected: str | None) -> None:
+    assert alpha_clarification_rule(_request(query)) == expected
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("怎么才能保研？", QUESTION_RECOMMENDATION_OBJECT),
+        ("我能不能保研？", QUESTION_GRADE),
+        ("推免复试都考什么，怎么算分？", None),
+        ("推免招多少人？", QUESTION_PROFESSION),
+        ("2027 年计算机技术专硕招多少推免生？", None),
+        ("推免资格要求专业排名前多少？", None),
+        ("2028 年推免政策是什么？", None),
+        ("其他学院的推免条件是什么？", None),
+    ],
+)
+def test_recommendation_clarification(query: str, expected: str | None) -> None:
+    assert alpha_clarification_rule(_request(query)) == expected
+
+
+def test_one_question_per_turn() -> None:
+    question = alpha_clarification_rule(_request("我想问奖学金和竞赛加分怎么办"))
+    assert isinstance(question, str)
+    assert question.count("？") == 1
+
+
+def test_history_fills_slots_without_reasking() -> None:
+    request = _request(
+        "国家级二等奖，团队作品，第一完成人，创新学分能认定多少？",
+        history=["我想问创新学分认定", "数学建模竞赛"],
+    )
+    assert alpha_clarification_rule(request) is None
+
+
+# ---------------------------------------------------------------- 证据适用性
+
+
+def test_default_entry_returns_bool_without_metadata() -> None:
+    check = build_alpha_evidence_check(today=lambda: TODAY)
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SCHOOL_SCHOLARSHIP) is True
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SUPERSEDED_SCHOLARSHIP) is False
+
+
+@pytest.mark.parametrize(
+    ("query", "chunk"),
+    [
+        ("全国大学生数学建模竞赛国家二等奖，团队作品，我为第一完成人，创新学分原始分是多少？", CREDIT_BYLAW),
+        ("综测里我们团队的校级竞赛最高等级奖能加多少分？", EVALUATION_BYLAW),
+        ("优秀学生综合奖学金一等奖要什么条件？", SCHOOL_SCHOLARSHIP),
+        ("院级学科竞赛类的爱国者之星奖学金，金额、名额和条件是什么？", DEPT_SCHOLARSHIP),
+        ("我是大二，上学期有一门必修挂了，还能评奖学金吗？", SCHOOL_SCHOLARSHIP),
+        ("推免复试都考什么，怎么算分？", RECOMMENDATION_REVIEW),
+        ("2027 年计算机技术专硕招多少推免生？", RECOMMENDATION_REVIEW),
+        ("蓝桥杯省赛二等奖在综测里能加几分？", CATALOG),
+    ],
+)
+def test_applicable_evidence_is_kept(query: str, chunk: RetrievedChunk) -> None:
+    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    assert check(_request(query), chunk) is True
+
+
+@pytest.mark.parametrize(
+    ("query", "chunk"),
+    [
+        # 用途不同：创新学分问题不能拿综测分档回答
+        ("数学建模竞赛国家级二等奖，团队作品，我是第一完成人，创新学分原始分是多少？", EVALUATION_BYLAW),
+        # 赛事类别无法由目录确定
+        ("蓝桥杯省赛二等奖在综测里能加几分？", EVALUATION_BYLAW),
+        # 报名通知不是认定依据
+        ("这个比赛在不在教务处的认定目录里？", LANQIAO),
+        # 推免计分口径未入库，不能拿创新学分或综测代替
+        ("竞赛获奖在推免时能加多少分？", CREDIT_BYLAW),
+        ("竞赛获奖在推免时能加多少分？", EVALUATION_BYLAW),
+        # 国家奖学金另文规定
+        ("国家奖学金需要什么条件？", SCHOOL_SCHOLARSHIP),
+        ("文化科技创新创业奖学金要什么条件？", SCHOOL_SCHOLARSHIP),
+        ("宝钢奖学金怎么申请？", SCHOOL_SCHOLARSHIP),
+        # 年度不匹配：2027 年院级不能套 2026 通知
+        ("2027 年院级奖学金什么时候截止？", DEPT_SCHOLARSHIP),
+        # 资格门槛不能用复试方案代替
+        ("推免资格要求专业排名前多少？", RECOMMENDATION_REVIEW),
+        # 未来年度不能套历史方案
+        ("2028 年推免政策是什么？", RECOMMENDATION_REVIEW),
+        # 外校资料不在库内
+        ("其他学院的推免条件是什么？", RECOMMENDATION_REVIEW),
+        # 旧版办法已废止
+        ("优秀学生综合奖学金一等奖要什么条件？", SUPERSEDED_SCHOLARSHIP),
+    ],
+)
+def test_inapplicable_evidence_is_rejected(query: str, chunk: RetrievedChunk) -> None:
+    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    assert check(_request(query), chunk) is False
+
+
+def test_unverified_or_unconfirmed_evidence_is_rejected() -> None:
+    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    pending = _chunk(
+        index=8,
+        title=SCHOOL_SCHOLARSHIP.title,
+        content=SCHOOL_SCHOLARSHIP.content,
+        timeliness=TimelinessVerificationStatus.PENDING,
+    )
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), pending) is False
+
+
+def test_major_mismatch_is_rejected_for_dept_award() -> None:
+    meta = _meta(
+        DEPT_SCHOLARSHIP,
+        record_code="计算机学院-2026-院级奖学金",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术、软件工程"},
+        deadline=date(2026, 4, 26),
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((DEPT_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    query = "我是数学专业大二学生，想申请院级学业类奖学金，有什么条件？"
+    assert check(_request(query), DEPT_SCHOLARSHIP) is False
+
+
+def test_evidence_check_never_returns_string() -> None:
+    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    result = check(_request("国家奖学金需要什么条件？"), SCHOOL_SCHOLARSHIP)
+    assert isinstance(result, bool)
+
+
+# ---------------------------------------------------------------- 工作流联调
+
+
+class _Retriever:
+    def __init__(self, chunks: list[RetrievedChunk]) -> None:
+        self._chunks = chunks
+        self.calls = 0
+
+    async def retrieve(self, request: RetrievalRequest) -> list[RetrievedChunk]:
+        self.calls += 1
+        return list(self._chunks)
+
+
+class _LLM:
+    def __init__(self, content: str = '{"evidence":[]}') -> None:
+        self._content = content
+        self.calls = 0
+
+    async def generate(self, request) -> LLMResult:
+        self.calls += 1
+        return LLMResult(content=self._content, model="stub")
+
+
+@pytest.mark.anyio
+async def test_workflow_returns_clarification_before_retrieval() -> None:
+    retriever = _Retriever([SCHOOL_SCHOLARSHIP])
+    llm = _LLM()
+    workflow = AgentWorkflow(
+        retriever=retriever,
+        llm_client=llm,
+        clarification_rule=alpha_clarification_rule,
+        evidence_check=build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY),
+    )
+    result = await workflow.run(_request("我能申请奖学金吗？"))
+    assert result.status == AnswerStatus.NEEDS_CLARIFICATION
+    assert result.clarifying_question == QUESTION_SCHOLARSHIP_CATEGORY
+    assert result.answer is None
+    assert retriever.calls == 0
+    assert llm.calls == 0
+
+
+@pytest.mark.anyio
+async def test_workflow_rejects_inapplicable_evidence() -> None:
+    retriever = _Retriever([EVALUATION_BYLAW])
+    llm = _LLM()
+    workflow = AgentWorkflow(
+        retriever=retriever,
+        llm_client=llm,
+        clarification_rule=alpha_clarification_rule,
+        evidence_check=build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY),
+    )
+    result = await workflow.run(_request("蓝桥杯省赛二等奖在综测里能加几分？"))
+    assert result.status == AnswerStatus.INSUFFICIENT_EVIDENCE
+    assert result.answer_mode == AnswerMode.INSUFFICIENT_DATA
+    assert result.citations == []
+    assert llm.calls == 0
+
+
+@pytest.mark.anyio
+async def test_workflow_answers_with_applicable_evidence() -> None:
+    retriever = _Retriever([SCHOOL_SCHOLARSHIP])
+    llm = _LLM(json.dumps(
+        {"evidence": [{"chunk_id": str(SCHOOL_SCHOLARSHIP.chunk_id), "quote": SCHOOL_SCHOLARSHIP.content}]},
+        ensure_ascii=False,
+    ))
+    workflow = AgentWorkflow(
+        retriever=retriever,
+        llm_client=llm,
+        clarification_rule=alpha_clarification_rule,
+        evidence_check=build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY),
+    )
+    result = await workflow.run(_request("优秀学生综合奖学金一等奖要什么条件？"))
+    assert result.status == AnswerStatus.ANSWERED
+    assert result.answer_mode == AnswerMode.CURRENT_POLICY
+    assert [str(citation.chunk_id) for citation in result.citations] == [
+        str(SCHOOL_SCHOLARSHIP.chunk_id)
+    ]
+
+
+@pytest.mark.anyio
+async def test_clarification_error_propagates_to_caller() -> None:
+    def broken_rule(request: AgentRequest) -> str | None:
+        raise RuntimeError("rule failure")
+
+    workflow = AgentWorkflow(
+        retriever=_Retriever([SCHOOL_SCHOLARSHIP]),
+        llm_client=_LLM(),
+        clarification_rule=broken_rule,
+    )
+    # 追问规则没有兜底捕获，异常交由调用方统一安全拒答。
+    with pytest.raises(RuntimeError):
+        await workflow.run(_request("优秀学生综合奖学金一等奖要什么条件？"))
+
+
+def test_lookup_failure_is_treated_as_unknown() -> None:
+    def broken_lookup(version_id) -> DocumentMetadata | None:
+        raise RuntimeError("metadata unavailable")
+
+    check = build_alpha_evidence_check(broken_lookup, today=lambda: TODAY)
+    # 取不到元数据时按“适用范围未知”处理，个人适用性问题不能放行。
+    assert check(_request("我是大二，能评优秀学生综合奖学金吗？"), SCHOOL_SCHOLARSHIP) is False
