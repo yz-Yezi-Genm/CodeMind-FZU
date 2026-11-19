@@ -1,0 +1,190 @@
+"""Unified loader for human-approved Alpha policy packages."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import json
+from pathlib import Path
+from typing import Any
+
+from backend.contracts import (
+    DocumentPackage,
+    IndexResult,
+    IndexingStatus,
+    RetrievalStatus,
+)
+from .local import LocalBM25Retriever
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_APPROVED_DIR = PROJECT_ROOT / "knowledge_base" / "processed" / "alpha" / "approved"
+
+
+@dataclass(frozen=True)
+class AlphaCorpusLoadReport:
+    """Observable summary of loading approved Alpha DocumentPackages."""
+
+    corpus_dir: Path
+    loaded_packages: tuple[str, ...]
+    skipped_packages: tuple[tuple[str, str], ...]
+    index_results: tuple[IndexResult, ...]
+
+    @property
+    def total_indexed_chunks(self) -> int:
+        return sum(result.indexed_count for result in self.index_results)
+
+
+def _resolve_within(root: Path, rel_path: str) -> Path:
+    if (
+        not isinstance(rel_path, str)
+        or not rel_path
+        or any(part in {"", ".", ".."} for part in rel_path.split("/"))
+        or any(char in rel_path for char in ("\\", ":", "\x00"))
+    ):
+        raise ValueError(f"非法相对路径：{rel_path!r}")
+    resolved = (root / rel_path).resolve(strict=True)
+    if not resolved.is_relative_to(root) or not resolved.is_file():
+        raise ValueError(f"路径超出允许目录或不是文件：{rel_path}")
+    return resolved
+
+
+def _display_path(path: Path, root: Path | None) -> str:
+    if root is not None:
+        try:
+            return path.relative_to(root).as_posix()
+        except ValueError:
+            pass
+    return path.name
+
+
+def _discover_entries(
+    corpus_dir: Path,
+    *,
+    file_root: Path | None,
+    allow_missing: bool = True,
+) -> tuple[Path, list[tuple[str, Path]], list[tuple[str, str]]]:
+    """Discover candidate JSON packages under corpus_dir.
+
+    Supports either a manifest.json (same layout as pending-review/manifest.json)
+    or direct *.json DocumentPackage files inside corpus_dir.
+    """
+    if not corpus_dir.exists():
+        if allow_missing:
+            return corpus_dir.resolve(strict=False), [], []
+        raise FileNotFoundError(f"approved 资料目录不存在：{corpus_dir}")
+    resolved_corpus = corpus_dir.resolve(strict=True)
+    if not resolved_corpus.is_dir():
+        raise ValueError(f"approved 资料目录无效：{corpus_dir}")
+
+    manifest_path = resolved_corpus / "manifest.json"
+    candidates: list[tuple[str, Path]] = []
+    skipped: list[tuple[str, str]] = []
+
+    if manifest_path.is_file():
+        resolved_manifest = manifest_path.resolve(strict=True)
+        if not resolved_manifest.is_relative_to(resolved_corpus):
+            raise ValueError("manifest.json 必须位于 approved 目录内")
+        manifest: dict[str, Any] = json.loads(resolved_manifest.read_bytes())
+        entries = manifest.get("packages")
+        if not isinstance(entries, list):
+            raise ValueError("manifest.json 缺少有效的 packages 列表")
+        base_root = file_root.resolve(strict=True) if file_root is not None else resolved_corpus
+        seen_paths: set[Path] = set()
+        for entry in entries:
+            if not isinstance(entry, dict) or not isinstance(entry.get("package"), str):
+                raise ValueError("manifest.json 中存在格式错误的 package 条目")
+            raw_key = entry["package"]
+            if "human_approved" in entry and entry["human_approved"] is not True:
+                skipped.append((raw_key, "manifest 未标记 human_approved=true，跳过加载"))
+                continue
+            resolved_pkg = _resolve_within(base_root, raw_key)
+            if not resolved_pkg.is_relative_to(resolved_corpus):
+                raise ValueError(f"approved manifest 不允许引用目录外资料包：{raw_key}")
+            if resolved_pkg in seen_paths:
+                raise ValueError(f"manifest.json 中存在重复资料包：{raw_key}")
+            seen_paths.add(resolved_pkg)
+            candidates.append((raw_key, resolved_pkg))
+        return resolved_corpus, candidates, skipped
+
+    for path in sorted(resolved_corpus.glob("*.json")):
+        if path.name == "manifest.json":
+            continue
+        resolved_pkg = path.resolve(strict=True)
+        if not resolved_pkg.is_relative_to(resolved_corpus) or not resolved_pkg.is_file():
+            raise ValueError(f"approved 目录不允许引用目录外资料包：{path.name}")
+        candidates.append((_display_path(resolved_pkg, file_root), resolved_pkg))
+    return resolved_corpus, candidates, skipped
+
+
+async def load_approved_alpha_retriever(
+    *,
+    corpus_dir: Path = DEFAULT_APPROVED_DIR,
+    file_root: Path | None = PROJECT_ROOT,
+    allow_missing: bool = True,
+) -> tuple[LocalBM25Retriever, AlphaCorpusLoadReport]:
+    """Load human-approved enabled DocumentPackages into a LocalBM25Retriever.
+
+    Packages that are not retrieval_status=enabled or explicitly marked
+    human_approved != true are never opened or indexed into the returned retriever.
+    """
+    resolved_root = file_root.resolve(strict=True) if file_root is not None else None
+    retriever = LocalBM25Retriever(file_root=resolved_root)
+    resolved_corpus, candidates, skipped = _discover_entries(
+        corpus_dir, file_root=resolved_root, allow_missing=allow_missing
+    )
+
+    loaded: list[str] = []
+    results: list[IndexResult] = []
+    seen_versions: set[tuple[str, str]] = set()
+    for label, path in candidates:
+        package = DocumentPackage.model_validate_json(path.read_bytes())
+        metadata = package.metadata
+        version_key = (metadata.record_code, metadata.version_no)
+        if version_key in seen_versions:
+            raise ValueError(
+                f"approved 目录存在重复文档版本：{metadata.record_code} ({metadata.version_no})"
+            )
+        seen_versions.add(version_key)
+        if metadata.retrieval_status != RetrievalStatus.ENABLED:
+            skipped.append((
+                label,
+                f"retrieval_status={metadata.retrieval_status.value}，仅允许加载 enabled 资料",
+            ))
+            continue
+        if (
+            isinstance(metadata.temporal_notes, dict)
+            and "human_approved" in metadata.temporal_notes
+            and metadata.temporal_notes["human_approved"] is not True
+        ):
+            skipped.append((label, "temporal_notes 未标记 human_approved=true，未通过人工审核"))
+            continue
+
+        result = await retriever.index_document(package)
+        results.append(result)
+        if result.status == IndexingStatus.FAILED:
+            reason = "; ".join(w.message for w in result.warnings) or "索引失败"
+            skipped.append((label, f"索引失败：{reason}"))
+            continue
+        loaded.append(label)
+
+    report = AlphaCorpusLoadReport(
+        corpus_dir=resolved_corpus,
+        loaded_packages=tuple(loaded),
+        skipped_packages=tuple(skipped),
+        index_results=tuple(results),
+    )
+    return retriever, report
+
+
+async def build_approved_alpha_retriever(
+    *,
+    corpus_dir: Path = DEFAULT_APPROVED_DIR,
+    file_root: Path | None = PROJECT_ROOT,
+    allow_missing: bool = True,
+) -> LocalBM25Retriever:
+    """Convenience entry point returning a Retriever ready for AgentWorkflow."""
+    retriever, _ = await load_approved_alpha_retriever(
+        corpus_dir=corpus_dir,
+        file_root=file_root,
+        allow_missing=allow_missing,
+    )
+    return retriever
