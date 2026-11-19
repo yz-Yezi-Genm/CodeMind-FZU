@@ -1,0 +1,683 @@
+{
+  "checked_on": "2026-11-19",
+  "original_archives_unchanged": true,
+  "workbook_headers_extracted": 5,
+  "legacy_doc_pending": 3,
+  "policy_approval": false,
+  "records": [
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学业类奖学金（类别三）汇总表.xlsx",
+      "member_sha256": "de8a2e86ea19bd003b424fc25278f534baf5244d2209430ef323b78a973790a1",
+      "bytes": 58379,
+      "status": "headers_and_merges_extracted",
+      "sheets": [
+        {
+          "sheet": "Sheet1",
+          "declared_max_row": 22,
+          "declared_max_column": 16384,
+          "merged_ranges": [
+            "A1:T1",
+            "A2:A3",
+            "B2:B3",
+            "C2:C3",
+            "D2:D3",
+            "E2:E3",
+            "F2:F3",
+            "G2:G3",
+            "H2:H3",
+            "I2:I3",
+            "J2:L2",
+            "M2:M3",
+            "N2:N3",
+            "O2:O3",
+            "P2:P3",
+            "Q2:Q3",
+            "R2:R3",
+            "S2:S3",
+            "T2:T3"
+          ],
+          "headers": [
+            {
+              "cell": "A1",
+              "value": "学业类奖学金报名汇总表"
+            },
+            {
+              "cell": "A2",
+              "value": "序号"
+            },
+            {
+              "cell": "B2",
+              "value": "姓名"
+            },
+            {
+              "cell": "C2",
+              "value": "学号"
+            },
+            {
+              "cell": "D2",
+              "value": "专业"
+            },
+            {
+              "cell": "E2",
+              "value": "学历层次"
+            },
+            {
+              "cell": "F2",
+              "value": "性别"
+            },
+            {
+              "cell": "G2",
+              "value": "年级"
+            },
+            {
+              "cell": "H2",
+              "value": "政治面貌"
+            },
+            {
+              "cell": "I2",
+              "value": "家庭经济情况"
+            },
+            {
+              "cell": "J2",
+              "value": "主要荣誉及科研情况"
+            },
+            {
+              "cell": "M2",
+              "value": "2025年度两学期综合测评排名（名次/总人数）"
+            },
+            {
+              "cell": "N2",
+              "value": "2025年度两学期学习成绩排名（名次/总人数）"
+            },
+            {
+              "cell": "O2",
+              "value": "主修/选修嵌入式方向相关课程名称及成绩"
+            },
+            {
+              "cell": "P2",
+              "value": "辅修专业名称"
+            },
+            {
+              "cell": "Q2",
+              "value": "辅修专业成绩（2024-2025学年）"
+            },
+            {
+              "cell": "R2",
+              "value": "联系\n电话"
+            },
+            {
+              "cell": "S2",
+              "value": "推荐排名（由辅导员填写）"
+            },
+            {
+              "cell": "T2",
+              "value": "辅导员"
+            },
+            {
+              "cell": "J3",
+              "value": "2025年度学科竞赛获奖情况（按照获奖等级顺序填写）"
+            },
+            {
+              "cell": "K3",
+              "value": "2025年度科研情况（仅填写本人一作或导师一作本人二作相关成果，）"
+            },
+            {
+              "cell": "L3",
+              "value": "其他获奖情况（入学以来）"
+            }
+          ],
+          "inspection_scope": "前3行表头及合并区域；未把示例姓名/电话当成真实申请数据；未计算公式或批准政策"
+        }
+      ]
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学术类奖学金（类别二）汇总表.xlsx",
+      "member_sha256": "08abfce04ee145056dd71e81c427628f0ebf4a832aa845e66911740e46bd2b26",
+      "bytes": 12470,
+      "status": "headers_and_merges_extracted",
+      "sheets": [
+        {
+          "sheet": "Sheet1",
+          "declared_max_row": 9,
+          "declared_max_column": 19,
+          "merged_ranges": [
+            "A1:Q1",
+            "A2:A3",
+            "B2:B3",
+            "C2:C3",
+            "D2:D3",
+            "E2:E3",
+            "F2:F3",
+            "G2:G3",
+            "H2:H3",
+            "I2:I3",
+            "J2:L2",
+            "M2:M3",
+            "N2:N3",
+            "O2:O3",
+            "P2:P3",
+            "Q2:Q3",
+            "R2:R3"
+          ],
+          "headers": [
+            {
+              "cell": "A1",
+              "value": "学术类奖学金报名汇总表"
+            },
+            {
+              "cell": "A2",
+              "value": "序号"
+            },
+            {
+              "cell": "B2",
+              "value": "姓名"
+            },
+            {
+              "cell": "C2",
+              "value": "学号"
+            },
+            {
+              "cell": "D2",
+              "value": "专业"
+            },
+            {
+              "cell": "E2",
+              "value": "学历层次"
+            },
+            {
+              "cell": "F2",
+              "value": "性别"
+            },
+            {
+              "cell": "G2",
+              "value": "年级"
+            },
+            {
+              "cell": "H2",
+              "value": "政治面貌"
+            },
+            {
+              "cell": "I2",
+              "value": "家庭经济情况"
+            },
+            {
+              "cell": "J2",
+              "value": "主要荣誉及科研情况"
+            },
+            {
+              "cell": "M2",
+              "value": "2025年度两学期综合测评排名（名次/总人数）"
+            },
+            {
+              "cell": "N2",
+              "value": "2025年度两学期学习成绩排名（名次/总人数，研究生为累计成绩）"
+            },
+            {
+              "cell": "O2",
+              "value": "近三年是否获评星火奖学金"
+            },
+            {
+              "cell": "P2",
+              "value": "联系\n电话"
+            },
+            {
+              "cell": "Q2",
+              "value": "推荐排名（由辅导员填写）"
+            },
+            {
+              "cell": "R2",
+              "value": "辅导员"
+            },
+            {
+              "cell": "J3",
+              "value": "2025年度学科竞赛获奖情况（按照获奖等级顺序填写）"
+            },
+            {
+              "cell": "K3",
+              "value": "2025年度科研情况（仅填写本人一作或导师一作本人二作相关成果，）"
+            },
+            {
+              "cell": "L3",
+              "value": "其他获奖情况（入学以来）"
+            }
+          ],
+          "inspection_scope": "前3行表头及合并区域；未把示例姓名/电话当成真实申请数据；未计算公式或批准政策"
+        }
+      ]
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学生工作类奖学金（类别四）汇总表.xlsx",
+      "member_sha256": "bc33cf59d9d22729a05694380f1912cd8fa2308f04f12bbaed039c03f4bb161d",
+      "bytes": 12498,
+      "status": "headers_and_merges_extracted",
+      "sheets": [
+        {
+          "sheet": "Sheet1",
+          "declared_max_row": 9,
+          "declared_max_column": 19,
+          "merged_ranges": [
+            "A1:Q1",
+            "A2:A3",
+            "B2:B3",
+            "C2:C3",
+            "D2:D3",
+            "E2:E3",
+            "F2:F3",
+            "G2:G3",
+            "H2:H3",
+            "I2:I3",
+            "J2:L2",
+            "M2:M3",
+            "N2:N3",
+            "O2:O3",
+            "P2:P3",
+            "Q2:Q3",
+            "R2:R3"
+          ],
+          "headers": [
+            {
+              "cell": "A1",
+              "value": "学生工作类奖学金报名汇总表"
+            },
+            {
+              "cell": "A2",
+              "value": "序号"
+            },
+            {
+              "cell": "B2",
+              "value": "姓名"
+            },
+            {
+              "cell": "C2",
+              "value": "学号"
+            },
+            {
+              "cell": "D2",
+              "value": "专业"
+            },
+            {
+              "cell": "E2",
+              "value": "学历层次"
+            },
+            {
+              "cell": "F2",
+              "value": "性别"
+            },
+            {
+              "cell": "G2",
+              "value": "年级"
+            },
+            {
+              "cell": "H2",
+              "value": "政治面貌"
+            },
+            {
+              "cell": "I2",
+              "value": "家庭经济情况"
+            },
+            {
+              "cell": "J2",
+              "value": "主要荣誉及科研情况"
+            },
+            {
+              "cell": "M2",
+              "value": "2025年度两学期综合测评排名（名次/总人数）"
+            },
+            {
+              "cell": "N2",
+              "value": "2025年度两学期学习成绩排名（名次/总人数，研究生为累计成绩）"
+            },
+            {
+              "cell": "O2",
+              "value": "近三年是否获评星火奖学金"
+            },
+            {
+              "cell": "P2",
+              "value": "联系\n电话"
+            },
+            {
+              "cell": "Q2",
+              "value": "推荐排名（由辅导员填写）"
+            },
+            {
+              "cell": "R2",
+              "value": "辅导员"
+            },
+            {
+              "cell": "J3",
+              "value": "2025年度学科竞赛获奖情况（按照获奖等级顺序填写）"
+            },
+            {
+              "cell": "K3",
+              "value": "2025年度科研情况（仅填写本人一作或导师一作本人二作相关成果，）"
+            },
+            {
+              "cell": "L3",
+              "value": "其他获奖情况（2024-2025学年）"
+            }
+          ],
+          "inspection_scope": "前3行表头及合并区域；未把示例姓名/电话当成真实申请数据；未计算公式或批准政策"
+        }
+      ]
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学科竞赛类奖学金（类别一）汇总表.xlsx",
+      "member_sha256": "33005eff0904edd62b71e912194e789c91ef9c5a85311aa1ced614bf3d40397f",
+      "bytes": 14741,
+      "status": "headers_and_merges_extracted",
+      "sheets": [
+        {
+          "sheet": "汇总表",
+          "declared_max_row": 9,
+          "declared_max_column": 19,
+          "merged_ranges": [
+            "A1:R1",
+            "A2:A3",
+            "B2:B3",
+            "C2:C3",
+            "D2:D3",
+            "E2:E3",
+            "F2:F3",
+            "G2:G3",
+            "H2:H3",
+            "I2:I3",
+            "J2:L2",
+            "M2:M3",
+            "N2:N3",
+            "O2:O3",
+            "P2:P3",
+            "Q2:Q3",
+            "R2:R3",
+            "S2:S3"
+          ],
+          "headers": [
+            {
+              "cell": "A1",
+              "value": "学科竞赛类奖学金报名汇总表"
+            },
+            {
+              "cell": "A2",
+              "value": "序号"
+            },
+            {
+              "cell": "B2",
+              "value": "姓名"
+            },
+            {
+              "cell": "C2",
+              "value": "学号"
+            },
+            {
+              "cell": "D2",
+              "value": "专业"
+            },
+            {
+              "cell": "E2",
+              "value": "学历层次"
+            },
+            {
+              "cell": "F2",
+              "value": "性别"
+            },
+            {
+              "cell": "G2",
+              "value": "年级"
+            },
+            {
+              "cell": "H2",
+              "value": "政治面貌"
+            },
+            {
+              "cell": "I2",
+              "value": "家庭经济情况"
+            },
+            {
+              "cell": "J2",
+              "value": "主要荣誉及科研情况"
+            },
+            {
+              "cell": "M2",
+              "value": "2025年度两学期综合测评排名（名次/总人数）"
+            },
+            {
+              "cell": "N2",
+              "value": "2025年度两学期学习成绩排名（名次/总人数，研究生为累计成绩）"
+            },
+            {
+              "cell": "O2",
+              "value": "获得省级三等奖以上荣誉项数"
+            },
+            {
+              "cell": "P2",
+              "value": "近三年是否获评星火奖学金"
+            },
+            {
+              "cell": "Q2",
+              "value": "联系\n电话"
+            },
+            {
+              "cell": "R2",
+              "value": "推荐排名（由辅导员填写）"
+            },
+            {
+              "cell": "S2",
+              "value": "辅导员"
+            },
+            {
+              "cell": "J3",
+              "value": "2025年度学科竞赛获奖情况（按照获奖等级顺序填写）"
+            },
+            {
+              "cell": "K3",
+              "value": "2025年度科研情况（仅填写本人一作或导师一作本人二作相关成果，）"
+            },
+            {
+              "cell": "L3",
+              "value": "其他获奖情况（入学以来）"
+            }
+          ],
+          "inspection_scope": "前3行表头及合并区域；未把示例姓名/电话当成真实申请数据；未计算公式或批准政策"
+        },
+        {
+          "sheet": "本科生补充",
+          "declared_max_row": 9,
+          "declared_max_column": 14,
+          "merged_ranges": [
+            "A1:N1",
+            "A2:A3",
+            "B2:B3",
+            "C2:C3",
+            "D2:D3",
+            "E2:E3",
+            "F2:F3",
+            "G2:G3",
+            "H2:H3",
+            "I2:I3",
+            "J2:K2",
+            "L2:L3",
+            "M2:M3",
+            "N2:N3"
+          ],
+          "headers": [
+            {
+              "cell": "A1",
+              "value": "学科竞赛类奖学金报名汇总表（本科生补充材料）"
+            },
+            {
+              "cell": "A2",
+              "value": "序号"
+            },
+            {
+              "cell": "B2",
+              "value": "姓名"
+            },
+            {
+              "cell": "C2",
+              "value": "学号"
+            },
+            {
+              "cell": "D2",
+              "value": "专业"
+            },
+            {
+              "cell": "E2",
+              "value": "学历层次"
+            },
+            {
+              "cell": "F2",
+              "value": "性别"
+            },
+            {
+              "cell": "G2",
+              "value": "年级"
+            },
+            {
+              "cell": "H2",
+              "value": "政治面貌"
+            },
+            {
+              "cell": "I2",
+              "value": "家庭经济情况"
+            },
+            {
+              "cell": "J2",
+              "value": "主要荣誉及科研情况"
+            },
+            {
+              "cell": "L2",
+              "value": "获得省级以上荣誉项数"
+            },
+            {
+              "cell": "M2",
+              "value": "联系\n电话"
+            },
+            {
+              "cell": "N2",
+              "value": "推荐排名（由辅导员填写）"
+            },
+            {
+              "cell": "J3",
+              "value": "2024-2025学年学科竞赛获奖情况（按照获奖等级顺序填写）"
+            },
+            {
+              "cell": "K3",
+              "value": "2024-2025学年科研情况（仅填写本人一作或导师一作本人二作相关成果，）"
+            }
+          ],
+          "inspection_scope": "前3行表头及合并区域；未把示例姓名/电话当成真实申请数据；未计算公式或批准政策"
+        }
+      ]
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表汇总表.xlsx",
+      "member_sha256": "32ee06278c32947d422325be73a3b637cbc417f36851baf75b560dea4ee644db",
+      "bytes": 11642,
+      "status": "headers_and_merges_extracted",
+      "sheets": [
+        {
+          "sheet": "汇总表",
+          "declared_max_row": 3,
+          "declared_max_column": 256,
+          "merged_ranges": [
+            "A1:N1"
+          ],
+          "headers": [
+            {
+              "cell": "A1",
+              "value": "福州大学2026年“星火奖教奖学金”申请表汇总表"
+            },
+            {
+              "cell": "A2",
+              "value": "序号"
+            },
+            {
+              "cell": "B2",
+              "value": "姓名"
+            },
+            {
+              "cell": "C2",
+              "value": "性别"
+            },
+            {
+              "cell": "D2",
+              "value": "\n出生             年月\n"
+            },
+            {
+              "cell": "E2",
+              "value": "所属系\n"
+            },
+            {
+              "cell": "F2",
+              "value": "岗位\n类别"
+            },
+            {
+              "cell": "G2",
+              "value": "学历\n/\n学位"
+            },
+            {
+              "cell": "H2",
+              "value": "\n行政\n职务\n"
+            },
+            {
+              "cell": "I2",
+              "value": "专业\n技术\n职称"
+            },
+            {
+              "cell": "J2",
+              "value": "到校\n时间"
+            },
+            {
+              "cell": "K2",
+              "value": "上一年度以来教学工作量及获奖情况简介（类别1）(不超过300字）"
+            },
+            {
+              "cell": "L2",
+              "value": "上一年度指导学科竞赛情况及获奖情况简介（类别2）(不超过300字）"
+            },
+            {
+              "cell": "M2",
+              "value": "工作业绩情况及获奖情况简介（类别3）(不超过300字）"
+            },
+            {
+              "cell": "N2",
+              "value": "申请类别（1/2/3)"
+            }
+          ],
+          "inspection_scope": "前2行表头及合并区域；未把示例姓名/电话当成真实申请数据；未计算公式或批准政策"
+        }
+      ]
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表（类别一）.doc",
+      "member_sha256": "df485dc6f96fde33c2456830b780702432ce6a8afc00c1fd3a45ccf232f1fe47",
+      "bytes": 154624,
+      "status": "legacy_doc_requires_reliable_conversion",
+      "ole_compound_signature_matches": true,
+      "reason": "本机未安装可用的Word/LibreOffice/antiword转换器；不从二进制猜正文，待有转换工具的人工导出可选中文本或DOCX后核对"
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表（类别三）.doc",
+      "member_sha256": "d649f713be9336870d0b6636558a37e527106974a2aeaea2892e819ec918ba5a",
+      "bytes": 154624,
+      "status": "legacy_doc_requires_reliable_conversion",
+      "ole_compound_signature_matches": true,
+      "reason": "本机未安装可用的Word/LibreOffice/antiword转换器；不从二进制猜正文，待有转换工具的人工导出可选中文本或DOCX后核对"
+    },
+    {
+      "archive": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表（类别二）.doc",
+      "member_sha256": "f3adb67a2b63ccf86c392a49167f7fdde45199eb1b14ab4214ac4c0a4f25add9",
+      "bytes": 154624,
+      "status": "legacy_doc_requires_reliable_conversion",
+      "ole_compound_signature_matches": true,
+      "reason": "本机未安装可用的Word/LibreOffice/antiword转换器；不从二进制猜正文，待有转换工具的人工导出可选中文本或DOCX后核对"
+    }
+  ]
+}
