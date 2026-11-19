@@ -1,4 +1,4 @@
-Agent: ed50c69ba23bd2435d1906e9ba8a1c9bb1d69f3a:backend/services/agent_workflow.py
+Agent: backend.services.agent_workflow.AgentWorkflow (current checkout)
 LLM: offline test double. Clarification and applicability callbacks are test inputs.
 {"query": "竞赛认定", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
 {"query": "奖学金", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}

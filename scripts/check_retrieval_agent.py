@@ -2,17 +2,14 @@
 
 import asyncio
 import json
-import subprocess
 from uuid import uuid4
 
 from backend.contracts import (
     AgentRequest, AnswerStatus, DocumentPackage, IndexingStatus, LLMGenerateRequest, LLMResult,
 )
 from backend.retrieval import LocalBM25Retriever
+from backend.services.agent_workflow import AgentWorkflow
 from scripts.demo_local_retrieval import REAL_CASES, ROOT, SYNTHETIC_PACKAGES
-
-AGENT_COMMIT = "ed50c69ba23bd2435d1906e9ba8a1c9bb1d69f3a"
-AGENT_PATH = "backend/services/agent_workflow.py"
 
 
 class FirstEvidenceLLM:
@@ -27,19 +24,6 @@ class FirstEvidenceLLM:
 
 
 async def check() -> None:
-    # Pin the team branch's source so the test can be replayed before it is merged.
-    agent_source = f"{AGENT_COMMIT}:{AGENT_PATH}"
-    source = subprocess.run(
-        ["git", "show", agent_source], cwd=ROOT, capture_output=True, check=False
-    )
-    if source.returncode:
-        raise SystemExit(
-            "Agent commit unavailable. Run git fetch origin feat/alpha-agent-workflow-wushiying."
-        )
-    namespace = {"__name__": "backend.services.agent_workflow"}
-    exec(compile(source.stdout, agent_source, "exec"), namespace)
-    agent_workflow = namespace["AgentWorkflow"]
-
     real = LocalBM25Retriever(file_root=ROOT)
     synthetic = LocalBM25Retriever()
     for stem, _ in REAL_CASES:
@@ -51,13 +35,13 @@ async def check() -> None:
     for item in json.loads(SYNTHETIC_PACKAGES.read_bytes()):
         await synthetic.index_document(DocumentPackage.model_validate(item))
 
-    print(f"Agent: {agent_source}")
+    print(f"Agent: {AgentWorkflow.__module__}.{AgentWorkflow.__qualname__} (current checkout)")
     print("LLM: offline test double. Clarification and applicability callbacks are test inputs.")
     cases = [(real, query, AnswerStatus.INSUFFICIENT_EVIDENCE) for _, query in REAL_CASES]
     cases.append((synthetic, "星桥奖学金申请需要什么", AnswerStatus.ANSWERED))
     for store, query, expected in cases:
         llm = FirstEvidenceLLM()
-        workflow = agent_workflow(
+        workflow = AgentWorkflow(
             store, llm, clarification_rule=lambda _: None, evidence_check=lambda *_: True
         )
         result = await workflow.run(AgentRequest(
