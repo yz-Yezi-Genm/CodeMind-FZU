@@ -1,6 +1,6 @@
 # Backend API 与模型适配
 
-本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、Mock Agent 演示入口和 Qwen 模型适配器。数据库、向量检索、真实 Agent 工作流及管理端业务仍由对应模块提供。
+本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、Mock Agent 演示入口和 Qwen 模型适配器。已实现可注入的 `AgentWorkflow`、Markdown/TXT 文档解析和本地 BM25 检索。
 
 ## 环境与启动
 
@@ -116,9 +116,9 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 
 ## 当前边界
 
-- Agent 工作流和对话历史持久化；
+- 对话历史持久化；
 - Qwen 真实网络调用需要本地配置 API Key，本次使用 MockTransport 完成适配器测试；
-- 文档解析、文件存储和资料入库；
+- 文件存储服务和完整资料入库流程；
 - PostgreSQL/SQLAlchemy 在线连接与迁移；
 - Chroma 和 RRF 混合检索；
 - 管理端业务 API 和认证授权。
