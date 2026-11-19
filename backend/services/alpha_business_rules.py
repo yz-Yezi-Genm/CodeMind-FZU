@@ -9,9 +9,19 @@
 - `alpha_evidence_check(request, chunk) -> bool`：判断片段是否适用于当前问题。
 
 `RetrievedChunk` 不含 `applicability_raw` / `deadline_on` / `record_code`，
-这些字段位于 `DocumentMetadata`。因此证据判断通过可选的元数据查询函数取得，
-由组装层把同一个 retriever 实例传进来（见 `bind_metadata_lookup` /
-`build_alpha_evidence_check`）。取不到元数据时按“适用范围未知”保守处理。
+这些字段位于 `DocumentMetadata`，局部章节说明位于 `ParsedChunk.locator_note`。
+证据判断通过两个可选查询函数取得，由组装层把同一个 retriever 实例传进来：
+
+```python
+evidence_check = build_alpha_evidence_check(
+    retriever.get_document_metadata,
+    chunk_lookup=retriever.get_parsed_chunk,
+)
+```
+
+也可以先 `bind_metadata_lookup(...)` / `bind_chunk_lookup(...)`，再直接使用两参数
+的 `alpha_evidence_check(request, chunk)`。元数据缺失、年度无法确认或适用范围
+无法确认时一律返回 `False`，不放行。
 """
 
 from __future__ import annotations
@@ -26,6 +36,7 @@ from backend.contracts.models import (
     AgentRequest,
     DocumentMetadata,
     LLMRole,
+    ParsedChunk,
     RetrievalStatus,
     RetrievedChunk,
     SourceVerificationStatus,
@@ -33,6 +44,7 @@ from backend.contracts.models import (
 )
 
 MetadataLookup = Callable[[UUID], DocumentMetadata | None]
+ChunkLookup = Callable[[UUID], ParsedChunk | None]
 EvidenceCheck = Callable[[AgentRequest, RetrievedChunk], bool]
 
 # 场景与用途标签（仅本模块内部使用，不写入公共契约）
@@ -140,6 +152,7 @@ _YEAR = re.compile(r"(20\d{2})\s*(?:年|届)")
 _ACADEMIC_YEAR_RANGE = re.compile(r"20\d{2}\s*[-—–至]\s*20\d{2}\s*学年?")
 
 _lookup: MetadataLookup | None = None
+_chunk_lookup: ChunkLookup | None = None
 
 
 @dataclass(frozen=True)
@@ -148,7 +161,8 @@ class _DocumentFacts:
     title: str
     applicability: dict[str, str] | None
     deadline: date | None
-    published_on: date | None
+    has_metadata: bool
+    has_metadata: bool = False
 
 
 def bind_metadata_lookup(lookup: MetadataLookup | None) -> None:
@@ -157,17 +171,47 @@ def bind_metadata_lookup(lookup: MetadataLookup | None) -> None:
     _lookup = lookup
 
 
+def bind_chunk_lookup(lookup: ChunkLookup | None) -> None:
+    """注册片段查询函数（通常为 retriever.get_parsed_chunk），用于读取 locator_note。"""
+    global _chunk_lookup
+    _chunk_lookup = lookup
+
+
 def build_alpha_evidence_check(
-    lookup: MetadataLookup | None = None,
+    metadata_lookup: MetadataLookup | None = None,
+    *,
+    chunk_lookup: ChunkLookup | None = None,
+    today: Callable[[], date] = date.today,
+) -> EvidenceCheck:
+    """用闭包绑定 retriever 的只读查询方法，保持 `(request, chunk) -> bool` 签名。
+
+    ```python
+    evidence_check = build_alpha_evidence_check(
+        retriever.get_document_metadata,
+        chunk_lookup=retriever.get_parsed_chunk,
+    )
+    ```
+    """
+
+    def check(request: AgentRequest, chunk: RetrievedChunk) -> bool:
+        return _assess(request, chunk, metadata_lookup, chunk_lookup, today())
+
+    return check
+
+
+def build_from_retriever(
+    retriever: object,
     *,
     today: Callable[[], date] = date.today,
 ) -> EvidenceCheck:
-    """生成绑定 retriever 元数据查询的证据判断函数，便于闭包注入与测试。"""
-
-    def check(request: AgentRequest, chunk: RetrievedChunk) -> bool:
-        return _assess(request, chunk, lookup, today())
-
-    return check
+    """直接从 retriever 对象取两个查询方法；缺失的方法按 None 处理。"""
+    metadata = getattr(retriever, "get_document_metadata", None)
+    parsed = getattr(retriever, "get_parsed_chunk", None)
+    return build_alpha_evidence_check(
+        metadata if callable(metadata) else None,
+        chunk_lookup=parsed if callable(parsed) else None,
+        today=today,
+    )
 
 
 def alpha_clarification_rule(request: AgentRequest) -> str | None:
@@ -184,8 +228,8 @@ def alpha_clarification_rule(request: AgentRequest) -> str | None:
 
 
 def alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool:
-    """默认入口；元数据来自 `bind_metadata_lookup` 注册的查询函数。"""
-    return _assess(request, chunk, _lookup, date.today())
+    """默认入口；查询函数来自 `bind_metadata_lookup` / `bind_chunk_lookup`。"""
+    return _assess(request, chunk, _lookup, _chunk_lookup, date.today())
 
 
 # --------------------------------------------------------------------------- 文本解析
@@ -373,6 +417,7 @@ def _assess(
     request: AgentRequest,
     chunk: RetrievedChunk,
     lookup: MetadataLookup | None,
+    chunk_lookup: ChunkLookup | None,
     today: date,
 ) -> bool:
     try:
@@ -385,8 +430,15 @@ def _assess(
         scenario, purpose = _analyse(text)
         if scenario is None:
             return True
+        # 三个场景都要确认文档类型与适用范围；缺元数据即视为无法确认。
+        if not facts.has_metadata:
+            return False
+        if not facts.applicability:
+            return False
         kind = _classify(facts)
         if _applicability(text, facts) is False:
+            return False
+        if not _section_applies(text, chunk, chunk_lookup):
             return False
         if _year_conflict(text, kind, facts, today):
             return False
@@ -464,6 +516,30 @@ def _check_recommendation(text: str, kind: str) -> bool:
 # --------------------------------------------------------------------------- 元数据与适用范围
 
 
+def _section_applies(
+    text: str,
+    chunk: RetrievedChunk,
+    chunk_lookup: ChunkLookup | None,
+) -> bool:
+    """按 locator_note 区分同一文件里的局部章节（如教师条款与学生条款）。"""
+    if chunk_lookup is None:
+        return True
+    try:
+        parsed = chunk_lookup(chunk.chunk_id)
+    except Exception:
+        return True
+    note = getattr(parsed, "locator_note", None) if parsed is not None else None
+    if not note:
+        return True
+    teacher = bool(re.search(r"教师|教职工|师资|绩效", note))
+    student = bool(re.search(r"学生|本科生|研究生|同学", note))
+    if teacher and not student and "教师" not in text:
+        return False
+    if student and not teacher and re.search(r"教师|教职工", text):
+        return False
+    return True
+
+
 def _document_facts(chunk: RetrievedChunk, lookup: MetadataLookup | None) -> _DocumentFacts:
     metadata = None
     if lookup is not None:
@@ -474,19 +550,22 @@ def _document_facts(chunk: RetrievedChunk, lookup: MetadataLookup | None) -> _Do
     if metadata is not None and not isinstance(metadata, DocumentMetadata):
         metadata = None
     if metadata is not None:
+        applicability = metadata.applicability_raw
+        if applicability is not None:
+            applicability = {str(key): str(value) for key, value in applicability.items()}
         return _DocumentFacts(
             record_code=metadata.record_code,
             title=metadata.title,
-            applicability=metadata.applicability_raw,
+            applicability=applicability,
             deadline=metadata.deadline_on,
-            published_on=metadata.published_on,
+            has_metadata=True,
         )
     return _DocumentFacts(
         record_code=None,
         title=chunk.title,
         applicability=None,
         deadline=None,
-        published_on=chunk.published_on,
+        has_metadata=False,
     )
 
 
@@ -517,20 +596,32 @@ def _year_conflict(text: str, kind: str, facts: _DocumentFacts, today: date) -> 
         return False
     doc_year = _document_year(facts)
     if doc_year is None:
-        return False
+        # 年度类通知必须能确认适用年度，否则不用于作答。
+        return True
     years = _years(text)
     if not years:
         return _future_year(text, today=today)
-    return max(years) > doc_year
+    # 年度类通知只服务其标注年度，问其他年度一律不适用。
+    return doc_year != max(years)
 
 
 def _document_year(facts: _DocumentFacts) -> int | None:
-    for value in (facts.title, facts.record_code, facts.published_on):
-        if value is None:
-            continue
-        match = re.search(r"20\d{2}", str(value))
+    """适用年度只取明确标注的年度口径，不拿发布日期当适用年度。"""
+    app = facts.applicability or {}
+    for key in ("适用年度", "适用届别", "适用学年", "适用年份"):
+        match = re.search(r"20\d{2}", str(app.get(key) or ""))
         if match:
             return int(match.group())
+    for value, pattern in (
+        (facts.title, r"(20\d{2})\s*(?:年|届|版)"),
+        # 记录编号按“计算机学院-2026-院级奖学金”编码适用年度
+        (facts.record_code, r"(20\d{2})"),
+    ):
+        if not value:
+            continue
+        match = re.search(pattern, str(value))
+        if match:
+            return int(match.group(1))
     return None
 
 

@@ -19,6 +19,8 @@ alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool
 
 均为同步函数，可直接传入 `AgentWorkflow(clarification_rule=..., evidence_check=...)`（传函数本身，不加括号）。
 
+分支 `feat/alpha-business-rules-runtime`，基于 main `f5fcabc`，PR #36（https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/36）。
+
 ## 2. 三个场景的必要字段与追问顺序
 
 追问固定按「事项 → 场景字段」推进，每轮只返回一个问句；信息齐备返回 `None`。
@@ -44,7 +46,13 @@ alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool
 | S2 | 校级办法接受校级奖学金与“不具备资格”类通用问题；院级只接受院级与星火通知，且不得用 2026 年通知回答 2027 年及以后；国家奖学金、文化科技创新创业奖学金、社会捐赠类一律拒绝 |
 | S3 | 复试流程、材料、招生计划、录取规则接受 2027 年复试方案；资格排名、加分、遴选细则不接受，复试方案不能充当资格门槛；其他学院与外校问题一律拒绝 |
 
-叠加的通用判定：年度冲突（问 2027 却检索到 2026 年度通知）拒绝；截止日期已过且问“现在还能不能办”拒绝；专业或年级与资料适用范围不符拒绝；适用范围未知且是个人适用性问题时按“无法确认”拒绝。
+叠加的通用判定，任一命中即拒绝：
+
+- 年度不匹配：年度类资料（院级通知、推免年度方案）只服务其标注的适用年度，问其他年度（无论更早还是更晚）都拒绝；问库外未来年度直接拒绝。适用年度只取 `applicability_raw` 的适用年度/适用届别字段、标题中的「年/届/版」、记录编号中的年份，**不拿发布日期当适用年度**。
+- 年度无法确认：年度类资料取不到适用年度时按未知处理，拒绝。
+- 必要元数据缺失：拿不到 `DocumentMetadata`、或 `applicability_raw` 为空时，无法确认文档类型、适用范围与年度，拒绝；不因“片段内容看起来相关”而放行。
+- 截止日期已过且问“现在还能不能办”拒绝；专业或年级与资料适用范围不符拒绝。
+- 局部章节不适配：同一文件里教师绩效/师资条款不能回答学生问题，学生条款也不能回答教师问题，依据 `ParsedChunk.locator_note` 判断。
 
 返回值只有 `True` / `False`，不返回 `"unknown"`、`"false"` 等字符串。规则内部异常一律按无法确认处理（返回 `False`），不放行。
 
@@ -52,20 +60,48 @@ alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool
 
 `RetrievedChunk` 的 17 个字段里没有 `applicability_raw`、`deadline_on`、`record_code`，按王智洋的说明，这三项位于 `DocumentMetadata`，本轮不扩公共 DTO，也不改 `extra="forbid"` 契约。
 
-取用方式为可选的元数据查询函数，签名 `(version_id: UUID) -> DocumentMetadata | None`：
+取用方式为两个可选的只读查询函数，均与 retriever 的方法签名一致：
+
+- `(version_id: UUID) -> DocumentMetadata | None`（`retriever.get_document_metadata`）
+- `(chunk_id: UUID) -> ParsedChunk | None`（`retriever.get_parsed_chunk`，用于读 `locator_note`）
+
+用工厂闭包绑定后，对外仍是两参数的 `alpha_evidence_check(request, chunk)`：
 
 ```python
-from backend.services.alpha_business_rules import build_alpha_evidence_check
+from backend.services.alpha_business_rules import (
+    alpha_clarification_rule,
+    build_alpha_evidence_check,
+)
 
 workflow = AgentWorkflow(
     retriever=retriever,
     llm_client=llm_client,
     clarification_rule=alpha_clarification_rule,
-    evidence_check=build_alpha_evidence_check(retriever.get_document_metadata),
+    evidence_check=build_alpha_evidence_check(
+        retriever.get_document_metadata,
+        chunk_lookup=retriever.get_parsed_chunk,
+    ),
 )
 ```
 
-也可以先 `bind_metadata_lookup(retriever.get_document_metadata)`，再直接传模块级 `alpha_evidence_check`。若组装时未接元数据，函数退化为仅用片段字段判断：通用问题照常，凡涉及专业、年级、截止日期的个人问题按“无法确认”拒绝，不会因拿不到元数据而放宽。
+也可以直接交给 retriever 对象，方法缺失时自动降级：
+
+```python
+evidence_check = build_from_retriever(retriever)
+```
+
+若组装顺序上不方便传闭包，可先注册再直接用模块级函数：
+
+```python
+bind_metadata_lookup(retriever.get_document_metadata)
+bind_chunk_lookup(retriever.get_parsed_chunk)
+
+workflow = AgentWorkflow(..., evidence_check=alpha_evidence_check)
+```
+
+PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retriever` 用 `getattr` 取方法，合入后无需改动即可生效。两个方法都是同步、未知对象返回 `None`、成功返回深拷贝，规则侧只读、不修改返回值。
+
+必要时元数据缺失时一律拒绝（`False`）：无法确认文档类型、适用年度、适用范围时宁可证据不足，也不给学生错误结论。
 
 ## 5. 与工作流的行为对齐
 
@@ -84,20 +120,31 @@ workflow = AgentWorkflow(
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 57 passed
+# 63 passed
 
 python -m pytest tests -q
-# 228 passed, 77 subtests passed
+# 234 passed, 77 subtests passed
 ```
 
 测试覆盖：
 
 - 三个场景的正常追问与信息齐备返回 `None`；
 - 每轮只一问（返回值为单个问句）；
-- 历史 user 消息补齐字段后不重复追问；
+- 历史 user 消息补齐字段后不重复追问（含“只说了奖学金、本轮补类别”）；
 - 三个场景各有多条证据接受用例；
-- 不适用政策被拒绝：跨口径、目录缺失、年度不匹配、未来年度、外校资料、已废止版本、未核验时效、专业不符、资格门槛误用复试方案；
+- 不适用政策被拒绝：跨口径、目录缺失、年度不匹配（含问更早年度）、未来年度、外校资料、已废止版本、未核验时效、专业不符、资格门槛误用复试方案、教师条款回答学生问题、适用范围为空、年度类资料缺元数据；
 - 规则异常时返回 `False` 而非放行。
+
+与吴诗莹约定案例的对应测试：
+
+| 案例 | 测试 | 预期 |
+| --- | --- | --- |
+| 奖学金缺类别 | `test_scholarship_clarification` | 返回类别追问，`needs_clarification`，不检索 |
+| 补齐类别 | `test_history_completes_scholarship_category`、`test_history_fills_slots_without_reasking` | 返回 `None`，继续检索 |
+| 年度不匹配 | `test_inapplicable_evidence_is_rejected`（2027 院级 / 2026 推免） | `False`，全部剔除后 `insufficient_evidence` |
+| 适用范围未知 | `test_unknown_applicability_is_rejected`、`test_lookup_failure_is_treated_as_unknown` | `False` |
+| 年度无法确认（缺元数据） | `test_annual_notice_without_metadata_is_rejected`、`test_default_entry_fails_closed_without_metadata` | `False` |
+| 局部片段不适用 | `test_teacher_only_section_is_rejected_for_student_question` | 教师条款 `False`，学生条款 `True` |
 
 ## 7. 已知限制
 

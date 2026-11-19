@@ -317,9 +317,10 @@ def test_history_fills_slots_without_reasking() -> None:
 # ---------------------------------------------------------------- 证据适用性
 
 
-def test_default_entry_returns_bool_without_metadata() -> None:
+def test_default_entry_fails_closed_without_metadata() -> None:
+    # 未绑定元数据查询时无法确认文档类型、适用年度与适用范围，一律不放行。
     check = build_alpha_evidence_check(today=lambda: TODAY)
-    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SCHOOL_SCHOLARSHIP) is True
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SCHOOL_SCHOLARSHIP) is False
     assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SUPERSEDED_SCHOLARSHIP) is False
 
 
@@ -359,6 +360,8 @@ def test_applicable_evidence_is_kept(query: str, chunk: RetrievedChunk) -> None:
         ("宝钢奖学金怎么申请？", SCHOOL_SCHOLARSHIP),
         # 年度不匹配：2027 年院级不能套 2026 通知
         ("2027 年院级奖学金什么时候截止？", DEPT_SCHOLARSHIP),
+        # 问 2026 年度也不能套 2027 方案
+        ("2026 年推免复试考什么？", RECOMMENDATION_REVIEW),
         # 资格门槛不能用复试方案代替
         ("推免资格要求专业排名前多少？", RECOMMENDATION_REVIEW),
         # 未来年度不能套历史方案
@@ -506,3 +509,71 @@ def test_lookup_failure_is_treated_as_unknown() -> None:
     check = build_alpha_evidence_check(broken_lookup, today=lambda: TODAY)
     # 取不到元数据时按“适用范围未知”处理，个人适用性问题不能放行。
     assert check(_request("我是大二，能评优秀学生综合奖学金吗？"), SCHOOL_SCHOLARSHIP) is False
+
+
+def test_history_completes_scholarship_category() -> None:
+    """上一轮只说了“奖学金”，本轮补上类别后不再追问类别。"""
+    request = _request(
+        "一等奖要什么条件？",
+        history=["我想问奖学金的事情", "优秀学生综合奖学金"],
+    )
+    assert alpha_clarification_rule(request) is None
+
+
+def test_unknown_applicability_is_rejected() -> None:
+    """适用范围无法确认时不放行，即使片段内容看起来相关。"""
+    meta = _meta(
+        CREDIT_BYLAW,
+        record_code="福大-2024-创新创业学分认定",
+        applicability=None,
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((CREDIT_BYLAW, meta)), today=lambda: TODAY
+    )
+    query = "全国大学生数学建模竞赛国家级二等奖，团队作品，我是第一完成人，创新学分原始分是多少？"
+    assert check(_request(query), CREDIT_BYLAW) is False
+
+
+def test_annual_notice_without_metadata_is_rejected() -> None:
+    """年度类通知缺元数据即无法确认适用年度，按未知处理。"""
+    check = build_alpha_evidence_check(today=lambda: TODAY)
+    assert check(_request("院级奖学金什么时候截止？"), DEPT_SCHOLARSHIP) is False
+
+
+def test_teacher_only_section_is_rejected_for_student_question() -> None:
+    """同一文件里教师绩效条款不能回答学生问题。"""
+    from backend.contracts.models import ParsedChunk
+
+    meta = _meta(
+        CREDIT_BYLAW,
+        record_code="福大-2024-创新创业学分认定",
+        applicability={"适用年级": "全体本科生", "适用专业": "全校相关本科专业"},
+    )
+    lookup = _lookup_for((CREDIT_BYLAW, meta))
+
+    def teacher_section(chunk_id):
+        return ParsedChunk(
+            chunk_no=1,
+            content=CREDIT_BYLAW.content,
+            source_file_key="credit.md",
+            locator_note="第六部分 教师指导工作量与绩效认定",
+        )
+
+    def student_section(chunk_id):
+        return ParsedChunk(
+            chunk_no=1,
+            content=CREDIT_BYLAW.content,
+            source_file_key="credit.md",
+            locator_note="第四部分 学生学分申请与记载",
+        )
+
+    query = "全国大学生数学建模竞赛国家级二等奖，团队作品，我是第一完成人，创新学分原始分是多少？"
+    rejected = build_alpha_evidence_check(
+        lookup, chunk_lookup=teacher_section, today=lambda: TODAY
+    )
+    assert rejected(_request(query), CREDIT_BYLAW) is False
+
+    kept = build_alpha_evidence_check(
+        lookup, chunk_lookup=student_section, today=lambda: TODAY
+    )
+    assert kept(_request(query), CREDIT_BYLAW) is True
