@@ -1,0 +1,61 @@
+{
+  "dataset": "real_blocked",
+  "index": [
+    {
+      "record_code": "福大-2026-竞赛项目级别认定",
+      "retrieval_status": "blocked",
+      "file_count": 6,
+      "document_id": "182e383c-9674-5dd8-952c-c67c35d56482",
+      "version_id": "690a466f-5f97-5955-a143-132ab7ea2d7a",
+      "status": "indexed",
+      "chunk_count": 13,
+      "indexed_count": 13,
+      "warnings": []
+    },
+    {
+      "record_code": "福大-2026-本科奖学金",
+      "retrieval_status": "blocked",
+      "file_count": 3,
+      "document_id": "77223b58-e0a0-58d7-a25b-ca1b84477ef3",
+      "version_id": "4b95ecfb-5f7b-5e76-a3a3-6b6d596366fb",
+      "status": "indexed",
+      "chunk_count": 4,
+      "indexed_count": 4,
+      "warnings": []
+    },
+    {
+      "record_code": "计算机学院-2027-推免资格推荐",
+      "retrieval_status": "blocked",
+      "file_count": 4,
+      "document_id": "f72578c7-c46a-5302-9243-469bbc86ec40",
+      "version_id": "7552f762-b20d-5036-b745-b59bb08ab282",
+      "status": "indexed",
+      "chunk_count": 6,
+      "indexed_count": 6,
+      "warnings": []
+    }
+  ],
+  "queries": [
+    {
+      "request": {
+        "query": "竞赛认定",
+        "top_k": 5
+      },
+      "hits": []
+    },
+    {
+      "request": {
+        "query": "奖学金",
+        "top_k": 5
+      },
+      "hits": []
+    },
+    {
+      "request": {
+        "query": "推免",
+        "top_k": 5
+      },
+      "hits": []
+    }
+  ]
+}
