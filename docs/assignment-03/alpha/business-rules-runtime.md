@@ -78,6 +78,8 @@ workflow = AgentWorkflow(
 
 联调测试覆盖上述四条路径（`test_workflow_returns_clarification_before_retrieval`、`test_workflow_rejects_inapplicable_evidence`、`test_workflow_answers_with_applicable_evidence`）。
 
+异常行为以工作流现有实现为准：追问规则抛异常时工作流未做兜底捕获，异常会向上抛给调用方（HTTP 层统一安全拒答）；证据规则在模块内部已捕获异常并返回 `False`，不会让单个片段的判断失败拖垮整轮。
+
 ## 6. 测试命令与结果
 
 ```
