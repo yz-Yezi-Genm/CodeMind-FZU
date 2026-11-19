@@ -1,14 +1,60 @@
 """Verify injection into the existing HTTP shell, with offline fakes only."""
+import json
 import unittest
 from datetime import date
+from pathlib import Path
 from uuid import UUID
 
 from fastapi.testclient import TestClient
 
+from backend.app.alpha import create_alpha_app
+from backend.app.config import AppSettings, PROJECT_ROOT
 from backend.app.main import create_app
-from backend.contracts.models import AskResponse
+from backend.contracts.models import (
+    AskResponse,
+    LLMGenerateRequest,
+    LLMResult,
+)
+from backend.retrieval.local import LocalBM25Retriever
 from backend.services.agent_workflow import AgentWorkflow
+from backend.services.alpha_runtime import build_alpha_runtime
+from backend.services.errors import LLMTimeoutError
 from examples.agent_workflow_demo import DemoLLMClient, DemoRetriever, demo_chunk
+
+
+class EvidenceSelectingLLM:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def generate(self, request: LLMGenerateRequest) -> LLMResult:
+        self.calls += 1
+        payload = json.loads(request.messages[-1].content)
+        first = payload["evidence"][0]
+        return LLMResult(
+            content=json.dumps(
+                {
+                    "evidence": [
+                        {
+                            "chunk_id": first["chunk_id"],
+                            "quote": first["content"],
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            model="offline-evidence-fixture",
+        )
+
+
+class TimeoutLLM:
+    async def generate(self, _request: LLMGenerateRequest) -> LLMResult:
+        raise LLMTimeoutError()
+
+
+FIXTURE_DIR = (
+    PROJECT_ROOT / "tests/fixtures/alpha_approved"
+)
+FIXTURE_CONTENT = "2026年奖学金申请需提交申请表和成绩单。"
 
 
 class AgentWorkflowApiTests(unittest.TestCase):
@@ -47,6 +93,140 @@ class AgentWorkflowApiTests(unittest.TestCase):
             response = client.post("/api/v1/ask", json={"query": ""})
             self.assertEqual(response.status_code, 422)
             self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
+
+    def test_alpha_lifespan_uses_real_bm25_workflow_and_http_adapter(self):
+        llm = EvidenceSelectingLLM()
+        settings = AppSettings(
+            alpha_package_dir=FIXTURE_DIR,
+            conversation_max_messages=8,
+        )
+
+        async def runtime_builder():
+            return await build_alpha_runtime(
+                settings,
+                llm_client=llm,
+                file_root=PROJECT_ROOT,
+            )
+
+        app = create_alpha_app(
+            settings=settings,
+            runtime_builder=runtime_builder,
+        )
+        with TestClient(app) as client:
+            self.assertIsInstance(
+                app.state.alpha_runtime.retriever,
+                LocalBM25Retriever,
+            )
+            response = client.post(
+                "/api/v1/ask",
+                json={"query": "2026年奖学金申请需要提交什么材料？"},
+            )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["status"], "answered")
+        self.assertEqual(
+            body["citations"][0]["excerpt"],
+            FIXTURE_CONTENT,
+        )
+        self.assertEqual(
+            body["citations"][0]["source_url"],
+            "https://example.invalid/test-policy",
+        )
+        self.assertEqual(llm.calls, 1)
+
+    def test_alpha_runtime_uses_prior_user_history_across_http_turns(self):
+        llm = EvidenceSelectingLLM()
+        settings = AppSettings(alpha_package_dir=FIXTURE_DIR)
+
+        async def runtime_builder():
+            return await build_alpha_runtime(
+                settings,
+                llm_client=llm,
+                file_root=PROJECT_ROOT,
+            )
+
+        app = create_alpha_app(
+            settings=settings,
+            runtime_builder=runtime_builder,
+        )
+        with TestClient(app) as client:
+            first = client.post(
+                "/api/v1/ask",
+                json={"query": "奖学金有哪些类别？"},
+            )
+            conversation_id = first.json()["conversation_id"]
+            second = client.post(
+                "/api/v1/ask",
+                json={"query": "2026年。", "conversation_id": conversation_id},
+            )
+            history = app.state.alpha_runtime.session_store.history(
+                UUID(conversation_id)
+            )
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.json()["status"], "needs_clarification")
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(second.json()["status"], "answered")
+        self.assertEqual(len(history), 4)
+        self.assertEqual(history[0].content, "奖学金有哪些类别？")
+        self.assertEqual(history[2].content, "2026年。")
+        self.assertEqual(llm.calls, 1)
+
+    def test_alpha_runtime_model_timeout_is_not_answered_status(self):
+        settings = AppSettings(alpha_package_dir=FIXTURE_DIR)
+
+        async def runtime_builder():
+            return await build_alpha_runtime(
+                settings,
+                llm_client=TimeoutLLM(),
+                file_root=PROJECT_ROOT,
+            )
+
+        app = create_alpha_app(
+            settings=settings,
+            runtime_builder=runtime_builder,
+        )
+        with TestClient(app) as client:
+            response = client.post(
+                "/api/v1/ask",
+                json={"query": "2026年奖学金申请需要提交什么材料？"},
+            )
+
+        self.assertEqual(response.status_code, 504)
+        self.assertEqual(response.json()["error"]["code"], "MODEL_TIMEOUT")
+        self.assertNotIn("status", response.json())
+
+    def test_alpha_lifespan_failure_is_reported_without_crashing_app(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/missing-approved",
+        )
+
+        async def runtime_builder():
+            return await build_alpha_runtime(
+                settings=settings,
+                llm_client=EvidenceSelectingLLM(),
+                file_root=PROJECT_ROOT,
+            )
+
+        app = create_alpha_app(
+            settings=settings,
+            runtime_builder=runtime_builder,
+        )
+        with TestClient(app) as client:
+            health = client.get("/api/v1/health")
+            response = client.post(
+                "/api/v1/ask",
+                json={"query": "选课有哪些步骤？"},
+            )
+
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(
+            response.json()["error"]["code"],
+            "KNOWLEDGE_BASE_UNAVAILABLE",
+        )
+        self.assertIsNotNone(app.state.alpha_runtime_error)
 
 
 if __name__ == "__main__":

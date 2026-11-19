@@ -1,0 +1,32 @@
+Alpha real-runtime process smoke
+Date: 2026-11-19 (Asia/Shanghai)
+Branch: feat/alpha-real-runtime
+Command:
+  ALPHA_PACKAGE_DIR=tests/fixtures/alpha_approved
+  QWEN_API_KEY=
+  python -X utf8 -m uvicorn backend.app.alpha:app --host 127.0.0.1 --port 8766
+
+Startup:
+  Alpha runtime startup unavailable code=SERVICE_NOT_CONFIGURED
+  Application startup complete.
+  Uvicorn running on http://127.0.0.1:8766
+
+GET /api/v1/health
+  HTTP 200
+  X-Request-ID: df3cd0ad-918f-42a8-bee5-1ef97ce2594f
+  {"status":"ok","service":"codemind-fzu-api","version":"0.1.0",
+   "timestamp":"2026-11-19T14:13:59.632404Z"}
+
+POST /api/v1/ask
+  Query: 2026年奖学金申请需要提交什么材料？
+  HTTP 503
+  X-Request-ID: 6b4286ca-0ee1-4c56-ba2f-2e15efbb4ef1
+  {"request_id":"6b4286ca-0ee1-4c56-ba2f-2e15efbb4ef1",
+   "error":{"code":"SERVICE_NOT_CONFIGURED",
+            "message":"未配置 QWEN_API_KEY，模型服务不可用。",
+            "retryable":true}}
+
+Interpretation:
+  This confirms process startup, lifespan failure isolation and HTTP error
+  adaptation with the synthetic test corpus.
+  It is NOT a real Qwen network call and NOT a positive formal-policy answer.

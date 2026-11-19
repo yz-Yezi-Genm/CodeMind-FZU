@@ -1,6 +1,6 @@
 # Backend API 与模型适配
 
-本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、Mock Agent 演示入口和 Qwen 模型适配器。已实现可注入的 `AgentWorkflow`、Markdown/TXT 文档解析和本地 BM25 检索。
+本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、真实运行组装、服务端会话历史、Mock Agent 演示入口和 Qwen 模型适配器。已实现可注入的 `AgentWorkflow`、Markdown/TXT 文档解析和本地 BM25 检索。
 
 ## 环境与启动
 
@@ -20,6 +20,9 @@ python -m uvicorn backend.app.main:app --reload --port 8000
 
 # Mock Agent 演示入口（用于前后端联调）
 python -m uvicorn backend.app.dev:app --reload --port 8000
+
+# 真实 Alpha 入口（需要本地 Qwen 配置和已审核资料）
+python -m uvicorn backend.app.alpha:app --reload --port 8000 --env-file backend/.env
 ```
 
 访问：
@@ -28,6 +31,8 @@ python -m uvicorn backend.app.dev:app --reload --port 8000
 - 问答入口：`POST http://127.0.0.1:8000/api/v1/ask`
 
 `backend.app.main:app` 是默认入口，未注入真实 Agent 时，问答接口返回统一格式的 `503 SERVICE_NOT_CONFIGURED`，不会伪造回答。
+
+`backend.app.alpha:app` 通过 FastAPI lifespan 创建 `LocalBM25Retriever`、加载人工审核资料、初始化 Qwen 客户端并装配 `AgentWorkflow`。默认只扫描 `knowledge_base/processed/alpha/approved/`，只加载通过公共 `DocumentPackage` 校验且 `retrieval_status=enabled` 的资料包；`blocked`、`review_only` 和侧车 JSON 不会进入正式索引。目录缺失、没有已开放包或索引不完整时，服务仍可启动，但问答返回 `503 KNOWLEDGE_BASE_UNAVAILABLE`，不会改用原始测试资料。
 
 本地 Mock 演示使用独立入口，不改变默认入口：
 
@@ -80,6 +85,11 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - `QWEN_MODEL`：默认 `qwen-plus`
 - `QWEN_TIMEOUT_SECONDS`
 - `QWEN_MAX_RETRIES`：0–3
+- `ALPHA_PACKAGE_DIR`：人工审核资料包目录，默认 `knowledge_base/processed/alpha/approved`
+- `CONVERSATION_MAX_MESSAGES`：每个会话最多保留的消息数，默认 12
+- `CONVERSATION_HISTORY_CHAR_LIMIT`：每个会话历史的字符预算，默认 6000
+
+服务端会话只在内存中保存，进程重启后丢失。同一 `conversation_id` 的请求串行执行，后续请求会获得此前的用户和 Agent 消息；不同 ID 的历史严格隔离。模型或检索异常不会写入失败轮次。
 
 `backend.services.qwen_client.QwenLLMClient` 实现公共 `LLMClient.generate()` 协议，不修改公共 `LLMGenerateRequest` / `LLMResult`。适配器处理超时、有限重试、限流和上游异常，并将错误转换为可安全返回的服务错误。
 
@@ -124,6 +134,8 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - 管理端业务 API 和认证授权。
 
 数据库设计中的资料默认 `retrieval_status=blocked`。解析、入库或建立索引均不会自动开放正式问答检索。
+
+当前 `approved/` 尚无人工签核后开放的正式包，配置中也没有真实 `QWEN_API_KEY`，因此不能用 MockTransport 结果宣称真实模型或正式政策正向链路已经验收。完整说明见 [Alpha 真实运行说明](../docs/assignment-03/alpha/real-runtime.md)。
 
 ## 文档解析（Alpha）
 

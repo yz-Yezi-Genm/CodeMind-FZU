@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "2026年本科生奖学金评定办法（测试夹具）",
+    "document_type": "管理办法",
+    "category_name": "综评与奖学金",
+    "business_direction_codes": [
+      "POLICY_AFFAIRS"
+    ],
+    "record_code": "TEST-APPROVED-SCHOLARSHIP-2026",
+    "version_no": "approved-v1",
+    "publisher": "测试发布单位",
+    "source_url": "https://example.invalid/test-policy",
+    "published_on": "2026-01-01",
+    "effective_on": "2026-01-01",
+    "policy_status": "测试",
+    "source_verification_status": "verified",
+    "timeliness_verification_status": "current",
+    "extraction_status": "extracted",
+    "v1_inclusion_status": "included",
+    "retrieval_status": "enabled",
+    "verification_note": "仅用于 Alpha 运行组装自动化测试，不是正式政策资料。"
+  },
+  "files": [
+    {
+      "file_role": "extracted",
+      "storage_key": "tests/fixtures/alpha_approved/policy.md",
+      "original_name": "policy.md",
+      "media_type": "text/markdown",
+      "processing_status": "extracted"
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_no": 1,
+      "content": "2026年奖学金申请需提交申请表和成绩单。",
+      "locator": "第1行",
+      "source_file_key": "tests/fixtures/alpha_approved/policy.md",
+      "index_status": "pending"
+    }
+  ]
+}

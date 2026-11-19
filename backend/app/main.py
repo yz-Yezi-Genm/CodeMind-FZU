@@ -82,12 +82,18 @@ def create_app(
     *,
     llm_client: LLMClient | None = None,
     settings: AppSettings | None = None,
+    lifespan: Any | None = None,
+    description: str | None = None,
 ) -> FastAPI:
     app_settings = settings or AppSettings.from_env()
     app = FastAPI(
         title="CodeMind-FZU API",
         version="0.1.0",
-        description="Alpha interface contract shell; business services are connected separately.",
+        description=(
+            description
+            or "Alpha interface contract; business services are injected separately."
+        ),
+        lifespan=lifespan,
     )
     app.state.agent_service = agent_service
     app.state.llm_client = llm_client
