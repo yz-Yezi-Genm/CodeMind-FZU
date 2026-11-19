@@ -113,6 +113,21 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
         await self.indexer.index_document(package)
         self.assertEqual(await self.search(), [])
 
+    async def test_invalid_revocation_still_removes_only_its_version(self):
+        other = await self.indexer.index_document(sample(version_no="v2"))
+        for status in (RetrievalStatus.BLOCKED, RetrievalStatus.REVIEW_ONLY):
+            with self.subTest(status=status):
+                package = sample()
+                await self.indexer.index_document(package)
+                self.assertEqual(len(await self.search()), 4)
+                package.metadata.retrieval_status = status
+                package.chunks[0].source_file_key = "missing.md"
+                with self.assertRaises(ValidationError):
+                    await self.indexer.index_document(package)
+                self.assertEqual(
+                    {hit.version_id for hit in await self.search()}, {other.version_id}
+                )
+
     async def test_unvalidated_mutations_cannot_open_a_package(self):
         package = sample(source_verification_status="pending", retrieval_status="blocked")
         package.metadata.retrieval_status = RetrievalStatus.ENABLED
@@ -216,6 +231,22 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.warnings, [])
         self.assertEqual(len(await self.search()), 2)
 
+    async def test_chunks_without_searchable_terms_are_not_counted(self):
+        package = sample()
+        package.chunks[0].content = "……？！"
+        result = await self.indexer.index_document(package)
+        self.assertEqual(result.status, IndexingStatus.PARTIAL)
+        self.assertEqual((result.chunk_count, result.indexed_count), (2, 1))
+        self.assertEqual([item.code for item in result.warnings], ["TOKENLESS_CHUNKS_SKIPPED"])
+        self.assertIn("1 个片段", result.warnings[0].message)
+        self.assertEqual([hit.content for hit in await self.search()], [package.chunks[1].content])
+
+        package.chunks[1].content = "。"
+        result = await self.indexer.index_document(package)
+        self.assertEqual(result.status, IndexingStatus.PARTIAL)
+        self.assertEqual(result.indexed_count, 0)
+        self.assertEqual(await self.search(), [])
+
     async def test_rejects_invalid_storage_location(self):
         for key in ("../outside.md", "/rooted.md", "C:/outside.md", "sub/../text.md"):
             with self.subTest(key=key):
@@ -245,6 +276,38 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
                 "FILE_HASH_MISMATCH", "FILE_UNAVAILABLE",
             })
             self.assertEqual(await store.retrieve(RetrievalRequest(query="奖学金")), [])
+
+    async def test_missing_unready_source_is_ignored_only_when_unused(self):
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            store = LocalBM25Retriever(file_root=root)
+            (root / "text.md").write_text("synthetic text", encoding="utf-8")
+            package = sample()
+            package.files[1].processing_status = FileProcessingStatus.FAILED
+            package.chunks[0].source_file_key = "policy.pdf"
+            request = RetrievalRequest(query="奖学金")
+
+            result = await store.index_document(package)
+            self.assertEqual(result.status, IndexingStatus.PARTIAL)
+            self.assertEqual((result.chunk_count, result.indexed_count), (2, 1))
+            self.assertEqual([item.code for item in result.warnings], ["SOURCE_FILE_NOT_READY"])
+            self.assertEqual(
+                [hit.content for hit in await store.retrieve(request)], [package.chunks[1].content]
+            )
+
+            package.chunks[0].index_status = ChunkIndexStatus.DISABLED
+            result = await store.index_document(package)
+            self.assertEqual(result.status, IndexingStatus.PARTIAL)
+            self.assertEqual(result.indexed_count, 1)
+
+            # The same missing file must pass integrity checks if a retained
+            # chunk now relies on it for provenance.
+            package.chunks[1].original_file_key = "policy.pdf"
+            result = await store.index_document(package)
+            self.assertEqual(result.status, IndexingStatus.FAILED)
+            self.assertEqual(result.indexed_count, 0)
+            self.assertIn("FILE_UNAVAILABLE", {item.code for item in result.warnings})
+            self.assertEqual(await store.retrieve(request), [])
 
     async def test_real_parser_handoff_indexes_without_exposing_policies(self):
         root = Path(__file__).resolve().parents[1]

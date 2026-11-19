@@ -7,6 +7,7 @@ import json
 import re
 import unicodedata
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass
 from math import fsum, log1p
 from pathlib import Path
@@ -20,6 +21,7 @@ from backend.contracts import (
     IndexResult,
     IndexingStatus,
     ParsedChunk,
+    ParsedFile,
     RetrievalRequest,
     RetrievalStatus,
     RetrievedChunk,
@@ -47,6 +49,11 @@ def _terms(text: str) -> list[str]:
 
 def _local_id(kind: str, *parts: str) -> UUID:
     return uuid5(NAMESPACE_URL, json.dumps(["codemind-fzu/alpha", kind, *parts]))
+
+
+def _document_and_version_ids(record_code: str, version_no: str) -> tuple[UUID, UUID]:
+    document_id = _local_id("document", record_code)
+    return document_id, _local_id("version", str(document_id), version_no)
 
 
 def _check_storage_key(key: str) -> None:
@@ -86,13 +93,13 @@ class LocalBM25Retriever:
             raise ValueError("file_root 必须是目录")
         self._versions: dict[UUID, _IndexedVersion] = {}
 
-    def _file_warnings(self, package: DocumentPackage) -> list[WarningItem]:
+    def _file_warnings(self, files: Iterable[ParsedFile]) -> list[WarningItem]:
         root = self._file_root
         if root is None:
             return []
 
         warnings = []
-        for file in package.files:
+        for file in files:
             try:
                 path = (root / file.storage_key).resolve(strict=True)
                 if not path.is_relative_to(root) or not path.is_file():
@@ -115,12 +122,28 @@ class LocalBM25Retriever:
                 ))
         return warnings
 
+    def _withdraw_if_requested(self, metadata: object) -> None:
+        if not isinstance(metadata, dict) or metadata.get("retrieval_status") not in (
+            RetrievalStatus.BLOCKED, RetrievalStatus.REVIEW_ONLY,
+        ):
+            return
+        record_code = metadata.get("record_code")
+        version_no = metadata.get("version_no")
+        if not isinstance(record_code, str) or not isinstance(version_no, str):
+            return
+        # A withdrawal from trusted ingestion must take effect even if the rest
+        # of the package is malformed. The version still cannot be re-indexed
+        # until the complete package passes validation.
+        _, version_id = _document_and_version_ids(record_code.strip(), version_no.strip())
+        self._versions.pop(version_id, None)
+
     async def index_document(self, package: DocumentPackage) -> IndexResult:
         # Revalidate nested DTOs and detach from caller-owned mutable models.
-        snapshot = DocumentPackage.model_validate(package.model_dump())
+        payload = package.model_dump()
+        self._withdraw_if_requested(payload.get("metadata"))
+        snapshot = DocumentPackage.model_validate(payload)
         metadata = snapshot.metadata
-        document_id = _local_id("document", metadata.record_code)
-        version_id = _local_id("version", str(document_id), metadata.version_no)
+        document_id, version_id = _document_and_version_ids(metadata.record_code, metadata.version_no)
         source_files = {}
         for file in snapshot.files:
             _check_storage_key(file.storage_key)
@@ -140,27 +163,26 @@ class LocalBM25Retriever:
             "version_id": version_id,
             "chunk_count": len(snapshot.chunks),
         }
-        warnings = self._file_warnings(snapshot)
-        if warnings:
-            # A formerly indexed version must not serve stale evidence after a
-            # failed integrity check on its replacement.
-            self._versions.pop(version_id, None)
-            return IndexResult(
-                **result_ids, status=IndexingStatus.FAILED, indexed_count=0, warnings=warnings
-            )
-
         entries = []
+        referenced_files: set[str] = set()
         skipped_sources: Counter[str] = Counter()
         skipped_disabled = False
+        skipped_tokenless = 0
         for chunk in snapshot.chunks:
-            if chunk.index_status == ChunkIndexStatus.DISABLED:
-                skipped_disabled = True
-                continue
             file_id, processing_status = source_files[chunk.source_file_key]
             if processing_status not in _INDEXABLE_FILE_STATUSES:
                 skipped_sources[chunk.source_file_key] += 1
                 continue
+            if chunk.index_status == ChunkIndexStatus.DISABLED:
+                skipped_disabled = True
+                continue
             terms = _terms(chunk.content)
+            if not terms:
+                skipped_tokenless += 1
+                continue
+            referenced_files.add(chunk.source_file_key)
+            if chunk.original_file_key:
+                referenced_files.add(chunk.original_file_key)
             entries.append(_IndexedChunk(
                 parsed=chunk,
                 file_id=file_id,
@@ -169,9 +191,21 @@ class LocalBM25Retriever:
                 length=len(terms),
             ))
 
+        # Only unready sources with no retained citation can skip integrity
+        # checks. A retained chunk may still cite one as its original file.
+        ignored_files = skipped_sources.keys() - referenced_files
+        integrity_warnings = self._file_warnings(
+            file for file in snapshot.files if file.storage_key not in ignored_files
+        )
+        warnings = list(integrity_warnings)
         if skipped_disabled:
             warnings.append(WarningItem(
                 code="DISABLED_CHUNKS_SKIPPED", message="禁用片段未加入索引。"
+            ))
+        if skipped_tokenless:
+            warnings.append(WarningItem(
+                code="TOKENLESS_CHUNKS_SKIPPED",
+                message=f"跳过 {skipped_tokenless} 个片段，原因是没有可检索词。",
             ))
         for storage_key, count in skipped_sources.items():
             _, processing_status = source_files[storage_key]
@@ -182,6 +216,13 @@ class LocalBM25Retriever:
                     f"跳过 {count} 个片段：{storage_key[:880]}"
                 ),
             ))
+        if integrity_warnings:
+            # A failed integrity check on the replacement invalidates the old
+            # snapshot as well.
+            self._versions.pop(version_id, None)
+            return IndexResult(
+                **result_ids, status=IndexingStatus.FAILED, indexed_count=0, warnings=warnings
+            )
         status = IndexingStatus.PARTIAL if warnings else IndexingStatus.INDEXED
         self._versions[version_id] = _IndexedVersion(
             metadata, document_id, version_id, tuple(entries)
@@ -208,7 +249,7 @@ class LocalBM25Retriever:
                 and request.business_direction_code not in metadata.business_direction_codes
             ):
                 continue
-            candidates.extend((version, chunk) for chunk in version.chunks if chunk.length)
+            candidates.extend((version, chunk) for chunk in version.chunks)
         if not candidates:
             return []
 

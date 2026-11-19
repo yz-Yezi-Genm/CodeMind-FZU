@@ -7,10 +7,10 @@ test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests.test_allowed_
 test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests.test_cors_origins_can_be_overridden_from_environment) ... ok
 test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests.test_dev_entry_keeps_mock_agent_enabled) ... ok
 test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests.test_health_and_request_id_header) ... ok
-test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=b01be65d-b1be-4256-a2bf-28def3a5c67e detail=AgentService.run() 必须返回 AgentResult。
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests.test_invalid_agent_return_type_is_hidden_as_internal_error) ... Internal service contract error request_id=9af093a0-edd6-430f-a7da-060c39dc3c82 detail=AgentService.run() 必须返回 AgentResult。
 ok
 test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests.test_patch_cors_is_enabled_for_admin_contracts) ... ok
-test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=8893b300-bf2b-4224-8b1d-1de6e2adda03 type=RuntimeError
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests.test_runtime_error_keeps_request_id_and_cors_headers) ... Unhandled AgentService error request_id=175c07c8-81f5-4213-82e3-fc4ba25cb747 type=RuntimeError
 Traceback (most recent call last):
   File "<repository>\backend\app\main.py", line 204, in ask
     result = await service.run(
@@ -70,8 +70,11 @@ test_enabled_retrieval_accepts_verified_metadata (test_interface_contracts.Inter
 test_enabled_retrieval_requires_review_prerequisites (test_interface_contracts.InterfaceContractTests.test_enabled_retrieval_requires_review_prerequisites) ... ok
 test_bad_chunk_references_and_duplicate_numbers_are_rejected (test_local_retrieval.LocalRetrievalTests.test_bad_chunk_references_and_duplicate_numbers_are_rejected) ... ok
 test_chunk_numbers_are_scoped_to_their_source_file (test_local_retrieval.LocalRetrievalTests.test_chunk_numbers_are_scoped_to_their_source_file) ... ok
+test_chunks_without_searchable_terms_are_not_counted (test_local_retrieval.LocalRetrievalTests.test_chunks_without_searchable_terms_are_not_counted) ... ok
 test_disabled_chunks_stay_unsearchable (test_local_retrieval.LocalRetrievalTests.test_disabled_chunks_stay_unsearchable) ... ok
+test_invalid_revocation_still_removes_only_its_version (test_local_retrieval.LocalRetrievalTests.test_invalid_revocation_still_removes_only_its_version) ... ok
 test_local_files_are_checked_before_indexing (test_local_retrieval.LocalRetrievalTests.test_local_files_are_checked_before_indexing) ... ok
+test_missing_unready_source_is_ignored_only_when_unused (test_local_retrieval.LocalRetrievalTests.test_missing_unready_source_is_ignored_only_when_unused) ... ok
 test_mutating_package_or_results_does_not_change_index (test_local_retrieval.LocalRetrievalTests.test_mutating_package_or_results_does_not_change_index) ... ok
 test_rank_and_trace_matching_chunks (test_local_retrieval.LocalRetrievalTests.test_rank_and_trace_matching_chunks) ... ok
 test_real_parser_handoff_indexes_without_exposing_policies (test_local_retrieval.LocalRetrievalTests.test_real_parser_handoff_indexes_without_exposing_policies) ... ok
@@ -99,10 +102,10 @@ test_success_response_is_adapted (test_qwen_client.QwenClientTests.test_success_
 test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests.test_timeout_maps_to_sanitized_service_error) ... ok
 
 ----------------------------------------------------------------------
-Ran 84 tests in 8.336s
+Ran 87 tests in 10.757s
 
 OK (skipped=1)
 
 $ python -X utf8 -m pytest docs/assignment-02/database-design/source/test_models.py docs/assignment-02/database-design/source/test_import_rules.py -q
 .....................                                                    [100%]
-21 passed in 1.59s
+21 passed in 1.95s
