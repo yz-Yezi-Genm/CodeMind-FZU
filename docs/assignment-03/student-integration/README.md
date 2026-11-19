@@ -41,3 +41,10 @@ npm run dev
 构建验证使用 `cd frontend` 后执行 `npm run build`，包含 TypeScript 类型检查和两个页面入口的 Vite 构建。
 
 当前 Mock Agent 可验证浏览器实际调用后端及三种业务状态。引用标题、原文片段、发布单位、日期和定位均来自接口字段。展开交互通过契约测试数据验证，真实回答及真实引用的验收依赖 Agent 和知识库接入。
+
+## PR #27 视觉验收补充
+
+学生端视觉优化完成后，使用本地 Mock Agent 服务重新启动 Vite 页面，并在 1440px 桌面视口与 390px 移动视口下核验首页布局、主题入口及输入区域：
+
+- [桌面端截图（1440px）](screenshots/10-ui-polish-desktop.png)
+- [移动端截图（390px）](screenshots/11-ui-polish-mobile-390.png)
