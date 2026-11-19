@@ -120,6 +120,8 @@ _PLAN_QUESTION = re.compile(r"招多少|招生计划|招几人|多少人|名额"
 _PROFESSION = re.compile(
     r"计算机科学与技术|计算机技术|软件工程|人工智能|数据科学|信息安全|网络空间|数学|金融|经济"
 )
+# 同一学科门类下的相近专业名称（如“计算机技术”与“计算机科学与技术”）
+_CS_FAMILY = re.compile(r"计算机|软件|人工智能|数据科学|信息安全|网络空间")
 _GRADE = re.compile(r"大[一二三四]|[一二三四]年级|20\d{2}\s*级")
 _PERSONAL = re.compile(r"我(?!们)|本人|我自己")
 _EXTERNAL_SCHOOL = re.compile(r"其他学院|别的学院|外校|其他学校|别的学校")
@@ -592,9 +594,6 @@ def _grade_allowed(grade_text: str, grade: int) -> bool | None:
     return None
 
 
-_CS_FAMILY = re.compile(r"计算机|软件|人工智能|数据科学|信息安全|网络空间")
-
-
 def _major_allowed(major_text: str, query_major: str) -> bool:
     if re.search(r"全校|不限|各专业|所有专业|相关本科专业", major_text):
         return True
@@ -602,5 +601,4 @@ def _major_allowed(major_text: str, query_major: str) -> bool:
         return True
     if query_major in major_text or major_text in query_major:
         return True
-    # 同一学科门类下的相近专业名称（如“计算机技术”与“计算机科学与技术”）。
     return bool(_CS_FAMILY.search(major_text) and _CS_FAMILY.search(query_major))
