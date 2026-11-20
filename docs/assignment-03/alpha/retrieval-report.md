@@ -74,14 +74,14 @@ python -X utf8 -m scripts.check_retrieval_agent
 
 为配合后端组装、Agent 与业务规则的正式联调，检索模块补充了统一加载入口与只读查询方法，不修改公共契约字段或协议签名：
 
-- `load_approved_alpha_retriever(corpus_dir=DEFAULT_APPROVED_DIR, file_root=PROJECT_ROOT, allow_missing=True) -> tuple[LocalBM25Retriever, AlphaCorpusLoadReport]`：仅加载 `approved/` 下通过人工审核且 `retrieval_status=enabled` 的资料包，支持 `manifest.json` 或目录直扫（自动忽略 `summary.json` 与 `*.metadata.json` 旁路文件）。
+- `load_approved_alpha_retriever(corpus_dir=DEFAULT_APPROVED_DIR, file_root=PROJECT_ROOT, allow_missing=True) -> tuple[LocalBM25Retriever, AlphaCorpusLoadReport]`：仅加载 `approved/` 下同时满足 `retrieval_status=enabled` 且 `temporal_notes["human_approved"] is True` 的资料包（若使用 `manifest.json`，条目亦须显式声明 `human_approved: true`，缺失字段视为未审核）；支持 `manifest.json` 或目录直扫（自动忽略 `summary.json` 与 `*.metadata.json` 旁路文件），并拒绝 `corpus_dir` 及其路径组成部分的符号链接与目录越界。
 - `build_approved_alpha_retriever(...) -> LocalBM25Retriever`：便捷封装，直接返回 `Retriever`，但会丢弃 `AlphaCorpusLoadReport`。
 - `LocalBM25Retriever.get_document_metadata(version_id: UUID)`（调用示例：`retriever.get_document_metadata(chunk.version_id)`）与 `get_parsed_chunk(chunk_id: UUID)`（调用示例：`retriever.get_parsed_chunk(chunk.chunk_id)`）：供业务规则侧通过闭包绑定只读读取文档元数据与原始片段（含 `locator_note`）；返回深拷贝，对象不存在、所属版本未开放（`blocked`/`review_only`）或重索引剔除时统一返回 `None`，不抛异常。
 
 **正式组装加载边界约定**：
 - `load_approved_alpha_retriever()` 会将所有非 `failed` 的包计入 `report.loaded_packages`，包括 `IndexingStatus.PARTIAL`（例如来源文件处于 `needs_ocr` 等未就绪状态导致 `indexed_count=0`）。未就绪片段绝不会被检索，但 `loaded_packages` 非空并不等同于“包已完整可用于正式问答”。
-- `allow_missing=True`（默认）在 `approved/` 目录尚不存在时返回空索引与空报告，不抛异常；此时空报告中的 `index_results`、`warnings` 和 `total_indexed_chunks=0` 与“目录存在但为空”表现一致，因此正式后端组装不能仅凭这三项为空就判定知识库正常。
-- 正式后端组装（`backend.app.alpha:app`）应调用 `load_approved_alpha_retriever(..., allow_missing=False)`（或在保留 `allow_missing=True` 时显式检查 `report.corpus_dir.is_dir()`），而非会丢弃报告的 `build_approved_alpha_retriever()`；并核对 `report.index_results`（按当前保守约定要求完整 `IndexingStatus.INDEXED`）、`warnings` 与 `report.total_indexed_chunks`，由组装层与 Agent 明确区分“知识库目录缺失/未就绪”与“正常无命中”。
+- `allow_missing=True`（默认）在 `approved/` 目录尚不存在时返回空索引与空报告，不抛异常；此时空报告中的 `report.index_results`（告警信息存放在各 `IndexResult.warnings` 中）和 `report.total_indexed_chunks=0` 与“目录存在但为空”表现一致，因此正式后端组装不能仅凭这几项为空就判定知识库正常。
+- 正式后端组装（`backend.app.alpha:app`）应调用 `load_approved_alpha_retriever(..., allow_missing=False)`（或在保留 `allow_missing=True` 时显式检查 `report.corpus_dir.is_dir()`），而非会丢弃报告的 `build_approved_alpha_retriever()`；并核对 `report.index_results`（按当前保守约定要求完整 `IndexingStatus.INDEXED` 并检查每条 `IndexResult.warnings`）与 `report.total_indexed_chunks`，由组装层与 Agent 明确区分“知识库目录缺失/未就绪”与“正常无命中”。
 - 未来届别/历史政策场景下，BM25 按词命中旧年度通知不视为检索错误；检索侧确保保留准确来源与年度元数据，由业务规则按当前保守门禁（`current-only`）拒绝错年度或历史片段，最终 Agent 返回 `insufficient_evidence`、空引用且模型调用 0 次。
 
 ## 当前限制

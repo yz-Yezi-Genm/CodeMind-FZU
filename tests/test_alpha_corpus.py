@@ -1,9 +1,12 @@
 import json
+import os
+import subprocess
 import unittest
 from datetime import date
 from hashlib import sha256
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 from uuid import uuid4
 
 from backend.contracts import (
@@ -12,6 +15,7 @@ from backend.contracts import (
     DocumentMetadata,
     DocumentPackage,
     FileProcessingStatus,
+    IndexingStatus,
     LLMGenerateRequest,
     LLMResult,
     ParsedChunk,
@@ -37,6 +41,9 @@ class _FirstEvidenceLLM:
         return LLMResult(content=json.dumps(output), model="offline-test-double")
 
 
+_DEFAULT_TEMPORAL_NOTES = object()
+
+
 def _write_approved_package(
     root: Path,
     corpus_dir: Path,
@@ -45,11 +52,14 @@ def _write_approved_package(
     record_code: str,
     content: str = "2026年院级奖学金面向计算机学院全日制本科生，截止时间为2026年12月20日。",
     retrieval_status: str = "enabled",
-    temporal_notes: dict | None = None,
+    temporal_notes: dict | None | object = _DEFAULT_TEMPORAL_NOTES,
     deadline_on: date | None = date(2026, 12, 20),
     applicability_raw: dict | None = None,
+    processing_status: FileProcessingStatus = FileProcessingStatus.EXTRACTED,
     corrupt_hash: bool = False,
 ) -> Path:
+    if temporal_notes is _DEFAULT_TEMPORAL_NOTES:
+        temporal_notes = {"human_approved": True}
     text_rel = f"texts/{Path(filename).stem}.md"
     text_path = root / text_rel
     text_path.parent.mkdir(parents=True, exist_ok=True)
@@ -84,7 +94,7 @@ def _write_approved_package(
                 storage_key=text_rel,
                 original_name=text_path.name,
                 sha256=digest,
-                processing_status=FileProcessingStatus.EXTRACTED,
+                processing_status=processing_status,
             ),
         ],
         chunks=[
@@ -152,6 +162,18 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                 temporal_notes={"human_approved": False},
             )
             _write_approved_package(
+                root, approved_dir, "missing_notes.json", record_code="MISS-1",
+                temporal_notes=None,
+            )
+            _write_approved_package(
+                root, approved_dir, "missing_flag.json", record_code="MISS-2",
+                temporal_notes={"note": "missing human_approved"},
+            )
+            _write_approved_package(
+                root, approved_dir, "string_flag.json", record_code="STR-1",
+                temporal_notes={"human_approved": "true"},
+            )
+            _write_approved_package(
                 root, approved_dir, "bad_hash.json", record_code="HASH-1", corrupt_hash=True
             )
 
@@ -167,6 +189,9 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                     "approved/blocked.json",
                     "approved/review.json",
                     "approved/unreviewed.json",
+                    "approved/missing_notes.json",
+                    "approved/missing_flag.json",
+                    "approved/string_flag.json",
                     "approved/bad_hash.json",
                 },
             )
@@ -204,10 +229,11 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
             hits = await retriever.retrieve(RetrievalRequest(query="院级奖学金"))
             self.assertEqual([hit.title for hit in hits], ["测试政策-A-1"])
 
-            # Non-boolean truthy strings like "false" must NOT be treated as approved.
+            # Missing human_approved key or non-boolean truthy strings must NOT be treated as approved.
             tricky_manifest = {
                 "packages": [
                     {"package": "approved/a.json", "human_approved": "false"},
+                    {"package": "approved/b.json"},
                 ]
             }
             (approved_dir / "manifest.json").write_text(json.dumps(tricky_manifest), encoding="utf-8")
@@ -215,7 +241,7 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                 corpus_dir=approved_dir, file_root=root
             )
             self.assertEqual(report.loaded_packages, ())
-            self.assertEqual(len(report.skipped_packages), 1)
+            self.assertEqual(len(report.skipped_packages), 2)
 
             # Duplicate document version across two files must be rejected.
             (approved_dir / "manifest.json").unlink()
@@ -229,6 +255,92 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
             (approved_dir / "manifest.json").write_text(json.dumps(bad_manifest), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "目录外"):
                 await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
+
+    async def test_corpus_dir_symlink_and_external_root_are_rejected(self):
+        with TemporaryDirectory() as tmp, TemporaryDirectory() as outside_tmp:
+            root = Path(tmp)
+            outside = Path(outside_tmp)
+            outside_approved = outside / "external_approved"
+            outside_approved.mkdir()
+            _write_approved_package(
+                outside, outside_approved, "ext.json", record_code="EXT-1"
+            )
+
+            # 1. External corpus_dir outside file_root must be rejected.
+            with self.assertRaisesRegex(ValueError, "超出允许根目录"):
+                await load_approved_alpha_retriever(
+                    corpus_dir=outside_approved, file_root=root, allow_missing=False
+                )
+
+            # 2. corpus_dir itself being a symlink/junction to an external directory must be rejected.
+            link_dir = root / "approved_link"
+            created_link = False
+            try:
+                link_dir.symlink_to(outside_approved, target_is_directory=True)
+                created_link = True
+            except OSError:
+                if os.name == "nt":
+                    completed = subprocess.run(
+                        ["cmd", "/c", "mklink", "/J", str(link_dir), str(outside_approved)],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    created_link = completed.returncode == 0
+
+            if created_link:
+                with self.assertRaisesRegex(ValueError, "符号链接"):
+                    await load_approved_alpha_retriever(
+                        corpus_dir=link_dir, file_root=root, allow_missing=False
+                    )
+                with self.assertRaisesRegex(ValueError, "符号链接"):
+                    await load_approved_alpha_retriever(
+                        corpus_dir=link_dir, file_root=None, allow_missing=False
+                    )
+
+            # 3. Intermediate path component being a symlink must also be rejected.
+            nested_approved = root / "nested" / "approved"
+            nested_approved.mkdir(parents=True)
+            nested_parent = (root / "nested").resolve()
+
+            orig_is_symlink = Path.is_symlink
+
+            def fake_is_symlink(path_obj: Path) -> bool:
+                if Path(os.path.abspath(path_obj)) == nested_parent:
+                    return True
+                return orig_is_symlink(path_obj)
+
+            with patch.object(Path, "is_symlink", fake_is_symlink):
+                with self.assertRaisesRegex(ValueError, "符号链接"):
+                    await load_approved_alpha_retriever(
+                        corpus_dir=nested_approved, file_root=root, allow_missing=False
+                    )
+
+    async def test_partial_package_with_zero_indexed_chunks_is_observable_in_report(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            approved_dir = root / "approved"
+            approved_dir.mkdir()
+            _write_approved_package(
+                root,
+                approved_dir,
+                "needs_ocr.json",
+                record_code="OCR-2026",
+                processing_status=FileProcessingStatus.NEEDS_OCR,
+            )
+
+            retriever, report = await load_approved_alpha_retriever(
+                corpus_dir=approved_dir, file_root=root, allow_missing=False
+            )
+            self.assertEqual(report.loaded_packages, ("approved/needs_ocr.json",))
+            self.assertEqual(report.skipped_packages, ())
+            self.assertEqual(len(report.index_results), 1)
+            result = report.index_results[0]
+            self.assertEqual(result.status, IndexingStatus.PARTIAL)
+            self.assertEqual(result.indexed_count, 0)
+            self.assertTrue(any(w.code == "SOURCE_FILE_NOT_READY" for w in result.warnings))
+            self.assertEqual(report.total_indexed_chunks, 0)
+            self.assertEqual(await retriever.retrieve(RetrievalRequest(query="院级奖学金")), [])
 
     async def test_agent_workflow_evidence_check_reads_applicability_and_deadline(self):
         with TemporaryDirectory() as tmp:

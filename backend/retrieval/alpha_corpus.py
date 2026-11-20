@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -56,6 +57,32 @@ def _display_path(path: Path, root: Path | None) -> str:
     return path.name
 
 
+def _is_link(path: Path) -> bool:
+    if path.is_symlink():
+        return True
+    isjunction = getattr(os.path, "isjunction", None)
+    return bool(isjunction and isjunction(path))
+
+
+def _check_corpus_dir_security(corpus_dir: Path, *, resolved_root: Path | None) -> None:
+    """Reject symlinks/junctions on corpus_dir or its path components under file_root."""
+    raw_dir = Path(os.path.abspath(corpus_dir))
+    if _is_link(corpus_dir) or _is_link(raw_dir):
+        raise ValueError(f"approved 资料目录不能是符号链接：{corpus_dir}")
+
+    if resolved_root is not None:
+        raw_root = Path(os.path.abspath(resolved_root))
+        try:
+            rel_parts = raw_dir.relative_to(raw_root).parts
+        except ValueError:
+            rel_parts = ()
+        current = raw_root
+        for part in rel_parts:
+            current = current / part
+            if _is_link(current):
+                raise ValueError(f"approved 资料目录路径包含符号链接：{current}")
+
+
 def _discover_entries(
     corpus_dir: Path,
     *,
@@ -67,6 +94,9 @@ def _discover_entries(
     Supports either a manifest.json (same layout as pending-review/manifest.json)
     or direct *.json DocumentPackage files inside corpus_dir.
     """
+    resolved_root = file_root.resolve(strict=True) if file_root is not None else None
+    _check_corpus_dir_security(corpus_dir, resolved_root=resolved_root)
+
     if not corpus_dir.exists():
         if allow_missing:
             return corpus_dir.resolve(strict=False), [], []
@@ -74,12 +104,16 @@ def _discover_entries(
     resolved_corpus = corpus_dir.resolve(strict=True)
     if not resolved_corpus.is_dir():
         raise ValueError(f"approved 资料目录无效：{corpus_dir}")
+    if resolved_root is not None and not resolved_corpus.is_relative_to(resolved_root):
+        raise ValueError(f"approved 资料目录超出允许根目录：{corpus_dir}")
 
     manifest_path = resolved_corpus / "manifest.json"
     candidates: list[tuple[str, Path]] = []
     skipped: list[tuple[str, str]] = []
 
     if manifest_path.is_file():
+        if _is_link(manifest_path):
+            raise ValueError("manifest.json 不能是符号链接")
         resolved_manifest = manifest_path.resolve(strict=True)
         if not resolved_manifest.is_relative_to(resolved_corpus):
             raise ValueError("manifest.json 必须位于 approved 目录内")
@@ -87,13 +121,13 @@ def _discover_entries(
         entries = manifest.get("packages")
         if not isinstance(entries, list):
             raise ValueError("manifest.json 缺少有效的 packages 列表")
-        base_root = file_root.resolve(strict=True) if file_root is not None else resolved_corpus
+        base_root = resolved_root if resolved_root is not None else resolved_corpus
         seen_paths: set[Path] = set()
         for entry in entries:
             if not isinstance(entry, dict) or not isinstance(entry.get("package"), str):
                 raise ValueError("manifest.json 中存在格式错误的 package 条目")
             raw_key = entry["package"]
-            if "human_approved" in entry and entry["human_approved"] is not True:
+            if entry.get("human_approved") is not True:
                 skipped.append((raw_key, "manifest 未标记 human_approved=true，跳过加载"))
                 continue
             resolved_pkg = _resolve_within(base_root, raw_key)
@@ -108,10 +142,12 @@ def _discover_entries(
     for path in sorted(resolved_corpus.glob("*.json")):
         if path.name in {"manifest.json", "summary.json"} or path.name.endswith(".metadata.json"):
             continue
+        if _is_link(path):
+            raise ValueError(f"approved 目录不允许包含符号链接资料包：{path.name}")
         resolved_pkg = path.resolve(strict=True)
         if not resolved_pkg.is_relative_to(resolved_corpus) or not resolved_pkg.is_file():
             raise ValueError(f"approved 目录不允许引用目录外资料包：{path.name}")
-        candidates.append((_display_path(resolved_pkg, file_root), resolved_pkg))
+        candidates.append((_display_path(resolved_pkg, resolved_root), resolved_pkg))
     return resolved_corpus, candidates, skipped
 
 
@@ -123,16 +159,19 @@ async def load_approved_alpha_retriever(
 ) -> tuple[LocalBM25Retriever, AlphaCorpusLoadReport]:
     """Load human-approved enabled DocumentPackages into a LocalBM25Retriever.
 
-    Packages that are not retrieval_status=enabled or explicitly marked
-    human_approved != true are never opened or indexed into the returned retriever.
+    Only packages with ``retrieval_status=enabled`` and explicit boolean
+    ``temporal_notes["human_approved"] is True`` (plus ``human_approved=True``
+    in ``manifest.json`` when a manifest is present) are indexed into the
+    returned retriever. Missing or non-True approval flags are always skipped.
 
     Return semantics for formal runtime assembly:
     - When ``allow_missing=True`` (default) and ``corpus_dir`` does not exist, an
       empty retriever and an empty report are returned rather than raising. Because
       a missing directory and an existing empty directory both yield empty
-      ``index_results``, no warnings, and ``total_indexed_chunks == 0``, formal
-      backend assembly cannot rely on those fields alone to verify corpus health;
-      pass ``allow_missing=False`` or explicitly check ``report.corpus_dir.is_dir()``.
+      ``index_results``, no ``IndexResult.warnings``, and ``total_indexed_chunks == 0``,
+      formal backend assembly cannot rely on those fields alone to verify corpus
+      health; pass ``allow_missing=False`` or explicitly check
+      ``report.corpus_dir.is_dir()``.
     - ``report.loaded_packages`` records every package whose indexing result is not
       ``IndexingStatus.FAILED`` — including ``IndexingStatus.PARTIAL`` packages
       (for example when unready/``needs_ocr`` source files leave ``indexed_count == 0``).
@@ -140,9 +179,9 @@ async def load_approved_alpha_retriever(
       not imply a package is fully ready for formal QA.
     - Formal backend/Agent assembly should inspect ``report.corpus_dir.is_dir()``
       (or pass ``allow_missing=False``), ``report.index_results`` (requiring
-      ``IndexingStatus.INDEXED`` under conservative Alpha policy), ``warnings``, and
-      ``report.total_indexed_chunks`` to distinguish a missing/unready corpus from
-      a normal zero-hit query.
+      ``IndexingStatus.INDEXED`` under conservative Alpha policy and checking each
+      ``IndexResult.warnings``), and ``report.total_indexed_chunks`` to distinguish
+      a missing/unready corpus from a normal zero-hit query.
     """
     resolved_root = file_root.resolve(strict=True) if file_root is not None else None
     retriever = LocalBM25Retriever(file_root=resolved_root)
@@ -168,10 +207,9 @@ async def load_approved_alpha_retriever(
                 f"retrieval_status={metadata.retrieval_status.value}，仅允许加载 enabled 资料",
             ))
             continue
-        if (
+        if not (
             isinstance(metadata.temporal_notes, dict)
-            and "human_approved" in metadata.temporal_notes
-            and metadata.temporal_notes["human_approved"] is not True
+            and metadata.temporal_notes.get("human_approved") is True
         ):
             skipped.append((label, "temporal_notes 未标记 human_approved=true，未通过人工审核"))
             continue
