@@ -139,10 +139,10 @@ PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retrieve
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 87 passed
+# 94 passed
 
 python -m pytest tests -q
-# 258 passed, 77 subtests passed
+# 265 passed, 77 subtests passed
 ```
 
 测试覆盖：
@@ -169,7 +169,13 @@ python -m pytest tests -q
 - 竞赛名称含「全国」不等于国家级：「全国大学生数学建模竞赛省赛二等奖」判为省部级；
 - 历史对话切换主题不影响本轮场景识别：场景优先按本轮提问判断，历史只在必要时补充字段；
 - 历史/已过期通知的截止时间与办理状态仍可作为历史信息回答，不因截止日期已过而丢弃；但现行资料问“现在还能不能办”依旧拒绝；
-- 候选资料在 `review_only`、`blocked` 状态下不进入回答（覆盖 #31 真实资料状态）。
+- 候选资料在 `review_only`、`blocked` 状态下不进入回答（覆盖 #31 真实资料状态）；
+- 同一会话换竞赛：本轮写明的级别、个人/集体、作品优先，历史只补本轮没说的槽位（换竞赛后旧作品不再沿用）；
+- 同一会话在复试与推荐资格之间切换：推免子场景按本轮问题判断，复试问题不追问年级；
+- 校级、院级综测只认综合素质评价办法，学科竞赛等级目录只负责国际级/国家级/省部级；
+- 级别否定与转折表达（“不是国家级，是省级二等奖”）按转折后的级别识别；
+- 团队识别要求明确表述（团队、集体、我们组、队友等），“我们”单独出现不算团队；
+- 历史/过期通知：问历史截止时间放行，问“现在还能不能申请”拒绝。
 
 与吴诗莹约定案例的对应测试：
 
@@ -181,6 +187,22 @@ python -m pytest tests -q
 | 适用范围未知 | `test_unknown_applicability_is_rejected`、`test_lookup_failure_is_treated_as_unknown` | `False` |
 | 年度无法确认（缺元数据） | `test_annual_notice_without_metadata_is_rejected`、`test_default_entry_fails_closed_without_metadata` | `False` |
 | 局部片段不适用 | `test_teacher_only_section_is_rejected_for_student_question` | 教师条款 `False`，学生条款 `True` |
+
+## 6.1 与 #31 / #32 / #35 的接口联调
+
+以 #35 `feat/alpha-retrieval-loader`（`1cc7ce1`）的 `LocalBM25Retriever` 签名为准：`retrieve(request)`、`get_document_metadata(version_id)`、`get_parsed_chunk(chunk_id)`，后两者对 `review_only`/`blocked` 返回 `None`。`build_from_retriever` 用 `getattr` 取方法，签名与 `MetadataLookup`/`ChunkLookup` 一致，可直接注入。
+
+以 #32 `feat/alpha-agent-integration`（`e46e745`）的 `AgentWorkflow` 做注入联调，结果：
+
+| 场景 | 结果 |
+| --- | --- |
+| 推免复试问名额，未说学位类型 | `needs_clarification`，检索调用 0 |
+| #31 推免资料 `review_only`（元数据查询返回 `None`） | `insufficient_evidence` / `NO_ELIGIBLE_EVIDENCE`，引用 0 |
+| 校级综测 + 综评办法（enabled） | `answered`，引用 1 |
+| 过期通知问历史截止 | 规则层 `True`；#32 端到端仍 `NO_ELIGIBLE_EVIDENCE` |
+| 过期通知问“现在还能申请” | 规则层 `False` |
+
+最后一项是 #32 `_eligible` 仍要求 `timeliness=current` 的已知门槛，需由 #32 统一放宽后才能端到端回答历史通知。
 
 ## 7. 已知限制
 

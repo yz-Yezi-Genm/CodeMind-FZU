@@ -43,6 +43,8 @@ from backend.services.alpha_business_rules import (
     QUESTION_TOPIC,
     _first_unit_state,
     _grade_level,
+    _level_for,
+    _team,
     _level,
     _rank,
     QUESTION_WORK_NAME,
@@ -1138,3 +1140,100 @@ def test_historical_deadline_is_answered_not_dropped() -> None:
     assert current_check(
         _request("优秀学生综合奖学金现在还能申请吗？"), SCHOOL_SCHOLARSHIP
     ) is False
+
+
+# --------------------------------------------------------------------------- 第六轮回归
+
+
+def test_switch_competition_ignores_previous_level_and_team() -> None:
+    """同一会话换竞赛，旧的级别、团队、作品不能盖掉本轮表达。"""
+    history = ["数学建模竞赛拿了国家级二等奖", f"团队作品，{WORK}"]
+    query = "蓝桥杯省赛二等奖，个人参赛，创新学分能认定多少？"
+    request = _request(query, history=history)
+    # 本轮没说作品，不能被上一场竞赛的作品顶替
+    assert alpha_clarification_rule(request) == QUESTION_WORK_NAME
+    assert _level_for(query, "\n".join(history) + "\n" + query) == "provincial"
+    assert _team(query) is False
+
+    completed = _request(f"蓝桥杯省赛二等奖，个人参赛，{WORK}，创新学分能认定多少？", history=history)
+    assert alpha_clarification_rule(completed) is None
+
+
+def test_switch_from_review_to_qualification() -> None:
+    """先问复试，再问推荐资格，子场景按本轮问题判断。"""
+    review_then_qualification = _request(
+        "推免资格要求专业排名前多少？", history=["推免复试都考什么？"]
+    )
+    assert alpha_clarification_rule(review_then_qualification) is None
+
+    qualification_then_review = _request(
+        "推免复试材料投递到哪？", history=["推免资格要求专业排名前多少？"]
+    )
+    # 复试材料不追问年级，只确认专业
+    assert alpha_clarification_rule(qualification_then_review) == QUESTION_PROFESSION
+
+
+def test_review_question_with_personal_pronoun_does_not_ask_grade() -> None:
+    assert alpha_clarification_rule(_request("我想知道推免复试都考什么")) is None
+
+
+def test_team_needs_explicit_team_wording() -> None:
+    assert _team("我们") is None
+    assert _team("我们组") is True
+    assert _team("团队作品") is True
+    assert _team("个人参赛") is False
+
+
+def test_negated_level_is_not_national() -> None:
+    assert _level("不是国家级，是省级二等奖") == "provincial"
+    assert _level("国家级二等奖") == "national"
+    query = f"蓝桥杯不是国家级，是省级二等奖，{WORK}，团队作品，第一完成人，创新学分能认定多少？"
+    assert alpha_clarification_rule(_request(query)) is None
+
+
+def test_school_level_evaluation_uses_bylaw_not_grade_catalog() -> None:
+    """校级、院级综测得用综评办法，学科竞赛等级目录不负责这两档。"""
+    check = build_alpha_evidence_check(
+        _full_lookup(), chunk_lookup=_student_locator, today=lambda: TODAY
+    )
+    query = "综测里校级竞赛最高等级奖能加几分？"
+    assert check(_request(query), EVALUATION_BYLAW) is True
+
+    eval_meta = _meta(
+        EVAL_CATALOG,
+        record_code="福大-2026-学科竞赛等级目录",
+        applicability={"适用年级": "全体本科生", "适用专业": "全校相关本科专业"},
+    )
+    catalog_check = build_alpha_evidence_check(
+        _lookup_for((EVAL_CATALOG, eval_meta)),
+        chunk_lookup=_student_locator,
+        today=lambda: TODAY,
+    )
+    # 等级目录不负责校级、院级两档
+    assert catalog_check(_request(query), EVAL_CATALOG) is False
+    # 国家级仍必须由等级目录定档
+    assert catalog_check(
+        _request("综测里国家级竞赛二等奖能加几分？"), EVAL_CATALOG
+    ) is True
+
+
+def test_expired_notice_answers_history_but_not_current_application() -> None:
+    """过期通知能回答历史截止时间，不能回答“现在还能不能申请”。"""
+    lookup = _full_lookup()
+
+    def student_heading(chunk_id):
+        return ParsedChunk(
+            chunk_no=1,
+            content=XINGHUO.content,
+            source_file_key="xinghuo.json",
+            locator_note=json.dumps(
+                {"heading_path": [{"level": 2, "title": "福州大学“星火奖学金”评选细则（学生）"}]},
+                ensure_ascii=False,
+            ),
+        )
+
+    check = build_alpha_evidence_check(
+        lookup, chunk_lookup=student_heading, today=lambda: TODAY
+    )
+    assert check(_request("星火奖学金去年截止到什么时候？"), XINGHUO) is True
+    assert check(_request("星火奖学金现在还能申请吗？"), XINGHUO) is False

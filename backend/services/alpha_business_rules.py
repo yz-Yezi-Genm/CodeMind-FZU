@@ -108,7 +108,8 @@ _LEVEL_LOOKUP_QUESTION = re.compile(r"认定目录|是否属于.*认定|属于�
 _AWARD_GRADE = re.compile(
     r"特等|一等|二等|三等|金奖|银奖|铜奖|单项奖|最高等级奖|次高等级奖|第三等级奖"
 )
-_TEAM = re.compile(r"团队|集体|我们|合作|组队")
+_TEAM = re.compile(r"团队|集体|合作|组队|队友|队员|共同完成")
+_TEAM_WE = re.compile(r"我们(?:组|队|团队|小组|一起|合作)")
 _INDIVIDUAL = re.compile(r"个人参赛|个人项目|独立完成|一个人")
 _RANK = re.compile(
     r"第([一二三四五六七八九十]{1,2}|\d{1,2})\s*(?:完成人|作者|名)|排名第\s*([一二三四五六七八九十]{1,2}|\d{1,2})"
@@ -245,7 +246,7 @@ def alpha_clarification_rule(request: AgentRequest) -> str | None:
     if scenario is None:
         return QUESTION_TOPIC
     if scenario == COMPETITION:
-        return _clarify_competition(text)
+        return _clarify_competition(text, request.query)
     if scenario == SCHOLARSHIP:
         return _clarify_scholarship(text)
     return _clarify_recommendation(text, request.query)
@@ -313,19 +314,35 @@ def _purpose(text: str) -> str | None:
     return None
 
 
+_LEVEL_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("international", re.compile(r"国际级|国际性|国际竞赛")),
+    ("national", re.compile(r"国家级|国家[特一二三]?等(?:奖)?|国家奖|全国奖|全国总决赛|国赛")),
+    ("provincial", re.compile(r"省部级|省级|省赛|赛区|省[一二三]等")),
+    ("school", re.compile(r"校级|学校级")),
+    ("college", re.compile(r"院级|学院级")),
+)
+# 否定、转折表达要把被否定的级别排除，例如“不是国家级，是省级二等奖”。
+_NEGATION_BEFORE = re.compile(r"(不是|并非|而非|而不是|也不算|不算|不能算|没有|未获|并没有)([^，。；,;]{0,4})?$")
+
+
 def _level(text: str) -> str | None:
     """级别只看明确写出的奖项级别；竞赛名称里的“全国”不等于国家级。"""
-    if re.search(r"国际级|国际性|国际竞赛", text):
-        return "international"
-    if re.search(r"国家级|国家[特一二三]?等(?:奖)?|国家奖|全国奖|全国总决赛|国赛", text):
-        return "national"
-    if re.search(r"省部级|省级|省赛|赛区|省[一二三]等", text):
-        return "provincial"
-    if re.search(r"校级|学校级", text):
-        return "school"
-    if re.search(r"院级|学院级", text):
-        return "college"
+    for name, pattern in _LEVEL_PATTERNS:
+        for match in pattern.finditer(text):
+            prefix = text[max(0, match.start() - 10):match.start()]
+            if _NEGATION_BEFORE.search(prefix):
+                continue
+            return name
     return None
+
+
+def _level_for(subject: str | None, text: str) -> str | None:
+    """本轮问题写了级别就采信本轮，历史只在没写级别时补位。"""
+    if subject:
+        level = _level(subject)
+        if level is not None:
+            return level
+    return _level(text)
 
 
 def _award_grade(text: str) -> str | None:
@@ -334,7 +351,7 @@ def _award_grade(text: str) -> str | None:
 
 
 def _team(text: str) -> bool | None:
-    if _TEAM.search(text):
+    if _TEAM.search(text) or _TEAM_WE.search(text):
         return True
     if _INDIVIDUAL.search(text):
         return False
@@ -446,31 +463,39 @@ def _recommendation_object(text: str) -> str | None:
 # --------------------------------------------------------------------------- 追问规则
 
 
-def _clarify_competition(text: str) -> str | None:
+def _clarify_competition(text: str, subject: str | None = None) -> str | None:
+    """追问时本轮问题优先，历史只补本轮没说的槽位。
+
+    同一会话换竞赛或换事项时，历史里的级别、个人/团队、作品不能盖掉本轮表达。
+    """
+    current = subject or text
     # 查目录、查级别归属属于资料缺口，追问解决不了，交给证据判断。
-    if _LEVEL_LOOKUP_QUESTION.search(text):
+    if _LEVEL_LOOKUP_QUESTION.search(current):
         return None
-    purpose = _purpose(text)
+    purpose = _purpose(current) or _purpose(text)
     if purpose is None:
         return QUESTION_PURPOSE
     if purpose == PURPOSE_RECOMMENDATION:
         return None
+    level = _level_for(subject, text)
     # 综测加分依赖《学科竞赛等级目录》定档；国家级与省部级无法定类，
     # 补齐个人/集体也仍然无法给出分值，直接走证据不足。
-    if purpose == PURPOSE_EVALUATION and _level(text) in {
+    if purpose == PURPOSE_EVALUATION and level in {
         "international", "national", "provincial",
     }:
         return None
     if not re.search(r"竞赛|比赛|大赛|杯|赛区", text):
         return QUESTION_COMPETITION_NAME
-    if purpose == PURPOSE_CREDIT and not _work_mentioned(text):
-        # 创新学分按作品认定，赛事与作品必须能对上。
+    if purpose == PURPOSE_CREDIT and not _work_mentioned(current):
+        # 创新学分按作品认定，赛事与作品必须能对上；换了竞赛后旧作品不算。
         return QUESTION_WORK_NAME
-    if _level(text) is None:
+    if level is None:
         return QUESTION_LEVEL
-    if _award_grade(text) is None and _rank(text) is None:
+    if _award_grade(current) is None and _award_grade(text) is None and _rank(text) is None:
         return QUESTION_AWARD_GRADE
-    team = _team(text)
+    team = _team(current)
+    if team is None:
+        team = _team(text)
     if team is None:
         return QUESTION_FORMAT
     if team and purpose == PURPOSE_CREDIT:
@@ -514,15 +539,20 @@ def _clarify_scholarship(text: str) -> str | None:
 def _clarify_recommendation(text: str, subject: str | None = None) -> str | None:
     if _future_year(text, today=date.today()) or _EXTERNAL_SCHOOL.search(text):
         return None
-    obj = _recommendation_object(text)
-    if obj == REVIEW and _REVIEW_DETAIL.search(text):
+    obj = _recommendation_object(subject) if subject else None
+    if obj is None:
+        obj = _recommendation_object(text)
+    if obj == REVIEW and _REVIEW_DETAIL.search(subject or text):
         # 专业与学位类型是两件事：认出专业不等于知道学术型/专业型/直博。
         if not _PROFESSION.search(text):
             return QUESTION_PROFESSION
         if _degree_type(text) is None:
             return QUESTION_DEGREE
         return None
-    # 年级只对校内推荐资格、排名和遴选有意义，复试材料类问题不追问年级。
+    if obj == REVIEW:
+        # 复试、材料、招生计划属于学院接收环节，与年级、排名无关，不追问年级。
+        return None
+    # 年级只对校内推荐资格、排名和遴选有意义。
     # 只看本轮提问，避免上一轮聊别的主题时把“我”带进来。
     current = subject or text
     if _PERSONAL.search(current) and not _GRADE.search(text):
@@ -569,10 +599,10 @@ def _assess(
         ):
             return False
         if scenario == COMPETITION:
-            return _check_competition(text, purpose, kind)
+            return _check_competition(text, purpose, kind, request.query)
         if scenario == SCHOLARSHIP:
-            return _check_scholarship(text, kind, today)
-        return _check_recommendation(text, kind)
+            return _check_scholarship(text, kind, today, request.query)
+        return _check_recommendation(text, kind, request.query)
     except Exception:
         # 规则无法判断时按“无法确认适用性”处理，不能放行。
         return False
@@ -597,8 +627,11 @@ def _basic_gates(chunk: RetrievedChunk, today: date) -> bool:
     return True
 
 
-def _check_competition(text: str, purpose: str | None, kind: str) -> bool:
-    if _LEVEL_LOOKUP_QUESTION.search(text):
+def _check_competition(
+    text: str, purpose: str | None, kind: str, subject: str | None = None
+) -> bool:
+    current = subject or text
+    if _LEVEL_LOOKUP_QUESTION.search(current):
         return kind == _KIND_CREDIT_CATALOG
     if purpose == PURPOSE_RECOMMENDATION:
         return False
@@ -606,19 +639,21 @@ def _check_competition(text: str, purpose: str | None, kind: str) -> bool:
         # 创新学分只认教务处级别认定目录与学分认定办法。
         return kind in {_KIND_CREDIT, _KIND_CREDIT_CATALOG}
     if purpose == PURPOSE_EVALUATION:
-        level = _level(text)
+        level = _level_for(subject, text)
         if level is None:
             return False
         if level in {"international", "national", "provincial"}:
             # 综测 A+/A/A-/B/C 只能由学科竞赛等级目录定档；教务处级别认定目录不顶替。
             return kind == _KIND_EVAL_CATALOG
-        # 校级、院级两档在综评办法里直接写明，不需要等级目录。
-        return kind in {_KIND_EVALUATION, _KIND_EVAL_CATALOG}
+        # 校级、院级两档写在综合素质评价办法里，等级目录不负责这两档。
+        return kind == _KIND_EVALUATION
     return False
 
 
-def _check_scholarship(text: str, kind: str, today: date) -> bool:
-    category = _scholarship_category(text)
+def _check_scholarship(
+    text: str, kind: str, today: date, subject: str | None = None
+) -> bool:
+    category = _scholarship_category(subject or text)
     if category is None:
         return kind == _KIND_SCHOLARSHIP
     if category in {"national", "cultech", "social"}:
@@ -631,8 +666,12 @@ def _check_scholarship(text: str, kind: str, today: date) -> bool:
     return kind == _KIND_SCHOLARSHIP
 
 
-def _check_recommendation(text: str, kind: str) -> bool:
-    obj = _recommendation_object(text)
+def _check_recommendation(
+    text: str, kind: str, subject: str | None = None
+) -> bool:
+    obj = _recommendation_object(subject) if subject else None
+    if obj is None:
+        obj = _recommendation_object(text)
     if obj == REVIEW:
         # 复试、材料、招生计划只认学院接收推免的复试方案。
         return kind == _KIND_RECOMMENDATION_REVIEW
@@ -893,12 +932,14 @@ def _deadline_conflict(
     """
     if facts.deadline is None or today <= facts.deadline:
         return False
+    availability = bool(_AVAILABILITY_QUESTION.search(text))
     if timeliness in {
         TimelinessVerificationStatus.HISTORICAL,
         TimelinessVerificationStatus.EXPIRED,
     }:
-        return False
-    return bool(_AVAILABILITY_QUESTION.search(text))
+        # 过期资料可以回答“当时截止到哪天”，但不能回答“现在还能不能办”。
+        return availability
+    return availability
 
 
 _GRADE_KEYS = ("适用年级", "年级", "学生对象", "对象", "适用对象", "招生对象")
