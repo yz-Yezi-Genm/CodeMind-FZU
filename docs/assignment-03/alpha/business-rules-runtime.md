@@ -142,7 +142,8 @@ python -m pytest tests/test_alpha_business_rules.py -q
 # 103 passed
 
 python -m pytest tests -q
-# 274 passed, 77 subtests passed
+# 274 passed, 77 subtests passed（本分支单独，未含 #35 用例）
+# 283 passed, 77 subtests passed（同步 main 后的合并树）
 ```
 
 测试覆盖：
