@@ -4,12 +4,21 @@
 Qwen 证据选择 → Citation 校验 → 返回结果」这条链路，用**真实组件**组装起来跑，
 只对 Qwen 上游用 httpx MockTransport 做离线替身（因为不能依赖真实 Qwen API）。
 
-三类测试在此明确区分（统计口径不得混淆）：
+测试分类（统计口径不得混淆）：
 
 - 第一类 Mock 测试：MockRetriever/Mock LLM 全部替身（见其他 test_*.py 文件）。
 - 第二类 真实资料测试：真实 DocumentPackage + 真实 LocalBM25Retriever + Mock Qwen。
+  由 AlphaE2ETests（T1/T2/T3/T4空库/T5/T7/T8/T9）与 AlphaE2EMultiTurnTests（T10）承担。
+- 证据准入规则测试（非 BM25 端到端）：AgentWorkflowEvidenceGateTests（T6），
+  用自定义 SingleChunkRetriever 验证 _eligible 门槛，不计入 BM25 端到端统计。
 - 第三类 真实 Qwen 集成测试：真实 Retriever + 真实 Qwen API（需 QWEN_API_KEY，
-  本文件以 test_real_qwen_* 命名并自动 skip，直到环境变量就绪）。
+  以 test_real_qwen_* 命名并自动 skip，直到环境变量就绪）。
+
+明确标注的「待实现」项（用 @unittest.skip 标记，不冒充已通过）：
+
+- test_future_year_policy_applicability：未来年度政策适用性判定未实现
+  （AgentWorkflow 仅处理历史年度）。
+- test_conversation_isolation：会话持久化/隔离未实现（依赖 alpha-real-runtime）。
 
 重要：本文件里的合成资料是「测试替身」，retrieval_status=enabled 等状态是
 构造出来的，不代表任何真实政策已经人工核验。真实核验资料（approved 目录）就绪前，
@@ -25,7 +34,6 @@ from uuid import UUID, uuid4
 import httpx
 from fastapi.testclient import TestClient
 
-from backend.app.config import AppSettings
 from backend.app.main import create_app
 from backend.contracts.models import (
     AgentRequest,
@@ -35,10 +43,8 @@ from backend.contracts.models import (
     DocumentPackage,
     FileProcessingStatus,
     LLMRole,
-    LLMResult,
     ParsedChunk,
     ParsedFile,
-    RetrievalRequest,
     RetrievalStatus,
     RetrievedChunk,
 )
@@ -233,12 +239,16 @@ class AlphaE2ETests(unittest.TestCase):
         package = _E2EFixtures.scholarship_package()
         runtime = _Runtime(_answered_handler, packages=[package])
         with TestClient(runtime.app()) as client:
-            response = client.post("/api/v1/ask", json={"query": "2026学年奖学金怎么申请？"})
+            # 问题与资料语义匹配：资料讲的是「金额与评定比例」，问题也问这个
+            response = client.post("/api/v1/ask", json={"query": "2026学年优秀学生综合奖学金的金额和评定比例是多少？"})
         body = response.json()
         self.assertEqual(body["status"], "answered")
         # 摘录必须与资料原文逐字一致，不能改写或拼接
         self.assertEqual(body["citations"][0]["excerpt"], package.chunks[0].content)
         self.assertIn(package.chunks[0].content, body["answer"])
+        # 选中的证据必须与问题相关（金额/比例），而非无关片段
+        self.assertIn("1500元", body["citations"][0]["excerpt"])
+        self.assertIn("前10%", body["citations"][0]["excerpt"])
 
     def test_T3_scholarship_without_year_needs_clarification(self):
         runtime = _Runtime(_answered_handler, packages=[_E2EFixtures.scholarship_package()])
@@ -250,17 +260,32 @@ class AlphaE2ETests(unittest.TestCase):
         self.assertTrue(body["clarifying_question"])
         self.assertEqual(body["citations"], [])
 
-    def test_T4_future_year_recommendation_insufficient_evidence(self):
+    def test_T4_empty_knowledge_base_yields_insufficient_evidence(self):
+        """空知识库：任何问题都应返回 insufficient_evidence（NO_ELIGIBLE_EVIDENCE）。"""
         runtime = _Runtime(_answered_handler, packages=[])
         with TestClient(runtime.app()) as client:
-            response = client.post("/api/v1/ask", json={"query": "2030年推免条件是什么？"})
+            response = client.post("/api/v1/ask", json={"query": "2026学年推免条件是什么？"})
         body = response.json()
         self.assertEqual(body["status"], "insufficient_evidence")
         self.assertEqual(body["answer_mode"], "insufficient_data")
         self.assertEqual(body["citations"], [])
-        # 未来年度没有适用政策，应 fail-closed 而非编造答案；
-        # 具体 warning 码取决于是否命中「历史/未来适用性」判定，这里只断言非 answered
-        self.assertNotEqual(body["status"], "answered")
+        self.assertTrue(any(w["code"] == "NO_ELIGIBLE_EVIDENCE" for w in body["warnings"]))
+
+    @unittest.skip(
+        "未来年度政策适用性判定未实现：AgentWorkflow 仅处理「历史年度」"
+        "（today > period_end 才触发 UNSUPPORTED_POLICY_MODE），对「未来年度」无专门规则，"
+        "待业务规则 evidence_check 接入后补充 fail-closed 断言。"
+    )
+    def test_future_year_policy_applicability(self):
+        """【待实现】未来年度无适用政策应 fail-closed，而非照常检索。"""
+        package = _E2EFixtures.competition_package()
+        runtime = _Runtime(_answered_handler, packages=[package])
+        with TestClient(runtime.app()) as client:
+            response = client.post("/api/v1/ask", json={"query": "2030年竞赛学分认定条件是什么？"})
+        body = response.json()
+        # 期望：未来年度问题在仅有 2026 年资料时应返回 insufficient_evidence
+        self.assertEqual(body["status"], "insufficient_evidence")
+        self.assertTrue(any(w["code"] in {"UNSUPPORTED_POLICY_MODE", "NO_ELIGIBLE_EVIDENCE"} for w in body["warnings"]))
 
     def test_T5_blocked_data_yields_insufficient_evidence(self):
         # 用真实 blocked 的 processed 资料，验证真实检索器不会泄露未开放资料
@@ -270,32 +295,6 @@ class AlphaE2ETests(unittest.TestCase):
         runtime = _Runtime(_answered_handler, packages=[package])
         with TestClient(runtime.app()) as client:
             response = client.post("/api/v1/ask", json={"query": "2026学年奖学金怎么申请？"})
-        body = response.json()
-        self.assertEqual(body["status"], "insufficient_evidence")
-        self.assertEqual(body["citations"], [])
-        self.assertTrue(any(w["code"] == "NO_ELIGIBLE_EVIDENCE" for w in body["warnings"]))
-
-    def test_T6_unverified_source_does_not_produce_answer(self):
-        # 来源未核验（partial）的片段，即使 retrieval=enabled，也必须被 _eligible 拒绝
-        import asyncio
-        unverified = _E2EFixtures._retrieved_chunk()
-
-        class SingleChunkRetriever:
-            async def retrieve(self, request):
-                return [unverified]
-
-        retriever = SingleChunkRetriever()
-        transport = httpx.MockTransport(_answered_handler)
-        upstream = httpx.AsyncClient(transport=transport)
-        llm = QwenLLMClient(
-            QwenSettings(api_key="offline-e2e-not-a-real-key", max_retries=0),
-            http_client=upstream,
-        )
-        workflow = AgentWorkflow(retriever, llm, today=lambda: date(2026, 11, 20))
-        app = create_app(agent_service=workflow, llm_client=llm)
-
-        with TestClient(app) as client:
-            response = client.post("/api/v1/ask", json={"query": "竞赛学分认定有什么条件？"})
         body = response.json()
         self.assertEqual(body["status"], "insufficient_evidence")
         self.assertEqual(body["citations"], [])
@@ -358,6 +357,43 @@ class AlphaE2ETests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# AgentWorkflow 证据准入规则测试（非 BM25 端到端）
+# ---------------------------------------------------------------------------
+class AgentWorkflowEvidenceGateTests(unittest.TestCase):
+    """AgentWorkflow 的证据准入门槛（_eligible）规则测试。
+
+    与 AlphaE2ETests 的区别：这里用自定义 SingleChunkRetriever 直接构造
+    RetrievedChunk，验证 AgentWorkflow 的 _eligible 门槛（来源核验等），
+    不经过 LocalBM25Retriever 的索引/检索，因此**不计入 BM25 端到端统计**。
+    """
+
+    def test_T6_unverified_source_does_not_produce_answer(self):
+        # 来源未核验（partial）的片段，即使 retrieval=enabled，也必须被 _eligible 拒绝
+        unverified = _E2EFixtures._retrieved_chunk()
+
+        class SingleChunkRetriever:
+            async def retrieve(self, request):
+                return [unverified]
+
+        retriever = SingleChunkRetriever()
+        transport = httpx.MockTransport(_answered_handler)
+        upstream = httpx.AsyncClient(transport=transport)
+        llm = QwenLLMClient(
+            QwenSettings(api_key="offline-e2e-not-a-real-key", max_retries=0),
+            http_client=upstream,
+        )
+        workflow = AgentWorkflow(retriever, llm, today=lambda: date(2026, 11, 20))
+        app = create_app(agent_service=workflow, llm_client=llm)
+
+        with TestClient(app) as client:
+            response = client.post("/api/v1/ask", json={"query": "竞赛学分认定有什么条件？"})
+        body = response.json()
+        self.assertEqual(body["status"], "insufficient_evidence")
+        self.assertEqual(body["citations"], [])
+        self.assertTrue(any(w["code"] == "NO_ELIGIBLE_EVIDENCE" for w in body["warnings"]))
+
+
+# ---------------------------------------------------------------------------
 # 多轮会话 + 会话隔离（第二类：真实 Retriever + Mock Qwen）
 # ---------------------------------------------------------------------------
 class AlphaE2EMultiTurnTests(unittest.IsolatedAsyncioTestCase):
@@ -386,7 +422,14 @@ class AlphaE2EMultiTurnTests(unittest.IsolatedAsyncioTestCase):
             history=history or [],
         )
 
-    async def test_T10_followup_uses_previous_conversation_context(self):
+    async def test_T10_workflow_uses_history_context(self):
+        """workflow 层利用 history 上下文（非 FastAPI 会话持久化）。
+
+        注意：这里直接调用 workflow.run 并手动传入 history，只证明 AgentWorkflow
+        能利用传入的历史上下文补齐缺失槽位（学年）。**不证明** FastAPI 已实现
+        会话持久化——会话持久化依赖 `feat/alpha-real-runtime` 分支的
+        `InMemoryConversationStore`，当前未合入 main。
+        """
         # 第一轮：追问学年
         first = await self.workflow.run(self._request("奖学金怎么申请？"))
         self.assertEqual(first.status, AnswerStatus.NEEDS_CLARIFICATION)
@@ -417,14 +460,14 @@ class AlphaE2EMultiTurnTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(again.status, AnswerStatus.NEEDS_CLARIFICATION)
 
-    async def test_different_conversation_ids_are_isolated(self):
-        # 同一 workflow 实例，两个不同 conversation_id 的 history 互不影响
-        a = self._request("奖学金怎么申请？", conversation_id=UUID(int=1))
-        b = self._request("竞赛学分认定有什么条件？", conversation_id=UUID(int=2))
-        ra = await self.workflow.run(a)
-        rb = await self.workflow.run(b)
-        # 两个请求携带的 history 都应是各自独立的（此处直接断言无串扰）
-        self.assertNotEqual(a.conversation_id, b.conversation_id)
+    @unittest.skip(
+        "会话隔离测试待实现：main 分支的 AgentWorkflow 无会话持久化，"
+        "conversation_id 仅作为请求字段透传，无法验证跨会话历史隔离。"
+        "待 feat/alpha-real-runtime 的 InMemoryConversationStore 合入后补测。"
+    )
+    async def test_conversation_isolation(self):
+        """【待实现】不同 conversation_id 的历史应互不影响。"""
+        raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------
