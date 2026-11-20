@@ -32,7 +32,7 @@ python -m uvicorn backend.app.alpha:app --reload --port 8000 --env-file backend/
 
 `backend.app.main:app` 是默认入口，未注入真实 Agent 时，问答接口返回统一格式的 `503 SERVICE_NOT_CONFIGURED`，不会伪造回答。
 
-`backend.app.alpha:app` 通过 FastAPI lifespan 创建 `LocalBM25Retriever`、加载人工审核资料、初始化 Qwen 客户端并装配 `AgentWorkflow`。默认只扫描 `knowledge_base/processed/alpha/approved/`，只加载通过公共 `DocumentPackage` 校验且 `retrieval_status=enabled` 的资料包；`blocked`、`review_only` 和侧车 JSON 不会进入正式索引。目录缺失、没有已开放包或索引不完整时，服务仍可启动，但问答返回 `503 KNOWLEDGE_BASE_UNAVAILABLE`，不会改用原始测试资料。
+`backend.app.alpha:app` 通过 FastAPI lifespan 调用 #35 的统一审核加载入口、初始化 Qwen 客户端并装配 `AgentWorkflow`。默认只扫描 `knowledge_base/processed/alpha/approved/`，同时要求 `retrieval_status=enabled` 和 manifest/`temporal_notes` 的人工审核标记为严格 `true`；`blocked`、`review_only`、未审核和侧车 JSON 不会进入正式索引。目录缺失、没有已审核包、部分索引或 warnings 时，服务仍可启动，但问答返回 `503 KNOWLEDGE_BASE_UNAVAILABLE`，不会改用原始测试资料。
 
 本地 Mock 演示使用独立入口，不改变默认入口：
 
@@ -86,15 +86,20 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - `QWEN_TIMEOUT_SECONDS`：默认 28 秒，适配 AgentWorkflow 的 30 秒总预算
 - `QWEN_MAX_RETRIES`：默认 0，范围 0–3；启用重试时需同步缩短单次超时
 - `ALPHA_PACKAGE_DIR`：人工审核资料包目录，默认 `knowledge_base/processed/alpha/approved`
-- `CONVERSATION_MAX_MESSAGES`：每个会话最多保留的消息数，默认 12
+- `CONVERSATION_MAX_MESSAGES`：每个会话最多保留的消息数，默认 12；奇数会向下取整为完整问答对
 - `CONVERSATION_HISTORY_CHAR_LIMIT`：每个会话历史的字符预算，默认 6000
+- `CONVERSATION_MAX_COUNT`：内存中最多保留的会话数，默认 1000
+- `CONVERSATION_IDLE_SECONDS`：空闲会话回收时间，默认 3600 秒
+- `CONVERSATION_CLEANUP_INTERVAL_SECONDS`：后台清理间隔，默认 300 秒
 
 完整本地、systemd 和 Kubernetes Secret 配置见
 [Alpha 环境变量与部署配置](../docs/assignment-03/alpha/environment-deployment.md)。
 
-服务端会话只在内存中保存，进程重启后丢失。同一 `conversation_id` 的请求串行执行，后续请求会获得此前的用户和 Agent 消息；不同 ID 的历史严格隔离。模型或检索异常不会写入失败轮次。
+服务端会话只在内存中保存，进程重启后丢失。同一 `conversation_id` 的请求串行执行，后续请求会获得此前的用户和 Agent 消息；不同 ID 的历史严格隔离。模型或检索异常不会写入失败轮次。运行时会按数量和空闲时间清理非活动会话，清理操作不会移除正在处理的轮次。
 
 `backend.services.qwen_client.QwenLLMClient` 实现公共 `LLMClient.generate()` 协议，不修改公共 `LLMGenerateRequest` / `LLMResult`。适配器处理超时、有限重试、限流和上游异常，并将错误转换为可安全返回的服务错误。
+
+正式运行只通过 `backend.retrieval.alpha_corpus.load_approved_alpha_retriever()` 加载资料，要求 manifest（如有）和 `temporal_notes` 都明确人工审核通过，并核对加载报告中的完整索引状态、warnings 与片段数量。业务规则通过 `alpha_business_rules.build_from_retriever(retriever)` 绑定当前只读元数据/片段查询；不会使用未绑定 Retriever 的全局证据函数。
 
 `httpx` 已包含在正式依赖 `backend/requirements.txt` 中，因为
 `backend.services` 在导入时会加载 Qwen 适配器；只安装运行依赖即可启动 API。

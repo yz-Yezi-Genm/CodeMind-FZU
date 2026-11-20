@@ -97,6 +97,9 @@ class AppSettings:
     alpha_package_dir: Path = DEFAULT_ALPHA_PACKAGE_DIR
     conversation_max_messages: int = 12
     conversation_history_char_limit: int = 6000
+    conversation_max_count: int = 1000
+    conversation_idle_seconds: int = 3600
+    conversation_cleanup_interval_seconds: int = 300
 
     @classmethod
     def from_env(cls) -> "AppSettings":
@@ -114,5 +117,23 @@ class AppSettings:
                 6000,
                 minimum=200,
                 maximum=50000,
+            ),
+            conversation_max_count=_parse_bounded_int(
+                "CONVERSATION_MAX_COUNT",
+                1000,
+                minimum=1,
+                maximum=100000,
+            ),
+            conversation_idle_seconds=_parse_bounded_int(
+                "CONVERSATION_IDLE_SECONDS",
+                3600,
+                minimum=1,
+                maximum=604800,
+            ),
+            conversation_cleanup_interval_seconds=_parse_bounded_int(
+                "CONVERSATION_CLEANUP_INTERVAL_SECONDS",
+                300,
+                minimum=1,
+                maximum=3600,
             ),
         )

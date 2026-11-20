@@ -57,6 +57,26 @@ FIXTURE_DIR = (
 FIXTURE_CONTENT = "2026年奖学金申请需提交申请表和成绩单。"
 
 
+def no_clarification(_request):
+    return None
+
+
+def allow_test_evidence(_request, _chunk):
+    return True
+
+
+def clarify_scholarship_year(request):
+    user_context = "\n".join(
+        [
+            *(turn.content for turn in request.history if turn.role.value == "user"),
+            request.query,
+        ]
+    )
+    if "奖学金" in user_context and "2026" not in user_context:
+        return "请问你咨询的是哪一学年的评定？"
+    return None
+
+
 class AgentWorkflowApiTests(unittest.TestCase):
     def client(self, chunks):
         service = AgentWorkflow(
@@ -106,6 +126,8 @@ class AgentWorkflowApiTests(unittest.TestCase):
                 settings,
                 llm_client=llm,
                 file_root=PROJECT_ROOT,
+                clarification_rule=clarify_scholarship_year,
+                evidence_check=allow_test_evidence,
             )
 
         app = create_alpha_app(
@@ -144,6 +166,8 @@ class AgentWorkflowApiTests(unittest.TestCase):
                 settings,
                 llm_client=llm,
                 file_root=PROJECT_ROOT,
+                clarification_rule=clarify_scholarship_year,
+                evidence_check=allow_test_evidence,
             )
 
         app = create_alpha_app(
@@ -181,6 +205,8 @@ class AgentWorkflowApiTests(unittest.TestCase):
                 settings,
                 llm_client=TimeoutLLM(),
                 file_root=PROJECT_ROOT,
+                clarification_rule=no_clarification,
+                evidence_check=allow_test_evidence,
             )
 
         app = create_alpha_app(

@@ -18,6 +18,9 @@
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "enabled",
+    "temporal_notes": {
+      "human_approved": true
+    },
     "verification_note": "仅用于 Alpha 运行组装自动化测试，不是正式政策资料。"
   },
   "files": [

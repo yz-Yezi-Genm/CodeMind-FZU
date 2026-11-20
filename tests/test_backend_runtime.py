@@ -1,5 +1,7 @@
 import asyncio
 import os
+import sys
+import types
 import unittest
 from unittest.mock import patch
 from uuid import UUID, uuid4
@@ -20,7 +22,7 @@ from backend.services.alpha_runtime import (
     InMemoryConversationStore,
     build_alpha_runtime,
 )
-from backend.services.errors import RuntimeUnavailableError, ServiceError
+from backend.services.errors import KnowledgeBaseUnavailableError, ServiceError
 
 
 class CapturingAgentService:
@@ -241,6 +243,9 @@ class BackendRuntimeTests(unittest.TestCase):
                 "ALPHA_PACKAGE_DIR": "knowledge_base/processed/alpha/approved",
                 "CONVERSATION_MAX_MESSAGES": "8",
                 "CONVERSATION_HISTORY_CHAR_LIMIT": "3000",
+                "CONVERSATION_MAX_COUNT": "25",
+                "CONVERSATION_IDLE_SECONDS": "600",
+                "CONVERSATION_CLEANUP_INTERVAL_SECONDS": "30",
             },
             clear=False,
         ):
@@ -252,6 +257,9 @@ class BackendRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(settings.conversation_max_messages, 8)
         self.assertEqual(settings.conversation_history_char_limit, 3000)
+        self.assertEqual(settings.conversation_max_count, 25)
+        self.assertEqual(settings.conversation_idle_seconds, 600)
+        self.assertEqual(settings.conversation_cleanup_interval_seconds, 30)
 
 
 class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
@@ -330,6 +338,20 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(history[2].role, LLMRole.USER)
         self.assertEqual(history[2].content, "第3轮问题")
 
+    async def test_odd_message_limit_is_rounded_down_to_complete_turns(self):
+        agent = RecordingConversationAgent()
+        store = InMemoryConversationStore(max_messages=5)
+        service = ConversationAgentService(agent, store)
+        conversation_id = uuid4()
+
+        for index in range(4):
+            await service.run(
+                self.request(conversation_id, f"第{index + 1}轮")
+            )
+
+        self.assertEqual(store.max_messages, 4)
+        self.assertEqual(len(store.history(conversation_id)), 4)
+
     async def test_same_conversation_requests_are_serialized(self):
         agent = BlockingConversationAgent()
         store = InMemoryConversationStore()
@@ -389,11 +411,113 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 PROJECT_ROOT / "tests/fixtures/alpha_approved"
             ),
         )
-        with self.assertRaises(RuntimeUnavailableError):
+        with self.assertRaises(KnowledgeBaseUnavailableError):
             await build_alpha_runtime(
                 settings,
                 llm_client=object(),
                 file_root=PROJECT_ROOT / "missing-retriever-root",
+            )
+
+    async def test_global_cleanup_removes_idle_and_protects_active_state(self):
+        agent = BlockingConversationAgent()
+        store = InMemoryConversationStore(max_messages=4, max_chars=1000)
+        service = ConversationAgentService(agent, store)
+        conversation_id = uuid4()
+
+        task = asyncio.create_task(
+            service.run(self.request(conversation_id, "清理测试"))
+        )
+        await agent.first_entered.wait()
+        self.assertEqual(await store.clear_all(), 0)
+        self.assertEqual(store.conversation_count, 1)
+        agent.allow_second.set()
+        await task
+
+        self.assertEqual(await store.prune_idle(idle_seconds=1e-9), 1)
+        self.assertEqual(store.conversation_count, 0)
+
+    async def test_global_cleanup_drops_inactive_sessions(self):
+        agent = RecordingConversationAgent()
+        store = InMemoryConversationStore(
+            max_conversations=2,
+            idle_seconds=1,
+        )
+        service = ConversationAgentService(agent, store)
+
+        for _ in range(3):
+            await service.run(self.request(uuid4(), "独立会话"))
+
+        self.assertEqual(store.conversation_count, 2)
+        await asyncio.sleep(0)
+        self.assertEqual(await store.prune_idle(idle_seconds=1e-9), 2)
+        self.assertEqual(store.conversation_count, 0)
+
+    async def test_business_rules_factory_binds_the_live_retriever(self):
+        observed = {}
+
+        class UnexpectedLLM:
+            async def generate(self, _request):
+                raise AssertionError("Rejected evidence must not call Qwen")
+
+        rules = types.ModuleType("backend.services.alpha_business_rules")
+        rules.alpha_clarification_rule = lambda _request: None
+
+        def build_from_retriever(retriever):
+            observed["retriever"] = retriever
+            return lambda _request, _chunk: False
+
+        rules.build_from_retriever = build_from_retriever
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_approved",
+        )
+        with patch.dict(
+            sys.modules,
+            {"backend.services.alpha_business_rules": rules},
+        ):
+            runtime = await build_alpha_runtime(
+                settings,
+                llm_client=UnexpectedLLM(),
+                file_root=PROJECT_ROOT,
+            )
+        try:
+            self.assertIs(observed["retriever"], runtime.retriever)
+            result = await runtime.agent_service.run(
+                self.request(
+                    uuid4(),
+                    "2026年奖学金申请需要提交什么材料？",
+                )
+            )
+        finally:
+            await runtime.close()
+
+        self.assertEqual(result.status, AnswerStatus.INSUFFICIENT_EVIDENCE)
+        self.assertEqual(result.warnings[0].code, "NO_ELIGIBLE_EVIDENCE")
+        self.assertEqual(result.citations, [])
+
+    async def test_runtime_rejects_unapproved_enabled_corpus(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_unapproved",
+        )
+        with self.assertRaises(KnowledgeBaseUnavailableError):
+            await build_alpha_runtime(
+                settings,
+                llm_client=object(),
+                file_root=PROJECT_ROOT,
+                clarification_rule=lambda _request: None,
+                evidence_check=lambda _request, _chunk: True,
+            )
+
+    async def test_runtime_rejects_partial_or_warning_index(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_partial",
+        )
+        with self.assertRaises(KnowledgeBaseUnavailableError):
+            await build_alpha_runtime(
+                settings,
+                llm_client=object(),
+                file_root=PROJECT_ROOT,
+                clarification_rule=lambda _request: None,
+                evidence_check=lambda _request, _chunk: True,
             )
 
 
