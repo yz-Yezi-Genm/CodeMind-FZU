@@ -1,5 +1,7 @@
 # PR #36 正式业务规则接入
 
+> 2026-11-20复审更新：下文13项及8ec09b0为前轮记录。本轮已fetch并使用规则bc97a93、检索1cc7ce1，原13项重跑且新增3项审核/报告检查，共16项通过；全仓224项、221通过、3跳过。正式包与Agent双重要求human_approved严格为True。最新结论见 [复审核验](agent-integration.md)，不得再把旧提交视为最新验收。
+
 2026-11-20更新。读取 `origin/feat/alpha-business-rules-runtime`（`8ec09b0`）与 `origin/feat/alpha-retrieval-loader`（`9201bb9`）后完成 Agent 侧验证。未合并他人分支，未改规则、检索或后端负责人文件。
 
 ## 已完成

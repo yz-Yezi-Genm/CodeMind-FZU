@@ -1,5 +1,7 @@
 # Agent 与后端/Qwen 接口对齐
 
+> 2026-11-20复审更新：Agent默认approved组装和直接包组装、证据门禁、Live验收前置检查均要求显式human_approved=True；模型返回后复查审批。跨分支最新为规则bc97a93/检索1cc7ce1，16项通过；全仓224项、221通过、3跳过。后端正式运行组装也需保留这些审核及报告检查。PR #32已确认非Draft、等待复审，正式业务验收限制不等于GitHub草稿状态。以下为历史接口说明，最新修复见agent-integration.md。
+
 > 2026-11-20更新：赵紫龙已提供真实短片段测试记录，qwen-flash/qwen-plus通过JSON及逐字匹配；这是上游报告，不是本Agent正式政策验收结果。联调模型改为qwen-flash（qwen-plus显式备选），28秒、0次重试。最新后端分支3606eda已修改其默认值，本工作分支的旧客户端文件未同步，故联调务必显式配置环境变量。当前不使用受限的qwen-turbo。
 
 2026-11-19，依据赵紫龙提供的《后端与 Qwen 模块说明》及新发的《后端与 Qwen 接入补充说明》核对。客户端基础实现已在 main 中；正式运行组装在 `feat/alpha-real-runtime`，尚未合入本工作分支基线。本轮不修改赵紫龙维护的 `qwen_client.py`、`backend/app/main.py`、`alpha_runtime.py` 或公共契约。

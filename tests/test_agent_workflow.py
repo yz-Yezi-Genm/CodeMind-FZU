@@ -3,7 +3,7 @@ import asyncio
 import json
 import unittest
 from datetime import date
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 from backend.contracts.models import (
@@ -12,7 +12,7 @@ from backend.contracts.models import (
 )
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError
-from examples.agent_workflow_demo import demo_chunk
+from examples.agent_workflow_demo import demo_chunk, demo_metadata
 
 
 class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
@@ -20,6 +20,8 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.chunk = demo_chunk()
         self.retriever = AsyncMock()
         self.retriever.retrieve.return_value = [self.chunk]
+        self.retriever.get_document_metadata = Mock(side_effect=lambda version_id: demo_metadata(next(
+            chunk for chunk in reversed(self.retriever.retrieve.return_value) if chunk.version_id == version_id)))
         self.llm = AsyncMock()
         self.llm.generate.return_value = self.selection(self.chunk)
         self.service = AgentWorkflow(
@@ -83,6 +85,49 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.citations, [])
         self.assertEqual(result.warnings[0].code, "NO_ELIGIBLE_EVIDENCE")
         self.llm.generate.assert_not_awaited()
+
+    async def test_enabled_evidence_requires_explicit_human_approval(self):
+        for notes in [None, {}, {"human_approved": False}, {"human_approved": "true"},
+                      {"human_approved": 1}, {"human_approved": None}]:
+            with self.subTest(notes=notes):
+                metadata = demo_metadata(self.chunk)
+                metadata.temporal_notes = notes
+                self.retriever.get_document_metadata.side_effect = None
+                self.retriever.get_document_metadata.return_value = metadata
+                result = await self.service.run(self.request())
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.llm.generate.assert_not_awaited()
+
+    async def test_metadata_unavailable_or_mismatched_cannot_be_approved_by_business_rule(self):
+        for value in [None, {}, demo_metadata(self.chunk).model_copy(update={"title": "另一个版本"})]:
+            with self.subTest(value=value):
+                self.retriever.get_document_metadata = Mock(return_value=value)
+                result = await AgentWorkflow(self.retriever, self.llm,
+                    evidence_check=lambda *_: True).run(self.request())
+                self.assertEqual(result.status, "insufficient_evidence")
+        self.retriever.get_document_metadata = Mock(side_effect=RuntimeError("private-review-error"))
+        result = await self.service.run(self.request())
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertNotIn("private-review-error", result.model_dump_json())
+        self.retriever.get_document_metadata = None
+        result = await self.service.run(self.request())
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.llm.generate.assert_not_awaited()
+
+    async def test_approval_withdrawn_during_model_call_discards_answer(self):
+        metadata = demo_metadata(self.chunk)
+        self.retriever.get_document_metadata = Mock(side_effect=lambda _: metadata.model_copy(deep=True))
+
+        async def generate(request):
+            metadata.temporal_notes = {"human_approved": False}
+            return self.selection(self.chunk)
+
+        self.llm.generate.side_effect = generate
+        result = await self.service.run(self.request())
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.warnings[0].code, "EVIDENCE_APPROVAL_CHANGED")
+        self.assertEqual(result.citations, [])
 
     async def test_answer_uses_exact_retrieval_metadata_and_excerpt(self):
         result = await self.service.run(self.request())

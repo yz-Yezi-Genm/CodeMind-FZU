@@ -8,7 +8,7 @@ from datetime import date
 from uuid import UUID
 
 from backend.contracts.models import (
-    AgentRequest, LLMGenerateRequest, LLMResult, RetrievalRequest, RetrievedChunk,
+    AgentRequest, DocumentMetadata, LLMGenerateRequest, LLMResult, RetrievalRequest, RetrievedChunk,
 )
 from backend.services.agent_workflow import AgentWorkflow
 
@@ -28,6 +28,15 @@ def demo_chunk() -> RetrievedChunk:
     )
 
 
+def demo_metadata(chunk: RetrievedChunk) -> DocumentMetadata:
+    """Synthetic review marker for offline fixtures only, never policy approval."""
+    fields = chunk.model_dump(include={"title", "publisher", "source_url", "published_on", "effective_on",
+        "source_verification_status", "timeliness_verification_status", "retrieval_status"})
+    return DocumentMetadata(**fields, document_type="合成测试", category_name="测试",
+        record_code="DEMO-NOT-POLICY", version_no="fixture-1", extraction_status="extracted",
+        v1_inclusion_status="included", temporal_notes={"human_approved": True})
+
+
 class DemoRetriever:
     """Fake Retriever. 'verified/enabled' are fixture values, not real reviews."""
 
@@ -36,6 +45,10 @@ class DemoRetriever:
 
     async def retrieve(self, request: RetrievalRequest) -> list[RetrievedChunk]:
         return self.chunks
+
+    def get_document_metadata(self, version_id: UUID) -> DocumentMetadata | None:
+        chunk = next((chunk for chunk in self.chunks if chunk.version_id == version_id), None)
+        return demo_metadata(chunk) if chunk is not None else None
 
 
 class DemoLLMClient:

@@ -1,5 +1,6 @@
 """Capture full regression and real blocked-corpus checks without paid calls."""
 import asyncio
+import argparse
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from importlib import metadata
@@ -16,7 +17,7 @@ from backend.contracts.models import AgentRequest, DocumentPackage, IndexingStat
 from backend.retrieval.local import LocalBM25Retriever
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.qwen_client import QwenLLMClient, QwenSettings
-from scripts.verify_alpha_upstream_integration import upstream_snapshot
+from scripts.verify_alpha_upstream_integration import agent_source_state, upstream_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/assignment-03/alpha/evidence/agent-integration"
@@ -82,7 +83,25 @@ async def real_policy_check():
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check-record", action="store_true",
+                        help="Read-only: verify current/committed sources and upstream refs match the saved test record")
+    args = parser.parse_args()
+    if args.check_record:
+        recorded = json.loads((OUTPUT / "environment.json").read_text(encoding="utf-8"))
+        current = agent_source_state()
+        if recorded["agent_source_state"]["source_sha256_lf"] != current["source_sha256_lf"]:
+            print("FAIL: sources differ from the executed regression; rerun verification")
+            return 1
+        for source in recorded["upstream_sources"]:
+            commit = subprocess.check_output(["git", "rev-parse", source["ref"]], cwd=ROOT, text=True).strip()
+            if commit != source["commit"]:
+                print("FAIL: upstream ref changed; fetch and rerun verification")
+                return 1
+        print("PASS: tested source contents and upstream commits match; current HEAD=" + current["base_commit"])
+        return 0
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    agent = agent_source_state()
     started = datetime.now(TZ).isoformat()
     command = [sys.executable, "-X", "utf8", "-m", "unittest", "discover", "-s", "tests", "-v"]
     with upstream_snapshot() as (snapshot, upstream_sources):
@@ -90,6 +109,8 @@ def main():
             env=dict(os.environ, PYTHONIOENCODING="utf-8", ALPHA_UPSTREAM_SNAPSHOT=snapshot),
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
     (OUTPUT / "unittest.txt").write_text(process.stdout, encoding="utf-8")
+    if agent["source_sha256_lf"] != agent_source_state()["source_sha256_lf"]:
+        raise RuntimeError("Agent sources changed during tests")
     if process.returncode:
         print(process.stdout)
         return process.returncode
@@ -100,6 +121,7 @@ def main():
         "started_at_asia_shanghai": started,
         "finished_at_asia_shanghai": datetime.now(TZ).isoformat(),
         "base_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+        "agent_source_state": agent,
         "branch": subprocess.check_output(["git", "branch", "--show-current"], cwd=ROOT, text=True).strip(),
         "python": sys.version,
         "dependencies": {name: metadata.version(name) for name in ("fastapi", "pydantic", "httpx", "uvicorn")},

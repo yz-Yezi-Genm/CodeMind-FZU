@@ -147,6 +147,8 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.file_root = Path(self.temporary.name)
         items = json.loads((ROOT / "docs/assignment-03/alpha/examples/retrieval-synthetic-packages.json").read_bytes())
         self.package = DocumentPackage.model_validate(items[0])
+        # Synthetic review input only; never promote a real policy fixture.
+        self.package.metadata.temporal_notes = {"human_approved": True}
         for file in self.package.files:
             path = self.file_root / file.storage_key
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -190,7 +192,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_real_modules_complete_clarify_retrieve_select_cite_chain(self):
         workflow = await self.workflow()
-        self.assertIsInstance(workflow.retriever, LocalBM25Retriever)
+        self.assertTrue(callable(workflow.retriever.get_document_metadata))
         response = await self.ask(workflow, "奖学金申请条件是什么？")
         self.assertEqual(response.json()["status"], "needs_clarification")
         self.assertEqual(response.json()["clarifying_question"], "请问你咨询的是哪一类奖学金？")
@@ -276,12 +278,39 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(raised.exception.code, "SERVICE_NOT_CONFIGURED")
         self.assertEqual(self.observed, [])
 
+    async def test_direct_packages_reject_missing_or_false_review_before_indexing(self):
+        for notes in [None, {}, {"human_approved": False}, {"human_approved": "true"}, {"human_approved": 1}]:
+            with self.subTest(notes=notes):
+                self.package.metadata.temporal_notes = notes
+                original = self.package.model_dump()
+                with patch("backend.retrieval.local.LocalBM25Retriever") as constructor:
+                    with self.assertRaises(ServiceError) as raised:
+                        await self.workflow()
+                    constructor.assert_not_called()
+                self.assertEqual(raised.exception.code, "SERVICE_NOT_CONFIGURED")
+                self.assertEqual(self.package.model_dump(), original)
+        self.assertEqual(self.observed, [])
+
+    async def test_legacy_package_snapshot_is_read_only_and_metadata_is_detached(self):
+        workflow = await self.workflow()
+        hits = await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金"))
+        metadata = workflow.retriever.get_document_metadata(hits[0].version_id)
+        metadata.temporal_notes["human_approved"] = False
+        self.assertIs(workflow.retriever.get_document_metadata(hits[0].version_id).temporal_notes["human_approved"], True)
+        self.assertFalse(hasattr(workflow.retriever, "index_document"))
+
     async def test_real_three_policy_packages_stay_blocked_and_skip_qwen(self):
         packages = [DocumentPackage.model_validate_json(
             (ROOT / "knowledge_base/processed/alpha" / (stem + ".json")).read_bytes()
         ) for stem in ("competition-recognition-2026", "scholarship-2026", "recommendation-eligibility-2027")]
         snapshots = [package.model_dump() for package in packages]
-        workflow = await self.workflow(packages=packages, file_root=ROOT, clarification_rule=lambda _: None)
+        with self.assertRaises(ServiceError):
+            await self.workflow(packages=packages, file_root=ROOT, clarification_rule=lambda _: None)
+        store = LocalBM25Retriever(file_root=ROOT)
+        for package in packages:
+            await store.index_document(package)
+        workflow = AgentWorkflow(store, self.llm, clarification_rule=lambda _: None,
+                                 evidence_check=lambda *_: True)
         for query in ("竞赛创新学分认定条件", "2026年校级奖学金申请条件", "2027年推免复试条件"):
             with self.subTest(query=query):
                 response = await self.ask(workflow, query)
@@ -311,8 +340,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
     async def test_factory_reuses_preloaded_retriever_and_its_citation_identities(self):
         # The approved loader in PR #35 returns a preloaded local retriever.
         # Exercise the stable handoff without copying that unmerged module here.
-        retriever = LocalBM25Retriever(file_root=self.file_root)
-        await retriever.index_document(self.package)
+        retriever = (await self.workflow()).retriever
         before = await retriever.retrieve(RetrievalRequest(query="星桥奖学金申请需要什么？"))
         workflow = await create_alpha_workflow(
             file_root=self.file_root, retriever=retriever, llm_client=self.llm,
@@ -327,7 +355,8 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(body["citations"][0]["excerpt"], before[0].content)
 
     async def test_factory_rejects_ambiguous_or_missing_corpus_source(self):
-        for options in [{}, {"packages": [self.package], "retriever": LocalBM25Retriever()}]:
+        for options in [{"packages": [self.package], "retriever": LocalBM25Retriever()},
+                        {"packages": [], "corpus_dir": self.file_root}]:
             with self.subTest(options=options):
                 with self.assertRaises(ValueError):
                     await create_alpha_workflow(
@@ -560,6 +589,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.local_class = local.LocalBM25Retriever
         items = json.loads((ROOT / "docs/assignment-03/alpha/examples/retrieval-synthetic-packages.json").read_bytes())
         self.package = DocumentPackage.model_validate(items[0])
+        self.package.metadata.temporal_notes = {"human_approved": True}
         self.package.metadata.title = "合成测试：本科生奖学金评定管理办法（2026年版）"
         self.package.metadata.record_code = "SYNTH-2026-本科奖学金"
         self.package.metadata.applicability_raw = {"适用年级": "全体本科生", "适用专业": "全校相关本科专业"}
@@ -589,12 +619,11 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         approved.mkdir(exist_ok=True)
         (approved / "policy.json").write_text(
             (package or self.package).model_dump_json(), encoding="utf-8")
-        retriever = await self.loader.build_approved_alpha_retriever(
-            corpus_dir=approved, file_root=self.root, allow_missing=False)
-        return await create_alpha_workflow(
-            file_root=self.root, retriever=retriever, llm_client=self.llm,
-            today=lambda: date(2026, 11, 19),
-        )
+        with patch.dict(sys.modules, {"backend.retrieval.alpha_corpus": self.loader}):
+            return await create_alpha_workflow(
+                file_root=self.root, corpus_dir=approved, llm_client=self.llm,
+                today=lambda: date(2026, 11, 20),
+            )
 
     def request(self, query="优秀学生综合奖学金一等奖要什么条件？", history=None):
         from backend.contracts.models import ConversationTurn
@@ -664,7 +693,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.package.chunks = [teacher, student]
         workflow = await self.workflow()
         result = await workflow.run(self.request(
-            "全国大学生数学建模竞赛国家二等奖，团队作品，我为第一完成人，创新学分原始分是多少？"))
+            "全国大学生数学建模竞赛国家二等奖，作品名称《测试交通预测》，团队作品，我为第一完成人，创新学分原始分是多少？"))
         self.assertEqual(result.status, "answered")
         self.assertEqual([x["content"] for x in self.observed[0]], [student.content])
         self.assertEqual(result.citations[0].excerpt, student.content)
@@ -674,7 +703,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.package.metadata.title = "合成测试：创新创业学分认定办法"
         self.package.chunks[0].content = "【合成测试】竞赛创新学分学生申请需要提交申请表。"
         self.package.chunks[0].locator_note = "学生学分申请与记载"
-        query = "全国大学生数学建模竞赛国家二等奖，团队作品，我为第一完成人，创新学分原始分是多少？"
+        query = "全国大学生数学建模竞赛国家二等奖，作品名称《测试交通预测》，团队作品，我为第一完成人，创新学分原始分是多少？"
         for failure in ("method_absent", "exception", "unknown_chunk", "missing_note", "empty_note"):
             with self.subTest(failure=failure):
                 workflow = await self.workflow()
@@ -746,8 +775,73 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
     async def test_review_only_package_skipped_by_actual_approved_loader(self):
         from backend.contracts.models import RetrievalStatus
         self.package.metadata.retrieval_status = RetrievalStatus.REVIEW_ONLY
-        result = await (await self.workflow()).run(self.request())
-        self.assertEqual(result.status, "insufficient_evidence")
+        with self.assertRaises(ServiceError):
+            await self.workflow()
+        self.assertEqual(self.observed, [])
+
+    async def test_latest_loader_and_agent_reject_every_unapproved_marker(self):
+        approved = self.root / "approved"
+        approved.mkdir()
+        for notes in [None, {}, {"human_approved": False}, {"human_approved": "true"}, {"human_approved": 1}]:
+            with self.subTest(notes=notes):
+                self.package.metadata.temporal_notes = notes
+                (approved / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
+                retriever, report = await self.loader.load_approved_alpha_retriever(
+                    corpus_dir=approved, file_root=self.root, allow_missing=False)
+                self.assertEqual(report.loaded_packages, ())
+                self.assertEqual(report.total_indexed_chunks, 0)
+                self.assertTrue(report.skipped_packages)
+                with self.assertRaises(ServiceError):
+                    await self.workflow()
+                # Bypass the loader on purpose: Agent's own approval gate must
+                # still reject enabled hits even with a permissive business rule.
+                store = self.local_class(file_root=self.root)
+                await store.index_document(self.package)
+                self.assertTrue(await store.retrieve(RetrievalRequest(query="奖学金")))
+                result = await AgentWorkflow(store, self.llm, clarification_rule=lambda _: None,
+                    evidence_check=lambda *_: True).run(self.request())
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_formal_corpus_report_rejects_partial_failed_empty_and_missing(self):
+        for problem in ("partial", "failed", "no_chunks", "empty", "missing"):
+            with self.subTest(problem=problem):
+                with TemporaryDirectory() as temporary:
+                    directory = Path(temporary)
+                    package = self.package.model_copy(deep=True)
+                    if problem == "partial":
+                        package.files[0].processing_status = FileProcessingStatus.NEEDS_OCR
+                    elif problem == "failed":
+                        package.files[0].sha256 = "0" * 64
+                    elif problem == "no_chunks":
+                        package.chunks = []
+                    if problem not in {"empty", "missing"}:
+                        # Keep corpus under the configured root as required by
+                        # latest PR #35 path validation.
+                        directory = self.root / ("report-" + problem)
+                        directory.mkdir()
+                        (directory / "policy.json").write_text(package.model_dump_json(), encoding="utf-8")
+                    else:
+                        directory = self.root / ("report-" + problem)
+                        if problem == "empty":
+                            directory.mkdir()
+                    with patch.dict(sys.modules, {"backend.retrieval.alpha_corpus": self.loader}):
+                        with self.assertRaises(ServiceError) as raised:
+                            await create_alpha_workflow(file_root=self.root, corpus_dir=directory,
+                                llm_client=self.llm, clarification_rule=lambda _: None, evidence_check=lambda *_: True)
+                    self.assertEqual(raised.exception.code, "SERVICE_NOT_CONFIGURED")
+        self.assertEqual(self.observed, [])
+
+    async def test_manifest_approval_cannot_replace_package_approval(self):
+        directory = self.root / "approved"
+        directory.mkdir()
+        self.package.metadata.temporal_notes = {}
+        (directory / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
+        (directory / "manifest.json").write_text(json.dumps({"packages": [
+            {"package": "approved/policy.json", "human_approved": True}]}), encoding="utf-8")
+        with self.assertRaises(ServiceError):
+            await self.workflow()
         self.assertEqual(self.observed, [])
 
 
@@ -779,7 +873,11 @@ class LiveAlphaAcceptanceTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(paths)
         packages = [DocumentPackage.model_validate_json((ROOT / path).read_bytes()) for path in paths]
         self.assertTrue(all(p.metadata.retrieval_status == "enabled" for p in packages))
-        workflow = await create_alpha_workflow(packages, file_root=ROOT)
+        self.assertTrue(all(isinstance(p.metadata.temporal_notes, dict)
+            and p.metadata.temporal_notes.get("human_approved") is True for p in packages))
+        approved = ROOT / "knowledge_base/processed/alpha/approved"
+        self.assertTrue(all((ROOT / path).resolve().is_relative_to(approved.resolve()) for path in paths))
+        workflow = await create_alpha_workflow(file_root=ROOT, corpus_dir=approved)
         query = os.environ["ALPHA_ACCEPTANCE_QUERY"]
         app = create_app(agent_service=workflow, llm_client=workflow.llm_client)
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://acceptance") as client:

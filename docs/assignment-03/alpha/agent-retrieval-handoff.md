@@ -1,5 +1,7 @@
 # Agent 与 PR #35 检索接口对齐
 
+> 2026-11-20复审更新：当前测试使用PR #35的1cc7ce1和PR #36的bc97a93。默认正式组装已改为load_approved_alpha_retriever并检查报告，不再仅用丢弃报告的build入口判定就绪；显式传包和Agent本身均增加严格human_approved检查。以下9201bb9及“待确认”为历史上下文，以 [复审核验](agent-integration.md) 为准。
+
 > 更新：PR #36已确认build_from_retriever工厂。Agent已绑定，并实际使用PR #35/#36原始源码完成10项跨分支集成；以下“待确认”保留前次交接上下文，最新结论见 [正式业务规则接入](agent-business-rules-handoff.md)。
 
 2026-11-19。根据王智洋回复及远程 `feat/alpha-retrieval-loader`（`9201bb9`）实际代码核对。PR #35 为前置依赖，目前尚未出现在本工作分支的 main 基线；未擅自合并，也未复制或修改负责人文件。
