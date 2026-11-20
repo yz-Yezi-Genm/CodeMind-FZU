@@ -125,6 +125,19 @@ async def load_approved_alpha_retriever(
 
     Packages that are not retrieval_status=enabled or explicitly marked
     human_approved != true are never opened or indexed into the returned retriever.
+
+    Return semantics for formal runtime assembly:
+    - When ``allow_missing=True`` (default) and ``corpus_dir`` does not exist, an
+      empty retriever and an empty report are returned rather than raising.
+    - ``report.loaded_packages`` records every package whose indexing result is not
+      ``IndexingStatus.FAILED`` — including ``IndexingStatus.PARTIAL`` packages
+      (for example when unready/``needs_ocr`` source files leave ``indexed_count == 0``).
+      Unready chunks are never exposed to retrieval, so ``loaded_packages`` alone does
+      not imply a package is fully ready for formal QA.
+    - Formal backend/Agent assembly should inspect ``report.index_results`` (requiring
+      ``IndexingStatus.INDEXED`` under conservative Alpha policy), ``warnings``, and
+      ``report.total_indexed_chunks`` to distinguish an unready corpus from a normal
+      zero-hit query.
     """
     resolved_root = file_root.resolve(strict=True) if file_root is not None else None
     retriever = LocalBM25Retriever(file_root=resolved_root)
@@ -181,7 +194,12 @@ async def build_approved_alpha_retriever(
     file_root: Path | None = PROJECT_ROOT,
     allow_missing: bool = True,
 ) -> LocalBM25Retriever:
-    """Convenience entry point returning a Retriever ready for AgentWorkflow."""
+    """Convenience entry point returning a Retriever without the load report.
+
+    Because this wrapper discards ``AlphaCorpusLoadReport``, formal backend assembly
+    should prefer ``load_approved_alpha_retriever()`` so it can verify
+    ``index_results``, ``warnings``, and ``total_indexed_chunks``.
+    """
     retriever, _ = await load_approved_alpha_retriever(
         corpus_dir=corpus_dir,
         file_root=file_root,

@@ -142,6 +142,11 @@ PDF/OCR、文件存储服务和持久化入库仍待接入。
 
 `backend.retrieval.LocalBM25Retriever` 实现 `KnowledgeIndexer` 和 `Retriever`。两个接口共用同一内存实例。配置 `file_root` 可检查真实资料文件及登记的 SHA-256。检索仅返回已明确开放的资料片段，并保留文档、版本和来源定位。
 
+统一加载与只读查询入口（PR #35）：
+- `load_approved_alpha_retriever()` / `build_approved_alpha_retriever()`：从 `knowledge_base/processed/alpha/approved/` 加载人工审核通过且 `retrieval_status=enabled` 的正式资料包。
+- `LocalBM25Retriever.get_document_metadata(record_code, version_no)` 与 `get_parsed_chunk(chunk_id)`：供业务规则侧只读查询元数据与原始片段（返回深拷贝；不存在、未开放或重索引被剔除时返回 `None` 不抛异常）。
+- **正式组装边界**：`build_approved_alpha_retriever()` 会丢弃 `AlphaCorpusLoadReport`；`load_approved_alpha_retriever()` 会将 `partial`（含来源未就绪导致 `indexed_count=0`）也计入 `loaded_packages`，且默认 `allow_missing=True` 缺目录时返回空索引。正式后端入口应使用 `load_approved_alpha_retriever()` 并检查 `index_results`（保守约定要求完整 `indexed`）、`warnings` 与 `total_indexed_chunks`，以区分“知识库未就绪”与“正常无命中”。
+
 ```bash
 python -X utf8 -m scripts.demo_local_retrieval
 python -X utf8 -m scripts.demo_local_retrieval --real
