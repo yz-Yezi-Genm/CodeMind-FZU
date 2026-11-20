@@ -1,0 +1,4 @@
+# Additional test dependencies for scripts.verify_alpha_agent_integration.
+# Install backend/requirements-dev.txt first.
+pytest>=9.2,<10
+pytest-subtests>=0.15,<0.16

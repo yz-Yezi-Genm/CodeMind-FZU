@@ -946,6 +946,78 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         workflow = await create_alpha_workflow(file_root=self.root, retriever=store, llm_client=self.llm)
         self.assertEqual((await workflow.run(self.request())).status, "answered")
 
+    def recommendation_package(self):
+        self.package.metadata.record_code = "SYNTH-2027-推免资格推荐"
+        self.package.metadata.title = "合成测试：2027届本科推免资格推荐办法"
+        self.package.metadata.applicability_raw = {
+            "适用年级": "2027届应届本科毕业生；大一至大三仅升学准备参考",
+            "适用专业": "计算机科学与技术、软件工程", "目标届别": "2027届",
+        }
+        self.package.chunks[0].content = "【合成测试，非政策】2027届推免推荐资格按本通知核对材料与排名。"
+
+    async def test_formal_eligibility_overrides_preparation_wording_before_qwen(self):
+        self.recommendation_package()
+        workflow = await self.workflow()
+        query = "我是大二，想提前准备2027届推免推荐资格排名，现在能做什么？"
+        with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+            result = await workflow.run(self.request(query))
+        retrieve.assert_awaited_once()
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+        # A pure preparation question remains usable under the owner's rules.
+        result = await workflow.run(self.request("我是大二，2027届推免要提前准备什么？"))
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+
+    async def test_external_college_without_scope_field_is_filtered_before_qwen(self):
+        self.recommendation_package()
+        self.assertNotIn("适用学院", self.package.metadata.applicability_raw)
+        workflow = await self.workflow()
+        with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+            result = await workflow.run(self.request("数学与统计学院的2027届推免推荐资格怎么排名？"))
+        retrieve.assert_awaited_once()
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+        # The fixture really is retrievable/applicable for the supported query.
+        result = await workflow.run(self.request("2027届推免推荐资格怎么排名？"))
+        self.assertEqual(result.status, "answered")
+
+    async def test_no_current_work_cannot_inherit_history_rank_or_reach_retriever(self):
+        workflow = await self.workflow()
+        history = ["数学建模竞赛国家级二等奖，团队作品，作品《交通预测》，我是第二完成人"]
+        query = ("数学建模竞赛校级最高等级奖，团队作品，综测能加几分？"
+                 "成果是上一学期取得的，以福州大学为第一署名单位。")
+        with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+            result = await workflow.run(self.request(query, history))
+        self.assertEqual(result.status, "needs_clarification")
+        self.assertEqual(result.clarifying_question, self.rules.QUESTION_ORDER)
+        self.assertEqual(result.citations, [])
+        retrieve.assert_not_called()
+        self.assertEqual(self.observed, [])
+
+    async def test_merged_business_rules_match_snapshot_and_run_without_snapshot_replacement(self):
+        source = ROOT / "backend/services/alpha_business_rules.py"
+        self.assertEqual(source.read_bytes().replace(b"\r\n", b"\n"),
+            (Path(os.environ["ALPHA_UPSTREAM_SNAPSHOT"]) / "alpha_business_rules.py").read_bytes().replace(b"\r\n", b"\n"))
+        spec = importlib.util.spec_from_file_location("_alpha_merged_rules", source)
+        merged = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = merged
+        spec.loader.exec_module(merged)
+        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
+        directory = self.root / "merged-all-approved"
+        directory.mkdir()
+        (directory / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
+        store, report = await load_approved_alpha_retriever(corpus_dir=directory,
+            file_root=self.root, allow_missing=False)
+        self.assertTrue(report.loaded_packages)
+        with patch.dict(sys.modules, {"backend.services.alpha_business_rules": merged}):
+            workflow = await create_alpha_workflow(file_root=self.root, retriever=store,
+                llm_client=self.llm, today=lambda: date(2026, 11, 20))
+        self.assertIs(workflow.clarification_rule.func, merged.alpha_clarification_rule)
+        self.assertEqual((await workflow.run(self.request())).status, "answered")
+
 
 @unittest.skipUnless(find_spec("backend.services.alpha_business_rules") is not None,
                      "Upstream alpha_business_rules.py has not been delivered")

@@ -95,7 +95,7 @@ def main():
             return 1
         if not all(item["in_HEAD"] or item["in_pending_merge"]
                    for item in current["required_merged_history"].values()):
-            print("FAIL: required main/#31/#35 history is not included")
+            print("FAIL: required main/#31/#35/#36 history is not included")
             return 1
         if current["pending_merge_parent"] is None:
             for name, expected in current["source_sha256_lf"].items():
@@ -113,22 +113,21 @@ def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     agent = agent_source_state()
     started = datetime.now(TZ).isoformat()
-    # Include #31's scope-local backend processing/privacy regressions, which
-    # unittest discover -s tests alone would not collect.
-    suite_code = (
-        "import sys,unittest; "
-        "suite=unittest.defaultTestLoader.discover('tests'); "
-        "suite.addTests(unittest.defaultTestLoader.loadTestsFromNames("
-        "['knowledge_base.processing.test_policy_review','knowledge_base.processing.test_policy_forms_privacy'])); "
-        "result=unittest.TextTestRunner(verbosity=2).run(suite); "
-        "sys.exit(0 if result.wasSuccessful() else 1)"
-    )
-    command = [sys.executable, "-X", "utf8", "-c", suite_code]
+    # Pytest collects both unittest classes and #36's pytest functions. Include
+    # #31's backend processing/privacy regressions outside the tests directory.
+    command = [sys.executable, "-X", "utf8", "-m", "pytest", "-v", "-ra",
+               "tests", "knowledge_base/processing/test_policy_review.py",
+               "knowledge_base/processing/test_policy_forms_privacy.py"]
     with upstream_snapshot() as (snapshot, upstream_sources):
         process = subprocess.run(command, cwd=ROOT,
             env=dict(os.environ, PYTHONIOENCODING="utf-8", ALPHA_UPSTREAM_SNAPSHOT=snapshot),
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
-    (OUTPUT / "unittest.txt").write_text(process.stdout, encoding="utf-8")
+    # Keep the established artifact path; environment.command identifies pytest.
+    # Indent the transcript and trim line ends so pytest's ======= separators
+    # are not mistaken for unresolved Git conflicts by git diff --check.
+    transcript = "\n".join("    " + line.rstrip() if line.strip() else ""
+                           for line in process.stdout.splitlines()) + "\n"
+    (OUTPUT / "unittest.txt").write_text(transcript, encoding="utf-8")
     if agent["source_sha256_lf"] != agent_source_state()["source_sha256_lf"]:
         raise RuntimeError("Agent sources changed during tests")
     if process.returncode:
@@ -144,14 +143,15 @@ def main():
         "agent_source_state": agent,
         "branch": subprocess.check_output(["git", "branch", "--show-current"], cwd=ROOT, text=True).strip(),
         "python": sys.version,
-        "dependencies": {name: metadata.version(name) for name in ("fastapi", "pydantic", "httpx", "uvicorn")},
+        "dependencies": {name: metadata.version(name) for name in ("fastapi", "pydantic", "httpx", "uvicorn", "pytest", "pytest-subtests")},
         "command": command, "exit_code": process.returncode,
         "test_layers": {
             "AgentWorkflowTests / AgentWorkflowApiTests": "Mock or demo dependencies",
             "AgentWorkflowQwenTests": "Real Qwen adapter with mock HTTP, demo retriever",
             "LocalRetrieverQwenIntegrationTests": "Real BM25, indexing, file/hash validation, Qwen adapter and FastAPI; synthetic corpus / test callbacks / mock HTTP",
             "real_policy_check": "Three real unchanged blocked corpora, actual index/hash validation and safety refusal; no Qwen call",
-            "DeliveredBusinessRulesTests": "Direct import skipped while upstream module is absent from this checkout; actual delivered rules run in snapshot integration tests",
+            "DeliveredBusinessRulesTests": "Direct import of the formally merged #36 business rules; no longer skipped for absent module",
+            "test_alpha_business_rules.py": "All merged #36 pytest functions, including latest intent/scope/work-ranking regressions",
             "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required",
             "UpstreamRulesRetrieverIntegrationTests": "Unmodified PR #35/#36 Git snapshots, actual rules/loader/BM25, synthetic corpus and mock Qwen HTTP",
             "QwenLiveProbeOfflineTests": "Live-probe opt-in guard, synthetic prompt and production citation verifier using mock transport only",

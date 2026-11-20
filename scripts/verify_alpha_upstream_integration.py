@@ -29,13 +29,13 @@ def agent_source_state():
     hashes = {}
     for name in sorted(set(paths)):
         path = ROOT / name
-        if path.is_file() and (path.suffix == ".py" or path.name in {"requirements.txt", "requirements-dev.txt"}):
+        if path.is_file() and (path.suffix == ".py" or path.name.startswith("requirements")):
             hashes[name] = sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     main = subprocess.check_output(["git", "rev-parse", "origin/main"], cwd=ROOT, text=True).strip()
     merge_head = subprocess.run(["git", "rev-parse", "-q", "--verify", "MERGE_HEAD"],
         cwd=ROOT, capture_output=True, text=True)
-    requirements = {"main_with_pr35": "a87182c", "pr31": "4282ea7"}
+    requirements = {"main_with_pr36": "474574e", "main_with_pr35": "a87182c", "pr31": "4282ea7"}
     pending = merge_head.stdout.strip() if merge_head.returncode == 0 else None
     included = {}
     for label, ref in requirements.items():

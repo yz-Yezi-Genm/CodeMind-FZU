@@ -1,9 +1,9 @@
 {
-  "started_at_asia_shanghai": "2026-11-20T23:54:31.679912+08:00",
-  "finished_at_asia_shanghai": "2026-11-20T23:54:41.446504+08:00",
-  "base_commit": "8ce01317f0b95441525c54c144af2eb1fb69c4a9",
+  "started_at_asia_shanghai": "2026-11-21T00:32:25.657098+08:00",
+  "finished_at_asia_shanghai": "2026-11-21T00:32:36.903619+08:00",
+  "base_commit": "116b157ce81c626067104db422d00ad475f05724",
   "agent_source_state": {
-    "base_commit": "8ce01317f0b95441525c54c144af2eb1fb69c4a9",
+    "base_commit": "116b157ce81c626067104db422d00ad475f05724",
     "source_sha256_lf": {
       "backend/__init__.py": "845da59f5760bf8179adad042a26eb8865c357b20d8b774809352368b8185e62",
       "backend/app/__init__.py": "45390889d8a4a81a685fa8f8fb38422e5f6ff8840d7df1405f088ab5347ae8e2",
@@ -23,6 +23,7 @@
       "backend/retrieval/local.py": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20",
       "backend/services/__init__.py": "7f046044817ea7579f0327f16c769a32c9b053c9e428a42dc15cba1de8c5658a",
       "backend/services/agent_workflow.py": "ff54a12e47479cbe161efd11d4950d4af92efc7044e6aecbd5ba371fa4f618d4",
+      "backend/services/alpha_business_rules.py": "9d4d187b4aa5778fe23ccc3ea6b3d2c15a7a720b15d6b884b156b74d187b8d96",
       "backend/services/errors.py": "cdaa522d135d79d5ded52669bb89eaa2fc64d56b1bf4bd7d35c6557fed835e77",
       "backend/services/mock_agent.py": "13b8ce18677d6e2d032fc534bb9cf86beebd9b020a8fbab3593e6374ca390f8f",
       "backend/services/qwen_client.py": "cc5259d3359fb1792729e9c7240d0678970a3c693c17e35e363c03f1c1876b0d",
@@ -38,13 +39,15 @@
       "scripts/check_retrieval_agent.py": "8f54d786e1c47bbfa46fb279b78d6cb224ccaebdbf0962c963c349950efea0fd",
       "scripts/demo_local_retrieval.py": "19ae6493b7b425c18828b294169ff39c5a052914b214d6d84488665da0d32c22",
       "scripts/parse_alpha_documents.py": "2e8c6fba5e03c834b0089bf87f9225ed774cdd7b84965277ab0078943b5b4bf3",
+      "scripts/requirements-alpha-verification.txt": "7da08197c02437b78a9df2244354ebcf501c0a0849cd2c38770c0a0332eca968",
       "scripts/run_alpha_agent.py": "6eedc0480eebe9ec8bf7d5d0e4c8e4592797c158f77b7330338ba7c7d3a60799",
       "scripts/verify_agent_workflow.py": "e5dc659cc874372a166caa443e12e1c14fef11bdf2dc85561b77cf256729520c",
-      "scripts/verify_alpha_agent_integration.py": "a68ae9fbd461ea43434c3c1240f1f8d0102264358ce5d2211c0071dbd4b9eff3",
-      "scripts/verify_alpha_upstream_integration.py": "27ed8c24dbf3b731ef98ff42005a7216d0a8ad333a1826006edba92875a2f121",
+      "scripts/verify_alpha_agent_integration.py": "5a434885fc5dd846af6c506ed80e85648467af10d15df89e31916d35db0a1081",
+      "scripts/verify_alpha_upstream_integration.py": "51223737e439bb1a632b96b94824e278ab333d0dcef8810f182b094a4c501639",
       "tests/test_agent_workflow.py": "0f4ac0d8117b52864c488734b202adb6666c3eee3f32887c1fda9d9aa68d9f0c",
       "tests/test_agent_workflow_api.py": "2addcf904df32f466490d46d12b2d3668b1c6ce1df495efb63ff76b37735ef7a",
-      "tests/test_agent_workflow_qwen.py": "deee6a3e6b6c91fc2d9bfa80f243f1c9452acf95c257f383aaf9e78858391a57",
+      "tests/test_agent_workflow_qwen.py": "fbb8b2a98ef0f8f7d6877b5e903c6983f4f41f837ef32bb656965a4e1f43539a",
+      "tests/test_alpha_business_rules.py": "4bc2c84dcab365a1efb18fad0b497c0cbd06c0f8b6efdd023339daafd35e4cfd",
       "tests/test_alpha_corpus.py": "bcf10abb793c12d762537f2d6f7d2bf20913598eeb108e5ff31e0db82b9ba3d7",
       "tests/test_api_validation.py": "63e93cd049a90d2656c91d8a7ff34ed216507929cca0043f3065135118fe5f1b",
       "tests/test_backend_runtime.py": "b0f196d174f54c853dfe403ec5617c9372f5edc79db59e720defb5d26392d594",
@@ -54,17 +57,22 @@
       "tests/test_mock_agent_api.py": "b2eb3fa086449af92fec543e7c9ce40452248cef8db249067f81a28a621918f0",
       "tests/test_qwen_client.py": "42f1d52b29eec6893dfd320e782ae1017084471b7536aed6d8e91bcc487444ec"
     },
-    "main_commit": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
-    "pending_merge_parent": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
+    "main_commit": "474574eac35bda331ac9eea2a003eb332be0138c",
+    "pending_merge_parent": "474574eac35bda331ac9eea2a003eb332be0138c",
     "required_merged_history": {
+      "main_with_pr36": {
+        "commit": "474574eac35bda331ac9eea2a003eb332be0138c",
+        "in_HEAD": false,
+        "in_pending_merge": true
+      },
       "main_with_pr35": {
         "commit": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
-        "in_HEAD": false,
+        "in_HEAD": true,
         "in_pending_merge": true
       },
       "pr31": {
         "commit": "4282ea785195ab3fccfe07c52b7c0bf3d1b18a10",
-        "in_HEAD": false,
+        "in_HEAD": true,
         "in_pending_merge": true
       }
     },
@@ -76,14 +84,21 @@
     "fastapi": "0.163.1",
     "pydantic": "2.14.3",
     "httpx": "0.28.1",
-    "uvicorn": "0.54.0"
+    "uvicorn": "0.54.0",
+    "pytest": "9.2.0",
+    "pytest-subtests": "0.15.0"
   },
   "command": [
     "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
     "-X",
     "utf8",
-    "-c",
-    "import sys,unittest; suite=unittest.defaultTestLoader.discover('tests'); suite.addTests(unittest.defaultTestLoader.loadTestsFromNames(['knowledge_base.processing.test_policy_review','knowledge_base.processing.test_policy_forms_privacy'])); result=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(0 if result.wasSuccessful() else 1)"
+    "-m",
+    "pytest",
+    "-v",
+    "-ra",
+    "tests",
+    "knowledge_base/processing/test_policy_review.py",
+    "knowledge_base/processing/test_policy_forms_privacy.py"
   ],
   "exit_code": 0,
   "test_layers": {
@@ -91,7 +106,8 @@
     "AgentWorkflowQwenTests": "Real Qwen adapter with mock HTTP, demo retriever",
     "LocalRetrieverQwenIntegrationTests": "Real BM25, indexing, file/hash validation, Qwen adapter and FastAPI; synthetic corpus / test callbacks / mock HTTP",
     "real_policy_check": "Three real unchanged blocked corpora, actual index/hash validation and safety refusal; no Qwen call",
-    "DeliveredBusinessRulesTests": "Direct import skipped while upstream module is absent from this checkout; actual delivered rules run in snapshot integration tests",
+    "DeliveredBusinessRulesTests": "Direct import of the formally merged #36 business rules; no longer skipped for absent module",
+    "test_alpha_business_rules.py": "All merged #36 pytest functions, including latest intent/scope/work-ranking regressions",
     "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required",
     "UpstreamRulesRetrieverIntegrationTests": "Unmodified PR #35/#36 Git snapshots, actual rules/loader/BM25, synthetic corpus and mock Qwen HTTP",
     "QwenLiveProbeOfflineTests": "Live-probe opt-in guard, synthetic prompt and production citation verifier using mock transport only"
@@ -99,9 +115,9 @@
   "upstream_sources": [
     {
       "ref": "origin/feat/alpha-business-rules-runtime",
-      "commit": "e0ed6e9d11a540068e86bd642e75ec21a3736a76",
+      "commit": "7f9c5154f2919d6a1d8828e9041b8a8c566943ca",
       "source": "backend/services/alpha_business_rules.py",
-      "sha256": "0cfd70d5e7c699bdcbcda96577ac3b492659f52aa1c1232da26f99772f9fea25"
+      "sha256": "9d4d187b4aa5778fe23ccc3ea6b3d2c15a7a720b15d6b884b156b74d187b8d96"
     },
     {
       "ref": "origin/feat/alpha-retrieval-loader",
