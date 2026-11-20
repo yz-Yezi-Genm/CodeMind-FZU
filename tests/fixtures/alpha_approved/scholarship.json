@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "2026年本科生奖学金评定办法（测试夹具）",
+    "title": "2026年本科生奖学金评定管理办法（测试夹具）",
     "document_type": "管理办法",
     "category_name": "综评与奖学金",
     "business_direction_codes": [
@@ -21,7 +21,11 @@
     "temporal_notes": {
       "human_approved": true
     },
-    "verification_note": "仅用于 Alpha 运行组装自动化测试，不是正式政策资料。"
+    "verification_note": "仅用于 Alpha 运行组装自动化测试，不是正式政策资料。",
+    "applicability_raw": {
+      "适用年度": "2026年",
+      "适用对象": "本科生"
+    }
   },
   "files": [
     {

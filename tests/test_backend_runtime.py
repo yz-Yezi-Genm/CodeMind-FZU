@@ -1,8 +1,10 @@
 import asyncio
+import json
 import os
 import sys
 import types
 import unittest
+from importlib.util import find_spec
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
@@ -15,6 +17,8 @@ from backend.contracts.models import (
     AgentResult,
     AnswerStatus,
     ConversationTurn,
+    LLMGenerateRequest,
+    LLMResult,
     LLMRole,
 )
 from backend.services.alpha_runtime import (
@@ -89,6 +93,26 @@ class BlockingConversationAgent(RecordingConversationAgent):
                 answer=f"已处理：{request.query}",
             )
         return await super().run(request)
+
+
+class EvidenceSelectingRuntimeLLM:
+    async def generate(self, request: LLMGenerateRequest) -> LLMResult:
+        payload = json.loads(request.messages[-1].content)
+        first = payload["evidence"][0]
+        return LLMResult(
+            content=json.dumps(
+                {
+                    "evidence": [
+                        {
+                            "chunk_id": first["chunk_id"],
+                            "quote": first["content"],
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            model="offline-runtime-rule-fixture",
+        )
 
 
 class BackendRuntimeTests(unittest.TestCase):
@@ -519,6 +543,39 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 clarification_rule=lambda _request: None,
                 evidence_check=lambda _request, _chunk: True,
             )
+
+
+@unittest.skipUnless(
+    find_spec("backend.services.alpha_business_rules"),
+    "PR #36 business rules are not merged into this checkout",
+)
+class DeliveredBusinessRulesRuntimeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_approved_corpus_and_retriever_bound_rules_reach_qwen(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_approved",
+        )
+        runtime = await build_alpha_runtime(
+            settings,
+            llm_client=EvidenceSelectingRuntimeLLM(),
+            file_root=PROJECT_ROOT,
+        )
+        try:
+            result = await runtime.agent_service.run(
+                AgentRequest(
+                    request_id=uuid4(),
+                    conversation_id=uuid4(),
+                    query="2026年校级优秀学生综合奖学金申请需要什么条件？",
+                )
+            )
+        finally:
+            await runtime.close()
+
+        self.assertEqual(result.status, AnswerStatus.ANSWERED)
+        self.assertEqual(len(result.citations), 1)
+        self.assertEqual(
+            result.citations[0].excerpt,
+            "2026年奖学金申请需提交申请表和成绩单。",
+        )
 
 
 if __name__ == "__main__":
