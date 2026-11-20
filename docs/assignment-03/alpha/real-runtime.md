@@ -54,7 +54,7 @@ Copy-Item backend\.env.example backend\.env
 ```env
 QWEN_API_KEY=
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL=qwen-plus
+QWEN_MODEL=qwen-flash
 QWEN_TIMEOUT_SECONDS=28
 QWEN_MAX_RETRIES=0
 ALPHA_PACKAGE_DIR=knowledge_base/processed/alpha/approved

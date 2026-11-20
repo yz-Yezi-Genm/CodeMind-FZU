@@ -82,7 +82,7 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - `CORS_ALLOW_ORIGINS`
 - `QWEN_API_KEY`：仅从本地环境读取，禁止提交
 - `QWEN_BASE_URL`：默认 OpenAI-compatible DashScope 地址
-- `QWEN_MODEL`：默认 `qwen-plus`
+- `QWEN_MODEL`：默认 `qwen-flash`，真实小样本验证可用；可配置为 `qwen-plus`
 - `QWEN_TIMEOUT_SECONDS`：默认 28 秒，适配 AgentWorkflow 的 30 秒总预算
 - `QWEN_MAX_RETRIES`：默认 0，范围 0–3；启用重试时需同步缩短单次超时
 - `ALPHA_PACKAGE_DIR`：人工审核资料包目录，默认 `knowledge_base/processed/alpha/approved`

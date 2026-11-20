@@ -208,6 +208,7 @@ class QwenClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(settings.timeout_seconds, 28.0)
         self.assertEqual(settings.max_retries, 0)
+        self.assertEqual(settings.model, "qwen-flash")
 
 
 if __name__ == "__main__":

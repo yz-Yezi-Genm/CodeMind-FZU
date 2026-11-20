@@ -19,7 +19,7 @@ from backend.services.errors import (
 
 
 DEFAULT_QWEN_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-DEFAULT_QWEN_MODEL = "qwen-plus"
+DEFAULT_QWEN_MODEL = "qwen-flash"
 _RETRYABLE_STATUS_CODES = {408, 429, 500, 502, 503, 504}
 
 

@@ -19,7 +19,7 @@
 | --- | --- | --- | --- |
 | `QWEN_API_KEY` | 真实问答必填 | 空 | 只放本地或 Secret |
 | `QWEN_BASE_URL` | 否 | DashScope OpenAI-compatible URL | 模型服务端点 |
-| `QWEN_MODEL` | 否 | `qwen-plus` | 本轮证据选择模型 |
+| `QWEN_MODEL` | 否 | `qwen-flash` | 本轮低成本证据选择模型，`qwen-plus` 为可用备选 |
 | `QWEN_TIMEOUT_SECONDS` | 否 | `28` | 单次模型调用上限 |
 | `QWEN_MAX_RETRIES` | 否 | `0` | 0–3 次有限重试 |
 | `CORS_ALLOW_ORIGINS` | 否 | 显式本地来源列表 | 禁止 `*` |
@@ -77,7 +77,7 @@ git check-ignore -v backend\.env
 ```env
 QWEN_API_KEY=由部署平台写入
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL=qwen-plus
+QWEN_MODEL=qwen-flash
 QWEN_TIMEOUT_SECONDS=28
 QWEN_MAX_RETRIES=0
 ALPHA_PACKAGE_DIR=/srv/codemind-fzu/knowledge_base/processed/alpha/approved
@@ -124,7 +124,7 @@ env:
   - name: QWEN_BASE_URL
     value: https://dashscope.aliyuncs.com/compatible-mode/v1
   - name: QWEN_MODEL
-    value: qwen-plus
+    value: qwen-flash
   - name: QWEN_TIMEOUT_SECONDS
     value: "28"
   - name: QWEN_MAX_RETRIES
