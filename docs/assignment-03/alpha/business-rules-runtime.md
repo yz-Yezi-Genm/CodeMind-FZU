@@ -139,10 +139,10 @@ PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retrieve
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 94 passed
+# 103 passed
 
 python -m pytest tests -q
-# 265 passed, 77 subtests passed
+# 274 passed, 77 subtests passed
 ```
 
 测试覆盖：
@@ -175,7 +175,10 @@ python -m pytest tests -q
 - 校级、院级综测只认综合素质评价办法，学科竞赛等级目录只负责国际级/国家级/省部级；
 - 级别否定与转折表达（“不是国家级，是省级二等奖”）按转折后的级别识别；
 - 团队识别要求明确表述（团队、集体、我们组、队友等），“我们”单独出现不算团队；
-- 历史/过期通知：问历史截止时间放行，问“现在还能不能申请”拒绝。
+- 历史/过期通知：问历史截止时间放行，问“现在还能不能申请”拒绝；
+- 年级口径区分正式资格与参考说明：#31 的“大一至大三仅升学准备参考”不再让低年级通过正式推荐资格，只有准备、流程类问题按参考口径放行；
+- 排名不跨竞赛、不跨作品继承：历史排名只在本轮未说、且同一竞赛同一作品时复用；
+- 追问与证据判断共用时间源，`alpha_clarification_rule` 支持注入 `today`。
 
 与吴诗莹约定案例的对应测试：
 
@@ -190,9 +193,9 @@ python -m pytest tests -q
 
 ## 6.1 与 #31 / #32 / #35 的接口联调
 
-以 #35 `feat/alpha-retrieval-loader`（`1cc7ce1`）的 `LocalBM25Retriever` 签名为准：`retrieve(request)`、`get_document_metadata(version_id)`、`get_parsed_chunk(chunk_id)`，后两者对 `review_only`/`blocked` 返回 `None`。`build_from_retriever` 用 `getattr` 取方法，签名与 `MetadataLookup`/`ChunkLookup` 一致，可直接注入。
+#31 与 #35 已合入 main（main `a87182c`），本分支同步后重新核对接口。以 main `backend/retrieval/local.py` 的 `LocalBM25Retriever` 签名为准：`retrieve(request)`、`get_document_metadata(version_id)`、`get_parsed_chunk(chunk_id)`，后两者对 `review_only`/`blocked` 返回 `None`。`build_from_retriever` 用 `getattr` 取方法，签名与 `MetadataLookup`/`ChunkLookup` 一致，可直接注入。
 
-以 #32 `feat/alpha-agent-integration`（`e46e745`）的 `AgentWorkflow` 做注入联调，结果：
+以 main `backend/services/agent_workflow.py` 与 #32 `feat/alpha-agent-integration`（`e46e745`）的 `AgentWorkflow` 分别做注入联调，结果一致：
 
 | 场景 | 结果 |
 | --- | --- |

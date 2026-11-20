@@ -239,8 +239,15 @@ def build_from_retriever(
     )
 
 
-def alpha_clarification_rule(request: AgentRequest) -> str | None:
-    """必要信息不足时返回单个追问问句，信息齐备时返回 None。"""
+def alpha_clarification_rule(
+    request: AgentRequest,
+    *,
+    today: Callable[[], date] = date.today,
+) -> str | None:
+    """必要信息不足时返回单个追问问句，信息齐备时返回 None。
+
+    `today` 与证据判断共用同一个时间源，固定日期测试时追问口径不会漂移。
+    """
     text = _user_text(request)
     scenario, _ = _analyse(text, request.query)
     if scenario is None:
@@ -248,8 +255,8 @@ def alpha_clarification_rule(request: AgentRequest) -> str | None:
     if scenario == COMPETITION:
         return _clarify_competition(text, request.query)
     if scenario == SCHOLARSHIP:
-        return _clarify_scholarship(text)
-    return _clarify_recommendation(text, request.query)
+        return _clarify_scholarship(text, request.query, today=today())
+    return _clarify_recommendation(text, request.query, today=today())
 
 
 def alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool:
@@ -356,6 +363,35 @@ def _team(text: str) -> bool | None:
     if _INDIVIDUAL.search(text):
         return False
     return None
+
+
+_COMPETITION_NAMES = re.compile(r"数学建模|蓝桥杯|挑战杯|互联网\+|电子设计|程序设计|机器人大赛|智能车|创新创业大赛")
+_WORK_NAME = re.compile(r"《[^》]{1,80}》")
+
+
+def _competition_keys(text: str) -> set[str]:
+    return set(_COMPETITION_NAMES.findall(text))
+
+
+def _works(text: str) -> set[str]:
+    return set(_WORK_NAME.findall(text))
+
+
+def _rank_for(subject: str | None, text: str) -> int | None:
+    """本轮排名优先；历史排名只在本轮没写、且确认同一竞赛同一作品时复用。"""
+    current = subject or text
+    rank = _rank(current)
+    if rank is not None:
+        return rank
+    if not subject:
+        return None
+    if not (_competition_keys(subject) & _competition_keys(text)):
+        return None
+    # 同一竞赛但换了作品，旧排名不属于新作品。
+    current_works = _works(subject)
+    if current_works and (_works(text) - current_works):
+        return None
+    return _rank(text)
 
 
 def _rank(text: str) -> int | None:
@@ -491,7 +527,8 @@ def _clarify_competition(text: str, subject: str | None = None) -> str | None:
         return QUESTION_WORK_NAME
     if level is None:
         return QUESTION_LEVEL
-    if _award_grade(current) is None and _award_grade(text) is None and _rank(text) is None:
+    rank = _rank_for(subject, text)
+    if _award_grade(current) is None and _award_grade(text) is None and rank is None:
         return QUESTION_AWARD_GRADE
     team = _team(current)
     if team is None:
@@ -500,11 +537,11 @@ def _clarify_competition(text: str, subject: str | None = None) -> str | None:
         return QUESTION_FORMAT
     if team and purpose == PURPOSE_CREDIT:
         # 只在前八名之外未说明时追问；已经说清第九名及以后不再重复追问。
-        if _rank(text) is None:
+        if rank is None:
             return QUESTION_TOP_EIGHT
     if purpose == PURPOSE_EVALUATION:
         # 个人项目同样要计上一学期成果、同样要求福大第一署名，不因为个人申报跳过。
-        if team and _rank(text) is None and not _ORDER.search(text):
+        if team and rank is None and not _ORDER.search(current):
             return QUESTION_ORDER
         if _semester_state(text) is None:
             return QUESTION_SEMESTER
@@ -513,11 +550,13 @@ def _clarify_competition(text: str, subject: str | None = None) -> str | None:
     return None
 
 
-def _clarify_scholarship(text: str) -> str | None:
+def _clarify_scholarship(
+    text: str, subject: str | None = None, *, today: date | None = None
+) -> str | None:
     # 库外年度直接证据不足，不追问年度（2.5）。
-    if _future_year(text, today=date.today()):
+    if _future_year(text, today=today or date.today()):
         return None
-    category = _scholarship_category(text)
+    category = _scholarship_category(subject or "") or _scholarship_category(text)
     if category is None:
         # 通用资格问题（处分、挂科、休学等）由校级办法直接覆盖，不问类别。
         if _NO_ELIGIBILITY.search(text):
@@ -536,8 +575,10 @@ def _clarify_scholarship(text: str) -> str | None:
     return None
 
 
-def _clarify_recommendation(text: str, subject: str | None = None) -> str | None:
-    if _future_year(text, today=date.today()) or _EXTERNAL_SCHOOL.search(text):
+def _clarify_recommendation(
+    text: str, subject: str | None = None, *, today: date | None = None
+) -> str | None:
+    if _future_year(text, today=today or date.today()) or _EXTERNAL_SCHOOL.search(text):
         return None
     obj = _recommendation_object(subject) if subject else None
     if obj is None:
@@ -916,6 +957,7 @@ def _document_year(facts: _DocumentFacts) -> int | None:
     return None
 
 
+_REFERENCE_QUESTION = re.compile(r"准备|参考|提前|规划|了解|流程|时间线|什么时候|何时|大几|几年级")
 _AVAILABILITY_QUESTION = re.compile(r"还能|现在还|目前还|是否还|办理窗口|现在.*(申请|报名|提交)|今年.*(申请|报名)")
 
 
@@ -984,7 +1026,9 @@ def _applicability(
             return False
 
     if query_grade and grade_text:
-        allowed = _grade_allowed(grade_text, query_grade)
+        allowed = _grade_allowed(
+            grade_text, query_grade, allow_reference=bool(_REFERENCE_QUESTION.search(text))
+        )
         if allowed is False:
             return False
         unknown = unknown or allowed is None
@@ -1032,12 +1076,20 @@ def _cohort_year(app: dict[str, str]) -> int | None:
     return None
 
 
-def _grade_allowed(grade_text: str, grade: int) -> bool | None:
+def _grade_allowed(
+    grade_text: str, grade: int, *, allow_reference: bool = False
+) -> bool | None:
+    """区分正式申请资格与仅作参考的说明。
+
+    #31 的 2027 届方案写明“大一至大三仅升学准备参考”，低年级学生不能据此
+    通过正式推荐资格的适用性检查；只有问准备、流程类问题时才按参考口径放行。
+    """
     if re.search(r"全体|全部|全校|各年级|所有年级", grade_text):
         return True
     if "大一至大三" in grade_text:
+        reference_only = bool(re.search(r"仅[^；;。]{0,12}参考|仅供参考", grade_text))
         if grade <= 3:
-            return True
+            return True if allow_reference or not reference_only else False
         return bool(re.search(r"应届|毕业生", grade_text))
     match = re.search(r"大([一二三四])", grade_text)
     if match:

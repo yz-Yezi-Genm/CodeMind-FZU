@@ -1237,3 +1237,70 @@ def test_expired_notice_answers_history_but_not_current_application() -> None:
     )
     assert check(_request("星火奖学金去年截止到什么时候？"), XINGHUO) is True
     assert check(_request("星火奖学金现在还能申请吗？"), XINGHUO) is False
+
+
+# --------------------------------------------------------------------------- 第七轮回归
+
+
+def _qualification_check():
+    meta = _meta(
+        QUALIFICATION_2027,
+        record_code="计算机学院-2027-推免资格推荐",
+        applicability={
+            "适用年级": "2027届应届本科毕业生；大一至大三仅升学准备参考",
+            "适用专业": "计算机科学与技术（含实验班）、数据科学与大数据技术、人工智能、信息安全、软件工程",
+            "适用对象": "学院申请取得本科推免推荐资格的学生",
+            "目标届别": "2027届",
+        },
+    )
+    return build_alpha_evidence_check(
+        _lookup_for((QUALIFICATION_2027, meta)), today=lambda: TODAY
+    )
+
+
+@pytest.mark.parametrize("grade", ["大一", "大二", "大三"])
+def test_lower_grade_cannot_use_reference_note_for_qualification(grade: str) -> None:
+    """大一至大三仅升学准备参考，不能据此通过正式推荐资格适用性。"""
+    check = _qualification_check()
+    query = f"我是{grade}，2027届推免推荐资格怎么排名？"
+    assert check(_request(query), QUALIFICATION_2027) is False
+
+
+def test_lower_grade_can_read_preparation_questions() -> None:
+    check = _qualification_check()
+    assert check(_request("我是大二，2027届推免要提前准备什么？"), QUALIFICATION_2027) is True
+
+
+def test_senior_grade_matches_formal_eligibility() -> None:
+    check = _qualification_check()
+    assert check(_request("我是大四，2027届推免推荐资格怎么排名？"), QUALIFICATION_2027) is True
+
+
+def test_rank_is_not_inherited_across_competitions() -> None:
+    """上一场数学建模的第二完成人不能带到蓝桥杯团队作品。"""
+    history = [f"数学建模竞赛国家级二等奖，团队作品，{WORK}，我是第二完成人"]
+    query = "蓝桥杯省赛二等奖，团队作品，作品《校园二手交易平台》，创新学分能认定多少？"
+    assert alpha_clarification_rule(_request(query, history=history)) == QUESTION_TOP_EIGHT
+
+
+def test_rank_is_not_inherited_across_works() -> None:
+    """同一竞赛换了作品，旧排名不属于新作品。"""
+    history = [f"数学建模竞赛国家级二等奖，团队作品，{WORK}，我是第二完成人"]
+    query = "数学建模竞赛省级二等奖，团队作品，作品《空气质量预测模型》，创新学分能认定多少？"
+    assert alpha_clarification_rule(_request(query, history=history)) == QUESTION_TOP_EIGHT
+
+
+def test_rank_is_reused_for_same_competition_and_work() -> None:
+    history = [f"数学建模竞赛国家级二等奖，团队作品，{WORK}，我是第二完成人"]
+    query = f"数学建模竞赛国家级二等奖，团队作品，{WORK}，创新学分能认定多少？"
+    assert alpha_clarification_rule(_request(query, history=history)) is None
+
+
+def test_clarification_honours_injected_today() -> None:
+    """追问与证据判断共用同一时间源。"""
+    query = "2029 年推免政策是什么？"
+    assert alpha_clarification_rule(_request(query), today=lambda: date(2026, 11, 19)) is None
+    assert (
+        alpha_clarification_rule(_request(query), today=lambda: date(2030, 1, 1))
+        == QUESTION_RECOMMENDATION_OBJECT
+    )
