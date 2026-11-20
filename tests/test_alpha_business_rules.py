@@ -464,9 +464,15 @@ def test_evidence_check_never_returns_string() -> None:
 
 
 class _Retriever:
-    def __init__(self, chunks: list[RetrievedChunk]) -> None:
+    def __init__(self, chunks: list[RetrievedChunk], *, metadata: DocumentMetadata | None = None) -> None:
         self._chunks = chunks
+        self._metadata = metadata.model_copy(deep=True) if metadata is not None else None
         self.calls = 0
+
+    def get_document_metadata(self, version_id) -> DocumentMetadata | None:
+        if self._metadata is None or not any(chunk.version_id == version_id for chunk in self._chunks):
+            return None
+        return self._metadata.model_copy(deep=True)
 
     async def retrieve(self, request: RetrievalRequest) -> list[RetrievedChunk]:
         self.calls += 1
@@ -520,7 +526,11 @@ async def test_workflow_rejects_inapplicable_evidence() -> None:
 
 @pytest.mark.anyio
 async def test_workflow_answers_with_applicable_evidence() -> None:
-    retriever = _Retriever([SCHOOL_SCHOLARSHIP])
+    # Synthetic test approval only; Agent now independently verifies the same
+    # retriever's metadata, even when the business rule accepts the evidence.
+    metadata = _full_lookup()(SCHOOL_SCHOLARSHIP.version_id)
+    metadata.temporal_notes = {"human_approved": True}
+    retriever = _Retriever([SCHOOL_SCHOLARSHIP], metadata=metadata)
     llm = _LLM(json.dumps(
         {"evidence": [{"chunk_id": str(SCHOOL_SCHOLARSHIP.chunk_id), "quote": SCHOOL_SCHOLARSHIP.content}]},
         ensure_ascii=False,

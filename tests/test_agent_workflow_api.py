@@ -2,6 +2,7 @@
 import unittest
 from datetime import date
 from uuid import UUID
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -47,6 +48,19 @@ class AgentWorkflowApiTests(unittest.TestCase):
             response = client.post("/api/v1/ask", json={"query": ""})
             self.assertEqual(response.status_code, 422)
             self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
+
+    def test_unexpected_model_exception_uses_sanitized_backend_error_envelope(self):
+        llm = AsyncMock()
+        llm.generate.side_effect = RuntimeError("private-api-key-or-endpoint")
+        workflow = AgentWorkflow(DemoRetriever([demo_chunk()]), llm)
+        with TestClient(create_app(agent_service=workflow)) as client:
+            response = client.post("/api/v1/ask", json={"query": "选课有哪些步骤？"})
+        body = response.json()
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(body["error"]["code"], "MODEL_UNAVAILABLE")
+        self.assertEqual(response.headers["x-request-id"], body["request_id"])
+        self.assertNotIn("status", body)
+        self.assertNotIn("private-api-key-or-endpoint", response.text)
 
 
 if __name__ == "__main__":
