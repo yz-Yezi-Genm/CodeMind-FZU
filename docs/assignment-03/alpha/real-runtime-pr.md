@@ -46,3 +46,14 @@
 - 业务规则模块合入后需再跑一次正式政策正向端到端测试。
 
 任何 MockTransport 或合成 `example.invalid` 测试都不视为真实模型或正式政策验收成功。
+
+## 第二轮审核修复
+
+- 资料加载改为 #35 `load_approved_alpha_retriever()`，核对人工审核标记、路径安全、完整索引、warnings 和片段数量。
+- 业务规则改为 #36 `build_from_retriever(retriever)`。
+- 若 #32 的 `create_alpha_workflow()` 已合入则自动使用；当前未合入时保留同签名 fallback。
+- 奇数消息上限向下归一化；会话增加数量上限、空闲回收、活动请求保护和后台清理。
+- 新增未审核、部分索引、warnings、业务拒绝和正式审核成功路径测试。
+
+第二轮集成版本、定向/全量测试结果和失败关闭记录见
+[运行时上游集成复核](evidence/runtime-upstream-review.md)。

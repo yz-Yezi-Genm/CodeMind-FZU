@@ -114,6 +114,9 @@ Mock 入口保持不变：
 - `build_from_retriever()` 绑定当前 Retriever，业务拒绝时零模型调用；
 - 奇数消息上限归一化、LRU 数量上限、空闲清理与活动会话保护。
 
+第二轮审核对应的 #32/#36 临时集成版本、全量结果和上游测试口径冲突见
+[运行时上游集成复核](evidence/runtime-upstream-review.md)。
+
 ## 7. 待上游交付
 
 - 丁晓炜完成人工签核，并提供 `knowledge_base/processed/alpha/approved/` 下的正式 `enabled` 包；
