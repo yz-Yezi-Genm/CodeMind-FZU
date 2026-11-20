@@ -3,6 +3,9 @@
 Uses bundled openpyxl for read-only analysis; tar.exe reads individual RAR
 members to memory. Old binary DOC is identified, never decoded as plain text.
 python -m knowledge_base.processing.inspect_policy_forms
+
+This is the historical header/layout inspection, NOT a full privacy check.
+Use audit_policy_forms.py for all rows, all XML parts and old DOC contents.
 """
 from hashlib import sha256
 from io import BytesIO

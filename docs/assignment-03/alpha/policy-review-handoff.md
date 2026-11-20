@@ -16,7 +16,7 @@
 
 详细核验结果在 `docs/assignment-03/alpha/policy-verification-matrix.md`。正式放行资料将与本轮候选包分开，人工签核完成后再交付 `approved/` 中的版本。
 
-当前逐项待办、需要的材料和可转发给王智洋/组长的文字，见[政策资料当前待办与协作分工](policy-review-next-steps.md)。2026-11-19已补5份Excel的表头/合并区域检查及学校奖学金有限范围后续修订排查；3份旧DOC仍待可靠转换。候选正文、片段数及原件未改，增补核验说明后仍为blocked/review_only。
+当前逐项待办、需要的材料和可转发给王智洋/组长的文字，见[政策资料当前待办与协作分工](policy-review-next-steps.md)。2026-11-19已补5份Excel的表头/合并区域检查及学校奖学金有限范围后续修订排查；2026-11-20进一步完成两归档全部工作表和3份旧DOC的工具/AI隐私核查，未发现真实填报个人记录，待组长复审；DOC正式政策转换仍待后续。见[隐私专项报告](attachment-privacy-review.md)。候选正文、片段数及原件未改，增补核验说明后仍为blocked/review_only。
 
 ## 接收方式
 
@@ -72,8 +72,8 @@ async def receive():
 |---|---|---:|---|---|
 | `competition.json` | 竞赛认定通知+3份DOCX | 224 | blocked | 通知页身份认证；205条数据行尚未逐条人工语义审核 |
 | `scholarship.json` | 学校2026本科奖学金办法 | 59 | review_only | 有限范围后续修订排查已补，现行性和关键数值待人工签核 |
-| `college-scholarship.json` | 学院院级奖学金通知 | 33 | blocked | 2026发布但正文/表头2025考核年度；专项称谓、统计区间待确认；ZIP内4份XLSX表头已提取 |
-| `xinghuo.json` | 学院星火通知 | 35 | review_only | 报送期已过；RAR内教师XLSX表头已提取，另3份旧DOC待转换，不当学生表单使用 |
+| `college-scholarship.json` | 学院院级奖学金通知 | 33 | blocked | 2026发布但正文/表头2025考核年度；专项称谓、统计区间待确认；ZIP内4份XLSX全量隐私检查未发现真实申请记录，待复审 |
+| `xinghuo.json` | 学院星火通知 | 35 | review_only | 报送期已过；RAR内教师XLSX及3份空白教师DOC已做隐私检查；正式政策转换仍待后续，不当学生表单使用 |
 | `recommendation.json` | 学院2027届推免推荐资格 | 20 | review_only | 2026-09-09 21:00申请截止已过；PDF转录待人工签核，原文志愿服务边界待释义 |
 
 ## 对接记录
