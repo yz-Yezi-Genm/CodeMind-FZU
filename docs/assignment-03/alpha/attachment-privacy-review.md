@@ -31,6 +31,32 @@
 - 旧 DOC：使用 antiword 0.37 的 `-t -r -s -m UTF-8.txt` 提取全部文本，包含工具支持的隐藏及删除文字；核对所有填写区、OLE 属性与流目录，并用 oletools 0.60.2 静态检查模板 VBA 与 P-code。未执行 Office、宏、外链或公式。三份模板有同源办公模板宏，未发现其中包含真实申请人/教师资料；没有把“有宏”误判成“有真实填报记录”。
 - 不声称完成磁盘空闲区恢复等取证，也不将正则“没找到电话”当作隐私通过依据。正文、表格、示例语义及模板属性均进行了对照；精确字节变化或新增成员必须重新检查。
 
+## DOC 的 OLE / VBA 静态检查摘要
+
+下表数值来自实际运行 `audit_policy_forms` 生成的 `form-privacy-audit.json`，不是单元测试中的模拟输出。字符数是 antiword UTF-8 输出解码后的长度，非空行数按该输出统计。
+
+| 旧 DOC | 提取字符数 | 非空文本行 | OLE 流 | 其中宏相关流 | VBA 源码模块 / P-code 报告 |
+|---|---:|---:|---:|---:|---|
+| 类别一 | 2944 | 41 | 19 | 13 | 5 / 1 |
+| 类别二 | 2801 | 39 | 19 | 13 | 5 / 1 |
+| 类别三 | 2877 | 40 | 19 | 13 | 5 / 1 |
+
+每份 DOC 均检查了 `WordDocument`、`1Table`、`Data`、文档摘要属性及 `Macros/` 下的全部流，并记录各流 SHA-256。作者、最后保存者、标题属性存在；值经核对属于模板软件/设备账号和模板标题，报告不公开原值。未发现申请人照片或其他 `ObjectPool` 嵌入对象流。
+
+五个 VBA 源码模块为 `ThisDocument.cls`、`RJeGov.bas`、`frmSelect.frm`、`Common.bas`、`FileDialog.cls`，另有一份 `VBA_P-code.txt` 静态反汇编报告。内容为办公模板、文件选择和文档操作逻辑；本次未发现真实申请人或教师的填报资料。三份 DOC 的对应 VBA 源码/P-code 摘要相同，正文摘要各自独立保留。P-code 仅将工具自动生成的临时输入路径头替换为 `<INPUT_DOC>`，实际代码不改写。
+
+全程没有启动 Word 或执行宏。上述结果用于附件隐私核查，不等同于宏运行安全认证，也不表示已完成政策正文转换、人工签核或正式检索开放。
+
+## 实际审计与单元测试的区别
+
+| 执行入口 | 实际做了什么 | 能证明什么及其边界 |
+|---|---|---|
+| `python -m knowledge_base.processing.audit_policy_forms ...` | 读取两个原始归档的全部成员；重新扫描 XLSX；对三份 DOC 实际调用 antiword，再用 olefile 读取属性/流、oletools 提取 VBA/P-code；最后逐项比对已审阅基线 | 本次实际转换和静态分析产物与基线一致；结论针对这些原件字节。不是单靠旧摘要宣布通过 |
+| `test_current_archives_match_full_reviewed_baseline` | 实际校验归档和所有成员哈希，并重新扫描 XLSX；DOC 的 `inspection` 使用既有基线值，不调用 antiword / oletools | 验证文件未变、XLSX 检查一致及基线关联；**不能证明本轮重新转换了 DOC 或重新分析了 VBA** |
+| `test_doc_converter_includes_hidden_removed_text_and_rejects_warnings` | 用模拟的子进程结果检查 `-r/-s` 参数及遇到转换警告时拒绝通过 | 验证调用/错误处理逻辑；**不属于真实 DOC 转换审计** |
+
+其余隐私单元测试使用合成 XLSX 检查隐藏内容覆盖、报告不泄露字段值以及归档变化时拒绝沿用结论；不替代实际附件内容对照。实际审计 JSON 与单元测试日志分别保留，不能将“13 项测试通过”当作三份 DOC 再次转换的唯一依据。
+
 ## 原件完整性与复现
 
 | 官方附件 | 本地快照 SHA-256 |
@@ -60,3 +86,5 @@ python -m knowledge_base.processing.build_policy_review --check
 竞赛通知登录核验、院级奖学金年度/称谓确认、星火旧 DOC 的正式政策转换与语义复核、人工签核仍为后续正式资料放行任务。本次 DOC 提取只服务隐私检查，没有新增正式正文、没有将任何资料改成 enabled，也没有向 `approved/` 放入资料包。PR #31 继续是 **pending-review 候选资料交付**。
 
 验证记录：[本次专项测试](evidence/policy-review-privacy-tests.txt)（13/13通过，含6项新增隐私测试）、[原有回归测试](evidence/policy-review-privacy-regression.txt)（171项，170通过、1项Windows符号链接条件跳过）、[结果摘要](evidence/policy-review-privacy-test-result.json)和[候选包哈希/定位/检索隔离检查](evidence/policy-review-check.json)。
+
+公开测试日志中的本机 Windows 绝对路径统一替换为 `<REPO>/` 下的相对位置，执行环境记录中的解释器路径也作同样处理；只清理机器路径，保留告警、异常堆栈的文件/行号、测试结果及原始统计。同目录历史日志中的失败记录仍按原样保留，不表述为本次重新运行结果。
