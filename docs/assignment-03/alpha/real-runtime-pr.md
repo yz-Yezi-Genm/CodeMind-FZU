@@ -28,9 +28,9 @@
 .\.venv\Scripts\python.exe -X utf8 -m unittest tests.test_backend_runtime tests.test_agent_workflow_api tests.test_agent_workflow_qwen tests.test_qwen_client -v
 ```
 
-结果：36 项通过。
+结果：44 项执行，43 项通过，1 项在 #36 合入前按条件跳过。
 
-全仓库结果：181 项中 178 通过、2 失败、1 跳过。两个失败均为现有 `scholarship-2026` 原始资料 SHA-256 与登记值不一致；跳过项为 Windows 符号链接权限限制。本次运行/会话/Qwen 测试均通过。
+全仓库结果：199 项中 195 通过、2 失败、2 跳过。两个失败均为现有 `scholarship-2026` 原始资料 SHA-256 与登记值不一致；跳过项分别为 Windows 符号链接权限和 #36 合入前条件测试。本次运行/会话/Qwen 测试均通过。
 
 ## 运行证据
 

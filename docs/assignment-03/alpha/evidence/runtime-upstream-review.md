@@ -28,7 +28,7 @@
 
 ```text
 定向运行/API/Qwen/会话：
-Ran 43 tests, OK
+Ran 44 tests, 43 passed, 1 skipped
 
 全量 unittest：
 Ran 199 tests
