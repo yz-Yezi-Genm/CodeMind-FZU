@@ -1,0 +1,90 @@
+{
+  "scholarship": {
+    "body_visible_chars": 2262,
+    "units": 59,
+    "uncovered_text_nodes": 0
+  },
+  "college-scholarship": {
+    "body_visible_chars": 1877,
+    "units": 33,
+    "uncovered_text_nodes": 0
+  },
+  "xinghuo": {
+    "body_visible_chars": 1285,
+    "units": 35,
+    "uncovered_text_nodes": 0
+  },
+  "competition": {
+    "body_visible_chars": 502,
+    "units": 10,
+    "uncovered_text_nodes": 0
+  },
+  "competition-attachment-1": {
+    "tables": [
+      {
+        "table": 1,
+        "rows_including_header": 78,
+        "gridSpan": 0,
+        "vMerge": 0
+      }
+    ],
+    "footnotes_and_endnotes": 0,
+    "units": 80
+  },
+  "competition-attachment-2": {
+    "tables": [
+      {
+        "table": 1,
+        "rows_including_header": 109,
+        "gridSpan": 0,
+        "vMerge": 0
+      }
+    ],
+    "footnotes_and_endnotes": 0,
+    "units": 111
+  },
+  "competition-attachment-3": {
+    "tables": [
+      {
+        "table": 1,
+        "rows_including_header": 21,
+        "gridSpan": 0,
+        "vMerge": 0
+      }
+    ],
+    "footnotes_and_endnotes": 0,
+    "units": 23
+  },
+  "recommendation": {
+    "pages": 4,
+    "layout_reviewed_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "human_signoff": false
+  },
+  "college-attachment-inventory": [
+    {
+      "name": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学业类奖学金（类别三）汇总表.xlsx",
+      "bytes": 58379,
+      "parsed": false
+    },
+    {
+      "name": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学术类奖学金（类别二）汇总表.xlsx",
+      "bytes": 12470,
+      "parsed": false
+    },
+    {
+      "name": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学生工作类奖学金（类别四）汇总表.xlsx",
+      "bytes": 12498,
+      "parsed": false
+    },
+    {
+      "name": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学科竞赛类奖学金（类别一）汇总表.xlsx",
+      "bytes": 14741,
+      "parsed": false
+    }
+  ]
+}
