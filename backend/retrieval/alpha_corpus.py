@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
+import stat
 from typing import Any
 
 from backend.contracts import (
@@ -57,11 +58,28 @@ def _display_path(path: Path, root: Path | None) -> str:
     return path.name
 
 
+def _is_windows_junction(path: Path) -> bool:
+    if os.name != "nt":
+        return False
+    isjunction = getattr(os.path, "isjunction", None)
+    if isjunction is not None:
+        return bool(isjunction(path))
+    try:
+        st = os.lstat(path)
+    except OSError:
+        return False
+    reparse_attr = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+    mount_point_tag = getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", 0xA0000003)
+    symlink_tag = getattr(stat, "IO_REPARSE_TAG_SYMLINK", 0xA000000C)
+    attrs = getattr(st, "st_file_attributes", 0)
+    tag = getattr(st, "st_reparse_tag", 0)
+    return bool(attrs & reparse_attr) and tag in {mount_point_tag, symlink_tag}
+
+
 def _is_link(path: Path) -> bool:
     if path.is_symlink():
         return True
-    isjunction = getattr(os.path, "isjunction", None)
-    return bool(isjunction and isjunction(path))
+    return _is_windows_junction(path)
 
 
 def _check_corpus_dir_security(corpus_dir: Path, *, resolved_root: Path | None) -> None:

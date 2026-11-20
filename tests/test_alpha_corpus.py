@@ -256,7 +256,7 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
             with self.assertRaisesRegex(ValueError, "目录外"):
                 await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
 
-    async def test_corpus_dir_symlink_and_external_root_are_rejected(self):
+    async def test_corpus_dir_external_root_and_intermediate_symlink_are_rejected(self):
         with TemporaryDirectory() as tmp, TemporaryDirectory() as outside_tmp:
             root = Path(tmp)
             outside = Path(outside_tmp)
@@ -272,33 +272,7 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                     corpus_dir=outside_approved, file_root=root, allow_missing=False
                 )
 
-            # 2. corpus_dir itself being a symlink/junction to an external directory must be rejected.
-            link_dir = root / "approved_link"
-            created_link = False
-            try:
-                link_dir.symlink_to(outside_approved, target_is_directory=True)
-                created_link = True
-            except OSError:
-                if os.name == "nt":
-                    completed = subprocess.run(
-                        ["cmd", "/c", "mklink", "/J", str(link_dir), str(outside_approved)],
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
-                    created_link = completed.returncode == 0
-
-            if created_link:
-                with self.assertRaisesRegex(ValueError, "符号链接"):
-                    await load_approved_alpha_retriever(
-                        corpus_dir=link_dir, file_root=root, allow_missing=False
-                    )
-                with self.assertRaisesRegex(ValueError, "符号链接"):
-                    await load_approved_alpha_retriever(
-                        corpus_dir=link_dir, file_root=None, allow_missing=False
-                    )
-
-            # 3. Intermediate path component being a symlink must also be rejected.
+            # 2. Intermediate path component being a symlink must also be rejected.
             nested_approved = root / "nested" / "approved"
             nested_approved.mkdir(parents=True)
             nested_parent = (root / "nested").resolve()
@@ -315,6 +289,57 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                     await load_approved_alpha_retriever(
                         corpus_dir=nested_approved, file_root=root, allow_missing=False
                     )
+
+    async def test_corpus_dir_link_to_external_directory_is_rejected(self):
+        with TemporaryDirectory() as tmp, TemporaryDirectory() as outside_tmp:
+            root = Path(tmp)
+            outside = Path(outside_tmp)
+            outside_approved = outside / "external_approved"
+            outside_approved.mkdir()
+            _write_approved_package(
+                outside, outside_approved, "ext.json", record_code="EXT-1"
+            )
+
+            link_dir = root / "approved_link"
+            created_link = False
+            is_junction = False
+            try:
+                link_dir.symlink_to(outside_approved, target_is_directory=True)
+                created_link = True
+            except OSError:
+                if os.name == "nt":
+                    completed = subprocess.run(
+                        ["cmd", "/c", "mklink", "/J", str(link_dir), str(outside_approved)],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    created_link = completed.returncode == 0
+                    is_junction = created_link
+
+            if not created_link:
+                self.skipTest("当前操作系统环境不允许创建符号链接或目录联接")
+
+            with self.assertRaisesRegex(ValueError, "符号链接"):
+                await load_approved_alpha_retriever(
+                    corpus_dir=link_dir, file_root=root, allow_missing=False
+                )
+            with self.assertRaisesRegex(ValueError, "符号链接"):
+                await load_approved_alpha_retriever(
+                    corpus_dir=link_dir, file_root=None, allow_missing=False
+                )
+
+            # Verify Python 3.10/3.11 lstat fallback when os.path.isjunction is absent.
+            if is_junction:
+                with patch.object(os.path, "isjunction", None, create=True):
+                    with self.assertRaisesRegex(ValueError, "符号链接"):
+                        await load_approved_alpha_retriever(
+                            corpus_dir=link_dir, file_root=root, allow_missing=False
+                        )
+                    with self.assertRaisesRegex(ValueError, "符号链接"):
+                        await load_approved_alpha_retriever(
+                            corpus_dir=link_dir, file_root=None, allow_missing=False
+                        )
 
     async def test_partial_package_with_zero_indexed_chunks_is_observable_in_report(self):
         with TemporaryDirectory() as tmp:
