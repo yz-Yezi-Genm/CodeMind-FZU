@@ -1354,3 +1354,47 @@ def test_rank_is_not_inherited_across_unquoted_works() -> None:
     history = [f"数学建模竞赛国家级二等奖，团队作品，{WORK}，我是第二完成人"]
     query = "数学建模竞赛省级二等奖，团队作品，作品名称叫空气质量预测平台，创新学分能认定多少？"
     assert alpha_clarification_rule(_request(query, history=history)) == QUESTION_TOP_EIGHT
+
+
+# --------------------------------------------------------------------------- 第九轮回归
+
+
+def test_preparation_wording_cannot_bypass_formal_eligibility() -> None:
+    """“提前准备”不能盖过正式资格/排名意图。"""
+    check = _qualification_check()
+    assert check(
+        _request("我是大二，想提前准备2027届推免推荐资格排名，现在能做什么？"),
+        QUALIFICATION_2027,
+    ) is False
+    # 纯准备性问题仍按参考口径放行
+    assert check(_request("我是大二，2027届推免要提前准备什么？"), QUALIFICATION_2027) is True
+
+
+def test_external_college_without_college_field_is_rejected() -> None:
+    """资料没有学院字段时，其他学院的问题同样 fail-closed。"""
+    meta = _meta(
+        QUALIFICATION_2027,
+        record_code="计算机学院-2027-推免资格推荐",
+        applicability={
+            "适用年级": "2027届应届本科毕业生；大一至大三仅升学准备参考",
+            "适用专业": "计算机科学与技术（含实验班）、数据科学与大数据技术、人工智能、信息安全、软件工程",
+            "目标届别": "2027届",
+        },
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((QUALIFICATION_2027, meta)), today=lambda: TODAY
+    )
+    assert check(
+        _request("数学与统计学院的2027届推免推荐资格怎么排名？"), QUALIFICATION_2027
+    ) is False
+    assert check(_request("2027届推免推荐资格怎么排名？"), QUALIFICATION_2027) is True
+
+
+def test_rank_is_not_reused_without_current_work() -> None:
+    """同一竞赛但本轮没说作品，不能继承历史排名。"""
+    history = [f"数学建模竞赛国家级二等奖，团队作品，{WORK}，我是第二完成人"]
+    query = (
+        "数学建模竞赛校级最高等级奖，团队作品，综测能加几分？"
+        "成果是上一学期取得的，以福州大学为第一署名单位。"
+    )
+    assert alpha_clarification_rule(_request(query, history=history)) == QUESTION_ORDER

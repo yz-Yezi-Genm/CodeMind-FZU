@@ -139,11 +139,11 @@ workflow = AgentWorkflow(..., evidence_check=alpha_evidence_check)
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 107 passed
+# 110 passed
 
 python -m pytest tests -q
-# 278 passed, 77 subtests passed（本分支单独，未含 #35 用例）
-# 287 passed, 77 subtests passed（同步 main 后的合并树）
+# 281 passed, 77 subtests passed（本分支单独，未含 #35 用例）
+# 290 passed, 77 subtests passed（同步 main 后的合并树）
 ```
 
 测试覆盖：
@@ -181,7 +181,10 @@ python -m pytest tests -q
 - 排名不跨竞赛、不跨作品继承：历史排名只在本轮未说、且同一竞赛同一作品时复用；
 - 追问与证据判断共用时间源，`alpha_clarification_rule` 支持注入 `today`；
 - 明确指定年级或专业、但资料缺少对应适用范围字段时 fail-closed，不因为句子里没有第一人称而放行；
-- 作品标识除书名号外，也识别“作品名称叫 XXX”“项目名称是 XXX”等无书名号写法，跨作品排名同样不继承。
+- 作品标识除书名号外，也识别“作品名称叫 XXX”“项目名称是 XXX”等无书名号写法，跨作品排名同样不继承；
+- 正式资格、排名、遴选、能否申请等意图优先于“提前/准备”等参考性关键词，低年级不能借准备说法通过正式资格；
+- 资料没有学院字段时，明确询问其他学院同样拒绝；
+- 历史排名只在“本轮同一竞赛 + 本轮明确同一作品”时继承，本轮未说作品也重新追问。
 
 与吴诗莹约定案例的对应测试：
 

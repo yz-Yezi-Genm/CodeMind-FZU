@@ -384,21 +384,30 @@ def _works(text: str) -> set[str]:
     return names
 
 
-def _rank_for(subject: str | None, text: str) -> int | None:
+def _history_text(text: str, subject: str | None) -> str:
+    """从拼接后的上下文里取历史部分：`_user_text` 把本轮问题放在最后。"""
+    if subject and text.endswith(subject):
+        return text[: -len(subject)]
+    return text
+
+
+def _rank_for(subject: str | None, history_text: str) -> int | None:
     """本轮排名优先；历史排名只在本轮没写、且确认同一竞赛同一作品时复用。"""
-    current = subject or text
+    current = subject or history_text
     rank = _rank(current)
     if rank is not None:
         return rank
-    if not subject:
+    if not subject or not history_text:
         return None
-    if not (_competition_keys(subject) & _competition_keys(text)):
+    if not (_competition_keys(subject) & _competition_keys(history_text)):
         return None
-    # 同一竞赛但换了作品，旧排名不属于新作品。
+    # 只有本轮明确同一作品时才继承；本轮没说作品、或换了作品都重新追问。
     current_works = _works(subject)
-    if current_works and (_works(text) - current_works):
+    if not current_works:
         return None
-    return _rank(text)
+    if not (current_works & _works(history_text)):
+        return None
+    return _rank(history_text)
 
 
 def _rank(text: str) -> int | None:
@@ -534,7 +543,7 @@ def _clarify_competition(text: str, subject: str | None = None) -> str | None:
         return QUESTION_WORK_NAME
     if level is None:
         return QUESTION_LEVEL
-    rank = _rank_for(subject, text)
+    rank = _rank_for(subject, _history_text(text, subject))
     if _award_grade(current) is None and _award_grade(text) is None and rank is None:
         return QUESTION_AWARD_GRADE
     team = _team(current)
@@ -965,6 +974,10 @@ def _document_year(facts: _DocumentFacts) -> int | None:
 
 
 _REFERENCE_QUESTION = re.compile(r"准备|参考|提前|规划|了解|流程|时间线|什么时候|何时|大几|几年级")
+# 正式资格、排名、遴选、能否申请等意图出现时，准备性关键词不再放行低年级。
+_FORMAL_ELIGIBILITY = re.compile(
+    r"资格|排名|遴选|能否申请|能不能申请|可否申请|申请条件|申请资格|名额|入选|推荐名单|够不够"
+)
 _AVAILABILITY_QUESTION = re.compile(r"还能|现在还|目前还|是否还|办理窗口|现在.*(申请|报名|提交)|今年.*(申请|报名)")
 
 
@@ -1018,6 +1031,10 @@ def _applicability(
 
     query_grade = _grade_level(text, today)
     query_major = _PROFESSION.search(text)
+    allow_reference = (
+        bool(_REFERENCE_QUESTION.search(text))
+        and not _FORMAL_ELIGIBILITY.search(text)
+    )
     unknown = False
 
     query_cohort = _enrolment_year(text)
@@ -1026,15 +1043,14 @@ def _applicability(
         # 入学年份与目标届别对不上，说明这份年度方案不是该学生的届别。
         return False
 
-    if college_text and _EXTERNAL_COLLEGE.search(text):
-        # 资料只服务本学院，问题指向其他学院时不适用。
-        named = _EXTERNAL_COLLEGE.search(text)
-        if "计算机" not in named.group() and "软件" not in named.group():
-            return False
+    named = _EXTERNAL_COLLEGE.search(text)
+    if named and "计算机" not in named.group() and "软件" not in named.group():
+        # 资料只服务本学院；连学院字段都没有时，外院问题同样无法核实。
+        return False
 
     if query_grade and grade_text:
         allowed = _grade_allowed(
-            grade_text, query_grade, allow_reference=bool(_REFERENCE_QUESTION.search(text))
+            grade_text, query_grade, allow_reference=allow_reference
         )
         if allowed is False:
             return False
