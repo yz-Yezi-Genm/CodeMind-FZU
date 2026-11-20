@@ -17,6 +17,7 @@ from backend.contracts.models import (
     ExtractionStatus,
     InclusionStatus,
     LLMResult,
+    ParsedChunk,
     LLMRole,
     RetrievalRequest,
     RetrievalStatus,
@@ -165,6 +166,16 @@ LANQIAO = _chunk(
 def _lookup_for(*pairs: tuple[RetrievedChunk, DocumentMetadata]):
     mapping = {chunk.version_id: meta for chunk, meta in pairs}
     return lambda version_id: mapping.get(version_id)
+
+
+def _student_locator(chunk_id):
+    """学生条款章节定位：仅在需要按章节区分时使用。"""
+    return ParsedChunk(
+        chunk_no=1,
+        content="学生适用条款",
+        source_file_key="policy.md",
+        locator_note="学生适用条款",
+    )
 
 
 def _full_lookup():
@@ -338,7 +349,9 @@ def test_default_entry_fails_closed_without_metadata() -> None:
     ],
 )
 def test_applicable_evidence_is_kept(query: str, chunk: RetrievedChunk) -> None:
-    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    check = build_alpha_evidence_check(
+        _full_lookup(), chunk_lookup=_student_locator, today=lambda: TODAY
+    )
     assert check(_request(query), chunk) is True
 
 
@@ -373,7 +386,9 @@ def test_applicable_evidence_is_kept(query: str, chunk: RetrievedChunk) -> None:
     ],
 )
 def test_inapplicable_evidence_is_rejected(query: str, chunk: RetrievedChunk) -> None:
-    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    check = build_alpha_evidence_check(
+        _full_lookup(), chunk_lookup=_student_locator, today=lambda: TODAY
+    )
     assert check(_request(query), chunk) is False
 
 
@@ -488,18 +503,51 @@ async def test_workflow_answers_with_applicable_evidence() -> None:
 
 
 @pytest.mark.anyio
-async def test_clarification_error_propagates_to_caller() -> None:
+async def test_clarification_error_is_safely_rejected() -> None:
+    """追问规则异常时不得产出政策答案，也不触发检索与模型调用。"""
     def broken_rule(request: AgentRequest) -> str | None:
         raise RuntimeError("rule failure")
 
+    retriever = _Retriever([SCHOOL_SCHOLARSHIP])
+    llm = _LLM()
     workflow = AgentWorkflow(
-        retriever=_Retriever([SCHOOL_SCHOLARSHIP]),
-        llm_client=_LLM(),
+        retriever=retriever,
+        llm_client=llm,
         clarification_rule=broken_rule,
     )
-    # 追问规则没有兜底捕获，异常交由调用方统一安全拒答。
-    with pytest.raises(RuntimeError):
-        await workflow.run(_request("优秀学生综合奖学金一等奖要什么条件？"))
+    try:
+        result = await workflow.run(_request("优秀学生综合奖学金一等奖要什么条件？"))
+    except RuntimeError:
+        # 尚未合并兜底捕获的工作流版本：异常交由调用方统一拒答。
+        assert retriever.calls == 0
+        assert llm.calls == 0
+        return
+    assert result.status == AnswerStatus.INSUFFICIENT_EVIDENCE
+    assert result.answer_mode == AnswerMode.INSUFFICIENT_DATA
+    assert result.warnings[0].code == "CLARIFICATION_RULE_FAILED"
+    assert retriever.calls == 0
+    assert llm.calls == 0
+
+
+def test_section_sensitive_document_without_locator_is_rejected() -> None:
+    """必须按章节区分的资料，无法确认章节时按未知处理。"""
+    query = "全国大学生数学建模竞赛国家级二等奖，团队作品，我是第一完成人，创新学分原始分是多少？"
+    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    assert check(_request(query), CREDIT_BYLAW) is False
+
+    def missing_chunk(chunk_id):
+        return None
+
+    check_with_lookup = build_alpha_evidence_check(
+        _full_lookup(), chunk_lookup=missing_chunk, today=lambda: TODAY
+    )
+    assert check_with_lookup(_request(query), CREDIT_BYLAW) is False
+
+
+def test_non_section_sensitive_document_does_not_require_locator() -> None:
+    """不需要章节区分的资料，没有 locator_note 也继续判断。"""
+    check = build_alpha_evidence_check(_full_lookup(), today=lambda: TODAY)
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SCHOOL_SCHOLARSHIP) is True
 
 
 def test_lookup_failure_is_treated_as_unknown() -> None:

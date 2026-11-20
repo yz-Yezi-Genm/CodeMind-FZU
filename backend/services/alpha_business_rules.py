@@ -89,6 +89,9 @@ _SCHOLARSHIP_TOPIC = re.compile(r"奖学金|助学金|奖助|单项奖|励志奖
 _PURPOSE_CREDIT = re.compile(r"创新学分|学分认定|认定多少学分|原始分")
 _PURPOSE_EVALUATION = re.compile(r"综测|综合素质测评|综合素质评价|加几分|加分")
 
+# 正文同时含教师与学生条款、必须按章节定位的资料；新增此类文件时在此登记。
+_SECTION_SENSITIVE = re.compile(r"创新创业学分认定|学分认定实施")
+
 _LEVELS = (
     ("international", re.compile(r"国际级|国际性|国际竞赛")),
     ("national", re.compile(r"国家级|全国")),
@@ -438,7 +441,7 @@ def _assess(
         kind = _classify(facts)
         if _applicability(text, facts) is False:
             return False
-        if not _section_applies(text, chunk, chunk_lookup):
+        if not _section_applies(text, facts, chunk, chunk_lookup):
             return False
         if _year_conflict(text, kind, facts, today):
             return False
@@ -516,19 +519,30 @@ def _check_recommendation(text: str, kind: str) -> bool:
 # --------------------------------------------------------------------------- 元数据与适用范围
 
 
+def _needs_section(facts: _DocumentFacts) -> bool:
+    """正文同时含教师条款与学生条款、必须按章节区分的资料。"""
+    scope = f"{facts.record_code or ''}{facts.title or ''}"
+    return bool(_SECTION_SENSITIVE.search(scope))
+
+
 def _section_applies(
     text: str,
+    facts: _DocumentFacts,
     chunk: RetrievedChunk,
     chunk_lookup: ChunkLookup | None,
 ) -> bool:
     """按 locator_note 区分同一文件里的局部章节（如教师条款与学生条款）。"""
-    if chunk_lookup is None:
-        return True
-    try:
-        parsed = chunk_lookup(chunk.chunk_id)
-    except Exception:
-        return True
-    note = getattr(parsed, "locator_note", None) if parsed is not None else None
+    needs_section = _needs_section(facts)
+    note = None
+    if chunk_lookup is not None:
+        try:
+            parsed = chunk_lookup(chunk.chunk_id)
+        except Exception:
+            parsed = None
+        note = getattr(parsed, "locator_note", None) if parsed is not None else None
+    if needs_section and not note:
+        # 混合条款资料必须能确认当前片段属于哪一节，否则按无法确认处理。
+        return False
     if not note:
         return True
     teacher = bool(re.search(r"教师|教职工|师资|绩效", note))

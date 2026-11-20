@@ -53,6 +53,7 @@ alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool
 - 必要元数据缺失：拿不到 `DocumentMetadata`、或 `applicability_raw` 为空时，无法确认文档类型、适用范围与年度，拒绝；不因“片段内容看起来相关”而放行。
 - 截止日期已过且问“现在还能不能办”拒绝；专业或年级与资料适用范围不符拒绝。
 - 局部章节不适配：同一文件里教师绩效/师资条款不能回答学生问题，学生条款也不能回答教师问题，依据 `ParsedChunk.locator_note` 判断。
+- 章节无法确认：正文同时含教师条款与学生条款的资料（当前登记《创新创业学分认定办法》，常量 `_SECTION_SENSITIVE`），取不到 `locator_note` 时拒绝；不需要章节区分的资料不受影响，继续其他判断。
 
 返回值只有 `True` / `False`，不返回 `"unknown"`、`"false"` 等字符串。规则内部异常一律按无法确认处理（返回 `False`），不放行。
 
@@ -114,16 +115,18 @@ PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retrieve
 
 联调测试覆盖上述四条路径（`test_workflow_returns_clarification_before_retrieval`、`test_workflow_rejects_inapplicable_evidence`、`test_workflow_answers_with_applicable_evidence`）。
 
-异常行为以工作流现有实现为准：追问规则抛异常时工作流未做兜底捕获，异常会向上抛给调用方（HTTP 层统一安全拒答）；证据规则在模块内部已捕获异常并返回 `False`，不会让单个片段的判断失败拖垮整轮。
+按吴诗莹对齐后的工作流行为：追问规则抛异常时返回 `insufficient_evidence`（`answer_mode=insufficient_data`，警告码 `CLARIFICATION_RULE_FAILED`），不检索、不调用模型；证据规则在模块内部已捕获异常并返回 `False`，单个片段判断失败不影响其他片段。
+
+本分支基于 main `f5fcabc`，尚未包含上述兜底捕获，因此测试 `test_clarification_error_is_safely_rejected` 同时兼容两种实现：异常上抛（调用方拒答）或工作流返回 `insufficient_evidence` + `CLARIFICATION_RULE_FAILED`；两种路径都断言未触发检索与模型调用。
 
 ## 6. 测试命令与结果
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 63 passed
+# 65 passed
 
 python -m pytest tests -q
-# 234 passed, 77 subtests passed
+# 236 passed, 77 subtests passed
 ```
 
 测试覆盖：
@@ -133,7 +136,9 @@ python -m pytest tests -q
 - 历史 user 消息补齐字段后不重复追问（含“只说了奖学金、本轮补类别”）；
 - 三个场景各有多条证据接受用例；
 - 不适用政策被拒绝：跨口径、目录缺失、年度不匹配（含问更早年度）、未来年度、外校资料、已废止版本、未核验时效、专业不符、资格门槛误用复试方案、教师条款回答学生问题、适用范围为空、年度类资料缺元数据；
-- 规则异常时返回 `False` 而非放行。
+- 规则异常时返回 `False` 而非放行；
+- 追问规则异常时不产出政策答案，且不触发检索与模型调用（兼容 `CLARIFICATION_RULE_FAILED` 与异常上抛两种实现）；
+- 章节敏感资料缺 `locator_note` 时拒绝，非章节敏感资料不受影响。
 
 与吴诗莹约定案例的对应测试：
 
