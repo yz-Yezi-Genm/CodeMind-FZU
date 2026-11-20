@@ -57,6 +57,27 @@ function renderCitation(citation: Citation): string {
     <p>${escapeHtml(citation.excerpt)}</p>${sourceLink}</details>`;
 }
 
+function renderAnswerMode(mode: AskResponse['answer_mode']): string {
+  if (!mode) return '';
+  const labels: Record<NonNullable<AskResponse['answer_mode']>, string> = {
+    current_policy: '当前政策依据',
+    historical: '历史资料参考',
+    procedure_reference: '办理流程参考',
+    insufficient_data: '证据不足',
+  };
+  return `<p class="student-answer-mode">回答依据：${escapeHtml(labels[mode])}</p>`;
+}
+
+function hasTestFixtureCitation(citations: Citation[]): boolean {
+  return citations.some((citation) => {
+    try {
+      return new URL(citation.source_url).hostname === 'example.invalid';
+    } catch {
+      return false;
+    }
+  });
+}
+
 function renderResult(query: string, response: AskResponse): void {
   const labels: Record<AskResponse['status'], string> = {
     answered: '已回答',
@@ -71,6 +92,9 @@ function renderResult(query: string, response: AskResponse): void {
     .join('');
   const citations = response.citations.map(renderCitation).join('');
   const answer = content || '目前没有足够的依据提供可靠回答。';
+  const testFixtureNotice = hasTestFixtureCitation(response.citations)
+    ? '<p class="student-test-fixture-notice">当前回答引用的是联调测试资料，不代表学校正式政策结论。</p>'
+    : '';
 
   const turn = document.createElement('article');
   turn.className = 'student-turn';
@@ -78,8 +102,10 @@ function renderResult(query: string, response: AskResponse): void {
     <p class="student-question"><span class="student-sr-only">你：</span>${escapeHtml(query)}</p>
     <div class="student-answer">
       <h2>${labels[response.status]}</h2>
+      ${renderAnswerMode(response.answer_mode)}
       <p>${escapeHtml(answer)}</p>
       ${warnings ? `<ul class="student-warnings">${warnings}</ul>` : ''}
+      ${testFixtureNotice}
       ${citations || (response.status === 'answered' ? '<p class="hint">暂无引用来源。</p>' : '')}
       ${response.status === 'answered' ? `<div class="student-feedback" role="group" aria-label="回答反馈">
         <button type="button" aria-pressed="false">有帮助</button>
