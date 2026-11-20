@@ -83,11 +83,14 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - `QWEN_API_KEY`：仅从本地环境读取，禁止提交
 - `QWEN_BASE_URL`：默认 OpenAI-compatible DashScope 地址
 - `QWEN_MODEL`：默认 `qwen-plus`
-- `QWEN_TIMEOUT_SECONDS`
-- `QWEN_MAX_RETRIES`：0–3
+- `QWEN_TIMEOUT_SECONDS`：默认 28 秒，适配 AgentWorkflow 的 30 秒总预算
+- `QWEN_MAX_RETRIES`：默认 0，范围 0–3；启用重试时需同步缩短单次超时
 - `ALPHA_PACKAGE_DIR`：人工审核资料包目录，默认 `knowledge_base/processed/alpha/approved`
 - `CONVERSATION_MAX_MESSAGES`：每个会话最多保留的消息数，默认 12
 - `CONVERSATION_HISTORY_CHAR_LIMIT`：每个会话历史的字符预算，默认 6000
+
+完整本地、systemd 和 Kubernetes Secret 配置见
+[Alpha 环境变量与部署配置](../docs/assignment-03/alpha/environment-deployment.md)。
 
 服务端会话只在内存中保存，进程重启后丢失。同一 `conversation_id` 的请求串行执行，后续请求会获得此前的用户和 Agent 消息；不同 ID 的历史严格隔离。模型或检索异常不会写入失败轮次。
 

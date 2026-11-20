@@ -55,8 +55,8 @@ Copy-Item backend\.env.example backend\.env
 QWEN_API_KEY=
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 QWEN_MODEL=qwen-plus
-QWEN_TIMEOUT_SECONDS=20
-QWEN_MAX_RETRIES=1
+QWEN_TIMEOUT_SECONDS=28
+QWEN_MAX_RETRIES=0
 ALPHA_PACKAGE_DIR=knowledge_base/processed/alpha/approved
 CONVERSATION_MAX_MESSAGES=12
 CONVERSATION_HISTORY_CHAR_LIMIT=6000

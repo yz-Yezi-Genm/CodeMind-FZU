@@ -30,13 +30,13 @@ class QwenSettings:
     api_key: str = field(default="", repr=False)
     base_url: str = DEFAULT_QWEN_BASE_URL
     model: str = DEFAULT_QWEN_MODEL
-    timeout_seconds: float = 20.0
-    max_retries: int = 1
+    timeout_seconds: float = 28.0
+    max_retries: int = 0
 
     @classmethod
     def from_env(cls) -> "QwenSettings":
-        timeout_raw = os.getenv("QWEN_TIMEOUT_SECONDS", "20")
-        retries_raw = os.getenv("QWEN_MAX_RETRIES", "1")
+        timeout_raw = os.getenv("QWEN_TIMEOUT_SECONDS", "28")
+        retries_raw = os.getenv("QWEN_MAX_RETRIES", "0")
         try:
             timeout_seconds = float(timeout_raw)
         except ValueError as exc:
