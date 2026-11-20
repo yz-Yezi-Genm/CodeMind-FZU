@@ -1,0 +1,59 @@
+[
+  {
+    "key": "competition",
+    "url": "https://jwch.fzu.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=14534&wbtreeid=1039",
+    "checked_at": "2026-11-19T11:16:04.102769+00:00",
+    "final_url": "https://sso.fzu.edu.cn/login?service=http%3A%2F%2Fjwch.fzu.edu.cn%2Fsystem%2Fresource%2Fcode%2Fauth%2Fcas%2Fclogin.jsp",
+    "status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "byte_size": 32502,
+    "sha256": "ea46eeca4fa1fb7833f47e71870bca848ff3fc040ccbd48f02e3d9c5c4118c16",
+    "source_verified": false,
+    "access_status": "authentication_required",
+    "response_not_retained_reason": "统一身份认证页面，不作为政策正文留档"
+  },
+  {
+    "key": "scholarship",
+    "url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+    "checked_at": "2026-11-19T11:16:04.103776+00:00",
+    "final_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+    "status": 200,
+    "content_type": "text/html",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/scholarship.html",
+    "byte_size": 57777,
+    "sha256": "cdbb5410575e98f7bcd2a868dedaee1bf535ebb26c5de83c42e731771b90dc8c"
+  },
+  {
+    "key": "recommendation",
+    "url": "https://ccds.fzu.edu.cn/info/1119/11932.htm",
+    "checked_at": "2026-11-19T11:16:04.103776+00:00",
+    "final_url": "https://ccds.fzu.edu.cn/info/1119/11932.htm",
+    "status": 200,
+    "content_type": "text/html",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/recommendation.html",
+    "byte_size": 19898,
+    "sha256": "98dcddb40e888ba73ac286e6f09245552b920545c6cbd6fa496de9f69050adc8"
+  },
+  {
+    "key": "college-scholarship",
+    "url": "https://ccds.fzu.edu.cn/info/1165/11707.htm",
+    "checked_at": "2026-11-19T11:16:04.103776+00:00",
+    "final_url": "https://ccds.fzu.edu.cn/info/1165/11707.htm",
+    "status": 200,
+    "content_type": "text/html",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/college-scholarship.html",
+    "byte_size": 67260,
+    "sha256": "f481f8e757556a604a72da37de4e0e0de4f448e6dc528444a4a3a37508260e90"
+  },
+  {
+    "key": "xinghuo",
+    "url": "https://ccds.fzu.edu.cn/info/1119/11710.htm",
+    "checked_at": "2026-11-19T11:16:04.104770+00:00",
+    "final_url": "https://ccds.fzu.edu.cn/info/1119/11710.htm",
+    "status": 200,
+    "content_type": "text/html",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/xinghuo.html",
+    "byte_size": 27944,
+    "sha256": "f80fd20e4d0c07c8252e425075e642684131c80adbb1a600c64f371df5c773ac"
+  }
+]

@@ -1,0 +1,1122 @@
+{
+  "reviewed_on": "2026-11-20",
+  "review_method": "tool extraction and AI full-content comparison; leader re-review pending",
+  "human_approved": false,
+  "archives": [
+    {
+      "file": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip",
+      "sha256": "3023a76d80d3ff80ad5fa474727a4d754f1dc3b71774af15588f98505338902d"
+    },
+    {
+      "file": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar",
+      "sha256": "b99ec34294b07689725302a25aed8575057da551a040b6f7353484e7701d9ade"
+    }
+  ],
+  "toolchain": {
+    "antiword": "0.37, locally compiled from grobian/antiword main; UTF-8 -t -r -s",
+    "antiword_sha256": "50a23f3da2dedb819facdacebe83ca742d7c359a5e0e8b3a8161aba91be89866",
+    "olefile": "0.47",
+    "oletools": "0.60.2",
+    "archive_reader": "Windows bsdtar; ZIP via Python zipfile",
+    "xlsx": "stdlib ElementTree scans every worksheet and every XML/rels part"
+  },
+  "records": [
+    {
+      "archive": "college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学业类奖学金（类别三）汇总表.xlsx",
+      "member_sha256": "de8a2e86ea19bd003b424fc25278f534baf5244d2209430ef323b78a973790a1",
+      "bytes": 58379,
+      "inspection": {
+        "kind": "xlsx",
+        "sheets": [
+          {
+            "sheet": "Sheet1",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "eb33619468812c690bacf22aec5d8cdafcf364d5ff47fd8fdc8834896c0ce100"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2",
+                  "J2",
+                  "M2",
+                  "N2",
+                  "O2",
+                  "P2",
+                  "Q2",
+                  "R2",
+                  "S2",
+                  "T2"
+                ],
+                "content_sha256": "9f47ac223876db79b59eb7af723408389a0df6d62184cefbaf689d419ff592cd"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "J3",
+                  "K3",
+                  "L3"
+                ],
+                "content_sha256": "9af1febe3d12e2cab04fae54b62875c15fbeaa767068e7bb09d4fd5bcc338e0c"
+              },
+              {
+                "row": 4,
+                "cells": [
+                  "A4",
+                  "B4",
+                  "C4",
+                  "D4",
+                  "E4",
+                  "F4",
+                  "G4",
+                  "H4",
+                  "I4",
+                  "J4",
+                  "K4",
+                  "L4",
+                  "M4",
+                  "N4",
+                  "O4",
+                  "P4",
+                  "Q4",
+                  "R4"
+                ],
+                "content_sha256": "3c920a050b0cca5ea2b6a993c9310110976feca263d666c878f54b9423b44958"
+              }
+            ],
+            "nonempty_cells": 40,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:T1",
+              "J2:L2",
+              "A2:A3",
+              "B2:B3",
+              "C2:C3",
+              "D2:D3",
+              "E2:E3",
+              "F2:F3",
+              "G2:G3",
+              "H2:H3",
+              "I2:I3",
+              "M2:M3",
+              "N2:N3",
+              "O2:O3",
+              "P2:P3",
+              "Q2:Q3",
+              "R2:R3",
+              "S2:S3",
+              "T2:T3"
+            ]
+          }
+        ],
+        "xml_parts_scanned": 11,
+        "all_xml_text_and_attributes_sha256": "31d30837c6aee04a429d0ac6eae09745039775af61f26487a1d21a741ea51627",
+        "shared_string_entries": 38,
+        "unused_shared_strings": 0,
+        "comment_parts": 0,
+        "external_relationships": 0,
+        "binary_parts": [],
+        "office_properties_present": [
+          "docProps/app.xml",
+          "docProps/core.xml",
+          "docProps/custom.xml"
+        ]
+      },
+      "content_assessment": {
+        "decision": "explicit_example_rows_only",
+        "data_rows": [
+          {
+            "sheet": "Sheet1",
+            "row": 4,
+            "reason": "序号单元格标记“例”；其余非空行均为标题/表头；本行按填表示例复核，不公开示例原值。"
+          }
+        ],
+        "real_applicant_records_found": false,
+        "properties_review": "通用软件/设备账号及软件版本/文档标识；无真实申请人身份。"
+      }
+    },
+    {
+      "archive": "college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学术类奖学金（类别二）汇总表.xlsx",
+      "member_sha256": "08abfce04ee145056dd71e81c427628f0ebf4a832aa845e66911740e46bd2b26",
+      "bytes": 12470,
+      "inspection": {
+        "kind": "xlsx",
+        "sheets": [
+          {
+            "sheet": "Sheet1",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "9c8de0bb42698ba946f010501fc74143108bd5078da85a626b0287431612dd81"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2",
+                  "J2",
+                  "M2",
+                  "N2",
+                  "O2",
+                  "P2",
+                  "Q2",
+                  "R2"
+                ],
+                "content_sha256": "86d4bec6b595cef72b3a590b3f43dd0cc21c5afb8196cb31bb5d33dbb1c0ee91"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "J3",
+                  "K3",
+                  "L3"
+                ],
+                "content_sha256": "9af1febe3d12e2cab04fae54b62875c15fbeaa767068e7bb09d4fd5bcc338e0c"
+              },
+              {
+                "row": 4,
+                "cells": [
+                  "A4",
+                  "B4",
+                  "C4",
+                  "D4",
+                  "E4",
+                  "F4",
+                  "G4",
+                  "H4",
+                  "I4",
+                  "J4",
+                  "K4",
+                  "L4",
+                  "M4",
+                  "N4",
+                  "O4",
+                  "P4"
+                ],
+                "content_sha256": "cb9d35234414b37d4af92b061d35cc258db1a266a17138ee11c126f387a9ba49"
+              }
+            ],
+            "nonempty_cells": 36,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:Q1",
+              "J2:L2",
+              "A2:A3",
+              "B2:B3",
+              "C2:C3",
+              "D2:D3",
+              "E2:E3",
+              "F2:F3",
+              "G2:G3",
+              "H2:H3",
+              "I2:I3",
+              "M2:M3",
+              "N2:N3",
+              "O2:O3",
+              "P2:P3",
+              "Q2:Q3",
+              "R2:R3"
+            ]
+          }
+        ],
+        "xml_parts_scanned": 11,
+        "all_xml_text_and_attributes_sha256": "96e1280bd2fce043cd9ba58eafde33b80187699d21d66073de814f1dc4648ef5",
+        "shared_string_entries": 35,
+        "unused_shared_strings": 0,
+        "comment_parts": 0,
+        "external_relationships": 0,
+        "binary_parts": [],
+        "office_properties_present": [
+          "docProps/app.xml",
+          "docProps/core.xml",
+          "docProps/custom.xml"
+        ]
+      },
+      "content_assessment": {
+        "decision": "explicit_example_rows_only",
+        "data_rows": [
+          {
+            "sheet": "Sheet1",
+            "row": 4,
+            "reason": "序号单元格标记“例”；其余非空行均为标题/表头；本行按填表示例复核，不公开示例原值。"
+          }
+        ],
+        "real_applicant_records_found": false,
+        "properties_review": "通用软件/设备账号及软件版本/文档标识；无真实申请人身份。"
+      }
+    },
+    {
+      "archive": "college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学生工作类奖学金（类别四）汇总表.xlsx",
+      "member_sha256": "bc33cf59d9d22729a05694380f1912cd8fa2308f04f12bbaed039c03f4bb161d",
+      "bytes": 12498,
+      "inspection": {
+        "kind": "xlsx",
+        "sheets": [
+          {
+            "sheet": "Sheet1",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "fc141f42d15d596f7ad95d7e57e07ef48e0c2b46ca04362afb9832d47dc45e05"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2",
+                  "J2",
+                  "M2",
+                  "N2",
+                  "O2",
+                  "P2",
+                  "Q2",
+                  "R2"
+                ],
+                "content_sha256": "86d4bec6b595cef72b3a590b3f43dd0cc21c5afb8196cb31bb5d33dbb1c0ee91"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "J3",
+                  "K3",
+                  "L3"
+                ],
+                "content_sha256": "ae8b21440f970eb621515a5dcf0493d09d7345c14bc1d265c1c373e105c52e26"
+              },
+              {
+                "row": 4,
+                "cells": [
+                  "A4",
+                  "B4",
+                  "C4",
+                  "D4",
+                  "E4",
+                  "F4",
+                  "G4",
+                  "H4",
+                  "I4",
+                  "J4",
+                  "K4",
+                  "L4",
+                  "M4",
+                  "N4",
+                  "O4",
+                  "P4"
+                ],
+                "content_sha256": "cb9d35234414b37d4af92b061d35cc258db1a266a17138ee11c126f387a9ba49"
+              }
+            ],
+            "nonempty_cells": 36,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:Q1",
+              "J2:L2",
+              "A2:A3",
+              "B2:B3",
+              "C2:C3",
+              "D2:D3",
+              "E2:E3",
+              "F2:F3",
+              "G2:G3",
+              "H2:H3",
+              "I2:I3",
+              "M2:M3",
+              "N2:N3",
+              "O2:O3",
+              "P2:P3",
+              "Q2:Q3",
+              "R2:R3"
+            ]
+          }
+        ],
+        "xml_parts_scanned": 11,
+        "all_xml_text_and_attributes_sha256": "41fdd10b880c1876963a3c4dc030aad651090765d3defff2fdf7a17793a69903",
+        "shared_string_entries": 35,
+        "unused_shared_strings": 0,
+        "comment_parts": 0,
+        "external_relationships": 0,
+        "binary_parts": [],
+        "office_properties_present": [
+          "docProps/app.xml",
+          "docProps/core.xml",
+          "docProps/custom.xml"
+        ]
+      },
+      "content_assessment": {
+        "decision": "explicit_example_rows_only",
+        "data_rows": [
+          {
+            "sheet": "Sheet1",
+            "row": 4,
+            "reason": "序号单元格标记“例”；其余非空行均为标题/表头；本行按填表示例复核，不公开示例原值。"
+          }
+        ],
+        "real_applicant_records_found": false,
+        "properties_review": "通用软件/设备账号及软件版本/文档标识；无真实申请人身份。"
+      }
+    },
+    {
+      "archive": "college-attachments.zip",
+      "member": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表/学科竞赛类奖学金（类别一）汇总表.xlsx",
+      "member_sha256": "33005eff0904edd62b71e912194e789c91ef9c5a85311aa1ced614bf3d40397f",
+      "bytes": 14741,
+      "inspection": {
+        "kind": "xlsx",
+        "sheets": [
+          {
+            "sheet": "汇总表",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "c5946478ca41392fb380bf230d48bd5f40bee42f76904a9b0693b08d9d6949f6"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2",
+                  "J2",
+                  "M2",
+                  "N2",
+                  "O2",
+                  "P2",
+                  "Q2",
+                  "R2",
+                  "S2"
+                ],
+                "content_sha256": "c87f1038ff7e2db93c44fd92d6acfb21fd2a0c2e554cd8994ce6e6d2354a4627"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "J3",
+                  "K3",
+                  "L3"
+                ],
+                "content_sha256": "9af1febe3d12e2cab04fae54b62875c15fbeaa767068e7bb09d4fd5bcc338e0c"
+              },
+              {
+                "row": 4,
+                "cells": [
+                  "A4",
+                  "B4",
+                  "C4",
+                  "D4",
+                  "E4",
+                  "F4",
+                  "G4",
+                  "H4",
+                  "I4",
+                  "J4",
+                  "K4",
+                  "L4",
+                  "M4",
+                  "N4",
+                  "O4",
+                  "P4",
+                  "Q4"
+                ],
+                "content_sha256": "840b7501aa332228ee9fef8eaf9a93762485f8d7c729437e6f8a054572e9a5fd"
+              }
+            ],
+            "nonempty_cells": 38,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:R1",
+              "J2:L2",
+              "A2:A3",
+              "B2:B3",
+              "C2:C3",
+              "D2:D3",
+              "E2:E3",
+              "F2:F3",
+              "G2:G3",
+              "H2:H3",
+              "I2:I3",
+              "M2:M3",
+              "N2:N3",
+              "O2:O3",
+              "P2:P3",
+              "Q2:Q3",
+              "R2:R3",
+              "S2:S3"
+            ]
+          },
+          {
+            "sheet": "本科生补充",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "033e17e62da2dbfee3bf7ea9f02f6fb1ec18f69cd278bed31093a0794d7c1f20"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2",
+                  "J2",
+                  "L2",
+                  "M2",
+                  "N2"
+                ],
+                "content_sha256": "43b28577d9fa8ccb0534e72416ca58721daa3b278fb8f885dd6507c144ec0f5a"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "J3",
+                  "K3"
+                ],
+                "content_sha256": "0179fc798e7eeea001b3f38b69790c539f68e403041088c76cb0466d7b996ac1"
+              },
+              {
+                "row": 4,
+                "cells": [
+                  "A4",
+                  "B4",
+                  "C4",
+                  "D4",
+                  "E4",
+                  "F4",
+                  "G4",
+                  "H4",
+                  "I4",
+                  "J4",
+                  "K4",
+                  "L4",
+                  "M4"
+                ],
+                "content_sha256": "78005611b23cfe3dbf902908180560dc5360e230003255fdf5889987f72152cb"
+              }
+            ],
+            "nonempty_cells": 29,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:N1",
+              "J2:K2",
+              "A2:A3",
+              "B2:B3",
+              "C2:C3",
+              "D2:D3",
+              "E2:E3",
+              "F2:F3",
+              "G2:G3",
+              "H2:H3",
+              "I2:I3",
+              "L2:L3",
+              "M2:M3",
+              "N2:N3"
+            ]
+          }
+        ],
+        "xml_parts_scanned": 12,
+        "all_xml_text_and_attributes_sha256": "0129c4783068b36d6d0ecaeb0eb05f0fb7412fde5aec01141c42de2ffb11e32b",
+        "shared_string_entries": 42,
+        "unused_shared_strings": 0,
+        "comment_parts": 0,
+        "external_relationships": 0,
+        "binary_parts": [],
+        "office_properties_present": [
+          "docProps/app.xml",
+          "docProps/core.xml",
+          "docProps/custom.xml"
+        ]
+      },
+      "content_assessment": {
+        "decision": "explicit_example_rows_only",
+        "data_rows": [
+          {
+            "sheet": "汇总表",
+            "row": 4,
+            "reason": "序号单元格标记“例”；其余非空行均为标题/表头；本行按填表示例复核，不公开示例原值。"
+          },
+          {
+            "sheet": "本科生补充",
+            "row": 4,
+            "reason": "序号单元格标记“例”；其余非空行均为标题/表头；本行按填表示例复核，不公开示例原值。"
+          }
+        ],
+        "real_applicant_records_found": false,
+        "properties_review": "通用软件/设备账号及软件版本/文档标识；无真实申请人身份。"
+      }
+    },
+    {
+      "archive": "xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表汇总表.xlsx",
+      "member_sha256": "32ee06278c32947d422325be73a3b637cbc417f36851baf75b560dea4ee644db",
+      "bytes": 11642,
+      "inspection": {
+        "kind": "xlsx",
+        "sheets": [
+          {
+            "sheet": "汇总表",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "0fefddec0f156ae6fda5129d7d33084093b02f0553deaede63d995c931aeb3f7"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2",
+                  "J2",
+                  "K2",
+                  "L2",
+                  "M2",
+                  "N2"
+                ],
+                "content_sha256": "bf56746a19be0ae8842ab080e7c9ea533323c6902627436c3b0e3481eeaecbdb"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "A3",
+                  "B3",
+                  "C3",
+                  "D3",
+                  "E3",
+                  "F3",
+                  "G3",
+                  "H3",
+                  "I3",
+                  "J3"
+                ],
+                "content_sha256": "9737c5a3df781b9cc477ff71faabc2644cfe8bb1ea38c3e18dd74b64e2c50163"
+              }
+            ],
+            "nonempty_cells": 25,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:N1"
+            ]
+          }
+        ],
+        "xml_parts_scanned": 11,
+        "all_xml_text_and_attributes_sha256": "4c0786fda4fcf1e0a78083ba804eaa3e630f11ef101565b60aba6dbf795c3820",
+        "shared_string_entries": 25,
+        "unused_shared_strings": 0,
+        "comment_parts": 0,
+        "external_relationships": 0,
+        "binary_parts": [],
+        "office_properties_present": [
+          "docProps/app.xml",
+          "docProps/core.xml",
+          "docProps/custom.xml"
+        ]
+      },
+      "content_assessment": {
+        "decision": "placeholder_example_only",
+        "data_rows": [
+          {
+            "sheet": "汇总表",
+            "row": 3,
+            "reason": "姓名为X占位；所在系为多个部门的斜杠选项、岗位为类别示例；其余为示范填法，无第二条填报记录。不是已确认的真实教师申请。"
+          }
+        ],
+        "real_applicant_records_found": false,
+        "properties_review": "通用软件/设备账号及软件版本/文档标识；无真实申请人身份。"
+      }
+    },
+    {
+      "archive": "xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表（类别一）.doc",
+      "member_sha256": "df485dc6f96fde33c2456830b780702432ce6a8afc00c1fd3a45ccf232f1fe47",
+      "bytes": 154624,
+      "inspection": {
+        "kind": "legacy_doc",
+        "text_sha256": "e7de729f92b0d6db5f986a1e4ce1f3cad73b4a2b5cb842abfe453377fbe0debd",
+        "text_characters": 2944,
+        "nonempty_text_lines": 41,
+        "removed_and_hidden_text_included": true,
+        "ole_streams": [
+          {
+            "stream": "\u0001CompObj",
+            "sha256": "c4d5a73c17d4f0903bfbffe6bba276111c8baf89b1b417566a5bb8f1a7ef83be"
+          },
+          {
+            "stream": "\u0005DocumentSummaryInformation",
+            "sha256": "b2c449e389b6ae7923eea666d99f91a2b821c0b5f000e63f13649f9bde23e733"
+          },
+          {
+            "stream": "\u0005SummaryInformation",
+            "sha256": "4e3d0ed0e51871c1ea21d9de3be42cd302174aa4817e7193a0965bca871430f3"
+          },
+          {
+            "stream": "1Table",
+            "sha256": "605ce1ff92a785208d0375bd88c25ca3fa1c7f2d817f09e86961d0bb62f20301"
+          },
+          {
+            "stream": "Data",
+            "sha256": "c383e2c1887cc8b07b9b746b0e84c8e632381037c0dae4a4543cc967d51c74d6"
+          },
+          {
+            "stream": "Macros/PROJECT",
+            "sha256": "9a0be5b35acbfa637bcb6b986933063897b38736b6f4e85f28aad9369cf55fd5"
+          },
+          {
+            "stream": "Macros/PROJECTwm",
+            "sha256": "05095a2db0c57eebb8ae8b966b5131067431e2036af3039af46736d50ef60f3c"
+          },
+          {
+            "stream": "Macros/VBA/Common",
+            "sha256": "2ff321c9410dddeae21c7a1da1b10d9993ae4f098e3f2fd5aa5a7bd1bd226df4"
+          },
+          {
+            "stream": "Macros/VBA/FileDialog",
+            "sha256": "e3af2bcf9e46234328a74b39b4f9b97f0657e60b68f2d882e458f92ce84b2575"
+          },
+          {
+            "stream": "Macros/VBA/RJeGov",
+            "sha256": "7ea26db78ff55c9660cb0eada9040bf26ec7b0c954ed89477615cdcfae25f6cb"
+          },
+          {
+            "stream": "Macros/VBA/ThisDocument",
+            "sha256": "5835507d70162032aada54bd02f43a684474d1182f7f6d01f9d13761380d11ce"
+          },
+          {
+            "stream": "Macros/VBA/_VBA_PROJECT",
+            "sha256": "0fa8b916f69e8b4a2b2edc3bee7b3fc7f05f70344aafa610bff1f34c51b1867b"
+          },
+          {
+            "stream": "Macros/VBA/dir",
+            "sha256": "6ff824344cf1a1564fda75e864fe21942b8188ce4a3c028f445d785ddc6f7d1b"
+          },
+          {
+            "stream": "Macros/VBA/frmSelect",
+            "sha256": "1db3d8e6ebb8db371395e20b5f3fbab15c9c40e61b45eee7025f1bc3a82306f1"
+          },
+          {
+            "stream": "Macros/frmSelect/\u0001CompObj",
+            "sha256": "057e3d39cd6e6b882c9cebfb56920db712f49cd628b35bf58e1fd544c0bea20b"
+          },
+          {
+            "stream": "Macros/frmSelect/\u0003VBFrame",
+            "sha256": "a8f19d028211959caeacd504a50950931b270d6c9bf421534d361ef75a253a5b"
+          },
+          {
+            "stream": "Macros/frmSelect/f",
+            "sha256": "e3ee35d0d39f1246f942c85ec702463be6d347c49245d4673b7bb6805e6105be"
+          },
+          {
+            "stream": "Macros/frmSelect/o",
+            "sha256": "ed5e974ba8fefca59f9d8afa18bf60d4b0b18a9228ac780836fe5080dc824c2d"
+          },
+          {
+            "stream": "WordDocument",
+            "sha256": "bcee04d27b3fcbd4ea97ca85ea17abbbe8da8323271084c25c25af3d1a5b6f60"
+          }
+        ],
+        "office_property_presence": {
+          "author": true,
+          "last_saved_by": true,
+          "title": true,
+          "subject": false,
+          "keywords": false,
+          "comments": false
+        },
+        "static_vba_and_pcode": [
+          {
+            "module": "ThisDocument.cls",
+            "sha256": "d8da3245a1e2c66d03028c729b9fb3f89002949f7d49b64de2ec6cd34b904560",
+            "bytes": 25841
+          },
+          {
+            "module": "RJeGov.bas",
+            "sha256": "1783b2714afc4326ee16c48ba94e9058d8adc786d7b95bf5f91c1b9bcf25598c",
+            "bytes": 5876
+          },
+          {
+            "module": "frmSelect.frm",
+            "sha256": "738ae0bd3ee21b59395fbf6024f7b0c2566c13a23b0c9d94b6263e8e8abda9dc",
+            "bytes": 3326
+          },
+          {
+            "module": "Common.bas",
+            "sha256": "b1d719bb02fd07f0fc5e8d24aadd2a9da119ec77eb2083f8c9401b714a2a8645",
+            "bytes": 5969
+          },
+          {
+            "module": "FileDialog.cls",
+            "sha256": "876f42db534f3574a675a201fbe99895eb152d95991609cf5e8cd4107019d00d",
+            "bytes": 4020
+          },
+          {
+            "module": "VBA_P-code.txt",
+            "sha256": "17de37f7c68dfb61fdeca3f1099aace22944becde3c6fe02e8b65468c745fa8a",
+            "bytes": 89408
+          }
+        ],
+        "office_or_macros_executed": false
+      },
+      "content_assessment": {
+        "decision": "blank_application_template",
+        "real_applicant_records_found": false,
+        "fields_review": "姓名、性别、民族、出生日期、政治面貌、学历、职务、个人履历、获奖、工作量、事迹及签名填写区为空白；仅字段标签和填写提示。",
+        "ole_review": "正文包含隐藏/删除文本的静态提取；OLE属性为模板软件/设备账号；模板VBA及P-code为办公模板逻辑，未发现真实申请人/教师资料，未执行宏。",
+        "policy_conversion_status": "本次仅隐私核查，未将DOC转换内容加入政策正文或正式检索。"
+      }
+    },
+    {
+      "archive": "xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表（类别三）.doc",
+      "member_sha256": "d649f713be9336870d0b6636558a37e527106974a2aeaea2892e819ec918ba5a",
+      "bytes": 154624,
+      "inspection": {
+        "kind": "legacy_doc",
+        "text_sha256": "84d8fe01e1ac3138717d060fa06e7f1bd27a2da28ddff717457abc2eff0a18f3",
+        "text_characters": 2877,
+        "nonempty_text_lines": 40,
+        "removed_and_hidden_text_included": true,
+        "ole_streams": [
+          {
+            "stream": "\u0001CompObj",
+            "sha256": "c4d5a73c17d4f0903bfbffe6bba276111c8baf89b1b417566a5bb8f1a7ef83be"
+          },
+          {
+            "stream": "\u0005DocumentSummaryInformation",
+            "sha256": "5e958561006cd5f5f22e063adffdd12febbbfb7d8828ac4d95a9b9fb3d34ef68"
+          },
+          {
+            "stream": "\u0005SummaryInformation",
+            "sha256": "21a7c4c3c399dc978c5c001eda5e110d3acfbc1165e232bff54e9593364eff98"
+          },
+          {
+            "stream": "1Table",
+            "sha256": "9b5b123d1fb1dd83465ad4e48d4ad986f05a7a482cb3f2ea96913509f2ee2a84"
+          },
+          {
+            "stream": "Data",
+            "sha256": "c383e2c1887cc8b07b9b746b0e84c8e632381037c0dae4a4543cc967d51c74d6"
+          },
+          {
+            "stream": "Macros/PROJECT",
+            "sha256": "9a0be5b35acbfa637bcb6b986933063897b38736b6f4e85f28aad9369cf55fd5"
+          },
+          {
+            "stream": "Macros/PROJECTwm",
+            "sha256": "05095a2db0c57eebb8ae8b966b5131067431e2036af3039af46736d50ef60f3c"
+          },
+          {
+            "stream": "Macros/VBA/Common",
+            "sha256": "2ff321c9410dddeae21c7a1da1b10d9993ae4f098e3f2fd5aa5a7bd1bd226df4"
+          },
+          {
+            "stream": "Macros/VBA/FileDialog",
+            "sha256": "e3af2bcf9e46234328a74b39b4f9b97f0657e60b68f2d882e458f92ce84b2575"
+          },
+          {
+            "stream": "Macros/VBA/RJeGov",
+            "sha256": "7ea26db78ff55c9660cb0eada9040bf26ec7b0c954ed89477615cdcfae25f6cb"
+          },
+          {
+            "stream": "Macros/VBA/ThisDocument",
+            "sha256": "5835507d70162032aada54bd02f43a684474d1182f7f6d01f9d13761380d11ce"
+          },
+          {
+            "stream": "Macros/VBA/_VBA_PROJECT",
+            "sha256": "0fa8b916f69e8b4a2b2edc3bee7b3fc7f05f70344aafa610bff1f34c51b1867b"
+          },
+          {
+            "stream": "Macros/VBA/dir",
+            "sha256": "6ff824344cf1a1564fda75e864fe21942b8188ce4a3c028f445d785ddc6f7d1b"
+          },
+          {
+            "stream": "Macros/VBA/frmSelect",
+            "sha256": "1db3d8e6ebb8db371395e20b5f3fbab15c9c40e61b45eee7025f1bc3a82306f1"
+          },
+          {
+            "stream": "Macros/frmSelect/\u0001CompObj",
+            "sha256": "057e3d39cd6e6b882c9cebfb56920db712f49cd628b35bf58e1fd544c0bea20b"
+          },
+          {
+            "stream": "Macros/frmSelect/\u0003VBFrame",
+            "sha256": "a8f19d028211959caeacd504a50950931b270d6c9bf421534d361ef75a253a5b"
+          },
+          {
+            "stream": "Macros/frmSelect/f",
+            "sha256": "e3ee35d0d39f1246f942c85ec702463be6d347c49245d4673b7bb6805e6105be"
+          },
+          {
+            "stream": "Macros/frmSelect/o",
+            "sha256": "ed5e974ba8fefca59f9d8afa18bf60d4b0b18a9228ac780836fe5080dc824c2d"
+          },
+          {
+            "stream": "WordDocument",
+            "sha256": "ef658cf1f95fa26dfee4b3b916c761df6dd41c800d7afd378a48b5a4efd28257"
+          }
+        ],
+        "office_property_presence": {
+          "author": true,
+          "last_saved_by": true,
+          "title": true,
+          "subject": false,
+          "keywords": false,
+          "comments": false
+        },
+        "static_vba_and_pcode": [
+          {
+            "module": "ThisDocument.cls",
+            "sha256": "d8da3245a1e2c66d03028c729b9fb3f89002949f7d49b64de2ec6cd34b904560",
+            "bytes": 25841
+          },
+          {
+            "module": "RJeGov.bas",
+            "sha256": "1783b2714afc4326ee16c48ba94e9058d8adc786d7b95bf5f91c1b9bcf25598c",
+            "bytes": 5876
+          },
+          {
+            "module": "frmSelect.frm",
+            "sha256": "738ae0bd3ee21b59395fbf6024f7b0c2566c13a23b0c9d94b6263e8e8abda9dc",
+            "bytes": 3326
+          },
+          {
+            "module": "Common.bas",
+            "sha256": "b1d719bb02fd07f0fc5e8d24aadd2a9da119ec77eb2083f8c9401b714a2a8645",
+            "bytes": 5969
+          },
+          {
+            "module": "FileDialog.cls",
+            "sha256": "876f42db534f3574a675a201fbe99895eb152d95991609cf5e8cd4107019d00d",
+            "bytes": 4020
+          },
+          {
+            "module": "VBA_P-code.txt",
+            "sha256": "17de37f7c68dfb61fdeca3f1099aace22944becde3c6fe02e8b65468c745fa8a",
+            "bytes": 89408
+          }
+        ],
+        "office_or_macros_executed": false
+      },
+      "content_assessment": {
+        "decision": "blank_application_template",
+        "real_applicant_records_found": false,
+        "fields_review": "姓名、性别、民族、出生日期、政治面貌、学历、职务、个人履历、获奖、工作量、事迹及签名填写区为空白；仅字段标签和填写提示。",
+        "ole_review": "正文包含隐藏/删除文本的静态提取；OLE属性为模板软件/设备账号；模板VBA及P-code为办公模板逻辑，未发现真实申请人/教师资料，未执行宏。",
+        "policy_conversion_status": "本次仅隐私核查，未将DOC转换内容加入政策正文或正式检索。"
+      }
+    },
+    {
+      "archive": "xinghuo-forms.rar",
+      "member": "2026年星火奖教金申请表/福州大学2026年“星火奖教奖学金”申请表（类别二）.doc",
+      "member_sha256": "f3adb67a2b63ccf86c392a49167f7fdde45199eb1b14ab4214ac4c0a4f25add9",
+      "bytes": 154624,
+      "inspection": {
+        "kind": "legacy_doc",
+        "text_sha256": "21df037d7e046108d364fe4bb78e390e1fbfbbac25cb7f90e3e5dc22dc785077",
+        "text_characters": 2801,
+        "nonempty_text_lines": 39,
+        "removed_and_hidden_text_included": true,
+        "ole_streams": [
+          {
+            "stream": "\u0001CompObj",
+            "sha256": "c4d5a73c17d4f0903bfbffe6bba276111c8baf89b1b417566a5bb8f1a7ef83be"
+          },
+          {
+            "stream": "\u0005DocumentSummaryInformation",
+            "sha256": "55f8d510dccd750af8af404c39b74905be10e2a888a44dbdfa7ebcf5c0ecbf27"
+          },
+          {
+            "stream": "\u0005SummaryInformation",
+            "sha256": "21e8efb0e5ca633e163483ec2a7b7c0673c8cd332712806fdc5e7a6729374df6"
+          },
+          {
+            "stream": "1Table",
+            "sha256": "5ecd38fa11ba1583177c1527bb9761b744f02fe4123663b26935e62b1c223fc5"
+          },
+          {
+            "stream": "Data",
+            "sha256": "c383e2c1887cc8b07b9b746b0e84c8e632381037c0dae4a4543cc967d51c74d6"
+          },
+          {
+            "stream": "Macros/PROJECT",
+            "sha256": "9a0be5b35acbfa637bcb6b986933063897b38736b6f4e85f28aad9369cf55fd5"
+          },
+          {
+            "stream": "Macros/PROJECTwm",
+            "sha256": "05095a2db0c57eebb8ae8b966b5131067431e2036af3039af46736d50ef60f3c"
+          },
+          {
+            "stream": "Macros/VBA/Common",
+            "sha256": "2ff321c9410dddeae21c7a1da1b10d9993ae4f098e3f2fd5aa5a7bd1bd226df4"
+          },
+          {
+            "stream": "Macros/VBA/FileDialog",
+            "sha256": "e3af2bcf9e46234328a74b39b4f9b97f0657e60b68f2d882e458f92ce84b2575"
+          },
+          {
+            "stream": "Macros/VBA/RJeGov",
+            "sha256": "7ea26db78ff55c9660cb0eada9040bf26ec7b0c954ed89477615cdcfae25f6cb"
+          },
+          {
+            "stream": "Macros/VBA/ThisDocument",
+            "sha256": "5835507d70162032aada54bd02f43a684474d1182f7f6d01f9d13761380d11ce"
+          },
+          {
+            "stream": "Macros/VBA/_VBA_PROJECT",
+            "sha256": "0fa8b916f69e8b4a2b2edc3bee7b3fc7f05f70344aafa610bff1f34c51b1867b"
+          },
+          {
+            "stream": "Macros/VBA/dir",
+            "sha256": "6ff824344cf1a1564fda75e864fe21942b8188ce4a3c028f445d785ddc6f7d1b"
+          },
+          {
+            "stream": "Macros/VBA/frmSelect",
+            "sha256": "1db3d8e6ebb8db371395e20b5f3fbab15c9c40e61b45eee7025f1bc3a82306f1"
+          },
+          {
+            "stream": "Macros/frmSelect/\u0001CompObj",
+            "sha256": "057e3d39cd6e6b882c9cebfb56920db712f49cd628b35bf58e1fd544c0bea20b"
+          },
+          {
+            "stream": "Macros/frmSelect/\u0003VBFrame",
+            "sha256": "a8f19d028211959caeacd504a50950931b270d6c9bf421534d361ef75a253a5b"
+          },
+          {
+            "stream": "Macros/frmSelect/f",
+            "sha256": "e3ee35d0d39f1246f942c85ec702463be6d347c49245d4673b7bb6805e6105be"
+          },
+          {
+            "stream": "Macros/frmSelect/o",
+            "sha256": "ed5e974ba8fefca59f9d8afa18bf60d4b0b18a9228ac780836fe5080dc824c2d"
+          },
+          {
+            "stream": "WordDocument",
+            "sha256": "da749d58a35a3ed5ee08073919e557c76ea4287a9c4bbd80d515b2fc8a351d24"
+          }
+        ],
+        "office_property_presence": {
+          "author": true,
+          "last_saved_by": true,
+          "title": true,
+          "subject": false,
+          "keywords": false,
+          "comments": false
+        },
+        "static_vba_and_pcode": [
+          {
+            "module": "ThisDocument.cls",
+            "sha256": "d8da3245a1e2c66d03028c729b9fb3f89002949f7d49b64de2ec6cd34b904560",
+            "bytes": 25841
+          },
+          {
+            "module": "RJeGov.bas",
+            "sha256": "1783b2714afc4326ee16c48ba94e9058d8adc786d7b95bf5f91c1b9bcf25598c",
+            "bytes": 5876
+          },
+          {
+            "module": "frmSelect.frm",
+            "sha256": "738ae0bd3ee21b59395fbf6024f7b0c2566c13a23b0c9d94b6263e8e8abda9dc",
+            "bytes": 3326
+          },
+          {
+            "module": "Common.bas",
+            "sha256": "b1d719bb02fd07f0fc5e8d24aadd2a9da119ec77eb2083f8c9401b714a2a8645",
+            "bytes": 5969
+          },
+          {
+            "module": "FileDialog.cls",
+            "sha256": "876f42db534f3574a675a201fbe99895eb152d95991609cf5e8cd4107019d00d",
+            "bytes": 4020
+          },
+          {
+            "module": "VBA_P-code.txt",
+            "sha256": "17de37f7c68dfb61fdeca3f1099aace22944becde3c6fe02e8b65468c745fa8a",
+            "bytes": 89408
+          }
+        ],
+        "office_or_macros_executed": false
+      },
+      "content_assessment": {
+        "decision": "blank_application_template",
+        "real_applicant_records_found": false,
+        "fields_review": "姓名、性别、民族、出生日期、政治面貌、学历、职务、个人履历、获奖、工作量、事迹及签名填写区为空白；仅字段标签和填写提示。",
+        "ole_review": "正文包含隐藏/删除文本的静态提取；OLE属性为模板软件/设备账号；模板VBA及P-code为办公模板逻辑，未发现真实申请人/教师资料，未执行宏。",
+        "policy_conversion_status": "本次仅隐私核查，未将DOC转换内容加入政策正文或正式检索。"
+      }
+    }
+  ]
+}

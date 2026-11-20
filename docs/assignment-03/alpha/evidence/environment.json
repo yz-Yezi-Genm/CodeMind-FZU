@@ -10,7 +10,7 @@
     {
       "name": "unittest",
       "args": [
-        "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+        "<REPO>/.venv/Scripts/python.exe",
         "-m",
         "unittest",
         "discover",
@@ -23,7 +23,7 @@
     {
       "name": "demo",
       "args": [
-        "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+        "<REPO>/.venv/Scripts/python.exe",
         "-m",
         "examples.agent_workflow_demo"
       ],

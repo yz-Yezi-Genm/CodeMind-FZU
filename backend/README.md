@@ -157,6 +157,11 @@ PDF/OCR、文件存储服务和持久化入库仍待接入。
 
 `backend.retrieval.LocalBM25Retriever` 实现 `KnowledgeIndexer` 和 `Retriever`。两个接口共用同一内存实例。配置 `file_root` 可检查真实资料文件及登记的 SHA-256。检索仅返回已明确开放的资料片段，并保留文档、版本和来源定位。
 
+统一加载与只读查询入口（PR #35）：
+- `load_approved_alpha_retriever()` / `build_approved_alpha_retriever()`：从 `knowledge_base/processed/alpha/approved/` 加载人工审核通过（要求严格满足 `retrieval_status=enabled` 且 `temporal_notes["human_approved"] is True`；若存在 `manifest.json` 亦须显式标记 `human_approved: true`）的正式资料包，并拒绝符号链接与目录越界。
+- `LocalBM25Retriever.get_document_metadata(version_id: UUID)`（示例：`retriever.get_document_metadata(chunk.version_id)`）与 `get_parsed_chunk(chunk_id: UUID)`：供业务规则侧只读查询元数据与原始片段（返回深拷贝；不存在、未开放或重索引被剔除时返回 `None` 不抛异常）。
+- **正式组装边界**：`build_approved_alpha_retriever()` 会丢弃 `AlphaCorpusLoadReport`；`load_approved_alpha_retriever()` 会将 `partial`（含来源未就绪导致 `indexed_count=0`）也计入 `loaded_packages`，且默认 `allow_missing=True` 缺目录时返回空索引与空报告。由于目录缺失与空目录都会返回空的 `index_results`（以及各 `IndexResult.warnings`）和 `total_indexed_chunks=0`，正式后端入口不能仅凭空报告判断知识库正常，应在正式组装时传入 `allow_missing=False` 或显式检查 `report.corpus_dir.is_dir()`，并核对 `report.index_results`（保守约定要求完整 `indexed` 且核查每条 `IndexResult.warnings`）与 `report.total_indexed_chunks`，以区分“知识库目录缺失/未就绪”与“正常无命中”。
+
 ```bash
 python -X utf8 -m scripts.demo_local_retrieval
 python -X utf8 -m scripts.demo_local_retrieval --real
