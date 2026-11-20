@@ -41,6 +41,8 @@ from backend.services.alpha_business_rules import (
     QUESTION_SEMESTER,
     QUESTION_TOP_EIGHT,
     QUESTION_TOPIC,
+    _level,
+    _rank,
     alpha_clarification_rule,
     build_alpha_evidence_check,
 )
@@ -357,7 +359,6 @@ def test_default_entry_fails_closed_without_metadata() -> None:
         ("我是大二，上学期有一门必修挂了，还能评奖学金吗？", SCHOOL_SCHOLARSHIP),
         ("推免复试都考什么，怎么算分？", RECOMMENDATION_REVIEW),
         ("2027 年计算机技术专硕招多少推免生？", RECOMMENDATION_REVIEW),
-        ("蓝桥杯省赛二等奖在综测里能加几分？", CATALOG),
     ],
 )
 def test_applicable_evidence_is_kept(query: str, chunk: RetrievedChunk) -> None:
@@ -372,6 +373,8 @@ def test_applicable_evidence_is_kept(query: str, chunk: RetrievedChunk) -> None:
     [
         # 用途不同：创新学分问题不能拿综测分档回答
         ("数学建模竞赛国家级二等奖，团队作品，我是第一完成人，创新学分原始分是多少？", EVALUATION_BYLAW),
+        # 综测定档：教务处级别认定目录不能代替学科竞赛等级目录
+        ("蓝桥杯省赛二等奖在综测里能加几分？", CATALOG),
         # 赛事类别无法由目录确定
         ("蓝桥杯省赛二等奖在综测里能加几分？", EVALUATION_BYLAW),
         # 报名通知不是认定依据
@@ -710,3 +713,219 @@ def test_xinghuo_three_part_structure() -> None:
     )
     assert student(_request(student_query), XINGHUO) is True
     assert student(_request(teacher_query), XINGHUO) is False
+
+
+# --------------------------------------------------------------------------- #31 真实元数据回归
+
+
+COLLEGE_2026 = _chunk(
+    index=20,
+    title="关于做好福州大学计算机与大数据学院各类院级奖学金评选工作的通知",
+    content="学科竞赛类爱国者之星奖学金 5000 元、5 名，评选年度获省级三等奖以上。",
+)
+QUALIFICATION_2027 = _chunk(
+    index=21,
+    title="计算机与大数据学院（软件学院）2027年推荐优秀应届本科毕业生免试攻读研究生工作方案",
+    content="推荐资格按综合成绩排序，申请截止 2026-09-09。",
+    timeliness=TimelinessVerificationStatus.HISTORICAL,
+)
+EVAL_CATALOG = _chunk(
+    index=22,
+    title="福州大学学生文化科技创新创业奖学金学科竞赛等级目录（2026年版）",
+    content="全国大学生数学建模竞赛为 A 类赛事，省赛按 B 档计分。",
+)
+
+
+def test_credit_catalog_only_serves_innovation_credit() -> None:
+    """教务处级别认定目录能答创新学分，不能答综测加分。"""
+    meta = _meta(
+        CATALOG,
+        record_code="福大-2026-竞赛项目级别认定",
+        applicability={
+            "适用年级": "参加相关竞赛并申请学分认定的本科生，含大一至大三",
+            "适用专业": "全校相关本科专业",
+            "适用对象": "竞赛学分认定申请者；教师绩效条文不作为学生问答范围",
+        },
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((CATALOG, meta)), chunk_lookup=_student_locator, today=lambda: TODAY
+    )
+    credit_query = "全国大学生数学建模竞赛国家二等奖，团队作品，我为第一完成人，创新学分原始分是多少？"
+    assert check(_request(credit_query), CATALOG) is True
+    assert check(_request("全国大学生数学建模竞赛国家级二等奖，综测能加几分？"), CATALOG) is False
+
+
+def test_evaluation_catalog_required_for_national_competition() -> None:
+    """综测定档只认学科竞赛等级目录，缺这份资料就不能给分。"""
+    meta = _meta(
+        EVAL_CATALOG,
+        record_code="福大-2026-学科竞赛等级目录",
+        applicability={"适用年级": "全体本科生", "适用专业": "全校相关本科专业"},
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((EVAL_CATALOG, meta)), chunk_lookup=_student_locator, today=lambda: TODAY
+    )
+    assert check(_request("全国大学生数学建模竞赛国家级二等奖，综测能加几分？"), EVAL_CATALOG) is True
+    assert check(_request("全国大学生数学建模竞赛国家级二等奖，综测能加几分？"), CATALOG) is False
+
+
+def test_competition_name_with_quanguo_is_not_national() -> None:
+    """竞赛名称含“全国”不等于国家级，省赛要按省部级识别。"""
+    assert _level("全国大学生数学建模竞赛省赛二等奖") == "provincial"
+    assert _level("全国大学生数学建模竞赛") is None
+    assert _level("全国大学生数学建模竞赛国家级二等奖") == "national"
+
+
+def test_ninth_rank_is_parsed_and_not_reasked() -> None:
+    """第九名及以后已经说清，不再重复追问前八名。"""
+    assert _rank("团队作品，我是第九完成人") == 9
+    assert _rank("排名第 12") == 12
+    request = _request("数学建模竞赛省赛二等奖，团队作品，我是第九完成人，创新学分原始分是多少？")
+    assert alpha_clarification_rule(request) is None
+
+
+def test_negative_first_unit_and_current_semester_are_not_reasked() -> None:
+    """“不是第一署名单位”“本学期成果”已经回答，不再追问。"""
+    base = "综测里我们团队的校级竞赛最高等级奖能加多少分？"
+    explicit = base + "我是第二完成人，本学期取得的，不是以福州大学为第一署名单位。"
+    assert alpha_clarification_rule(_request(explicit)) is None
+    # 未说明时仍然逐项追问，且仍按两参数签名返回 str
+    assert alpha_clarification_rule(_request(base)) == QUESTION_ORDER
+
+
+def test_review_qualification_material_is_review() -> None:
+    """复试资格审查、材料属于复试环节，不应被归为校内推荐资格。"""
+    query = "推免复试资格审查要交哪些材料？"
+    assert alpha_clarification_rule(_request(query)) is None
+    meta = _meta(
+        RECOMMENDATION_REVIEW,
+        record_code="计算机学院-2027-推免复试",
+        applicability={"适用年级": "2027届应届本科毕业生", "适用专业": "计算机科学与技术"},
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((RECOMMENDATION_REVIEW, meta)), today=lambda: TODAY
+    )
+    assert check(_request(query), RECOMMENDATION_REVIEW) is True
+
+
+def test_recommendation_qualification_plan_distinct_from_review() -> None:
+    """2027 届推荐资格方案与学院复试方案不是同一种资料。"""
+    meta = _meta(
+        QUALIFICATION_2027,
+        record_code="计算机学院-2027-推免资格推荐",
+        applicability={
+            "适用年级": "2027届应届本科毕业生；大一至大三仅升学准备参考",
+            "适用专业": "计算机科学与技术（含实验班）、数据科学与大数据技术、人工智能、信息安全、软件工程",
+            "适用对象": "学院申请取得本科推免推荐资格的学生",
+            "目标届别": "2027届",
+            "使用限制": "不适用于下一届；不可回答当前报名开放",
+        },
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((QUALIFICATION_2027, meta)), today=lambda: TODAY
+    )
+    qualification_query = "2027届推免推荐资格怎么排名？"
+    review_query = "推免复试资格审查要交哪些材料？"
+    assert check(_request(qualification_query), QUALIFICATION_2027) is True
+    assert check(_request(review_query), QUALIFICATION_2027) is False
+
+    review_meta = _meta(
+        RECOMMENDATION_REVIEW,
+        record_code="计算机学院-2027-推免复试",
+        applicability={"适用年级": "2027届应届本科毕业生", "适用专业": "计算机科学与技术"},
+    )
+    review_check = build_alpha_evidence_check(
+        _lookup_for((RECOMMENDATION_REVIEW, review_meta)), today=lambda: TODAY
+    )
+    assert review_check(_request(qualification_query), RECOMMENDATION_REVIEW) is False
+
+
+def test_dept_annual_ambiguity_blocks_answers() -> None:
+    """院级 2026 通知标注了年度歧义，不能凭 record_code 的年份当作 2026 适用。"""
+    meta = _meta(
+        COLLEGE_2026,
+        record_code="计算机学院-2026-院级奖学金",
+        applicability={
+            "学院": "福州大学计算机与大数据学院",
+            "对象": "正式学籍、在读全日制本科生和研究生，各专项另有限制",
+            "年度歧义": "网页发布2026-04-13；首段2025年度；待学院确认，不自行纠正",
+            "学业类": "原文10名本科生",
+        },
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((COLLEGE_2026, meta)), today=lambda: TODAY
+    )
+    query = "院级学科竞赛类的爱国者之星奖学金，金额、名额和条件是什么？"
+    assert check(_request(query), COLLEGE_2026) is False
+
+
+def test_college_field_rejects_other_college() -> None:
+    """元数据限定本学院时，其他学院学生的问题不适用。"""
+    meta = _meta(
+        XINGHUO,
+        record_code="计算机学院-2026-星火奖学金",
+        applicability={
+            "学院": "福州大学计算机与大数据学院",
+            "学生对象": "正式学籍、在读全日制本科生和研究生",
+            "教师条款": "全文为完整性保留，学生问答不得引用教师资格、名额或金额",
+            "年度": "2026年沿用2025细则，申请期已过",
+        },
+    )
+    lookup = _lookup_for((XINGHUO, meta))
+
+    def student_heading(chunk_id):
+        # 契约里 locator_note 是字符串，加载器会把 heading_path 结构序列化成 JSON。
+        return ParsedChunk(
+            chunk_no=1,
+            content=XINGHUO.content,
+            source_file_key="xinghuo.json",
+            locator_note=json.dumps(
+                {
+                    "coordinate_system": "decoded_text_lf_bom_removed",
+                    "heading_path": [{
+                        "level": 2,
+                        "title": "关于做好2026年福州大学“星火奖教奖学金”评选工作的通知 | 福州大学“星火奖学金”评选细则（学生）",
+                    }],
+                },
+                ensure_ascii=False,
+            ),
+        )
+
+    check = build_alpha_evidence_check(
+        lookup, chunk_lookup=student_heading, today=lambda: TODAY
+    )
+    assert check(_request("我是数学与统计学院的学生，能申请星火奖学金吗？"), XINGHUO) is False
+    assert check(_request("星火奖学金的学生评选条件是什么？"), XINGHUO) is True
+
+
+def test_real_locator_note_dict_heading_path() -> None:
+    """#31 的 locator_note 是 dict + heading_path[{level,title}]，要能直接解析。"""
+    lookup = _full_lookup()
+
+    def heading(title: str):
+        return lambda chunk_id: ParsedChunk(
+            chunk_no=1,
+            content=XINGHUO.content,
+            source_file_key="xinghuo.json",
+            locator_note=json.dumps(
+                {
+                    "coordinate_system": "decoded_text_lf_bom_removed",
+                    "heading_path": [{"level": 2, "title": title}],
+                    "note": "本输入文件定位；不是官方原件页码。",
+                },
+                ensure_ascii=False,
+            ),
+        )
+
+    student = build_alpha_evidence_check(
+        lookup,
+        chunk_lookup=heading("关于做好2026年福州大学“星火奖教奖学金”评选工作的通知 | 福州大学“星火奖学金”评选细则"),
+        today=lambda: TODAY,
+    )
+    teacher = build_alpha_evidence_check(
+        lookup,
+        chunk_lookup=heading("关于做好2026年福州大学“星火奖教奖学金”评选工作的通知 | 福州大学“星火奖教金”评选细则"),
+        today=lambda: TODAY,
+    )
+    assert student(_request("星火奖学金的学生评选条件是什么？"), XINGHUO) is True
+    assert teacher(_request("星火奖学金的学生评选条件是什么？"), XINGHUO) is False

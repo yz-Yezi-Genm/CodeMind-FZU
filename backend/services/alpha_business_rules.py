@@ -108,10 +108,15 @@ _AWARD_GRADE = re.compile(
 )
 _TEAM = re.compile(r"团队|集体|我们|合作|组队")
 _INDIVIDUAL = re.compile(r"个人参赛|个人项目|独立完成|一个人")
-_RANK = re.compile(r"第([一二三四五六七八1-8])完成人|第([一二三四五六七八1-8])名|排名第([一二三四五六七八1-8])")
-_ORDER = re.compile(r"第[一二三四五六七八1-8]完成人|完成人排序|排序第")
-_SEMESTER = re.compile(r"上一学期|上学期|本学期|这学期|学年")
-_FIRST_UNIT = re.compile(r"第一署名|署名单位|福州大学为第一")
+_RANK = re.compile(
+    r"第([一二三四五六七八九十]{1,2}|\d{1,2})\s*(?:完成人|作者|名)|排名第\s*([一二三四五六七八九十]{1,2}|\d{1,2})"
+)
+_ORDER = re.compile(r"第[一二三四五六七八九十]{1,2}\s*(?:完成人|作者)|完成人排序|排序第")
+_SEMESTER = re.compile(r"上一学期|上学期|上个学期|前一学期|本学期|这学期|这一学期|下学期|去年|前年|学年")
+_FIRST_UNIT = re.compile(r"第一署名|署名单位|第一单位")
+_FIRST_UNIT_NEGATIVE = re.compile(r"不是|并非|没有|未以|不属于|非第一")
+_SEMESTER_LAST = re.compile(r"上一学期|上学期|上个学期|前一学期")
+_SEMESTER_OTHER = re.compile(r"本学期|这学期|这一学期|下学期|去年|前年|两年前")
 
 _SCHOLARSHIP_NATIONAL = re.compile(r"国家奖学金|国家励志|励志奖学金")
 _SCHOLARSHIP_CULTECH = re.compile(r"文化科技创新创业奖学金")
@@ -143,13 +148,23 @@ _CS_FAMILY = re.compile(r"计算机|软件|人工智能|数据科学|信息安�
 _GRADE = re.compile(r"大[一二三四]|[一二三四]年级|20\d{2}\s*级")
 _PERSONAL = re.compile(r"我(?!们)|本人|我自己")
 _EXTERNAL_SCHOOL = re.compile(r"其他学院|别的学院|外校|其他学校|别的学校")
+_EXTERNAL_COLLEGE = re.compile(
+    r"其他学院|别的学院|外院"
+    r"|数学与统计学院|外国语学院|经济与管理学院|法学院|人文社会科学学院"
+    r"|土木工程学院|机械工程及自动化学院|化学学院|物理与信息工程学院"
+    r"|生物科学与工程学院|材料科学与工程学院|电气工程与自动化学院|建筑与城乡规划学院"
+)
 
 _KIND_CREDIT = "credit_bylaw"
 _KIND_EVALUATION = "evaluation_bylaw"
 _KIND_SCHOLARSHIP = "scholarship_bylaw"
 _KIND_DEPT_SCHOLARSHIP = "dept_scholarship"
-_KIND_RECOMMENDATION = "recommendation_review"
-_KIND_CATALOG = "competition_catalog"
+_KIND_RECOMMENDATION_REVIEW = "recommendation_review"
+_KIND_RECOMMENDATION_QUALIFICATION = "recommendation_qualification"
+# 教务处《大学生学科竞赛级别认定结果》：只服务创新学分认定与级别归属。
+_KIND_CREDIT_CATALOG = "competition_credit_catalog"
+# 《学生文化科技创新创业奖学金学科竞赛等级目录》：综测 A+/A/A-/B/C 定档依据。
+_KIND_EVAL_CATALOG = "competition_evaluation_catalog"
 _KIND_EVENT = "event_notice"
 _KIND_COURSE = "course_rules"
 _KIND_OTHER = "other"
@@ -168,7 +183,6 @@ class _DocumentFacts:
     applicability: dict[str, str] | None
     deadline: date | None
     has_metadata: bool
-    has_metadata: bool = False
 
 
 def bind_metadata_lookup(lookup: MetadataLookup | None) -> None:
@@ -278,9 +292,17 @@ def _purpose(text: str) -> str | None:
 
 
 def _level(text: str) -> str | None:
-    for name, pattern in _LEVELS:
-        if pattern.search(text):
-            return name
+    """级别只看明确写出的奖项级别；竞赛名称里的“全国”不等于国家级。"""
+    if re.search(r"国际级|国际性|国际竞赛", text):
+        return "international"
+    if re.search(r"国家级|国家[特一二三]?等(?:奖)?|国家奖|全国奖|全国总决赛|国赛", text):
+        return "national"
+    if re.search(r"省部级|省级|省赛|赛区|省[一二三]等", text):
+        return "provincial"
+    if re.search(r"校级|学校级", text):
+        return "school"
+    if re.search(r"院级|学院级", text):
+        return "college"
     return None
 
 
@@ -302,7 +324,44 @@ def _rank(text: str) -> int | None:
     if not match:
         return None
     token = next(group for group in match.groups() if group)
-    return int(token) if token.isdigit() else "一二三四五六七八".index(token) + 1
+    return _rank_number(token)
+
+
+_DIGITS = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+
+
+def _rank_number(token: str) -> int | None:
+    if token.isdigit():
+        return int(token)
+    if token == "十":
+        return 10
+    if token.startswith("十"):
+        return 10 + _DIGITS.get(token[1:], 0)
+    if "十" in token:
+        head, _, tail = token.partition("十")
+        base = _DIGITS.get(head, 0) * 10
+        return base + (_DIGITS.get(tail, 0) if tail else 0)
+    return _DIGITS.get(token)
+
+
+def _first_unit_state(text: str) -> bool | None:
+    """第一署名单位是肯定、否定还是未说明。"""
+    if not _FIRST_UNIT.search(text):
+        return None
+    if _FIRST_UNIT_NEGATIVE.search(text):
+        return False
+    if re.search(r"(以|是).{0,8}(福州大学|福大).{0,6}(为|作为)?第一|第一署名.{0,4}(福州大学|福大)", text):
+        return True
+    return None
+
+
+def _semester_state(text: str) -> bool | None:
+    """成果是否落在上一学期。"""
+    if _SEMESTER_LAST.search(text):
+        return True
+    if _SEMESTER_OTHER.search(text):
+        return False
+    return None
 
 
 def _years(text: str) -> set[int]:
@@ -331,7 +390,13 @@ def _scholarship_category(text: str) -> str | None:
     return None
 
 
+_REVIEW_PRIORITY = re.compile(r"复试|面试|机试|招生计划|招生名额|接收推免")
+
+
 def _recommendation_object(text: str) -> str | None:
+    # 复试资格审查、复试材料属于复试环节，不能因为出现“资格”就归到推荐资格。
+    if _REVIEW_PRIORITY.search(text):
+        return REVIEW
     if _RECOMMENDATION_QUALIFICATION.search(text):
         return QUALIFICATION
     if _RECOMMENDATION_REVIEW.search(text):
@@ -367,15 +432,16 @@ def _clarify_competition(text: str) -> str | None:
     if team is None:
         return QUESTION_FORMAT
     if team and purpose == PURPOSE_CREDIT:
-        rank = _rank(text)
-        if rank is None or rank > 8:
+        # 只在前八名之外未说明时追问；已经说清第九名及以后不再重复追问。
+        if _rank(text) is None:
             return QUESTION_TOP_EIGHT
     if team and purpose == PURPOSE_EVALUATION:
-        if not _ORDER.search(text):
+        if _rank(text) is None and not _ORDER.search(text):
             return QUESTION_ORDER
-        if not _SEMESTER.search(text):
+        # 明确说“本学期/去年”已经回答了学期问题，不再追问；只问尚未说明的情况。
+        if _semester_state(text) is None:
             return QUESTION_SEMESTER
-        if not _FIRST_UNIT.search(text):
+        if _first_unit_state(text) is None:
             return QUESTION_FIRST_UNIT
     return None
 
@@ -481,19 +547,21 @@ def _basic_gates(chunk: RetrievedChunk, today: date) -> bool:
 
 def _check_competition(text: str, purpose: str | None, kind: str) -> bool:
     if _LEVEL_LOOKUP_QUESTION.search(text):
-        return kind == _KIND_CATALOG
+        return kind == _KIND_CREDIT_CATALOG
     if purpose == PURPOSE_RECOMMENDATION:
         return False
     if purpose == PURPOSE_CREDIT:
-        return kind in {_KIND_CREDIT, _KIND_CATALOG}
+        # 创新学分只认教务处级别认定目录与学分认定办法。
+        return kind in {_KIND_CREDIT, _KIND_CREDIT_CATALOG}
     if purpose == PURPOSE_EVALUATION:
         level = _level(text)
         if level is None:
             return False
         if level in {"international", "national", "provincial"}:
-            # 没有等级目录就无法确定 A+/A/A-/B/C 档，不能拿分档表充当结论。
-            return kind == _KIND_CATALOG
-        return kind in {_KIND_EVALUATION, _KIND_CATALOG}
+            # 综测 A+/A/A-/B/C 只能由学科竞赛等级目录定档；教务处级别认定目录不顶替。
+            return kind == _KIND_EVAL_CATALOG
+        # 校级、院级两档在综评办法里直接写明，不需要等级目录。
+        return kind in {_KIND_EVALUATION, _KIND_EVAL_CATALOG}
     return False
 
 
@@ -513,10 +581,13 @@ def _check_scholarship(text: str, kind: str, today: date) -> bool:
 
 def _check_recommendation(text: str, kind: str) -> bool:
     obj = _recommendation_object(text)
+    if obj == REVIEW:
+        # 复试、材料、招生计划只认学院接收推免的复试方案。
+        return kind == _KIND_RECOMMENDATION_REVIEW
     if obj == QUALIFICATION or (obj is None and _PERSONAL.search(text)):
-        # 校内推免资格推荐办法未入库，复试方案不能代替资格门槛。
-        return False
-    return kind == _KIND_RECOMMENDATION
+        # 推荐资格只认学院推荐资格方案；校级办法未入库，复试方案不能代替。
+        return kind == _KIND_RECOMMENDATION_QUALIFICATION
+    return kind == _KIND_RECOMMENDATION_QUALIFICATION
 
 
 # --------------------------------------------------------------------------- 元数据与适用范围
@@ -541,9 +612,23 @@ ROLE_SHARED = "shared"
 
 
 def _section_text(note: object) -> str:
-    """章节说明可能是纯文本，也可能是含 heading_path 的 JSON 字符串。"""
+    """章节说明可能是纯文本、dict，或含 heading_path 的 JSON 字符串。"""
     if note is None:
         return ""
+    if isinstance(note, dict):
+        parts: list[str] = []
+        heading = note.get("heading_path")
+        if isinstance(heading, list):
+            for item in heading:
+                if isinstance(item, dict):
+                    title = item.get("title") or item.get("heading")
+                    if title:
+                        parts.append(str(title))
+                else:
+                    parts.append(str(item))
+        elif heading:
+            parts.append(str(heading))
+        return " | ".join(part for part in parts if part)
     if not isinstance(note, str):
         return str(note)
     text = note.strip()
@@ -654,8 +739,14 @@ def _document_facts(chunk: RetrievedChunk, lookup: MetadataLookup | None) -> _Do
 def _classify(facts: _DocumentFacts) -> str:
     code = facts.record_code or ""
     title = facts.title or ""
+    scope = f"{code}{title}"
+    # 综测定档目录与教务处级别认定目录不是同一份资料，先区分再落到别的类型。
+    if "学科竞赛等级目录" in scope or (
+        "文化科技创新创业" in scope and "目录" in scope
+    ):
+        return _KIND_EVAL_CATALOG
     if "竞赛项目级别认定" in code or "竞赛级别认定" in title or "级别认定结果" in title:
-        return _KIND_CATALOG
+        return _KIND_CREDIT_CATALOG
     if "创新创业学分认定" in code or ("创新创业" in title and "学分认定" in title):
         return _KIND_CREDIT
     if "综评" in code or "综合素质评价" in title:
@@ -664,8 +755,13 @@ def _classify(facts: _DocumentFacts) -> str:
         return _KIND_DEPT_SCHOLARSHIP
     if "本科奖学金" in code or "奖学金评定管理办法" in title:
         return _KIND_SCHOLARSHIP
-    if "推免复试" in code or "推免复试" in title or "免试攻读研究生" in title:
-        return _KIND_RECOMMENDATION
+    # 学院接收推免的复试方案与学院推荐资格方案是两份资料。
+    if "推免复试" in code or "推免复试" in title or "复试方案" in title or "复试实施细则" in title:
+        return _KIND_RECOMMENDATION_REVIEW
+    if "推免资格推荐" in code or "推荐资格" in scope or "推免资格" in scope:
+        return _KIND_RECOMMENDATION_QUALIFICATION
+    if "免试攻读研究生" in title:
+        return _KIND_RECOMMENDATION_QUALIFICATION
     if "蓝桥杯" in title:
         return _KIND_EVENT
     if "课程考核" in title or "成绩记载" in title:
@@ -673,9 +769,31 @@ def _classify(facts: _DocumentFacts) -> str:
     return _KIND_OTHER
 
 
+_YEAR_AMBIGUITY_KEY = re.compile(r"年度歧义|年度|评奖年度|考核年度")
+
+
+def _year_ambiguous(facts: _DocumentFacts) -> bool:
+    """元数据明确标注年度歧义时，不能凭 record_code 的年份认作适用年度。"""
+    app = facts.applicability or {}
+    for key, value in app.items():
+        if "歧义" not in str(key):
+            continue
+        text = str(value)
+        if text.strip() and not re.fullmatch(r"无|否|none|-", text.strip(), re.I):
+            return True
+    return False
+
+
 def _year_conflict(text: str, kind: str, facts: _DocumentFacts, today: date) -> bool:
-    if kind not in {_KIND_DEPT_SCHOLARSHIP, _KIND_RECOMMENDATION}:
+    if kind not in {
+        _KIND_DEPT_SCHOLARSHIP,
+        _KIND_RECOMMENDATION_REVIEW,
+        _KIND_RECOMMENDATION_QUALIFICATION,
+    }:
         return False
+    if _year_ambiguous(facts):
+        # 发布年度与正文考核年度存疑时，一律不用于作答。
+        return True
     doc_year = _document_year(facts)
     if doc_year is None:
         # 年度类通知必须能确认适用年度，否则不用于作答。
@@ -690,7 +808,7 @@ def _year_conflict(text: str, kind: str, facts: _DocumentFacts, today: date) -> 
 def _document_year(facts: _DocumentFacts) -> int | None:
     """适用年度只取明确标注的年度口径，不拿发布日期当适用年度。"""
     app = facts.applicability or {}
-    for key in ("适用年度", "适用届别", "适用学年", "适用年份"):
+    for key in ("适用年度", "适用届别", "适用学年", "适用年份", "目标届别", "年度"):
         match = re.search(r"20\d{2}", str(app.get(key) or ""))
         if match:
             return int(match.group())
@@ -717,15 +835,38 @@ def _deadline_conflict(text: str, facts: _DocumentFacts, today: date) -> bool:
     return bool(_AVAILABILITY_QUESTION.search(text))
 
 
+_GRADE_KEYS = ("适用年级", "年级", "学生对象", "对象", "适用对象", "招生对象")
+_MAJOR_KEYS = ("适用专业", "专业", "招生专业")
+_TARGET_KEYS = ("适用对象", "对象", "学生对象", "招生对象")
+_COLLEGE_KEYS = ("学院", "适用学院", "所属学院")
+
+
+def _first_value(app: dict[str, str], keys: tuple[str, ...]) -> str:
+    for key in keys:
+        value = app.get(key)
+        text = str(value or "").strip()
+        if text:
+            return text
+    return ""
+
+
 def _applicability(text: str, facts: _DocumentFacts) -> bool | None:
     app = facts.applicability or {}
-    grade_text = str(app.get("适用年级") or "")
-    major_text = str(app.get("适用专业") or "")
-    target_text = str(app.get("适用对象") or "")
+    # #31 实际元数据里年级/专业/对象分别落在 适用年级 / 学生对象 / 对象 / 学院 等键上。
+    grade_text = _first_value(app, _GRADE_KEYS)
+    major_text = _first_value(app, _MAJOR_KEYS)
+    target_text = _first_value(app, _TARGET_KEYS)
+    college_text = _first_value(app, _COLLEGE_KEYS)
 
     query_grade = _grade_level(text)
     query_major = _PROFESSION.search(text)
     unknown = False
+
+    if college_text and _EXTERNAL_COLLEGE.search(text):
+        # 资料只服务本学院，问题指向其他学院时不适用。
+        named = _EXTERNAL_COLLEGE.search(text)
+        if "计算机" not in named.group() and "软件" not in named.group():
+            return False
 
     if query_grade and grade_text:
         allowed = _grade_allowed(grade_text, query_grade)
