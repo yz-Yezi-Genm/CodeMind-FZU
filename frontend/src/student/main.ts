@@ -35,13 +35,15 @@ async function refreshHealth(): Promise<void> {
 
 function renderCitation(citation: Citation): string {
   let sourceLink = '';
-  try {
-    const url = new URL(citation.source_url);
-    if (url.protocol === 'https:' || url.protocol === 'http:') {
-      sourceLink = `<a href="${escapeHtml(url.href)}" target="_blank" rel="noopener noreferrer">查看原始来源</a>`;
+  if (!isTestFixtureCitation(citation)) {
+    try {
+      const url = new URL(citation.source_url);
+      if (url.protocol === 'https:' || url.protocol === 'http:') {
+        sourceLink = `<a href="${escapeHtml(url.href)}" target="_blank" rel="noopener noreferrer">查看原始来源</a>`;
+      }
+    } catch {
+      // The title and excerpt remain available if the source URL is invalid.
     }
-  } catch {
-    // The title and excerpt remain available if the source URL is invalid.
   }
 
   const metadata = [
@@ -68,14 +70,16 @@ function renderAnswerMode(mode: AskResponse['answer_mode']): string {
   return `<p class="student-answer-mode">回答依据：${escapeHtml(labels[mode])}</p>`;
 }
 
+function isTestFixtureCitation(citation: Citation): boolean {
+  try {
+    return new URL(citation.source_url).hostname === 'example.invalid';
+  } catch {
+    return false;
+  }
+}
+
 function hasTestFixtureCitation(citations: Citation[]): boolean {
-  return citations.some((citation) => {
-    try {
-      return new URL(citation.source_url).hostname === 'example.invalid';
-    } catch {
-      return false;
-    }
-  });
+  return citations.some(isTestFixtureCitation);
 }
 
 function renderResult(query: string, response: AskResponse): void {

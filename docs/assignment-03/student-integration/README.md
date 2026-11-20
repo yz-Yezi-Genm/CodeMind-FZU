@@ -80,3 +80,13 @@ python -X utf8 -m unittest tests.test_agent_workflow tests.test_agent_workflow_a
 
 - 已测场景未发现需要修复的学生端交互问题。测试中的「先追问学年」来自默认回调，正式奖学金场景仍需由 Agent 与业务规则负责人确认追问顺序。
 - 待可用的正式后端接入审核通过的资料包、正式业务规则和真实 Qwen 后，补测竞赛认定、奖学金和推免三个场景。验收时补上真实来源跳转、多轮上下文和三种状态截图，确认模型错误仍走现有 HTTP 错误契约。
+## PR #39 回答依据与引用回归
+
+使用浏览器 DevTools 请求拦截构造契约 `AskResponse`，仅验证前端渲染；以下截图不是正式政策或真实 Qwen 联调记录。
+
+| 拦截响应 | 核验结果 | 截图 |
+| --- | --- | --- |
+| `answer_mode: current_policy`，Citation 来源为 `https://example.invalid/test-policy` | 展示「当前政策依据」和测试资料提示；保留引用标题与原文，不生成「查看原始来源」外链。 | [测试夹具来源](screenshots/13-contract-test-fixture.png) |
+| `answer_mode: current_policy`，Citation 来源为学校官网格式 URL | 展示「当前政策依据」及引用元数据；无测试资料提示；展开引用后显示「查看原始来源」入口。 | [正常来源](screenshots/14-contract-official-source.png) |
+
+两组响应均使用既有 `AskResponse` / `Citation` 字段。真实运行时的三种业务状态、多轮会话及正式资料引用，仍以已配置 Qwen 和审核 `enabled` 资料包的实际联调结果为准。
