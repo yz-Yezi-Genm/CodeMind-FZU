@@ -16,6 +16,7 @@ from backend.contracts.models import AgentRequest, DocumentPackage, IndexingStat
 from backend.retrieval.local import LocalBM25Retriever
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.qwen_client import QwenLLMClient, QwenSettings
+from scripts.verify_alpha_upstream_integration import upstream_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/assignment-03/alpha/evidence/agent-integration"
@@ -84,8 +85,10 @@ def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     started = datetime.now(TZ).isoformat()
     command = [sys.executable, "-X", "utf8", "-m", "unittest", "discover", "-s", "tests", "-v"]
-    process = subprocess.run(command, cwd=ROOT, env=dict(os.environ, PYTHONIOENCODING="utf-8"),
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
+    with upstream_snapshot() as (snapshot, upstream_sources):
+        process = subprocess.run(command, cwd=ROOT,
+            env=dict(os.environ, PYTHONIOENCODING="utf-8", ALPHA_UPSTREAM_SNAPSHOT=snapshot),
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
     (OUTPUT / "unittest.txt").write_text(process.stdout, encoding="utf-8")
     if process.returncode:
         print(process.stdout)
@@ -106,9 +109,21 @@ def main():
             "AgentWorkflowQwenTests": "Real Qwen adapter with mock HTTP, demo retriever",
             "LocalRetrieverQwenIntegrationTests": "Real BM25, indexing, file/hash validation, Qwen adapter and FastAPI; synthetic corpus / test callbacks / mock HTTP",
             "real_policy_check": "Three real unchanged blocked corpora, actual index/hash validation and safety refusal; no Qwen call",
-            "DeliveredBusinessRulesTests": "Actual business functions, skipped until delivered",
+            "DeliveredBusinessRulesTests": "Direct import skipped while upstream module is absent from this checkout; actual delivered rules run in snapshot integration tests",
             "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required",
+            "UpstreamRulesRetrieverIntegrationTests": "Unmodified PR #35/#36 Git snapshots, actual rules/loader/BM25, synthetic corpus and mock Qwen HTTP",
+            "QwenLiveProbeOfflineTests": "Live-probe opt-in guard, synthetic prompt and production citation verifier using mock transport only",
         },
+        "upstream_sources": upstream_sources,
+        "qwen_handoff_checks": [
+            "Startup script reads explicit packages and injects the same workflow/model into FastAPI",
+            "401/403, 408, 429 and 5xx preserve backend status, request ID and CORS headers",
+            "Malformed/empty provider envelope is HTTP 502; invalid evidence selection is a business refusal",
+            "Read timeout and connection failures map to 504/503 without provider detail leakage",
+            "Outer workflow timeout cancels the real adapter request",
+            "Mixed transport and HTTP failures share the adapter retry budget",
+            "Recommended 28-second/no-retry environment reaches the real Qwen adapter; workflow keeps 30-second outer wait",
+        ],
     }
     (OUTPUT / "environment.json").write_text(json.dumps(environment, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("\n".join(process.stdout.strip().splitlines()[-4:]))

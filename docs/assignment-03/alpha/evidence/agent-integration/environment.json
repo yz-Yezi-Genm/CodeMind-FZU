@@ -1,7 +1,7 @@
 {
-  "started_at_asia_shanghai": "2026-11-19T20:00:00.812635+08:00",
-  "finished_at_asia_shanghai": "2026-11-19T20:00:08.504412+08:00",
-  "base_commit": "f5fcabce29fbbec1e02e29bb6c2eb28c92785bf3",
+  "started_at_asia_shanghai": "2026-11-20T11:06:50.649398+08:00",
+  "finished_at_asia_shanghai": "2026-11-20T11:06:57.159009+08:00",
+  "base_commit": "730f88a2a4d8faff4213293bd6ad78f135ab4420",
   "branch": "feat/alpha-agent-integration",
   "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
   "dependencies": {
@@ -27,7 +27,38 @@
     "AgentWorkflowQwenTests": "Real Qwen adapter with mock HTTP, demo retriever",
     "LocalRetrieverQwenIntegrationTests": "Real BM25, indexing, file/hash validation, Qwen adapter and FastAPI; synthetic corpus / test callbacks / mock HTTP",
     "real_policy_check": "Three real unchanged blocked corpora, actual index/hash validation and safety refusal; no Qwen call",
-    "DeliveredBusinessRulesTests": "Actual business functions, skipped until delivered",
-    "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required"
-  }
+    "DeliveredBusinessRulesTests": "Direct import skipped while upstream module is absent from this checkout; actual delivered rules run in snapshot integration tests",
+    "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required",
+    "UpstreamRulesRetrieverIntegrationTests": "Unmodified PR #35/#36 Git snapshots, actual rules/loader/BM25, synthetic corpus and mock Qwen HTTP",
+    "QwenLiveProbeOfflineTests": "Live-probe opt-in guard, synthetic prompt and production citation verifier using mock transport only"
+  },
+  "upstream_sources": [
+    {
+      "ref": "origin/feat/alpha-business-rules-runtime",
+      "commit": "8ec09b0896c72900c375b42c6274e2f879f4e086",
+      "source": "backend/services/alpha_business_rules.py",
+      "sha256": "99df85f1cf30c2cfd229d18b9e8980fcb18daa4a956dcd26c305ff0ee76d5736"
+    },
+    {
+      "ref": "origin/feat/alpha-retrieval-loader",
+      "commit": "9201bb9d0d09b4f28d3bf1a8fa50160a9d7bf203",
+      "source": "backend/retrieval/local.py",
+      "sha256": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20"
+    },
+    {
+      "ref": "origin/feat/alpha-retrieval-loader",
+      "commit": "9201bb9d0d09b4f28d3bf1a8fa50160a9d7bf203",
+      "source": "backend/retrieval/alpha_corpus.py",
+      "sha256": "b0ebfbbb1653db78335e3c86c4a4e180f06195945e57a86049258753cbec937b"
+    }
+  ],
+  "qwen_handoff_checks": [
+    "Startup script reads explicit packages and injects the same workflow/model into FastAPI",
+    "401/403, 408, 429 and 5xx preserve backend status, request ID and CORS headers",
+    "Malformed/empty provider envelope is HTTP 502; invalid evidence selection is a business refusal",
+    "Read timeout and connection failures map to 504/503 without provider detail leakage",
+    "Outer workflow timeout cancels the real adapter request",
+    "Mixed transport and HTTP failures share the adapter retry budget",
+    "Recommended 28-second/no-retry environment reaches the real Qwen adapter; workflow keeps 30-second outer wait"
+  ]
 }

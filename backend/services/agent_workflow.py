@@ -307,9 +307,10 @@ class AgentWorkflow:
 
 
 async def create_alpha_workflow(
-    packages: Iterable[DocumentPackage],
+    packages: Iterable[DocumentPackage] | None = None,
     *,
     file_root: Path,
+    retriever: Retriever | None = None,
     llm_client: LLMClient | None = None,
     clarification_rule: ClarificationRule | None = None,
     evidence_check: EvidenceCheck | None = None,
@@ -320,10 +321,12 @@ async def create_alpha_workflow(
 ) -> AgentWorkflow:
     """Assemble the real local retriever, business callbacks and Qwen adapter.
 
-    The default rule module is owned by the business team. Missing delivery is
+    The default rule module is owned by the business team. A missing module is
     a configuration error, never a silent fallback to the legacy demo rules.
     Explicit callbacks/client support owner handoff and labelled offline tests.
     Packages retain their reviewed/blocked state; indexing is not approval.
+    A retriever from build_approved_alpha_retriever can be injected instead of
+    packages; retain that same instance for the business rule's metadata lookups.
     Inject the result with create_app(agent_service=workflow,
     llm_client=workflow.llm_client). The caller loads its approved package list.
     """
@@ -333,24 +336,32 @@ async def create_alpha_workflow(
     from backend.services.errors import LLMConfigurationError
     from backend.services.qwen_client import create_qwen_client_from_env
 
+    if retriever is not None and packages is not None:
+        raise ValueError("Provide packages or an already loaded retriever, not both")
+    if retriever is None and packages is None:
+        raise ValueError("Provide packages or an already loaded retriever")
     if (clarification_rule is None) != (evidence_check is None):
         raise ValueError("Provide both business callbacks or neither")
+    if retriever is None:
+        retriever = LocalBM25Retriever(file_root=file_root)
     if clarification_rule is None:
         try:
             rules = import_module("backend.services.alpha_business_rules")
             clarification_rule = rules.alpha_clarification_rule
-            evidence_check = rules.alpha_evidence_check
+            # PR #36 requires per-index metadata and chapter lookups. The
+            # module-level alpha_evidence_check is intentionally unbound and
+            # fails closed; never register global lookups shared across apps.
+            evidence_check = rules.build_from_retriever(retriever, today=today)
         except (ImportError, AttributeError) as exc:
             raise LLMConfigurationError("Alpha 业务规则模块未就绪，不能启用正式工作流。") from exc
 
-    retriever = LocalBM25Retriever(file_root=file_root)
     workflow = AgentWorkflow(
         retriever, llm_client if llm_client is not None else create_qwen_client_from_env(),
         clarification_rule=clarification_rule, evidence_check=evidence_check,
         top_k=top_k, timeout_seconds=timeout_seconds,
         max_evidence_chars=max_evidence_chars, today=today,
     )
-    for package in packages:
+    for package in packages if packages is not None else ():
         indexed = await retriever.index_document(package)
         if indexed.status != IndexingStatus.INDEXED:
             raise ServiceError(

@@ -1,19 +1,21 @@
 # Alpha Agent 核心模块集成记录
 
-日期：2026-11-19（Asia/Shanghai）。开发分支：`feat/alpha-agent-integration`，从最新远程 main `f5fcabce29fbbec1e02e29bb6c2eb28c92785bf3` 创建。修改保留在本地，由用户自行提交、推送和创建 PR。
+> 2026-11-20模型交接更新：上游已报告qwen-flash/qwen-plus真实短片段探测通过；本Agent工作区尚未执行付费调用。联调环境示例已改为qwen-flash，新增 `scripts/check_qwen_live.py` 显式--live短片段复测命令及API Key本地加载说明。最新完整脚本216项，213通过、3跳过，包含13项正式规则/检索原始源码组合测试。短片段探测不代表正式政策链路验收通过。
+
+更新日期：2026-11-20（Asia/Shanghai）。开发分支：`feat/alpha-agent-integration`，从远程 main `f5fcabce29fbbec1e02e29bb6c2eb28c92785bf3` 创建。首批修改已由用户提交；上游交接后的补充修改保留本地，由用户自行提交、推送到同一PR #32。
 
 ## 当前交付与依赖
 
-完成真实本地检索器、Qwen 适配器及两个业务回调的组装入口与工作流防护；尚未完成正式业务规则、人工审核政策和真实 Qwen 的正向端到端验收。
+完成真实检索器、Qwen适配器及正式业务规则闭包的组装与防护，13项原始上游代码组合测试通过。尚未完成上游合并后的正式运行入口部署、人工审核政策和真实Qwen的正向端到端验收。
 
 | 模块 | main 上的现状 | 本轮处理 |
 | --- | --- | --- |
 | AgentWorkflow（#24） | 三状态、来源/时效门槛、逐字引用校验已存在 | 保留已有门槛，增加回调防护、元数据兼容及严格 JSON 校验 |
 | LocalBM25Retriever（#26） | 异步索引/检索可用，无命中为 `[]` | 使用同一实例索引和检索，启用受控文件根目录及 SHA-256 检查 |
-| 业务规则（#29） | 只有 `business-rules.md`，无 `alpha_business_rules.py` 或两个可调用函数 | 默认组装时加载负责人模块；缺失时报 `SERVICE_NOT_CONFIGURED`，不静默采用旧默认规则。提前测试使用明确标记的替身 |
+| 业务规则（#36） | 正式函数及build_from_retriever已在负责人分支交付，尚未合入本基线 | 默认按同一Retriever绑定闭包，避免裸函数无元数据；已实际执行跨分支原始代码测试 |
 | QwenLLMClient（#20） | `generate(LLMGenerateRequest) -> LLMResult`、环境工厂及统一异常已存在 | 默认使用真实环境工厂；离线集成只替换 HTTP transport |
 | 真实资料 | 三个包均 `blocked`；来源/时效未完成审核 | 原样索引、核验文件及哈希；验证安全拒答，不修改审核状态 |
-| 适用范围元数据 | `DocumentMetadata` 有 `applicability_raw`、`deadline_on`，当前 `RetrievedChunk` 尚未带出 | 兼容类型化片段扩展，将其完整交给规则和模型；不自行发明公共字段 |
+| 适用范围元数据 | PR #35 提供按 version_id/chunk_id 读取元数据的只读查询方法，尚未合入本分支基线 | 优先通过同一 Retriever 查询，不扩展公共字段；组装函数已支持预加载实例，正式规则已通过工厂绑定，跨分支验证通过 |
 
 不修改 `alpha_business_rules.py`、`qwen_client.py`、`retrieval/local.py`、公共契约及后端入口。
 
@@ -49,9 +51,9 @@ async def assemble(root: Path, approved_package_paths: list[Path]):
     return create_app(agent_service=workflow, llm_client=workflow.llm_client)
 ```
 
-负责人交付 `backend.services.alpha_business_rules` 后，默认加载 `alpha_clarification_rule` 和 `alpha_evidence_check`；模型默认调用既有 `create_qwen_client_from_env()`。任何一个业务回调需要替换时，必须显式提供两个回调，避免一半真实、一半旧默认。文件损坏、缺失或来源未就绪导致 `failed/partial` 索引时，组装拒绝启动，不使用部分资料演示正式链路。`blocked` 包可以索引但始终不可检索；索引不是审核。
+负责人已在PR #36交付 `backend.services.alpha_business_rules`。默认加载 `alpha_clarification_rule` 并通过 `build_from_retriever(retriever, today=today)` 绑定证据闭包；模型默认调用既有 `create_qwen_client_from_env()`。任何一个业务回调需要替换时，必须显式提供两个回调，避免一半真实、一半旧默认。文件损坏、缺失或来源未就绪导致 `failed/partial` 索引时，组装拒绝启动，不使用部分资料演示正式链路。`blocked` 包可以索引但始终不可检索；索引不是审核。
 
-后端 `AskRequest` 目前只有 `query` 和 `conversation_id`，不保存/加载 history。HTTP 追问后应重发包含全部信息的完整问题；直接调用工作流可通过 `AgentRequest.history` 提供用户历史。本轮没有擅自加入会话存储或修改 HTTP 契约。
+本工作分支的基础 `create_app()`/main 和本地排查入口不保存/加载 history，HTTP 追问后需重发完整问题；直接调用工作流可通过 `AgentRequest.history` 提供用户历史。赵紫龙补充说明中的正式 `backend.app.alpha:app` 则由 ConversationAgentService 按 conversation_id 注入历史，支持第二轮补充信息；该运行分支尚未合入本基线。本轮没有擅自修改其会话实现或 HTTP 契约。
 
 ## 主动对接记录
 
@@ -71,7 +73,7 @@ async def assemble(root: Path, approved_package_paths: list[Path]):
 .venv\Scripts\python.exe -X utf8 -m scripts.verify_alpha_agent_integration
 ```
 
-实际执行 191 项，188 项通过，3 项跳过，0 失败。跳过原因分别是 Windows 符号链接权限、上游正式业务规则未交付，以及真实 Qwen 验收未显式启用。
+接入PR #36闭包后，完整脚本实际执行216项，213项通过，3项跳过，0失败。其中13项使用PR #35/#36未经改写的代码快照，实际执行正式规则、loader和BM25；跳过项为Windows符号链接权限、本工作分支未合并规则文件的直接导入检查、真实付费验收未启用。正式规则已交付且已在快照集成中执行，不能再将该跳过写为负责人未交付。首批提交时为191项、188通过。
 
 | 验证层次 | 使用真实实现 | 测试替身或局限 |
 | --- | --- | --- |
@@ -79,7 +81,8 @@ async def assemble(root: Path, approved_package_paths: list[Path]):
 | 原有 Qwen 组合测试 | 工作流、Qwen 适配器及 FastAPI | DemoRetriever、MockTransport |
 | `LocalRetrieverQwenIntegrationTests` | BM25、索引、文件与哈希检查、工作流、Qwen 适配器及 FastAPI | 合成资料、规则替身、MockTransport；未调用付费模型 |
 | 三个真实资料包检查 | 真实文件、登记哈希、BM25 索引、工作流与 Qwen 适配器代码 | 测试回调、MockTransport；资料原样 `blocked`，只验证安全拒答 |
-| `DeliveredBusinessRulesTests` | 交付后的真实规则函数 | 当前缺模块，明确跳过 |
+| `DeliveredBusinessRulesTests` | 合并后直接导入的规则函数 | 本分支未合并模块，明确跳过 |
+| `UpstreamRulesRetrieverIntegrationTests` | PR #35/#36原始Git快照：正式规则、BM25和approved loader | 合成资料、MockTransport；13项已运行通过 |
 | `LiveAlphaAcceptanceTests` | 正式规则、已审核资料、真实 Qwen | 当前未执行；需环境变量显式启用 |
 
 真实资料结果：竞赛 13、奖学金 4、推免 6 个片段，共 23 个片段索引通过；三个问题均零命中、`insufficient_evidence`、空引用，Qwen 调用为 0。不能把这份拒答验证写成正式政策正向验收通过。
@@ -101,10 +104,21 @@ $env:ALPHA_ACCEPTANCE_QUERY = '填写与已审核资料对应的完整问题'
 
 ## 尚未完成的最终验收
 
-- 真实 `alpha_clarification_rule` / `alpha_evidence_check` 及完整业务案例接入验收。
-- 检索/规则负责人确认并带出适用范围、适用年度、截止日期等元数据。
+- PR #35/#36合并后的正式运行环境验收；原始代码快照的闭包绑定与13项跨分支集成已通过。
 - 至少一份有审核记录的正式可检索政策包，以及完整正向引用结果。
 - 真实 Qwen 端点的 JSON 选择结果、延迟与异常联调。
 - 历史模式、资料缺失优先和多事项响应的接口口径协商。
 
 本轮成果可供本地评审，尚不能宣称 Alpha 正式全链路已完成。提交 PR 时建议使用草稿并保留上述依赖。
+
+## 后端/Qwen 交接后的补充
+
+已按赵紫龙提供的说明核对客户端接口、异常和 API 注入方式。正式启动统一采用他维护的 `backend.app.alpha:app`；`scripts/run_alpha_agent.py` 保留为显式资料包的本地排查工具。新增测试验证排查脚本读取资料并注入相同客户端、401/403/408/429/5xx 和错误模型响应的 CORS/request ID、网络异常脱敏、工作流总等待取消、混合故障共享重试预算。真实付费验收入口也已覆盖基础 FastAPI 问答层，正式会话运行组装另需依赖就绪后联调。
+
+启动命令、模型 JSON 选择协议、交接示例的路径修正，以及可直接转发给赵紫龙的待确认事项，见 [Agent 与后端/Qwen 接口对齐](agent-qwen-handoff.md)。本轮没有执行付费模型调用，正式规则已交付，审核资料和付费模型验收仍待就绪。
+
+根据后端新发补充说明，提供 `examples/alpha-qwen.env.example` 非敏感联调配置片段：模型请求 28 秒、0 次重试，Agent 保留 30 秒外层等待；不修改客户端公共默认值或现有本地密钥文件。已验证配置传到真实适配器构造的网络客户端，模型HTTP失败/超时时只请求一次。正式环境通过 Uvicorn `--env-file backend/.env` 或平台 Secret 加载。
+
+检索负责人已确认稳定retrieve契约、两个只读元数据查询和approved统一加载入口。组装函数可直接接收预加载实例，并通过正式规则工厂绑定同一索引，避免重建和全局查询串用。
+
+2026-11-20已按PR #36最新head `8ec09b0`刷新13项跨分支实装测试，全部通过。追问异常测试兼容及章节敏感资料查询失败的两处差异已经解决；详见 [正式业务规则接入记录](agent-business-rules-handoff.md)。剩余工作为上游合并后的正式运行部署、历史模式和审核资料/真实模型验收。

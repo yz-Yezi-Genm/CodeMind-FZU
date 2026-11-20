@@ -1,0 +1,36 @@
+{
+  "time_asia_shanghai": "2026-11-20T10:37:50.593658+08:00",
+  "agent_commit": "730f88a2a4d8faff4213293bd6ad78f135ab4420",
+  "agent_worktree_changes_included": true,
+  "sources": [
+    {
+      "ref": "origin/feat/alpha-business-rules-runtime",
+      "commit": "8ec09b0896c72900c375b42c6274e2f879f4e086",
+      "source": "backend/services/alpha_business_rules.py",
+      "sha256": "99df85f1cf30c2cfd229d18b9e8980fcb18daa4a956dcd26c305ff0ee76d5736"
+    },
+    {
+      "ref": "origin/feat/alpha-retrieval-loader",
+      "commit": "9201bb9d0d09b4f28d3bf1a8fa50160a9d7bf203",
+      "source": "backend/retrieval/local.py",
+      "sha256": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20"
+    },
+    {
+      "ref": "origin/feat/alpha-retrieval-loader",
+      "commit": "9201bb9d0d09b4f28d3bf1a8fa50160a9d7bf203",
+      "source": "backend/retrieval/alpha_corpus.py",
+      "sha256": "b0ebfbbb1653db78335e3c86c4a4e180f06195945e57a86049258753cbec937b"
+    }
+  ],
+  "command": [
+    "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests",
+    "-v"
+  ],
+  "exit_code": 0,
+  "scope": "Unmodified upstream rules, BM25 metadata lookups and approved loader; current Agent; synthetic corpus; mock Qwen HTTP. No paid model or approved real policy acceptance."
+}
