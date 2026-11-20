@@ -673,3 +673,40 @@ def test_xinghuo_sections_are_distinguished() -> None:
     # 没有章节查询、locator 只有“第 7 条”这类泛化定位时，同样按无法确认拒绝。
     no_section = build_alpha_evidence_check(lookup, today=lambda: TODAY)
     assert no_section(_request(query), XINGHUO) is False
+
+
+def test_xinghuo_three_part_structure() -> None:
+    """星火文件按总通知 / 奖教金 / 奖学金三段区分，总标题里的复合词不能当章节标识。"""
+    total = "关于做好2026年福州大学“星火奖教奖学金”评选工作的通知"
+    lookup = _full_lookup()
+    student_query = "星火奖学金的学生评选条件是什么？"
+    teacher_query = "星火奖教金的评选条件是什么？"
+    procedure_query = "星火奖教奖学金的材料报送截止时间是什么？"
+
+    def note(*sections: str):
+        payload = '{"heading_path": %s}' % json.dumps([total, *sections], ensure_ascii=False)
+        return lambda chunk_id: ParsedChunk(
+            chunk_no=1,
+            content=XINGHUO.content,
+            source_file_key="xinghuo.json",
+            locator_note=payload,
+        )
+
+    general = build_alpha_evidence_check(
+        lookup, chunk_lookup=note("二、评选安排"), today=lambda: TODAY
+    )
+    assert general(_request(procedure_query), XINGHUO) is True
+    assert general(_request("星火奖教奖学金的评选条件是什么？"), XINGHUO) is False
+
+    teacher = build_alpha_evidence_check(
+        lookup, chunk_lookup=note("福州大学“星火奖教金”评选细则"), today=lambda: TODAY
+    )
+    # 教师评奖条款一律不用于学生问答，即使提问者自称教师。
+    assert teacher(_request(teacher_query), XINGHUO) is False
+    assert teacher(_request(student_query), XINGHUO) is False
+
+    student = build_alpha_evidence_check(
+        lookup, chunk_lookup=note("福州大学“星火奖学金”评选细则"), today=lambda: TODAY
+    )
+    assert student(_request(student_query), XINGHUO) is True
+    assert student(_request(teacher_query), XINGHUO) is False

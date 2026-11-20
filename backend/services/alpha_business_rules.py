@@ -528,8 +528,16 @@ def _needs_section(facts: _DocumentFacts) -> bool:
     return bool(_SECTION_SENSITIVE.search(scope))
 
 
-_TEACHER_SECTION = re.compile(r"教师|教职工|师资|绩效|奖教金")
-_STUDENT_SECTION = re.compile(r"学生|本科生|研究生|同学")
+_TEACHER_SECTION = re.compile(r"奖教金|教师|教职工|师资|绩效")
+_STUDENT_SECTION = re.compile(r"奖学金|学生|本科生|研究生|同学")
+# heading_path / locator 的层级分隔符。总标题里“星火奖教奖学金”是复合词，不代表某一节。
+_SECTION_SEP = re.compile(r"\||｜|›|»|>")
+_PROCEDURE_QUESTION = re.compile(r"材料|流程|报送|提交|截止|交到|程序|步骤|什么时候交|怎么报")
+_AWARD_QUESTION = re.compile(r"条件|要求|金额|奖励标准|名额|等级|资格|比例|能不能评")
+
+ROLE_TEACHER = "teacher"
+ROLE_STUDENT = "student"
+ROLE_SHARED = "shared"
 
 
 def _section_text(note: object) -> str:
@@ -563,13 +571,33 @@ def _section_text(note: object) -> str:
     return " ".join(item for item in parts if item) or text
 
 
+def _section_role(note: str) -> str | None:
+    """按层级切分章节名，判断片段属于教师节、学生节，还是不区分师生的总通知。"""
+    teacher = student = False
+    for raw in _SECTION_SEP.split(note):
+        segment = raw.strip().replace("奖教奖学金", "")
+        if not segment:
+            continue
+        if _TEACHER_SECTION.search(segment):
+            teacher = True
+        if _STUDENT_SECTION.search(segment):
+            student = True
+    if teacher and student:
+        return ROLE_SHARED
+    if teacher:
+        return ROLE_TEACHER
+    if student:
+        return ROLE_STUDENT
+    return None
+
+
 def _section_applies(
     text: str,
     facts: _DocumentFacts,
     chunk: RetrievedChunk,
     chunk_lookup: ChunkLookup | None,
 ) -> bool:
-    """按 locator_note / locator 区分同一文件里的局部章节（如教师条款与学生条款）。"""
+    """按 locator_note / locator 区分同一文件里的局部章节（如奖教金与学生奖学金条款）。"""
     needs_section = _needs_section(facts)
     note = ""
     if chunk_lookup is not None:
@@ -580,18 +608,18 @@ def _section_applies(
         if parsed is not None:
             note = _section_text(getattr(parsed, "locator_note", None))
     note = f"{note} {_section_text(chunk.locator)}".strip()
-    teacher = bool(_TEACHER_SECTION.search(note))
-    student = bool(_STUDENT_SECTION.search(note))
-    if needs_section and not (teacher or student):
-        # 混合条款资料必须能确认片段属于教师节还是学生节，“第 7 条”这类泛化定位不够。
-        return False
-    if not note:
+    if not note and not needs_section:
         return True
-    if teacher and not student and "教师" not in text:
+    role = _section_role(note)
+    if needs_section and role is None:
+        # 总通知部分（款项使用、评选安排、材料报送）不区分师生，只在办理流程问题上放行。
+        return bool(_PROCEDURE_QUESTION.search(text) and not _AWARD_QUESTION.search(text))
+    if role in {None, ROLE_SHARED}:
+        return True
+    if role == ROLE_TEACHER:
+        # 教师评奖条款一律不用于学生问答，即使提问者自称教师。
         return False
-    if student and not teacher and re.search(r"教师|教职工|奖教金", text):
-        return False
-    return True
+    return not re.search(r"教师|教职工|奖教金", text)
 
 
 def _document_facts(chunk: RetrievedChunk, lookup: MetadataLookup | None) -> _DocumentFacts:
@@ -679,10 +707,14 @@ def _document_year(facts: _DocumentFacts) -> int | None:
     return None
 
 
+_AVAILABILITY_QUESTION = re.compile(r"还能|现在还|目前还|是否还|办理窗口|现在.*(申请|报名|提交)|今年.*(申请|报名)")
+
+
 def _deadline_conflict(text: str, facts: _DocumentFacts, today: date) -> bool:
+    """截止日期已过只影响“现在还能不能办”，不影响查询历史通知里的条件与时间点。"""
     if facts.deadline is None or today <= facts.deadline:
         return False
-    return bool(re.search(r"截止|报名|申请时间|还能|现在.*(申请|报名)|办理窗口", text))
+    return bool(_AVAILABILITY_QUESTION.search(text))
 
 
 def _applicability(text: str, facts: _DocumentFacts) -> bool | None:
