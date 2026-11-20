@@ -1,0 +1,2 @@
+# Preserve the bytes used by ParsedFile.sha256 and LF character locators.
+texts/*.md -text -whitespace

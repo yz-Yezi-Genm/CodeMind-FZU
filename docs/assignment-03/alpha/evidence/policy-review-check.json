@@ -1,0 +1,76 @@
+{
+  "command": "python -m knowledge_base.processing.build_policy_review --check",
+  "verified_input_files": 16,
+  "package_count": 5,
+  "mapped_chunks": 371,
+  "ooxml_cells_checked_against_archive": 834,
+  "retrieval_status_counts": {
+    "review_only": 3,
+    "blocked": 2
+  },
+  "index_results": [
+    {
+      "key": "scholarship",
+      "index_result": {
+        "document_id": "77223b58-e0a0-58d7-a25b-ca1b84477ef3",
+        "version_id": "d4ed5822-0edc-59fb-82e2-17968fe4bafb",
+        "status": "indexed",
+        "chunk_count": 59,
+        "indexed_count": 59,
+        "warnings": []
+      }
+    },
+    {
+      "key": "college-scholarship",
+      "index_result": {
+        "document_id": "2dc9271d-fe7d-585d-85cc-a08b960c0795",
+        "version_id": "b87dff39-fa2d-591f-bd62-8456fe0e826b",
+        "status": "indexed",
+        "chunk_count": 33,
+        "indexed_count": 33,
+        "warnings": []
+      }
+    },
+    {
+      "key": "xinghuo",
+      "index_result": {
+        "document_id": "615b1991-e93f-5fdc-871a-649786d69322",
+        "version_id": "82ea7559-c10b-5fb8-b9dd-b82dcf1543bd",
+        "status": "indexed",
+        "chunk_count": 35,
+        "indexed_count": 35,
+        "warnings": []
+      }
+    },
+    {
+      "key": "competition",
+      "index_result": {
+        "document_id": "182e383c-9674-5dd8-952c-c67c35d56482",
+        "version_id": "a6e1c4c8-5381-5e23-afee-3b24f7edffbc",
+        "status": "indexed",
+        "chunk_count": 224,
+        "indexed_count": 224,
+        "warnings": []
+      }
+    },
+    {
+      "key": "recommendation",
+      "index_result": {
+        "document_id": "f72578c7-c46a-5302-9243-469bbc86ec40",
+        "version_id": "68074050-5d0d-5f33-b715-f85df732f4de",
+        "status": "indexed",
+        "chunk_count": 20,
+        "indexed_count": 20,
+        "warnings": []
+      }
+    }
+  ],
+  "formal_retrieval_hit_counts": {
+    "蓝桥杯竞赛认定": 0,
+    "奖学金": 0,
+    "推免": 0,
+    "星火4000": 0
+  },
+  "passed": true,
+  "limitations": "真实本地BM25离线对接；无生产数据库写入、人工签核或enabled资料；不是正式问答效果验收。"
+}
