@@ -66,6 +66,7 @@ QUESTION_PURPOSE = "你想了解的是创新学分认定、综测加分，还是
 QUESTION_COMPETITION_NAME = "请说一下竞赛全称，例如全国大学生数学建模竞赛。"
 QUESTION_LEVEL = "这个奖是国家级、省部级还是校级？"
 QUESTION_AWARD_GRADE = "获得的是特等奖、一等奖、二等奖还是三等奖？"
+QUESTION_WORK_NAME = "请说明作品名称，例如“基于多源数据的城市交通流量预测”。"
 QUESTION_FORMAT = "这是个人参赛还是团队作品？"
 QUESTION_TOP_EIGHT = "团队作品里你排第几？创新学分只认定排名前八名成员。"
 QUESTION_ORDER = "你在完成人里排第几？综测团体项目按排序系数计算。"
@@ -77,7 +78,8 @@ QUESTION_SCHOLARSHIP_CATEGORY = (
 QUESTION_SCHOLARSHIP_DIMENSION = "你想了解申请条件、所需材料，还是评定时间？"
 QUESTION_DEPT_AWARD = "院级奖学金里你关注哪一类？学科竞赛类、学术类、学业类还是学生工作类？"
 QUESTION_RECOMMENDATION_OBJECT = "你想问的是校内推免资格怎么获得，还是学院接收推免的复试安排？"
-QUESTION_PROFESSION = "你关注的是哪个专业？学术型、专业型还是直博？"
+QUESTION_PROFESSION = "你关注的是哪个专业？"
+QUESTION_DEGREE = "你关注的是学术型、专业型，还是直博？"
 QUESTION_GRADE = "你现在是大几？不同年级参考的年度通知不同。"
 
 _COMPETITION_TOPIC = re.compile(
@@ -140,11 +142,13 @@ _SCHOLARSHIP_DIMENSION = re.compile(
 _RECOMMENDATION_REVIEW = re.compile(r"复试|面试|机试|材料|招生|名额|招多少|录取|直博|专业")
 _RECOMMENDATION_QUALIFICATION = re.compile(r"资格|排名|遴选|推荐办法|加分|名额分配")
 _PLAN_QUESTION = re.compile(r"招多少|招生计划|招几人|多少人|名额")
-_PROFESSION = re.compile(
-    r"计算机科学与技术|计算机技术|软件工程|人工智能|数据科学|信息安全|网络空间|数学|金融|经济"
+_REVIEW_DETAIL = re.compile(
+    r"招多少|招生计划|招几人|多少人|名额|分组|材料投递|投递|调剂|录取|复试名单"
 )
-# 同一学科门类下的相近专业名称（如“计算机技术”与“计算机科学与技术”）
-_CS_FAMILY = re.compile(r"计算机|软件|人工智能|数据科学|信息安全|网络空间")
+_PROFESSION = re.compile(
+    r"计算机科学与技术|计算机技术|软件工程|人工智能|数据科学与大数据技术|数据科学"
+    r"|大数据|信息安全|网络空间安全|数学|金融|经济|电子信息"
+)
 _GRADE = re.compile(r"大[一二三四]|[一二三四]年级|20\d{2}\s*级")
 _PERSONAL = re.compile(r"我(?!们)|本人|我自己")
 _EXTERNAL_SCHOOL = re.compile(r"其他学院|别的学院|外校|其他学校|别的学校")
@@ -237,14 +241,14 @@ def build_from_retriever(
 def alpha_clarification_rule(request: AgentRequest) -> str | None:
     """必要信息不足时返回单个追问问句，信息齐备时返回 None。"""
     text = _user_text(request)
-    scenario, _ = _analyse(text)
+    scenario, _ = _analyse(text, request.query)
     if scenario is None:
         return QUESTION_TOPIC
     if scenario == COMPETITION:
         return _clarify_competition(text)
     if scenario == SCHOLARSHIP:
         return _clarify_scholarship(text)
-    return _clarify_recommendation(text)
+    return _clarify_recommendation(text, request.query)
 
 
 def alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool:
@@ -260,7 +264,7 @@ def _user_text(request: AgentRequest) -> str:
     return "\n".join([*previous, request.query]).strip()
 
 
-def _analyse(text: str) -> tuple[str | None, str | None]:
+def _detect(text: str) -> tuple[str | None, str | None]:
     competition = _COMPETITION_TOPIC.search(text)
     recommendation = _RECOMMENDATION_TOPIC.search(text)
     scholarship = _SCHOLARSHIP_TOPIC.search(text)
@@ -279,6 +283,24 @@ def _analyse(text: str) -> tuple[str | None, str | None]:
     if recommendation:
         return RECOMMENDATION, None
     return None, None
+
+
+def _analyse(
+    text: str, query: str | None = None
+) -> tuple[str | None, str | None]:
+    """优先按本轮问题定场景，避免历史对话的旧主题污染新问题。"""
+    if query:
+        scenario, purpose = _detect(query)
+        if scenario is not None and not (scenario == COMPETITION and purpose is None):
+            return scenario, purpose
+        full_scenario, full_purpose = _detect(text)
+        if scenario is None:
+            return full_scenario, full_purpose
+        # 本轮只提到“奖”而未说用途，且上下文明确是奖学金场景时，按奖学金继续。
+        if full_scenario is not None and full_scenario != COMPETITION:
+            return full_scenario, full_purpose
+        return scenario, purpose
+    return _detect(text)
 
 
 def _purpose(text: str) -> str | None:
@@ -355,6 +377,23 @@ def _first_unit_state(text: str) -> bool | None:
     return None
 
 
+def _work_mentioned(text: str) -> bool:
+    """作品名称：书名号标题，或明确写出作品/项目/论文名称。"""
+    if re.search(r"《[^》]{2,60}》", text):
+        return True
+    return bool(re.search(r"(?:作品|项目|论文|成果)(?:名称|题目|叫)|(?:作品|项目|论文)是[《“]", text))
+
+
+def _degree_type(text: str) -> str | None:
+    if re.search(r"直博", text):
+        return "direct_phd"
+    if re.search(r"学术型|学硕|学术硕士", text):
+        return "academic"
+    if re.search(r"专业型|专硕|专业硕士", text):
+        return "professional"
+    return None
+
+
 def _semester_state(text: str) -> bool | None:
     """成果是否落在上一学期。"""
     if _SEMESTER_LAST.search(text):
@@ -424,6 +463,9 @@ def _clarify_competition(text: str) -> str | None:
         return None
     if not re.search(r"竞赛|比赛|大赛|杯|赛区", text):
         return QUESTION_COMPETITION_NAME
+    if purpose == PURPOSE_CREDIT and not _work_mentioned(text):
+        # 创新学分按作品认定，赛事与作品必须能对上。
+        return QUESTION_WORK_NAME
     if _level(text) is None:
         return QUESTION_LEVEL
     if _award_grade(text) is None and _rank(text) is None:
@@ -435,10 +477,10 @@ def _clarify_competition(text: str) -> str | None:
         # 只在前八名之外未说明时追问；已经说清第九名及以后不再重复追问。
         if _rank(text) is None:
             return QUESTION_TOP_EIGHT
-    if team and purpose == PURPOSE_EVALUATION:
-        if _rank(text) is None and not _ORDER.search(text):
+    if purpose == PURPOSE_EVALUATION:
+        # 个人项目同样要计上一学期成果、同样要求福大第一署名，不因为个人申报跳过。
+        if team and _rank(text) is None and not _ORDER.search(text):
             return QUESTION_ORDER
-        # 明确说“本学期/去年”已经回答了学期问题，不再追问；只问尚未说明的情况。
         if _semester_state(text) is None:
             return QUESTION_SEMESTER
         if _first_unit_state(text) is None:
@@ -469,16 +511,24 @@ def _clarify_scholarship(text: str) -> str | None:
     return None
 
 
-def _clarify_recommendation(text: str) -> str | None:
+def _clarify_recommendation(text: str, subject: str | None = None) -> str | None:
     if _future_year(text, today=date.today()) or _EXTERNAL_SCHOOL.search(text):
         return None
-    if _PERSONAL.search(text) and not _GRADE.search(text):
-        return QUESTION_GRADE
     obj = _recommendation_object(text)
+    if obj == REVIEW and _REVIEW_DETAIL.search(text):
+        # 专业与学位类型是两件事：认出专业不等于知道学术型/专业型/直博。
+        if not _PROFESSION.search(text):
+            return QUESTION_PROFESSION
+        if _degree_type(text) is None:
+            return QUESTION_DEGREE
+        return None
+    # 年级只对校内推荐资格、排名和遴选有意义，复试材料类问题不追问年级。
+    # 只看本轮提问，避免上一轮聊别的主题时把“我”带进来。
+    current = subject or text
+    if _PERSONAL.search(current) and not _GRADE.search(text):
+        return QUESTION_GRADE
     if obj is None:
         return QUESTION_RECOMMENDATION_OBJECT
-    if obj == REVIEW and _PLAN_QUESTION.search(text) and not _PROFESSION.search(text):
-        return QUESTION_PROFESSION
     return None
 
 
@@ -499,7 +549,7 @@ def _assess(
             return False
         if _EXTERNAL_SCHOOL.search(text):
             return False
-        scenario, purpose = _analyse(text)
+        scenario, purpose = _analyse(text, request.query)
         if scenario is None:
             return True
         # 三个场景都要确认文档类型与适用范围；缺元数据即视为无法确认。
@@ -508,13 +558,15 @@ def _assess(
         if not facts.applicability:
             return False
         kind = _classify(facts)
-        if _applicability(text, facts) is False:
+        if _applicability(text, facts, today) is False:
             return False
         if not _section_applies(text, facts, chunk, chunk_lookup):
             return False
         if _year_conflict(text, kind, facts, today):
             return False
-        if _deadline_conflict(text, facts, today):
+        if _deadline_conflict(
+            text, facts, today, chunk.timeliness_verification_status
+        ):
             return False
         if scenario == COMPETITION:
             return _check_competition(text, purpose, kind)
@@ -828,9 +880,23 @@ def _document_year(facts: _DocumentFacts) -> int | None:
 _AVAILABILITY_QUESTION = re.compile(r"还能|现在还|目前还|是否还|办理窗口|现在.*(申请|报名|提交)|今年.*(申请|报名)")
 
 
-def _deadline_conflict(text: str, facts: _DocumentFacts, today: date) -> bool:
-    """截止日期已过只影响“现在还能不能办”，不影响查询历史通知里的条件与时间点。"""
+def _deadline_conflict(
+    text: str,
+    facts: _DocumentFacts,
+    today: date,
+    timeliness: TimelinessVerificationStatus,
+) -> bool:
+    """截止日期已过只在“现行资料 + 问现在还能不能办”时拒绝。
+
+    历史通知（historical / expired）的截止时间与办理状态应作为历史信息回答，
+    由工作流标注 answer_mode=historical，不在这里丢证据。
+    """
     if facts.deadline is None or today <= facts.deadline:
+        return False
+    if timeliness in {
+        TimelinessVerificationStatus.HISTORICAL,
+        TimelinessVerificationStatus.EXPIRED,
+    }:
         return False
     return bool(_AVAILABILITY_QUESTION.search(text))
 
@@ -850,7 +916,9 @@ def _first_value(app: dict[str, str], keys: tuple[str, ...]) -> str:
     return ""
 
 
-def _applicability(text: str, facts: _DocumentFacts) -> bool | None:
+def _applicability(
+    text: str, facts: _DocumentFacts, today: date
+) -> bool | None:
     app = facts.applicability or {}
     # #31 实际元数据里年级/专业/对象分别落在 适用年级 / 学生对象 / 对象 / 学院 等键上。
     grade_text = _first_value(app, _GRADE_KEYS)
@@ -858,9 +926,15 @@ def _applicability(text: str, facts: _DocumentFacts) -> bool | None:
     target_text = _first_value(app, _TARGET_KEYS)
     college_text = _first_value(app, _COLLEGE_KEYS)
 
-    query_grade = _grade_level(text)
+    query_grade = _grade_level(text, today)
     query_major = _PROFESSION.search(text)
     unknown = False
+
+    query_cohort = _enrolment_year(text)
+    target_cohort = _cohort_year(app)
+    if query_cohort and target_cohort and query_cohort + 4 != target_cohort:
+        # 入学年份与目标届别对不上，说明这份年度方案不是该学生的届别。
+        return False
 
     if college_text and _EXTERNAL_COLLEGE.search(text):
         # 资料只服务本学院，问题指向其他学院时不适用。
@@ -892,10 +966,28 @@ def _applicability(text: str, facts: _DocumentFacts) -> bool | None:
     return True
 
 
-def _grade_level(text: str) -> int | None:
+def _grade_level(text: str, today: date | None = None) -> int | None:
     match = re.search(r"大([一二三四])", text)
     if match:
         return "一二三四".index(match.group(1)) + 1
+    year = _enrolment_year(text)
+    if year is not None and today is not None:
+        # 2024 级在 2026 年 11 月是大三；9 月前仍按上一学年计算。
+        grade = today.year - year + (1 if today.month >= 9 else 0)
+        return grade if 1 <= grade <= 4 else None
+    return None
+
+
+def _enrolment_year(text: str) -> int | None:
+    match = re.search(r"(20\d{2})\s*级", text)
+    return int(match.group(1)) if match else None
+
+
+def _cohort_year(app: dict[str, str]) -> int | None:
+    for key in ("目标届别", "适用届别", "适用年级"):
+        match = re.search(r"(20\d{2})\s*届", str(app.get(key) or ""))
+        if match:
+            return int(match.group(1))
     return None
 
 
@@ -912,11 +1004,24 @@ def _grade_allowed(grade_text: str, grade: int) -> bool | None:
     return None
 
 
+_MAJOR_ALIASES: dict[str, tuple[str, ...]] = {
+    "计算机科学与技术": ("计算机科学与技术", "计算机技术", "计算机科学", "计算机"),
+    "软件工程": ("软件工程", "软件"),
+    "人工智能": ("人工智能",),
+    "数据科学与大数据技术": ("数据科学与大数据技术", "数据科学", "大数据"),
+    "信息安全": ("信息安全", "网络空间安全"),
+}
+
+
 def _major_allowed(major_text: str, query_major: str) -> bool:
+    """只做明确专业匹配或有依据的别名映射，不做计算机大类模糊放行。"""
     if re.search(r"全校|不限|各专业|所有专业|相关本科专业", major_text):
         return True
     if not major_text.strip():
         return True
-    if query_major in major_text or major_text in query_major:
+    if query_major in major_text:
         return True
-    return bool(_CS_FAMILY.search(major_text) and _CS_FAMILY.search(query_major))
+    for canonical, aliases in _MAJOR_ALIASES.items():
+        if query_major in aliases and canonical in major_text:
+            return True
+    return False
