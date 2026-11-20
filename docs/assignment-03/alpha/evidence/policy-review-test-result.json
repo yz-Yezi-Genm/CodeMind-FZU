@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-11-19T11:44:47.545461+00:00",
+  "commands": [
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 171 tests in 8.465s",
+        "",
+        "OK (skipped=1)"
+      ]
+    },
+    {
+      "command": "python -m unittest knowledge_base.processing.test_policy_review -v",
+      "exit_code": 0,
+      "tail": [
+        "----------------------------------------------------------------------",
+        "Ran 7 tests in 0.331s",
+        "",
+        "OK"
+      ]
+    }
+  ],
+  "repository_tests": 171,
+  "review_tests": 7,
+  "skipped": 1,
+  "successful": true
+}

@@ -93,17 +93,37 @@ def main():
         if recorded["agent_source_state"]["source_sha256_lf"] != current["source_sha256_lf"]:
             print("FAIL: sources differ from the executed regression; rerun verification")
             return 1
+        if not all(item["in_HEAD"] or item["in_pending_merge"]
+                   for item in current["required_merged_history"].values()):
+            print("FAIL: required main/#31/#35 history is not included")
+            return 1
+        if current["pending_merge_parent"] is None:
+            for name, expected in current["source_sha256_lf"].items():
+                committed = subprocess.run(["git", "show", "HEAD:" + name], cwd=ROOT, capture_output=True)
+                if committed.returncode or sha256(committed.stdout.replace(b"\r\n", b"\n")).hexdigest() != expected:
+                    print("FAIL: tested source is not included in final HEAD: " + name)
+                    return 1
         for source in recorded["upstream_sources"]:
             commit = subprocess.check_output(["git", "rev-parse", source["ref"]], cwd=ROOT, text=True).strip()
             if commit != source["commit"]:
                 print("FAIL: upstream ref changed; fetch and rerun verification")
                 return 1
-        print("PASS: tested source contents and upstream commits match; current HEAD=" + current["base_commit"])
+        print("PASS: tested source contents, required merged history and upstream commits match; current HEAD=" + current["base_commit"])
         return 0
     OUTPUT.mkdir(parents=True, exist_ok=True)
     agent = agent_source_state()
     started = datetime.now(TZ).isoformat()
-    command = [sys.executable, "-X", "utf8", "-m", "unittest", "discover", "-s", "tests", "-v"]
+    # Include #31's scope-local backend processing/privacy regressions, which
+    # unittest discover -s tests alone would not collect.
+    suite_code = (
+        "import sys,unittest; "
+        "suite=unittest.defaultTestLoader.discover('tests'); "
+        "suite.addTests(unittest.defaultTestLoader.loadTestsFromNames("
+        "['knowledge_base.processing.test_policy_review','knowledge_base.processing.test_policy_forms_privacy'])); "
+        "result=unittest.TextTestRunner(verbosity=2).run(suite); "
+        "sys.exit(0 if result.wasSuccessful() else 1)"
+    )
+    command = [sys.executable, "-X", "utf8", "-c", suite_code]
     with upstream_snapshot() as (snapshot, upstream_sources):
         process = subprocess.run(command, cwd=ROOT,
             env=dict(os.environ, PYTHONIOENCODING="utf-8", ALPHA_UPSTREAM_SNAPSHOT=snapshot),

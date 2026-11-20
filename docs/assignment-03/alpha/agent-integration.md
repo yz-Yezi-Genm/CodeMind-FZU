@@ -1,91 +1,74 @@
-# Alpha Agent 核心模块集成与复审核验
+# Alpha Agent 最新集成与第二轮复审记录
 
-更新：2026-11-20（Asia/Shanghai）。分支 `feat/alpha-agent-integration`，继续更新原 PR #32。已只读确认 PR 为 OPEN、`draft=false`，即非 Draft、可评审状态；当前修复等待用户提交后由组长复审。正式政策端到端验收尚未完成，与 GitHub 是否 Draft 是两回事。本次未修改线上 PR 状态。
+更新：2026-11-20（Asia/Shanghai）。分支 `feat/alpha-agent-integration`，继续更新原PR #32，不新建PR。当前PR为非Draft、待组长第二轮审核；正式政策端到端验收仍未完成。本轮由用户亲自提交和推送。
 
-## 复审要求与修复
+## 同步与提交状态
 
-### 人工审核门禁
+已fetch最新上游，并执行 `git merge --no-commit --no-ff origin/main`，无冲突。当前处于等待用户提交的合并状态：
 
-`retrieval_status=enabled` 不能替代人工审核。所有用于回答的文档必须满足：
-
-```python
-isinstance(metadata.temporal_notes, dict)
-and metadata.temporal_notes.get("human_approved") is True
-```
-
-缺失、False、None、字符串和数字标记都不通过，也不自动修改候选资料状态。
-
-- 默认 `create_alpha_workflow(file_root=...)` 使用 PR #35 的 `load_approved_alpha_retriever()`，`allow_missing=False`。也可显式指定 `corpus_dir`。
-- 验证加载报告：目录存在、实际加载包非空、索引结果非空、所有结果为完整 `indexed` 且无警告、总可用片段大于0。`partial/failed`、空目录、缺目录、零片段均返回脱敏配置错误；不能仅凭 loaded_packages 判定就绪。
-- 显式 `create_alpha_workflow(packages=...)` 对全部包重新校验，并在创建索引或模型客户端前检查严格人工审核标记；任一包未通过即拒绝组装。
-- Agent `_eligible()` 独立读取本轮 version_id 对应的 DocumentMetadata，校验审核标记、公共契约及与片段的来源/日期/核验状态一致性。无查询方法、未知元数据、查询异常、未审核版本均不进入 Qwen；业务回调返回True也不能绕过。
-- Qwen返回后重新检查实际选中证据的审核和开放状态；等待模型期间撤回的证据不输出引用，返回 `EVIDENCE_APPROVAL_CHANGED`。
-- 当前基线的旧 LocalBM25Retriever 尚无元数据查询。仅对工厂自行索引、审核通过的显式包提供私有只读快照适配；不暴露重索引接口，不允许缓存审核状态与可变旧索引并存。默认正式目录路径仍要求使用PR #35最新实现。可更新索引使用上游原生查询。
-- `LiveAlphaAcceptanceTests` 在联网前断言每个包均 enabled、human_approved严格为True、路径位于approved目录，并使用统一加载器再次验证报告。
-
-### 最新上游与测试溯源
-
-本次先fetch，再使用以下原始Git源码，不复制上游生产代码到本PR：
-
-| 上游 | 最新提交 |
+| 内容 | 对应提交 |
 | --- | --- |
-| PR #35 `feat/alpha-retrieval-loader` | `1cc7ce14864e6deaebf8c157b95985403c38ff9e` |
-| PR #36 `feat/alpha-business-rules-runtime` | `bc97a93dc60db076e1d1e64494dd3a96aa0895ac` |
+| 最新main、#35合并提交 | `a87182c5dd6f805f316df0b75896b8f84fa4415f` |
+| #31合并提交（已包含在上述main） | `4282ea785195ab3fccfe07c52b7c0bf3d1b18a10` |
+| #35最新修复 | `2b70386da880718430a9859c00e9cceef13c548a` |
+| #36最新修复 | `e0ed6e9d11a540068e86bd642e75ec21a3736a76` |
+| 本轮执行前Agent HEAD | `8ce01317f0b95441525c54c144af2eb1fb69c4a9` |
 
-最新规则增加了作品名称等必要项，集成问题已补齐这些信息，不用旧问题绕过新的追问要求。
+#31政策交付、#35统一加载器和元数据查询已实际进入工作区及待提交的main合并内容。未擅自合并#36生产文件，测试使用其未经修改的原始Git源码。用户提交后，新merge commit会正式包含#31/#35历史；本轮不提前编造尚未创建的最终提交SHA。
 
-原13项跨分支集成已全部重新运行，新增3项审核/报告边界检查，共16项通过。全仓224项，221通过、3跳过、0失败。三个跳过项为Windows符号链接权限、本工作分支未合并规则文件的直接导入检查、未启用的真实付费政策验收；正式规则已经在源码快照测试中执行。
+## 代码调整与兼容性
 
-## 工作流与组装
+保留第一轮通过的人工审核、引用及撤回复查逻辑。本轮生产代码只补充一处接口适配：用 `partial(rules.alpha_clarification_rule, today=today)` 绑定#36新增的可选时间源，使追问和证据判断使用同一日期；对外仍是单参数追问回调。证据回调继续由 `build_from_retriever(retriever, today=...)` 绑定同一索引。
 
-1. 必要信息检查，缺信息返回needs_clarification；规则异常返回CLARIFICATION_RULE_FAILED，不检索或调用模型。
-2. 用户问题与用户历史构造检索请求；保留既有历史请求限制，不采信助手历史作为政策依据。
-3. 片段通过公共契约、人工审核、来源、时效、日期、重复身份及版本一致性检查。
-4. `build_from_retriever(retriever, today=...)` 绑定同一索引的文档/章节查询。仅合格片段进入Qwen。
-5. Qwen仅输出evidence数组中的chunk_id与完整quote。未知、过滤、前轮、重复或改写引用使整轮拒答。
-6. 二次审核状态检查通过后，从原始片段按公共字段白名单构建Citation，答案只展示逐字核验原文。
+合并#35后，工厂实际使用原生元数据查询。旧Retriever适配测试显式构造不带元数据方法的替身，验证旧适配路径，不再错误断言真实新Retriever不可重索引。生产安全规则未因此放宽。
 
-三种状态保持answered、needs_clarification、insufficient_evidence。无合格证据不调用模型。模型适配器ServiceError原样交给FastAPI；外层等待超时转LLMTimeoutError，未知模型调用异常转脱敏LLMUnavailableError。历史模式本轮仍保守拒答，不把历史通知当作当前政策。
+新增组合回归：
 
-默认正式组装示意（需上游模块在运行环境就绪）：
+- 推免：大一/大二/大三及不匹配入学年级不能把“仅升学准备参考”用作正式推荐资格；符合年级可按规则使用。准备问题与资格判断分开验证，合成资料结果不代表判定学生真实资格。
+- 跨竞赛/作品：上一场竞赛或旧作品的完成人排名不能带到新作品；缺排名先追问，不检索、不调用模型；同竞赛同作品可复用历史排名。
+- 历史政策：规则可认可已结束通知的历史查询，但不能回答当前申请窗口。Agent仍为current-only，历史/expired片段统一安全拒答、不调用Qwen。
+- 日期：追问与证据共同使用注入日期，固定测试时间不依赖执行当天。
+- 合并实装：使用工作区中main的真实loader/BM25与#36工厂完成组合验证，并核对工作区检索源码与#35最新源码一致。
 
-```python
-workflow = await create_alpha_workflow(file_root=repository_root)
-app = create_app(agent_service=workflow, llm_client=workflow.llm_client)
-```
-
-后端维护的正式入口为 `backend.app.alpha:app`。本地排查脚本支持默认approved目录、`--corpus-dir`或显式`--package`，同样执行审核门禁；它没有正式入口的ConversationAgentService会话包装。正式后端运行组装需同步这些门禁，不修改其他成员负责文件。
-
-## 测试、记录与最终提交对应
-
-在仓库根目录运行：
+## 最新实际测试
 
 ```powershell
 .venv\Scripts\python.exe -X utf8 -m scripts.verify_alpha_upstream_integration
 .venv\Scripts\python.exe -X utf8 -m scripts.verify_alpha_agent_integration
 ```
 
-第一条输出16项跨分支结果；第二条全仓包含相同16项。脚本从远程分支引用提取原始代码，记录完整提交与文件SHA-256；缺少引用时显式失败，需先fetch。
+- 跨分支：**21项全部通过**，保留原16项并新增上述5项兼容性检查。
+- 后端全量：**251项，248通过、3跳过、0失败**。包括tests目录全量、新合入#35检索测试，以及#31位于knowledge_base/processing下的政策交付与表单隐私回归。
+- 跳过原因：Windows符号链接权限、本分支尚未合并#36模块的直接导入检查、未启用的真实付费政策验收。正式规则已在21项源码组合测试中实际执行。
+- 三个真实旧blocked包仍保持原始状态：23片段通过文件/哈希检查，零命中、空引用、证据不足，Qwen调用0次。未运行付费模型请求，未自动批准候选资料。
 
-记录还包含本Agent所有相关Python源码的LF规范化SHA-256。`base_commit`是执行时的HEAD，不伪称尚未提交的修复已经属于该提交。用户亲自提交后，以如下只读命令将最终HEAD与已执行的源码指纹、上游提交对应：
+第一轮224项、#35 1cc7ce1/#36 bc97a93属于历史记录，不作为本轮验证依据。首轮合并后的排查曾发现旧测试对新Retriever能力的假设失效；已显式隔离旧适配测试后完成全量重跑。没有为通过测试关闭门禁。
+
+## 最终提交与记录对应
+
+环境与跨分支JSON记录：执行时Agent HEAD、待合并main父提交、#31/#35历史包含性、两个上游完整SHA与文件哈希，以及backend/tests/scripts/examples/knowledge_base/processing相关Python源码的LF规范化SHA-256。执行期间源码变化会失败。
+
+用户亲自提交后执行：
 
 ```powershell
 .venv\Scripts\python.exe -X utf8 -m scripts.verify_alpha_agent_integration --check-record
+git rev-parse HEAD
 ```
 
-必须输出PASS；若源码或上游引用变了，应重新验证。该检查不重跑测试、不修改记录、不进行付费调用。测试期间源码变化也会导致验证脚本失败。
+`--check-record`只读验证：已执行的源码指纹与当前及最终HEAD中的Git blob一致；#31/#35已在HEAD历史内；上游引用与本次记录一致。若任何一项不符，停止上传并重跑验证。提交本身会改变SHA而不会改变已测源码，因此不需要为了把SHA写进自身提交而反复制造新提交。
 
-证据文件：`evidence/agent-integration/environment.json`、`unittest.txt`、`upstream-integration.json`、`upstream-integration.txt`、`real-policy-check.json`。216项/9201bb9/8ec09b0是上一轮历史结果，不再作为本次验收依据。
+提交前HEAD仍显示8ce0131不代表新代码已属于8ce0131；记录显式标注待提交合并与工作区源码，最终审核使用用户提交后终端输出的完整SHA和PASS对应。
 
-测试层次明确区分：Mock回归；正式规则/loader/BM25与合成审核输入、MockTransport的跨模块测试；真实blocked包的安全拒答；未执行的正式政策和真实模型端到端验收。合成资料的human_approved=True是测试输入，不是人工签核真实政策。
+## 保留的安全约束
 
-现有三个真实包保持原始状态：23个片段通过文件与哈希检查并索引，检索均零命中，Agent安全拒答、空引用、模型调用0次。直接交给正式包工厂时则因未审核被拒绝组装，不能为演示将它们改为已审核。
+1. 包内 `temporal_notes["human_approved"] is True`；enabled不能替代审核，缺失/false/字符串/数字均拒绝。
+2. 默认正式工厂用#35带报告的approved loader，严格目录/非空/完整indexed/warnings/总片段检查；直接传包也在索引前审核，候选状态不被修改。
+3. Agent按本轮version元数据独立复核审核、来源、时效和日期；规则True不能绕过，模型返回后再次检查撤回。
+4. 模型仅选择当轮合格chunk_id和完整原文；未知、过滤、前轮、重复或改写引用使整轮拒答。引用从真实片段字段白名单构建。
+5. 无合格证据不调用模型，三种业务状态不变。模型异常统一交后端，历史模式继续保守拒答。
 
-## 剩余验收与协作
+## 剩余验收
 
-- 组长复审本次门禁修复及最新测试证据。
-- 上游PR进入正式运行环境后，后端统一使用带报告的approved加载器和规则闭包，规则不可用时保持未就绪。
-- 团队指定审核者放行至少一个正式enabled、human_approved=True政策包。
-- 与账号持有人完成真实政策的检索→规则→Qwen→Citation及会话端到端验收。qwen-flash、28秒、0重试；密钥仅本地环境加载。
+更新原PR #32请求组长第二轮审核。正式后端运行组装、审核资料放行及真实政策/模型端到端验收仍需联合完成，相关限制保留但不自动将PR改回Draft。qwen-flash/28秒/0重试的联调配置不变，密钥只在本地环境读取。
 
-上游已提供qwen-flash/qwen-plus真实短片段格式探测记录，但本工作区未执行付费调用，不将其写成本Agent端到端通过。其余交接历史见同目录agent-business-rules-handoff.md、agent-retrieval-handoff.md、agent-qwen-handoff.md，以本页最新复审结果为准。
+证据：`evidence/agent-integration/environment.json`、`unittest.txt`、`upstream-integration.json`、`upstream-integration.txt`、`real-policy-check.json`。其他交接说明保留历史上下文，以本页为当前复审结论。

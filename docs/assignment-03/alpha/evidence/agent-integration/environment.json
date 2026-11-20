@@ -1,9 +1,9 @@
 {
-  "started_at_asia_shanghai": "2026-11-20T22:36:37.053884+08:00",
-  "finished_at_asia_shanghai": "2026-11-20T22:36:46.436038+08:00",
-  "base_commit": "e46e7457c2bf3e353b627153655b01f4768c406b",
+  "started_at_asia_shanghai": "2026-11-20T23:54:31.679912+08:00",
+  "finished_at_asia_shanghai": "2026-11-20T23:54:41.446504+08:00",
+  "base_commit": "8ce01317f0b95441525c54c144af2eb1fb69c4a9",
   "agent_source_state": {
-    "base_commit": "e46e7457c2bf3e353b627153655b01f4768c406b",
+    "base_commit": "8ce01317f0b95441525c54c144af2eb1fb69c4a9",
     "source_sha256_lf": {
       "backend/__init__.py": "845da59f5760bf8179adad042a26eb8865c357b20d8b774809352368b8185e62",
       "backend/app/__init__.py": "45390889d8a4a81a685fa8f8fb38422e5f6ff8840d7df1405f088ab5347ae8e2",
@@ -18,14 +18,21 @@
       "backend/document_processing/parser.py": "3d045933f81513b1be9dd2f89fa3de5a80aa8031f1abe3c512facb591bfee6ed",
       "backend/requirements-dev.txt": "0fde52259befafc63b39d6519bf349ad5495773801c3824d5e1213f74f5fb7df",
       "backend/requirements.txt": "4f3428393c44c6a769a4236fdf8c09c2898d2d4acdb63122d710d29891f1894a",
-      "backend/retrieval/__init__.py": "6f3ab5bf28e513ac10d8150edaccdd1b67935d9c3188d31eebdae9a2f6680dcb",
-      "backend/retrieval/local.py": "7524b690b9475dfd79bfce81280bfaa9bb11bc651b80295cfc456beaa438f2a4",
+      "backend/retrieval/__init__.py": "d712aa742af61d17dcea9b0e033679eac0e9c42e8ee646c5224bc450f14729db",
+      "backend/retrieval/alpha_corpus.py": "fe69d6e4eb82d9970496a28c3c3868fe0b167fdf555239972457abb4239e187e",
+      "backend/retrieval/local.py": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20",
       "backend/services/__init__.py": "7f046044817ea7579f0327f16c769a32c9b053c9e428a42dc15cba1de8c5658a",
-      "backend/services/agent_workflow.py": "3576e40df40ed6ee8915a5cc04218b4802ecc33ca2f870d4f7c42850630ba5df",
+      "backend/services/agent_workflow.py": "ff54a12e47479cbe161efd11d4950d4af92efc7044e6aecbd5ba371fa4f618d4",
       "backend/services/errors.py": "cdaa522d135d79d5ded52669bb89eaa2fc64d56b1bf4bd7d35c6557fed835e77",
       "backend/services/mock_agent.py": "13b8ce18677d6e2d032fc534bb9cf86beebd9b020a8fbab3593e6374ca390f8f",
       "backend/services/qwen_client.py": "cc5259d3359fb1792729e9c7240d0678970a3c693c17e35e363c03f1c1876b0d",
       "examples/agent_workflow_demo.py": "0df77ff76eb0f9990d88b8a63a12aa5659e6c5b30ce15a0bf41e1320b3041a57",
+      "knowledge_base/processing/audit_policy_forms.py": "3651c79938a2341b4892bbbe1f0d41b9cd7dfe8d6be515d9fbef03fc0c337017",
+      "knowledge_base/processing/build_policy_review.py": "93f5aa545b867c902528a4f70313d0070f12a22aa2081d25c7aab272687e698c",
+      "knowledge_base/processing/extract_policy_review.py": "32aed509e9b12ee611cff256fbf692d35f8e9e5a69aaed206e4cfe48cc759e47",
+      "knowledge_base/processing/inspect_policy_forms.py": "a873e56d832f45973a4eaceebc530f27b15f84e4de6fefa800e7f1de4612f4a1",
+      "knowledge_base/processing/test_policy_forms_privacy.py": "1d757cbdeb0d2b43d808c788c9cac4b1c0cf9e4376fbeab8a5165de14e6bbba3",
+      "knowledge_base/processing/test_policy_review.py": "061a8101a3da51a987253af0903ef92945ef48bb686a02bd83a09355556a7deb",
       "scripts/check_document_processing.py": "de3832c09805e38d5be3deb1d781d7294c86095c790a01f6329fef36b3111049",
       "scripts/check_qwen_live.py": "aacec90857cf1f057ba1d4b8b73cb1747c541c632a0764c8df5c1a53b62b2fa6",
       "scripts/check_retrieval_agent.py": "8f54d786e1c47bbfa46fb279b78d6cb224ccaebdbf0962c963c349950efea0fd",
@@ -33,18 +40,33 @@
       "scripts/parse_alpha_documents.py": "2e8c6fba5e03c834b0089bf87f9225ed774cdd7b84965277ab0078943b5b4bf3",
       "scripts/run_alpha_agent.py": "6eedc0480eebe9ec8bf7d5d0e4c8e4592797c158f77b7330338ba7c7d3a60799",
       "scripts/verify_agent_workflow.py": "e5dc659cc874372a166caa443e12e1c14fef11bdf2dc85561b77cf256729520c",
-      "scripts/verify_alpha_agent_integration.py": "d76be557b3c3c76f30429af9c1f137e59321d8a831dbf09a3d18c55a72956ddb",
-      "scripts/verify_alpha_upstream_integration.py": "255e7d53b399b35755a53c0349fd6ca3310733e1bda2eb2d525a8b2b8971a82e",
+      "scripts/verify_alpha_agent_integration.py": "a68ae9fbd461ea43434c3c1240f1f8d0102264358ce5d2211c0071dbd4b9eff3",
+      "scripts/verify_alpha_upstream_integration.py": "27ed8c24dbf3b731ef98ff42005a7216d0a8ad333a1826006edba92875a2f121",
       "tests/test_agent_workflow.py": "0f4ac0d8117b52864c488734b202adb6666c3eee3f32887c1fda9d9aa68d9f0c",
       "tests/test_agent_workflow_api.py": "2addcf904df32f466490d46d12b2d3668b1c6ce1df495efb63ff76b37735ef7a",
-      "tests/test_agent_workflow_qwen.py": "496fc6b8452bff07c3bcfd7ef047cb6e8a36ea38dae736418a1126a0b890e59d",
+      "tests/test_agent_workflow_qwen.py": "deee6a3e6b6c91fc2d9bfa80f243f1c9452acf95c257f383aaf9e78858391a57",
+      "tests/test_alpha_corpus.py": "bcf10abb793c12d762537f2d6f7d2bf20913598eeb108e5ff31e0db82b9ba3d7",
       "tests/test_api_validation.py": "63e93cd049a90d2656c91d8a7ff34ed216507929cca0043f3065135118fe5f1b",
       "tests/test_backend_runtime.py": "b0f196d174f54c853dfe403ec5617c9372f5edc79db59e720defb5d26392d594",
       "tests/test_document_processing.py": "f0f8fa336a99261b089a4cf1dfa90693c388b2936e25295c2d3715e6cdca8a01",
       "tests/test_interface_contracts.py": "250235bfac1334c3b3b01ec329285c9b9babded9d2c45c9f4cbef1e46f4a335f",
-      "tests/test_local_retrieval.py": "99552e8327149ec8ebebad7e4abbc880ee4abe89b5fbf01e54b6bcbba5f89bd2",
+      "tests/test_local_retrieval.py": "cb94c0398a4b2ae99d82c8adf5a5586a17d3328cc80bc47559c21735d0b71a40",
       "tests/test_mock_agent_api.py": "b2eb3fa086449af92fec543e7c9ce40452248cef8db249067f81a28a621918f0",
       "tests/test_qwen_client.py": "42f1d52b29eec6893dfd320e782ae1017084471b7536aed6d8e91bcc487444ec"
+    },
+    "main_commit": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
+    "pending_merge_parent": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
+    "required_merged_history": {
+      "main_with_pr35": {
+        "commit": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
+        "in_HEAD": false,
+        "in_pending_merge": true
+      },
+      "pr31": {
+        "commit": "4282ea785195ab3fccfe07c52b7c0bf3d1b18a10",
+        "in_HEAD": false,
+        "in_pending_merge": true
+      }
     },
     "record_scope": "Tested source contents; base_commit is not a claim that uncommitted edits are already committed"
   },
@@ -60,12 +82,8 @@
     "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
     "-X",
     "utf8",
-    "-m",
-    "unittest",
-    "discover",
-    "-s",
-    "tests",
-    "-v"
+    "-c",
+    "import sys,unittest; suite=unittest.defaultTestLoader.discover('tests'); suite.addTests(unittest.defaultTestLoader.loadTestsFromNames(['knowledge_base.processing.test_policy_review','knowledge_base.processing.test_policy_forms_privacy'])); result=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(0 if result.wasSuccessful() else 1)"
   ],
   "exit_code": 0,
   "test_layers": {
@@ -81,21 +99,21 @@
   "upstream_sources": [
     {
       "ref": "origin/feat/alpha-business-rules-runtime",
-      "commit": "bc97a93dc60db076e1d1e64494dd3a96aa0895ac",
+      "commit": "e0ed6e9d11a540068e86bd642e75ec21a3736a76",
       "source": "backend/services/alpha_business_rules.py",
-      "sha256": "c8b8a3a97cfc8f20f714a53b2d5b4301533d2c8952d2ff86ab45881a24b87421"
+      "sha256": "0cfd70d5e7c699bdcbcda96577ac3b492659f52aa1c1232da26f99772f9fea25"
     },
     {
       "ref": "origin/feat/alpha-retrieval-loader",
-      "commit": "1cc7ce14864e6deaebf8c157b95985403c38ff9e",
+      "commit": "2b70386da880718430a9859c00e9cceef13c548a",
       "source": "backend/retrieval/local.py",
       "sha256": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20"
     },
     {
       "ref": "origin/feat/alpha-retrieval-loader",
-      "commit": "1cc7ce14864e6deaebf8c157b95985403c38ff9e",
+      "commit": "2b70386da880718430a9859c00e9cceef13c548a",
       "source": "backend/retrieval/alpha_corpus.py",
-      "sha256": "fdd29f44635eb988cb7ee465cf9849d5c9d7f5570e5076a4d83ea5052ef1f6a5"
+      "sha256": "fe69d6e4eb82d9970496a28c3c3868fe0b167fdf555239972457abb4239e187e"
     }
   ],
   "qwen_handoff_checks": [

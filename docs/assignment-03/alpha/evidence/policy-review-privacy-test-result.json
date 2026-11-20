@@ -1,0 +1,22 @@
+{
+  "checked_on": "2026-11-20",
+  "checks": [
+    {
+      "command": "python -m unittest knowledge_base.processing.test_policy_forms_privacy knowledge_base.processing.test_policy_review -v",
+      "exit_code": 0,
+      "summary": [
+        "Ran 13 tests in 0.753s",
+        "OK"
+      ]
+    },
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "summary": [
+        "Ran 171 tests in 10.868s",
+        "OK (skipped=1)"
+      ]
+    }
+  ],
+  "formal_policy_approval": false
+}

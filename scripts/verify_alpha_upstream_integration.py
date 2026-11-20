@@ -25,14 +25,27 @@ def agent_source_state():
     blobs have the same fingerprint. Never inspect local .env files.
     """
     paths = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard",
-        "--", "backend", "tests", "scripts", "examples"], cwd=ROOT, text=True).splitlines()
+        "--", "backend", "tests", "scripts", "examples", "knowledge_base/processing"], cwd=ROOT, text=True).splitlines()
     hashes = {}
     for name in sorted(set(paths)):
         path = ROOT / name
         if path.is_file() and (path.suffix == ".py" or path.name in {"requirements.txt", "requirements-dev.txt"}):
             hashes[name] = sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-    return {"base_commit": head, "source_sha256_lf": hashes,
+    main = subprocess.check_output(["git", "rev-parse", "origin/main"], cwd=ROOT, text=True).strip()
+    merge_head = subprocess.run(["git", "rev-parse", "-q", "--verify", "MERGE_HEAD"],
+        cwd=ROOT, capture_output=True, text=True)
+    requirements = {"main_with_pr35": "a87182c", "pr31": "4282ea7"}
+    pending = merge_head.stdout.strip() if merge_head.returncode == 0 else None
+    included = {}
+    for label, ref in requirements.items():
+        commit = subprocess.check_output(["git", "rev-parse", ref], cwd=ROOT, text=True).strip()
+        included[label] = {"commit": commit,
+            "in_HEAD": subprocess.run(["git", "merge-base", "--is-ancestor", commit, head], cwd=ROOT).returncode == 0,
+            "in_pending_merge": bool(pending and subprocess.run(
+                ["git", "merge-base", "--is-ancestor", commit, pending], cwd=ROOT).returncode == 0)}
+    return {"base_commit": head, "source_sha256_lf": hashes, "main_commit": main,
+            "pending_merge_parent": pending, "required_merged_history": included,
             "record_scope": "Tested source contents; base_commit is not a claim that uncommitted edits are already committed"}
 
 

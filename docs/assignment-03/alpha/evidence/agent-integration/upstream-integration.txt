@@ -1,18 +1,23 @@
 D:\se_teamalpha\CodeMind-FZU\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
   from starlette.testclient import TestClient as TestClient  # noqa
-test_clarification_exception_has_strict_agent_refusal_contract (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_exception_has_strict_agent_refusal_contract) ... Executing <Task finished name='Task-1' coro=<UpstreamRulesRetrieverIntegrationTests.asyncSetUp() done, defined at D:\se_teamalpha\CodeMind-FZU\tests\test_agent_workflow_qwen.py:567> result=None created at C:\Users\shing\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:100> took 0.109 seconds
-Clarification rule failed; request_id=08f2e3fc-2ba2-4792-82dd-c6fb1bbea441
+test_clarification_and_evidence_share_injected_clock (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_and_evidence_share_injected_clock) ... Executing <Task finished name='Task-1' coro=<UpstreamRulesRetrieverIntegrationTests.asyncSetUp() done, defined at D:\se_teamalpha\CodeMind-FZU\tests\test_agent_workflow_qwen.py:578> result=None created at C:\Users\shing\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py:100> took 0.133 seconds
 ok
+test_clarification_exception_has_strict_agent_refusal_contract (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_exception_has_strict_agent_refusal_contract) ... Clarification rule failed; request_id=227cb305-d790-45c9-8855-486f96d97ea2
+ok
+test_competition_or_work_switch_does_not_inherit_previous_rank (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_competition_or_work_switch_does_not_inherit_previous_rank) ... ok
 test_formal_corpus_report_rejects_partial_failed_empty_and_missing (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_formal_corpus_report_rejects_partial_failed_empty_and_missing) ... ok
 test_historical_evidence_stays_blocked_by_workflow_gate (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_historical_evidence_stays_blocked_by_workflow_gate) ... ok
+test_historical_rule_applicability_cannot_relax_agent_current_gate (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_historical_rule_applicability_cannot_relax_agent_current_gate) ... ok
 test_latest_loader_and_agent_reject_every_unapproved_marker (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_latest_loader_and_agent_reject_every_unapproved_marker) ... ok
 test_manifest_approval_cannot_replace_package_approval (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_manifest_approval_cannot_replace_package_approval) ... ok
+test_merged_retriever_matches_latest_upstream_without_replacement (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_merged_retriever_matches_latest_upstream_without_replacement) ... ok
 test_missing_or_broken_metadata_blocks_before_qwen (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_missing_or_broken_metadata_blocks_before_qwen) ... ok
 test_non_sensitive_document_can_answer_without_chapter_metadata (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_non_sensitive_document_can_answer_without_chapter_metadata) ... ok
 test_per_retriever_rule_closures_do_not_share_metadata (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_per_retriever_rule_closures_do_not_share_metadata) ... ok
 test_real_loader_rules_and_qwen_adapter_answer_with_source (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_loader_rules_and_qwen_adapter_answer_with_source) ... ok
 test_real_rules_clarify_before_retrieval_and_model (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_rules_clarify_before_retrieval_and_model) ... ok
 test_real_rules_use_user_history_to_complete_category (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_rules_use_user_history_to_complete_category) ... ok
+test_recommendation_grade_eligibility_and_reference_are_distinct (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_recommendation_grade_eligibility_and_reference_are_distinct) ... ok
 test_review_only_package_skipped_by_actual_approved_loader (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_review_only_package_skipped_by_actual_approved_loader) ... ok
 test_sensitive_sections_fail_closed_for_every_missing_lookup_case (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_sensitive_sections_fail_closed_for_every_missing_lookup_case) ... ok
 test_teacher_section_filtered_out_of_real_qwen_prompt (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_teacher_section_filtered_out_of_real_qwen_prompt) ... ok
@@ -20,6 +25,6 @@ test_unknown_applicability_and_wrong_policy_kind_rejected (tests.test_agent_work
 test_year_mismatch_rejected_using_real_metadata (tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_year_mismatch_rejected_using_real_metadata) ... ok
 
 ----------------------------------------------------------------------
-Ran 16 tests in 0.866s
+Ran 21 tests in 0.738s
 
 OK

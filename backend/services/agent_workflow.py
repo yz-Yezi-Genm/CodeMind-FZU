@@ -12,6 +12,7 @@ import math
 import re
 from collections.abc import Callable, Iterable
 from datetime import date
+from functools import partial
 from pathlib import Path
 from uuid import UUID
 
@@ -424,7 +425,7 @@ async def create_alpha_workflow(
     if clarification_rule is None:
         try:
             rules = import_module("backend.services.alpha_business_rules")
-            clarification_rule = rules.alpha_clarification_rule
+            clarification_rule = partial(rules.alpha_clarification_rule, today=today)
             evidence_check = rules.build_from_retriever(retriever, today=today)
         except (ImportError, AttributeError) as exc:
             raise LLMConfigurationError("Alpha 业务规则模块未就绪，不能启用正式工作流。") from exc

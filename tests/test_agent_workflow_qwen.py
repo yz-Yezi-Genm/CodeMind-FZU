@@ -128,7 +128,7 @@ class AgentWorkflowQwenTests(unittest.TestCase):
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def fixture_clarification(request):
+def fixture_clarification(request, *, today=None):
     """Test double, not Lei Jiayu's production business implementation."""
     context = "\n".join([*(t.content for t in request.history if t.role == "user"), request.query])
     if "奖学金" in context and "星桥" not in context:
@@ -292,7 +292,18 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.observed, [])
 
     async def test_legacy_package_snapshot_is_read_only_and_metadata_is_detached(self):
-        workflow = await self.workflow()
+        class LegacyRetriever:
+            def __init__(self, **kwargs):
+                self.store = LocalBM25Retriever(**kwargs)
+
+            async def index_document(self, package):
+                return await self.store.index_document(package)
+
+            async def retrieve(self, request):
+                return await self.store.retrieve(request)
+
+        with patch("backend.retrieval.local.LocalBM25Retriever", LegacyRetriever):
+            workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金"))
         metadata = workflow.retriever.get_document_metadata(hits[0].version_id)
         metadata.temporal_notes["human_approved"] = False
@@ -333,7 +344,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         ):
             workflow = await create_alpha_workflow([self.package], file_root=self.file_root)
         self.assertIsInstance(workflow.llm_client, QwenLLMClient)
-        self.assertIs(workflow.clarification_rule, rules.alpha_clarification_rule)
+        self.assertIs(workflow.clarification_rule.func, rules.alpha_clarification_rule)
         self.assertIs(workflow.evidence_check, bound_check)
         self.assertTrue(await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金")))
 
@@ -843,6 +854,97 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(ServiceError):
             await self.workflow()
         self.assertEqual(self.observed, [])
+
+    async def test_recommendation_grade_eligibility_and_reference_are_distinct(self):
+        self.package.metadata.record_code = "SYNTH-2027-推免资格推荐"
+        self.package.metadata.title = "合成测试：2027届本科推免资格推荐办法"
+        self.package.metadata.applicability_raw = {
+            "适用年级": "2027届应届本科毕业生；大一至大三仅升学准备参考",
+            "适用专业": "计算机科学与技术、软件工程",
+            "适用对象": "学院申请取得本科推免推荐资格的学生", "目标届别": "2027届",
+        }
+        self.package.chunks[0].content = "【合成测试，非政策】2027届推免推荐资格按本通知核对材料与排名。"
+        workflow = await self.workflow()
+        for grade in ("大一", "大二", "大三", "2024级"):
+            with self.subTest(grade=grade):
+                result = await workflow.run(self.request(f"我是{grade}，2027届推免推荐资格怎么排名？"))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+        for query in ("我是大四，2027届推免推荐资格怎么排名？",
+                      "我是2023级，2027届推免推荐资格怎么排名？",
+                      "我是大二，2027届推免要提前准备什么？"):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "answered")
+                self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+
+    async def test_competition_or_work_switch_does_not_inherit_previous_rank(self):
+        self.package.metadata.record_code = "SYNTH-2024-创新创业学分认定"
+        self.package.metadata.title = "合成测试：创新创业学分认定办法"
+        self.package.chunks[0].content = "【合成测试】竞赛创新学分学生申请需要提交申请表。"
+        self.package.chunks[0].locator_note = "学生学分申请与记载"
+        workflow = await self.workflow()
+        history = ["数学建模竞赛国家级二等奖，团队作品，作品《交通预测》，我是第二完成人"]
+        for query in ("蓝桥杯省赛二等奖，团队作品，作品《校园二手平台》，创新学分能认定多少？",
+                      "数学建模竞赛省级二等奖，团队作品，作品《空气质量预测》，创新学分能认定多少？"):
+            with self.subTest(query=query), patch.object(workflow.retriever, "retrieve",
+                    wraps=workflow.retriever.retrieve) as retrieve:
+                result = await workflow.run(self.request(query, history))
+                self.assertEqual(result.status, "needs_clarification")
+                self.assertEqual(result.clarifying_question, self.rules.QUESTION_TOP_EIGHT)
+                retrieve.assert_not_called()
+        self.assertEqual(self.observed, [])
+        same = "数学建模竞赛国家级二等奖，团队作品，作品《交通预测》，创新学分能认定多少？"
+        result = await workflow.run(self.request(same, history))
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_historical_rule_applicability_cannot_relax_agent_current_gate(self):
+        self.package.metadata.record_code = "SYNTH-2026-星火奖学金"
+        self.package.metadata.title = "合成测试：2026年星火奖教奖学金评选通知"
+        self.package.metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
+        self.package.metadata.deadline_on = date(2026, 4, 26)
+        self.package.chunks[0].content = "【合成测试】星火奖学金申请截止时间为2026年4月26日。"
+        self.package.chunks[0].locator_note = json.dumps({"heading_path": [
+            {"level": 2, "title": "星火奖学金评选细则（学生）"}]}, ensure_ascii=False)
+        workflow = await self.workflow()
+        hits = await workflow.retriever.retrieve(RetrievalRequest(query="星火奖学金"))
+        self.assertTrue(hits)
+        historical = self.request("星火奖学金去年截止到什么时候？")
+        current = self.request("星火奖学金现在还能申请吗，有什么资格要求？")
+        self.assertIs(workflow.evidence_check(historical, hits[0]), True)
+        self.assertIs(workflow.evidence_check(current, hits[0]), False)
+        for request in (historical, current):
+            result = await workflow.run(request)
+            self.assertEqual(result.status, "insufficient_evidence")
+            self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_clarification_and_evidence_share_injected_clock(self):
+        workflow = await self.workflow()
+        query = self.request("2029年推免政策是什么？")
+        self.assertIsNone(workflow.clarification_rule(query))
+        workflow = await create_alpha_workflow(file_root=self.root, retriever=workflow.retriever,
+            llm_client=self.llm, today=lambda: date(2030, 1, 1))
+        result = await workflow.run(query)
+        self.assertEqual(result.status, "needs_clarification")
+        self.assertEqual(result.clarifying_question, self.rules.QUESTION_RECOMMENDATION_OBJECT)
+        self.assertEqual(self.observed, [])
+
+    async def test_merged_retriever_matches_latest_upstream_without_replacement(self):
+        # Actual imported main implementation, not the temporary PR module.
+        self.assertEqual((ROOT / "backend/retrieval/local.py").read_bytes().replace(b"\r\n", b"\n"),
+            (Path(os.environ["ALPHA_UPSTREAM_SNAPSHOT"]) / "retrieval/local.py").read_bytes().replace(b"\r\n", b"\n"))
+        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
+        directory = self.root / "merged-approved"
+        directory.mkdir()
+        (directory / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
+        store, report = await load_approved_alpha_retriever(corpus_dir=directory,
+            file_root=self.root, allow_missing=False)
+        self.assertTrue(report.loaded_packages)
+        workflow = await create_alpha_workflow(file_root=self.root, retriever=store, llm_client=self.llm)
+        self.assertEqual((await workflow.run(self.request())).status, "answered")
 
 
 @unittest.skipUnless(find_spec("backend.services.alpha_business_rules") is not None,
