@@ -19,7 +19,7 @@ alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool
 
 均为同步函数，可直接传入 `AgentWorkflow(clarification_rule=..., evidence_check=...)`（传函数本身，不加括号）。
 
-分支 `feat/alpha-business-rules-runtime`，基于 main `f5fcabc`，PR #36（https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/36）。
+分支 `feat/alpha-business-rules-runtime`，已同步 main `a87182c`（含 #31、#35 合并结果），PR #36（https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/36）。
 
 ## 2. 三个场景的必要字段与追问顺序
 
@@ -102,7 +102,7 @@ bind_chunk_lookup(retriever.get_parsed_chunk)
 workflow = AgentWorkflow(..., evidence_check=alpha_evidence_check)
 ```
 
-PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retriever` 用 `getattr` 取方法，合入后无需改动即可生效。两个方法都是同步、未知对象返回 `None`、成功返回深拷贝，规则侧只读、不修改返回值。
+#35 已合入 main，`build_from_retriever` 直接用 `getattr` 取 `get_document_metadata` 与 `get_parsed_chunk`，无需额外适配。两个方法都是同步、未知对象返回 `None`、成功返回深拷贝，规则侧只读、不修改返回值。
 
 必要时元数据缺失时一律拒绝（`False`）：无法确认文档类型、适用年度、适用范围时宁可证据不足，也不给学生错误结论。
 
@@ -133,17 +133,17 @@ PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retrieve
 
 按吴诗莹对齐后的工作流行为：追问规则抛异常时返回 `insufficient_evidence`（`answer_mode=insufficient_data`，警告码 `CLARIFICATION_RULE_FAILED`），不检索、不调用模型；证据规则在模块内部已捕获异常并返回 `False`，单个片段判断失败不影响其他片段。
 
-本分支基于 main `f5fcabc`，尚未包含上述兜底捕获，因此测试 `test_clarification_error_is_safely_rejected` 同时兼容两种实现：异常上抛（调用方拒答）或工作流返回 `insufficient_evidence` + `CLARIFICATION_RULE_FAILED`；两种路径都断言未触发检索与模型调用。
+本分支已同步 main `a87182c`，main 工作流尚未包含上述兜底捕获，因此测试 `test_clarification_error_is_safely_rejected` 同时兼容两种实现：异常上抛（调用方拒答）或工作流返回 `insufficient_evidence` + `CLARIFICATION_RULE_FAILED`；两种路径都断言未触发检索与模型调用。
 
 ## 6. 测试命令与结果
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 103 passed
+# 107 passed
 
 python -m pytest tests -q
-# 274 passed, 77 subtests passed（本分支单独，未含 #35 用例）
-# 283 passed, 77 subtests passed（同步 main 后的合并树）
+# 278 passed, 77 subtests passed（本分支单独，未含 #35 用例）
+# 287 passed, 77 subtests passed（同步 main 后的合并树）
 ```
 
 测试覆盖：
@@ -179,7 +179,9 @@ python -m pytest tests -q
 - 历史/过期通知：问历史截止时间放行，问“现在还能不能申请”拒绝；
 - 年级口径区分正式资格与参考说明：#31 的“大一至大三仅升学准备参考”不再让低年级通过正式推荐资格，只有准备、流程类问题按参考口径放行；
 - 排名不跨竞赛、不跨作品继承：历史排名只在本轮未说、且同一竞赛同一作品时复用；
-- 追问与证据判断共用时间源，`alpha_clarification_rule` 支持注入 `today`。
+- 追问与证据判断共用时间源，`alpha_clarification_rule` 支持注入 `today`；
+- 明确指定年级或专业、但资料缺少对应适用范围字段时 fail-closed，不因为句子里没有第一人称而放行；
+- 作品标识除书名号外，也识别“作品名称叫 XXX”“项目名称是 XXX”等无书名号写法，跨作品排名同样不继承。
 
 与吴诗莹约定案例的对应测试：
 

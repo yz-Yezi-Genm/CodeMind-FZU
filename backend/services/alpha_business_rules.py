@@ -366,7 +366,11 @@ def _team(text: str) -> bool | None:
 
 
 _COMPETITION_NAMES = re.compile(r"数学建模|蓝桥杯|挑战杯|互联网\+|电子设计|程序设计|机器人大赛|智能车|创新创业大赛")
-_WORK_NAME = re.compile(r"《[^》]{1,80}》")
+_WORK_NAME = re.compile(r"《([^》]{1,80})》")
+_WORK_NAMED = re.compile(
+    r"(?:作品|项目|论文|成果)(?:名称|题目|名字|名|叫)(?:叫|为|是|：|:)?\s*"
+    r"[“\"「]?([^，。；;、\s”\"」]{2,40})"
+)
 
 
 def _competition_keys(text: str) -> set[str]:
@@ -374,7 +378,10 @@ def _competition_keys(text: str) -> set[str]:
 
 
 def _works(text: str) -> set[str]:
-    return set(_WORK_NAME.findall(text))
+    """作品标识：书名号标题，或“作品名称叫 XXX”这类不带书名号的写法。"""
+    names = set(_WORK_NAME.findall(text))
+    names.update(_WORK_NAMED.findall(text))
+    return names
 
 
 def _rank_for(subject: str | None, text: str) -> int | None:
@@ -432,9 +439,9 @@ def _first_unit_state(text: str) -> bool | None:
 
 def _work_mentioned(text: str) -> bool:
     """作品名称：书名号标题，或明确写出作品/项目/论文名称。"""
-    if re.search(r"《[^》]{2,60}》", text):
+    if _works(text):
         return True
-    return bool(re.search(r"(?:作品|项目|论文|成果)(?:名称|题目|叫)|(?:作品|项目|论文)是[《“]", text))
+    return bool(re.search(r"(?:作品|项目|论文)是[《“]", text))
 
 
 def _degree_type(text: str) -> str | None:
@@ -1045,8 +1052,9 @@ def _applicability(
         if "本科" in target_text and "研究生" not in target_text:
             return False
 
-    if unknown and _PERSONAL.search(text):
-        # 适用范围未知时，不替学生认定个人适用性。
+    if unknown:
+        # 用户明确问了年级/专业，但资料没有对应适用范围：无法核实即不适用，
+        # 不因为句子里没有“我”就放行。
         return False
     return True
 

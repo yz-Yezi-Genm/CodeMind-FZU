@@ -45,6 +45,7 @@ from backend.services.alpha_business_rules import (
     _grade_level,
     _level_for,
     _team,
+    _works,
     _level,
     _rank,
     QUESTION_WORK_NAME,
@@ -1304,3 +1305,52 @@ def test_clarification_honours_injected_today() -> None:
         alpha_clarification_rule(_request(query), today=lambda: date(2030, 1, 1))
         == QUESTION_RECOMMENDATION_OBJECT
     )
+
+
+# --------------------------------------------------------------------------- 第八轮回归
+
+
+def test_explicit_grade_without_applicability_is_rejected() -> None:
+    """明确问了年级、资料没有适用年级时不能放行，句子里没有“我”也一样。"""
+    meta = _meta(
+        SCHOOL_SCHOLARSHIP,
+        record_code="福大-2026-本科奖学金",
+        applicability={"适用专业": "全校相关本科专业"},
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((SCHOOL_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    assert check(_request("大三学生能申请优秀学生综合奖学金吗？"), SCHOOL_SCHOLARSHIP) is False
+    # 没指定年级时不受这条影响
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SCHOOL_SCHOLARSHIP) is True
+
+
+def test_explicit_major_without_applicability_is_rejected() -> None:
+    """明确问了专业、资料没有适用专业时同样 fail-closed。"""
+    meta = _meta(
+        SCHOOL_SCHOLARSHIP,
+        record_code="福大-2026-本科奖学金",
+        applicability={"适用年级": "全体本科生"},
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((SCHOOL_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    assert check(
+        _request("计算机科学与技术专业能申请优秀学生综合奖学金吗？"), SCHOOL_SCHOLARSHIP
+    ) is False
+    assert check(_request("优秀学生综合奖学金一等奖要什么条件？"), SCHOOL_SCHOLARSHIP) is True
+
+
+def test_work_name_without_book_marks_is_recognised() -> None:
+    assert _works("作品名称叫城市交通流量预测") == {"城市交通流量预测"}
+    assert _works("作品叫空气质量预测平台") == {"空气质量预测平台"}
+    assert _works("论文题目是基于深度学习的图像分割") == {"基于深度学习的图像分割"}
+    # “成果是上一学期取得的”不能被当成作品名
+    assert _works("成果是上一学期取得的") == set()
+
+
+def test_rank_is_not_inherited_across_unquoted_works() -> None:
+    """同一竞赛、作品名称不带书名号但换了作品，也不能继承旧排名。"""
+    history = [f"数学建模竞赛国家级二等奖，团队作品，{WORK}，我是第二完成人"]
+    query = "数学建模竞赛省级二等奖，团队作品，作品名称叫空气质量预测平台，创新学分能认定多少？"
+    assert alpha_clarification_rule(_request(query, history=history)) == QUESTION_TOP_EIGHT
