@@ -128,16 +128,21 @@ async def load_approved_alpha_retriever(
 
     Return semantics for formal runtime assembly:
     - When ``allow_missing=True`` (default) and ``corpus_dir`` does not exist, an
-      empty retriever and an empty report are returned rather than raising.
+      empty retriever and an empty report are returned rather than raising. Because
+      a missing directory and an existing empty directory both yield empty
+      ``index_results``, no warnings, and ``total_indexed_chunks == 0``, formal
+      backend assembly cannot rely on those fields alone to verify corpus health;
+      pass ``allow_missing=False`` or explicitly check ``report.corpus_dir.is_dir()``.
     - ``report.loaded_packages`` records every package whose indexing result is not
       ``IndexingStatus.FAILED`` — including ``IndexingStatus.PARTIAL`` packages
       (for example when unready/``needs_ocr`` source files leave ``indexed_count == 0``).
       Unready chunks are never exposed to retrieval, so ``loaded_packages`` alone does
       not imply a package is fully ready for formal QA.
-    - Formal backend/Agent assembly should inspect ``report.index_results`` (requiring
+    - Formal backend/Agent assembly should inspect ``report.corpus_dir.is_dir()``
+      (or pass ``allow_missing=False``), ``report.index_results`` (requiring
       ``IndexingStatus.INDEXED`` under conservative Alpha policy), ``warnings``, and
-      ``report.total_indexed_chunks`` to distinguish an unready corpus from a normal
-      zero-hit query.
+      ``report.total_indexed_chunks`` to distinguish a missing/unready corpus from
+      a normal zero-hit query.
     """
     resolved_root = file_root.resolve(strict=True) if file_root is not None else None
     retriever = LocalBM25Retriever(file_root=resolved_root)

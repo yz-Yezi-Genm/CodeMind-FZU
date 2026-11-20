@@ -20,7 +20,6 @@ from backend.contracts import (
     RetrievalStatus,
 )
 from backend.retrieval import (
-    DEFAULT_APPROVED_DIR,
     build_approved_alpha_retriever,
     load_approved_alpha_retriever,
 )
@@ -104,12 +103,19 @@ def _write_approved_package(
 
 
 class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
-    async def test_default_approved_dir_loads_cleanly_when_empty(self):
-        retriever, report = await load_approved_alpha_retriever(corpus_dir=DEFAULT_APPROVED_DIR)
-        self.assertEqual(report.loaded_packages, ())
-        self.assertEqual(report.skipped_packages, ())
-        self.assertEqual(report.total_indexed_chunks, 0)
-        self.assertEqual(await retriever.retrieve(RetrievalRequest(query="奖学金")), [])
+    async def test_empty_approved_dir_loads_cleanly(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            empty_approved = root / "approved"
+            empty_approved.mkdir()
+            retriever, report = await load_approved_alpha_retriever(
+                corpus_dir=empty_approved, file_root=root, allow_missing=False
+            )
+            self.assertTrue(report.corpus_dir.is_dir())
+            self.assertEqual(report.loaded_packages, ())
+            self.assertEqual(report.skipped_packages, ())
+            self.assertEqual(report.total_indexed_chunks, 0)
+            self.assertEqual(await retriever.retrieve(RetrievalRequest(query="奖学金")), [])
 
     async def test_missing_dir_returns_empty_by_default_and_raises_when_disallowed(self):
         with TemporaryDirectory() as tmp:
@@ -117,6 +123,7 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
             retriever, report = await load_approved_alpha_retriever(
                 corpus_dir=missing, file_root=Path(tmp)
             )
+            self.assertFalse(report.corpus_dir.is_dir())
             self.assertEqual(report.loaded_packages, ())
             self.assertEqual(report.total_indexed_chunks, 0)
             self.assertEqual(await retriever.retrieve(RetrievalRequest(query="奖学金")), [])
