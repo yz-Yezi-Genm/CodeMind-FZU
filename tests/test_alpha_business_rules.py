@@ -139,6 +139,12 @@ DEPT_SCHOLARSHIP = _chunk(
     content="学科竞赛类爱国者之星奖学金 5000 元、5 名，评选年度获省级三等奖以上。",
     timeliness=TimelinessVerificationStatus.HISTORICAL,
 )
+XINGHUO = _chunk(
+    index=10,
+    title="关于做好2026年福州大学“星火奖教奖学金”评选工作的通知",
+    content="“星火奖学金”面向学生评选，每学年 3000 元/人；“星火奖教金”面向教师评选。",
+    timeliness=TimelinessVerificationStatus.HISTORICAL,
+)
 RECOMMENDATION_REVIEW = _chunk(
     index=5,
     title="计算机与大数据学院 2027 年推免复试方案及实施细则",
@@ -200,6 +206,12 @@ def _full_lookup():
             record_code="计算机学院-2026-院级奖学金",
             applicability={"适用年级": "全体本科生", "适用专业": "学院各专业"},
             deadline=date(2026, 4, 26),
+        )),
+        (XINGHUO, _meta(
+            XINGHUO,
+            record_code="计算机学院-2026-星火奖学金",
+            applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术、软件工程"},
+            deadline=date(2026, 5, 20),
         )),
         (RECOMMENDATION_REVIEW, _meta(
             RECOMMENDATION_REVIEW,
@@ -625,3 +637,39 @@ def test_teacher_only_section_is_rejected_for_student_question() -> None:
         lookup, chunk_lookup=student_section, today=lambda: TODAY
     )
     assert kept(_request(query), CREDIT_BYLAW) is True
+
+
+def test_xinghuo_sections_are_distinguished() -> None:
+    """星火文件混排奖教金（教师）与奖学金（学生），必须靠章节名区分。"""
+    query = "星火奖学金的学生评选条件是什么？"
+    lookup = _full_lookup()
+
+    def teacher_heading(chunk_id):
+        return ParsedChunk(
+            chunk_no=1,
+            content=XINGHUO.content,
+            source_file_key="xinghuo.json",
+            locator_note='{"heading_path": ["福州大学“星火奖教金”评选细则（教师）"]}',
+        )
+
+    def student_heading(chunk_id):
+        return ParsedChunk(
+            chunk_no=1,
+            content=XINGHUO.content,
+            source_file_key="xinghuo.json",
+            locator_note='{"heading_path": ["福州大学“星火奖学金”评选细则（学生）"]}',
+        )
+
+    rejected = build_alpha_evidence_check(
+        lookup, chunk_lookup=teacher_heading, today=lambda: TODAY
+    )
+    assert rejected(_request(query), XINGHUO) is False
+
+    kept = build_alpha_evidence_check(
+        lookup, chunk_lookup=student_heading, today=lambda: TODAY
+    )
+    assert kept(_request(query), XINGHUO) is True
+
+    # 没有章节查询、locator 只有“第 7 条”这类泛化定位时，同样按无法确认拒绝。
+    no_section = build_alpha_evidence_check(lookup, today=lambda: TODAY)
+    assert no_section(_request(query), XINGHUO) is False

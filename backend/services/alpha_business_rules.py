@@ -26,6 +26,7 @@ evidence_check = build_alpha_evidence_check(
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -90,7 +91,9 @@ _PURPOSE_CREDIT = re.compile(r"创新学分|学分认定|认定多少学分|原�
 _PURPOSE_EVALUATION = re.compile(r"综测|综合素质测评|综合素质评价|加几分|加分")
 
 # 正文同时含教师与学生条款、必须按章节定位的资料；新增此类文件时在此登记。
-_SECTION_SENSITIVE = re.compile(r"创新创业学分认定|学分认定实施")
+_SECTION_SENSITIVE = re.compile(
+    r"创新创业学分认定|学分认定实施|星火|奖教金|奖教奖学金"
+)
 
 _LEVELS = (
     ("international", re.compile(r"国际级|国际性|国际竞赛")),
@@ -525,31 +528,68 @@ def _needs_section(facts: _DocumentFacts) -> bool:
     return bool(_SECTION_SENSITIVE.search(scope))
 
 
+_TEACHER_SECTION = re.compile(r"教师|教职工|师资|绩效|奖教金")
+_STUDENT_SECTION = re.compile(r"学生|本科生|研究生|同学")
+
+
+def _section_text(note: object) -> str:
+    """章节说明可能是纯文本，也可能是含 heading_path 的 JSON 字符串。"""
+    if note is None:
+        return ""
+    if not isinstance(note, str):
+        return str(note)
+    text = note.strip()
+    if not text.startswith(("{", "[")):
+        return text
+    try:
+        data = json.loads(text)
+    except (ValueError, TypeError):
+        return text
+    parts: list[str] = []
+    if isinstance(data, dict):
+        heading = data.get("heading_path")
+        if isinstance(heading, list):
+            parts.extend(str(item) for item in heading)
+        elif heading:
+            parts.append(str(heading))
+        for key in ("heading", "section", "path", "title"):
+            value = data.get(key)
+            if isinstance(value, list):
+                parts.extend(str(item) for item in value)
+            elif value:
+                parts.append(str(value))
+    elif isinstance(data, list):
+        parts.extend(str(item) for item in data)
+    return " ".join(item for item in parts if item) or text
+
+
 def _section_applies(
     text: str,
     facts: _DocumentFacts,
     chunk: RetrievedChunk,
     chunk_lookup: ChunkLookup | None,
 ) -> bool:
-    """按 locator_note 区分同一文件里的局部章节（如教师条款与学生条款）。"""
+    """按 locator_note / locator 区分同一文件里的局部章节（如教师条款与学生条款）。"""
     needs_section = _needs_section(facts)
-    note = None
+    note = ""
     if chunk_lookup is not None:
         try:
             parsed = chunk_lookup(chunk.chunk_id)
         except Exception:
             parsed = None
-        note = getattr(parsed, "locator_note", None) if parsed is not None else None
-    if needs_section and not note:
-        # 混合条款资料必须能确认当前片段属于哪一节，否则按无法确认处理。
+        if parsed is not None:
+            note = _section_text(getattr(parsed, "locator_note", None))
+    note = f"{note} {_section_text(chunk.locator)}".strip()
+    teacher = bool(_TEACHER_SECTION.search(note))
+    student = bool(_STUDENT_SECTION.search(note))
+    if needs_section and not (teacher or student):
+        # 混合条款资料必须能确认片段属于教师节还是学生节，“第 7 条”这类泛化定位不够。
         return False
     if not note:
         return True
-    teacher = bool(re.search(r"教师|教职工|师资|绩效", note))
-    student = bool(re.search(r"学生|本科生|研究生|同学", note))
     if teacher and not student and "教师" not in text:
         return False
-    if student and not teacher and re.search(r"教师|教职工", text):
+    if student and not teacher and re.search(r"教师|教职工|奖教金", text):
         return False
     return True
 

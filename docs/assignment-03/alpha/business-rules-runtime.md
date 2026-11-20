@@ -53,7 +53,7 @@ alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool
 - 必要元数据缺失：拿不到 `DocumentMetadata`、或 `applicability_raw` 为空时，无法确认文档类型、适用范围与年度，拒绝；不因“片段内容看起来相关”而放行。
 - 截止日期已过且问“现在还能不能办”拒绝；专业或年级与资料适用范围不符拒绝。
 - 局部章节不适配：同一文件里教师绩效/师资条款不能回答学生问题，学生条款也不能回答教师问题，依据 `ParsedChunk.locator_note` 判断。
-- 章节无法确认：正文同时含教师条款与学生条款的资料（当前登记《创新创业学分认定办法》，常量 `_SECTION_SENSITIVE`），取不到 `locator_note` 时拒绝；不需要章节区分的资料不受影响，继续其他判断。
+- 章节无法确认：正文同时含教师条款与学生条款的资料（常量 `_SECTION_SENSITIVE`，当前登记《创新创业学分认定管理实施办法》与 2026 年“星火奖教奖学金”评选通知），必须能从 `locator_note` 或 `locator` 看出属于教师节还是学生节，否则拒绝；“第 7 条”这类泛化定位不算确认。不需要章节区分的资料不受影响。
 
 返回值只有 `True` / `False`，不返回 `"unknown"`、`"false"` 等字符串。规则内部异常一律按无法确认处理（返回 `False`），不放行。
 
@@ -104,6 +104,8 @@ PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retrieve
 
 必要时元数据缺失时一律拒绝（`False`）：无法确认文档类型、适用年度、适用范围时宁可证据不足，也不给学生错误结论。
 
+章节说明的两种形态都支持：`locator_note` 为纯文本时直接匹配；为 JSON 字符串时解析 `heading_path`（也兼容 `heading` / `section` / `path` / `title` 键），并叠加 `chunk.locator` 一起判断。王智洋确认 `get_parsed_chunk` 对不存在、未开放（blocked/review_only）或重索引剔除的 chunk 统一返回 `None`，不会抛异常，与本模块“取不到章节即拒绝”的处理一致。
+
 ## 5. 与工作流的行为对齐
 
 | 规则返回 | 工作流行为 |
@@ -123,10 +125,10 @@ PR #35 尚未合入 main，本分支不依赖它的代码：`build_from_retrieve
 
 ```
 python -m pytest tests/test_alpha_business_rules.py -q
-# 65 passed
+# 66 passed
 
 python -m pytest tests -q
-# 236 passed, 77 subtests passed
+# 237 passed, 77 subtests passed
 ```
 
 测试覆盖：
@@ -138,7 +140,8 @@ python -m pytest tests -q
 - 不适用政策被拒绝：跨口径、目录缺失、年度不匹配（含问更早年度）、未来年度、外校资料、已废止版本、未核验时效、专业不符、资格门槛误用复试方案、教师条款回答学生问题、适用范围为空、年度类资料缺元数据；
 - 规则异常时返回 `False` 而非放行；
 - 追问规则异常时不产出政策答案，且不触发检索与模型调用（兼容 `CLARIFICATION_RULE_FAILED` 与异常上抛两种实现）；
-- 章节敏感资料缺 `locator_note` 时拒绝，非章节敏感资料不受影响。
+- 章节敏感资料缺章节定位时拒绝，非章节敏感资料不受影响；
+- 星火文件按 `heading_path` 区分奖教金（教师）与奖学金（学生），JSON 形态的 `locator_note` 可解析。
 
 与吴诗莹约定案例的对应测试：
 
