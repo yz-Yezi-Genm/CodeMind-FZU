@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" modified="2026-11-21T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
   <diagram name="问答调用流程图" id="c0-flow-ask">
-    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="860" math="0" shadow="0">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="940" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="1" />
@@ -28,20 +28,23 @@
         <mxCell id="n6" value="是否有可用证据？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="620" y="535" width="360" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="n7" value="LLMClient.generate() 选取证据摘录；引用逐字核验，模型输出不作为证据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="560" y="615" width="480" height="52" as="geometry" />
+        <mxCell id="n7" value="LLMClient.generate() 选取证据摘录，模型输出不作为证据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="615" width="480" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="n8" value="AgentResult 由后端包装为 AskResponse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="560" y="695" width="480" height="48" as="geometry" />
+        <mxCell id="n8" value="引用一致性校验&#10;chunk_id 与 quote 一致？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="620" y="685" width="360" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="n9" value="前端展示回答、引用与 warnings；追问场景等待补充后再次提交" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="560" y="765" width="480" height="48" as="geometry" />
+        <mxCell id="n9" value="AgentResult 由后端包装为 AskResponse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="790" width="480" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="n10" value="needs_clarification&#10;返回 clarifying_question&#10;前端展示追问，等待补充信息" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+        <mxCell id="n10" value="前端展示回答、引用与 warnings；追问场景等待补充后再次提交" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="860" width="480" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n11" value="needs_clarification&#10;返回 clarifying_question&#10;前端展示追问，等待补充信息" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="1150" y="300" width="330" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="n11" value="insufficient_evidence&#10;返回解释与 warnings&#10;不伪造政策答案，citations 为空" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="1150" y="535" width="330" height="110" as="geometry" />
+        <mxCell id="n12" value="insufficient_evidence&#10;无可用证据，或引用校验失败&#10;伪造 chunk_id / 改写 quote 一律拒绝&#10;返回解释与 warnings，citations 为空，不伪造答案" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="560" width="330" height="160" as="geometry" />
         </mxCell>
         <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
@@ -94,35 +97,47 @@
         <mxCell id="e8" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="980" y="565" as="sourcePoint" />
-            <mxPoint x="1150" y="590" as="targetPoint" />
+            <mxPoint x="1150" y="600" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="800" y="667" as="sourcePoint" />
-            <mxPoint x="800" y="695" as="targetPoint" />
+            <mxPoint x="800" y="663" as="sourcePoint" />
+            <mxPoint x="800" y="685" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="e10" value="是" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="800" y="743" as="sourcePoint" />
-            <mxPoint x="800" y="765" as="targetPoint" />
+            <mxPoint x="800" y="755" as="sourcePoint" />
+            <mxPoint x="800" y="790" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;dashed=1;" edge="1" parent="1">
+        <mxCell id="e11" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="980" y="720" as="sourcePoint" />
+            <mxPoint x="1150" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="838" as="sourcePoint" />
+            <mxPoint x="800" y="860" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;dashed=1;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1150" y="410" as="sourcePoint" />
-            <mxPoint x="1040" y="789" as="targetPoint" />
+            <mxPoint x="1040" y="884" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;dashed=1;" edge="1" parent="1">
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;dashed=1;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1150" y="645" as="sourcePoint" />
-            <mxPoint x="1040" y="789" as="targetPoint" />
+            <mxPoint x="1150" y="720" as="sourcePoint" />
+            <mxPoint x="1040" y="884" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="note" value="编制：林世颖 | 日期：2026-11-21 | 状态口径以 Alpha 接口规范 V1.0 为准" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="300" y="830" width="1000" height="25" as="geometry" />
+          <mxGeometry x="300" y="910" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -6,6 +6,7 @@
 <line x1="800" y1="420" x2="800" y2="480" stroke="#9c27b0" stroke-width="2"/>
 <line x1="730" y1="580" x2="730" y2="640" stroke="#f9ab00" stroke-width="2"/>
 <line x1="440" y1="700" x2="560" y2="700" stroke="#f9ab00" stroke-width="2"/>
+<line x1="900" y1="700" x2="1020" y2="700" stroke="#f9ab00" stroke-width="2"/>
 <rect x="600" y="70" width="400" height="64" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="800.0" y="97.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">学生浏览器（学生端前端）</text>
 <text x="800.0" y="115.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">问题输入 · 回答与引用展示 · 追问交互 · 反馈</text>
@@ -43,5 +44,9 @@
 <text x="730.0" y="686.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">管理服务链路</text>
 <text x="730.0" y="704.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">DocumentParser 文档解析</text>
 <text x="730.0" y="722.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">KnowledgeIndexer 入库与索引</text>
+<rect x="1020" y="640" width="340" height="120" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="1190.0" y="662" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">认证授权（RBAC · 后续建设）</text>
+<text x="1190.0" y="690" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">登录鉴权 · 角色与权限</text>
+<text x="1190.0" y="708" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">管理 API 访问控制；当前未接入</text>
 <text x="800.0" y="812" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON</text>
 </svg>

@@ -2,7 +2,8 @@
 <rect width="1600" height="1026" fill="#ffffff"/>
 <text x="800.0" y="35" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="18" font-weight="bold" fill="#333333">CodeMind-FZU 当前实际架构图（Alpha · 基于 main 分支代码）</text>
 <line x1="450" y1="152" x2="480" y2="176" stroke="#34a853" stroke-width="2"/>
-<line x1="1150" y1="152" x2="1120" y2="176" stroke="#34a853" stroke-width="2"/>
+<line x1="1150" y1="152" x2="1120" y2="176" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="1135.0" y="164.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">管理 API 未实现，Mock 兜底</text>
 <line x1="800" y1="210" x2="800" y2="312" stroke="#1976d2" stroke-width="2"/>
 <line x1="800" y1="392" x2="800" y2="408" stroke="#1976d2" stroke-width="2"/>
 <line x1="800" y1="698" x2="800" y2="716" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
@@ -26,7 +27,7 @@
 <text x="800.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">POST /api/v1/ask 契约入口</text>
 <rect x="970" y="224" width="290" height="36" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="1115.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">CORS · 请求 ID · 统一错误信封</text>
-<text x="800.0" y="288.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">Agent 未注入或正式资料未就位时降级不可用服务，返回 503 SERVICE_NOT_CONFIGURED，不伪造回答</text>
+<text x="800.0" y="288.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">配置缺失 → 503 SERVICE_NOT_CONFIGURED；知识库缺失/加载失败 → 503 KNOWLEDGE_BASE_UNAVAILABLE；不伪造回答</text>
 <rect x="320" y="312" width="960" height="34" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
 <text x="800.0" y="333.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#0d47a1">公共契约层（已落地）</text>
 <rect x="340" y="356" width="450" height="36" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
@@ -37,20 +38,21 @@
 <rect x="120" y="440" width="430" height="66" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="335.0" y="468.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">MockAgentService</text>
 <text x="335.0" y="486.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">三状态 answered / needs_clarification / insufficient_evidence 演示</text>
-<rect x="585" y="440" width="430" height="66" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="468.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">QwenLLMClient</text>
-<text x="800.0" y="486.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">实现 LLMClient 协议；超时/重试/限流/错误映射；真实付费模型未接通</text>
+<rect x="585" y="440" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="461.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">QwenLLMClient</text>
+<text x="800.0" y="479.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">真实 HTTP 调用适配并接入 Alpha Runtime；超时/重试/限流/错误映射</text>
+<text x="800.0" y="497.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">真实 API 凭据配置与在线调用验收尚未完成</text>
 <rect x="1050" y="440" width="430" height="66" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="1265.0" y="468.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">errors.py</text>
 <text x="1265.0" y="486.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">服务错误类型与公共错误码映射</text>
 <rect x="120" y="524" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="335.0" y="552.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentWorkflow + create_alpha_workflow</text>
-<text x="335.0" y="570.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentService.run 结构实现 · 追问规则 · 证据资格门槛</text>
-<text x="335.0" y="588.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">版本冲突校验 · 引用逐字核验；不持久化会话</text>
+<text x="335.0" y="552.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentWorkflow（agent_workflow.py）</text>
+<text x="335.0" y="570.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Agent 工作流：追问规则 · 证据资格门槛 · 版本冲突校验</text>
+<text x="335.0" y="588.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">chunk_id/quote 逐字引用核验；不持久化会话</text>
 <rect x="585" y="524" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="552.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AlphaRuntime · 内存会话</text>
-<text x="800.0" y="570.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">InMemoryConversationStore 按会话隔离与有界历史</text>
-<text x="800.0" y="588.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">ConversationAgentService 注入 history；启动失败降级不可用服务</text>
+<text x="800.0" y="552.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AlphaRuntime（alpha_runtime.py）</text>
+<text x="800.0" y="570.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">运行时装配：组装检索/规则/模型服务；不可用兜底</text>
+<text x="800.0" y="588.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">内存会话按 ID 隔离与有界历史；ConversationAgentService 注入 history</text>
 <rect x="1050" y="524" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="1265.0" y="552.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">alpha_business_rules</text>
 <text x="1265.0" y="570.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">三场景追问规则与证据适用性回调</text>
@@ -59,8 +61,9 @@
 <text x="335.0" y="658.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">LocalBM25Retriever</text>
 <text x="335.0" y="676.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">本地 BM25 中文分词检索 + 内存入库；仅暴露 enabled 片段；无持久化存储</text>
 <rect x="585" y="628" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="658.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">alpha_corpus 加载器</text>
-<text x="800.0" y="676.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">已审核资料统一加载入口与完整性报告；人工批准门禁；路径与符号链接安全校验</text>
+<text x="800.0" y="649.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">alpha_corpus 加载器</text>
+<text x="800.0" y="667.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">资料加载与审核门禁：统一入口与完整性报告</text>
+<text x="800.0" y="685.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">人工批准校验；路径与符号链接安全校验</text>
 <rect x="1050" y="628" width="430" height="70" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="1265.0" y="658.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">TextDocumentParser</text>
 <text x="1265.0" y="676.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Markdown/TXT 解码、切片、定位与哈希；不联网/不写库/不建索引/不开放检索</text>
@@ -70,8 +73,8 @@
 <text x="345.0" y="771.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">管理后端服务与管理 API</text>
 <text x="345.0" y="789.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">DocumentAdminService 列表/详情/导入/重索引后端与 HTTP 接口未实现</text>
 <rect x="585" y="752" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
-<text x="800.0" y="771.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">真实 LLM 付费调用</text>
-<text x="800.0" y="789.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">适配器仅离线协议测试，Key 未配置、未接通真实模型</text>
+<text x="800.0" y="771.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">真实模型在线调用验收</text>
+<text x="800.0" y="789.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">HTTP 适配已实现；API 凭据配置与真实付费在线验收尚未完成</text>
 <rect x="1040" y="752" width="430" height="48" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
 <text x="1255.0" y="771.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">关系数据库 / ORM 持久化</text>
 <text x="1255.0" y="789.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">未引入 SQLAlchemy 与数据库驱动；当前为内存索引与内存会话</text>
@@ -95,6 +98,6 @@
 <text x="1255.0" y="899.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">候选资料位于 pending-review/，未签核不开放检索</text>
 <text x="800.0" y="940.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#999999">知识库候选资料已收集；未完成人工核验签核前默认 blocked/review_only，不进入正式问答检索</text>
 <rect x="100" y="956" width="1400" height="30" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="975.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">tests/ 覆盖后端运行时、接口契约、Agent 工作流、业务规则、本地检索、approved 资料加载、Qwen 客户端与文档解析</text>
+<text x="800.0" y="975.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">tests/ 覆盖后端运行时、契约、Agent 工作流、业务规则、本地检索、approved 加载、Qwen 适配、文档解析与 E2E 端到端链路</text>
 <text x="800.0" y="1008" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-21 | 依据：main 分支实际代码与 Alpha 接口规范 V1.0</text>
 </svg>

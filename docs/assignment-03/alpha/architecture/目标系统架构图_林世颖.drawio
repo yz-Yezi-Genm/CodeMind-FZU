@@ -43,6 +43,9 @@
         <mxCell id="n11" value="管理服务链路&#10;DocumentParser 文档解析&#10;KnowledgeIndexer 入库与索引" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="560" y="640" width="340" height="120" as="geometry" />
         </mxCell>
+        <mxCell id="n12" value="认证授权（RBAC · 后续建设）&#10;登录鉴权 · 角色与权限&#10;管理 API 访问控制；当前未接入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="640" width="340" height="120" as="geometry" />
+        </mxCell>
         <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="800" y="134" as="sourcePoint" />
@@ -71,6 +74,12 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="440" y="700" as="sourcePoint" />
             <mxPoint x="560" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="700" as="sourcePoint" />
+            <mxPoint x="1020" y="700" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="note" value="编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
