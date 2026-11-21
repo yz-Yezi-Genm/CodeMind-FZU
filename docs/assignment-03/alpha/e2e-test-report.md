@@ -111,9 +111,17 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 
 ### 6.1 Python 版本（已核实）
 
-- **Python 3.10.11**（winget 安装，评审要求版本）、3.13.14、3.12.7 三版本均验证通过。
+- **Python 3.10.11**（winget 安装）、3.13.14、3.12.7 三版本均验证通过。
 - 本文件在三版本下均为 **12 passed + 1 skipped**，全绿。
 - 全量三版本均 **357 passed + 28 skipped + 136 subtests**，无失败。
+- 版本核实方式：每个证据文件开头已输出 `python -VV` 与 `sys.executable`，
+  见下方「原始终端输出」列表。
+
+> **关于 3.13 的 venv 路径歧义**：本机 `fluxdemo` 虚拟环境由
+> `versions/3.13.12/python.exe` 创建（`pyvenv.cfg` 的 base 解释器），但运行时
+> `-VV` 与 `sys.executable` 均确认为 **3.13.14**。日志中出现的 `versions\3.13.12\Lib\...`
+> 是 venv 复用 base 标准库的正常路径，**不是版本错误**。已在证据文件开头显式输出
+> `-VV` 与 `sys.executable` 消除歧义。
 
 ### 6.2 UTF-8 解码警告（`PytestUnhandledThreadExceptionWarning`，B-6 仍存在）
 
@@ -135,14 +143,13 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 | Python 3.13.14 | 12 passed + 1 skipped | 357 passed + 28 skipped + 136 subtests |
 | Python 3.12.7 | 12 passed + 1 skipped | 357 passed + 28 skipped + 136 subtests |
 
-**原始终端输出**：
-- `docs/assignment-03/alpha/evidence/e2e-pytest.txt`（3.13.14 全量）
-- `docs/assignment-03/alpha/evidence/e2e-file.txt`（3.13.14 本文件）
+**原始终端输出**（每份开头含 `python -VV` 与 `sys.executable`）：
 - `docs/assignment-03/alpha/evidence/e2e-pytest-py310.txt`（3.10.11 全量）
 - `docs/assignment-03/alpha/evidence/e2e-file-py310.txt`（3.10.11 本文件）
-
-> 注：3.12 的旧证据文件（e2e-pytest-py312.txt / e2e-file-py312.txt）为上一轮产物，
-> 同步 #33 后 3.12 的时序失败已解决（与 3.10/3.13 一致），如需可重跑覆盖。
+- `docs/assignment-03/alpha/evidence/e2e-pytest-py312.txt`（3.12.7 全量）
+- `docs/assignment-03/alpha/evidence/e2e-file-py312.txt`（3.12.7 本文件）
+- `docs/assignment-03/alpha/evidence/e2e-pytest-py313.txt`（3.13.14 全量）
+- `docs/assignment-03/alpha/evidence/e2e-file-py313.txt`（3.13.14 本文件）
 
 ---
 

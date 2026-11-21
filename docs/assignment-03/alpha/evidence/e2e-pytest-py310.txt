@@ -1,3 +1,8 @@
+=== interpreter ===
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+sys.executable = C:\Users\m1781\AppData\Local\Programs\Python\Python310\python.exe
+
+=== pytest tests/ ===
 ...........................................................................sssssssssssssssssssssssss.s.... [ 27%]
 ........................................................................ [ 46%]
 ......................................................s................. [ 64%]
@@ -27,4 +32,4 @@ tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_exte
     warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 2 warnings, 136 subtests passed in 38.52s
+357 passed, 28 skipped, 2 warnings, 136 subtests passed in 19.43s
