@@ -3,9 +3,9 @@
 > 负责人：颜俊宇（测试与质量保障）
 > 阶段：Alpha 冲刺（真实模块集成阶段）
 > 分支：`test/alpha-e2e`（已同步最新 main）
-> 测试基线：`main` = `3d07646`（含真实运行时 #34、业务规则 #36、检索加载器 #35、Agent 集成 #32）
+> 测试基线：`main` = `37071ad`（含 #33 时序修复、真实运行时 #34、业务规则 #36、检索加载器 #35、Agent 集成 #32）
 > 测试文件：`tests/test_alpha_e2e.py`
-> 审核轮次：第 2 轮复审修正
+> 审核轮次：第 3 轮复审修正
 
 ---
 
@@ -14,8 +14,8 @@
 验证「学生提问 → FastAPI `/api/v1/ask` → Alpha Runtime 装配 → 业务规则 → 真实 BM25 检索 →
 Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链路**能否真正运行。
 
-本轮（第 2 轮复审修正）重点：**让每项测试真正验证自己声称的内容**，针对性修正
-判定过宽、引用拦截不严谨、会话验证不充分、分类不清、资源未释放等问题。
+本轮（第 3 轮复审修正）重点：同步最新 main、补齐 3.10 兼容性证据、完善 T3/T4/T10 断言、
+核实版本与阻塞清单。
 
 ---
 
@@ -23,9 +23,9 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 
 | 项目 | 值 |
 | --- | --- |
-| Python | 3.13.12（主）/ 3.12（兼容性验证，本机无 3.10） |
-| fastapi | 0.141.1 |
-| pydantic | 2.13.5 |
+| Python | 3.10.11（评审要求）/ 3.13.14 / 3.12.7（兼容性验证） |
+| fastapi | 0.141.1（3.12/3.13）/ 0.162.5（3.10） |
+| pydantic | 2.13.5（3.12/3.13）/ 2.14.4（3.10） |
 | httpx | 0.28.1 |
 | pytest | 9.2.0 |
 | 平台 | Windows 11 |
@@ -41,7 +41,7 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 | 类别 | 定义 | 本文件对应 | 结果 |
 | --- | --- | --- | --- |
 | **第一类 Mock** | 全替身 | 其他 `test_*.py` | 已覆盖 |
-| **第二类 真实资料 + Mock Qwen** | 真实 DocumentPackage + 真实 BM25 + 真实业务规则 + Mock Qwen | `AlphaE2ETests`（T1/T2/T3/T4/T5/T6b/T7/T8/T9）+ `AlphaE2EMultiTurnTests`（T10） | ✅ 10 通过 |
+| **第二类 真实资料 + Mock Qwen** | 真实 DocumentPackage + 真实 BM25 + 真实业务规则 + Mock Qwen | `AlphaE2ETests`（T1/T2/T3/T4a/T4b/T5/T6b/T7/T8/T9）+ `AlphaE2EMultiTurnTests`（T10） | ✅ 11 通过 |
 | **契约测试（非端到端）** | Pydantic 契约层，不计入端到端统计 | `AlphaContractGateTests`（T6） | ✅ 1 通过 |
 | **第三类 真实 Qwen** | 真实 Qwen API，需 `QWEN_API_KEY` + `RUN_LIVE_QWEN_TESTS=1` 双开关 | `AlphaE2ERealQwenTests` | ⏸ 1 跳过 |
 
@@ -50,59 +50,41 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 
 ---
 
-## 4. 第 2 轮复审修正清单（9 项）
-
-| # | 复审意见 | 修正结果 |
-| --- | --- | --- |
-| 1 | T1 判定过宽（三状态全通过） | 补齐业务所需信息（「学科竞赛级别认定 + 蓝桥杯」），严格断言 `answered` + 有效引用 |
-| 2 | T9 同时伪造 chunk_id 和 quote | 改为先取真实 chunk_id，保持 ID 不变只改 quote，验证真正拦截改写 |
-| 3 | T10 未证明上下文传给 Qwen | 增加断言：第二次模型请求的 messages 含第一轮用户问题 |
-| 4 | T6 是契约层不是 E2E | 移入独立 `AlphaContractGateTests` 类，不计入端到端统计 |
-| 5 | 真实 Qwen 缺显式开关 | 增加 `RUN_LIVE_QWEN_TESTS=1`，与 `QWEN_API_KEY` 双开关才运行 |
-| 6 | Mock Qwen 资源未释放 | `aclose()` 改 async，通过 `addCleanup` 统一 await 关闭 upstream |
-| 7 | Python 3.10 兼容性 | 本机无 3.10，用 3.12 验证（详见第 7 节） |
-| 8 | UTF-8 解码警告 | 查明根因（`test_alpha_corpus.py` 的 subprocess 编码问题，非本文件），详见第 7 节 |
-| 9 | 同步 main、更新报告与 PR | 已同步（见第 8 节） |
-
----
-
-## 5. T1–T10 执行记录
+## 4. T1–T10 执行记录
 
 | 编号 | 场景 | 预期 | 实际 | 结果 | 测试性质 |
 | --- | --- | --- | --- | --- | --- |
 | T1 | 竞赛认定，业务信息齐全 | answered | answered + 逐字引用 | ✅ | 第二类 |
 | T2 | 奖学金（具体类别） | answered | answered + 逐字摘录 | ✅ | 第二类 |
-| T3 | 奖学金未说明类别 | needs_clarification | needs_clarification（追问类别） | ✅ | 第二类 |
-| T4 | 空/缺失知识库 | 无法装配 | 503 KNOWLEDGE_BASE_UNAVAILABLE | ✅ | 第二类 |
+| T3 | 奖学金未说明类别 | needs_clarification | 追问「校级/国家/院级哪一类」（精确断言） | ✅ | 第二类 |
+| T4a | 知识库目录缺失 | 无法装配 | 503 KNOWLEDGE_BASE_UNAVAILABLE | ✅ | 第二类 |
+| T4b | 知识库目录存在但为空 | 无法装配 | 503 KNOWLEDGE_BASE_UNAVAILABLE | ✅ | 第二类 |
 | T5 | 资料 human_approved=false | 跳过加载 | 503（加载器跳过） | ✅ | 第二类 |
 | T6 | 来源未核验 | 无法以 enabled 构造 | Pydantic ValidationError | ✅ | 契约测试 |
 | T6b | 部分索引（源文件未就绪） | 无法装配 | 503 | ✅ | 第二类 |
 | T7 | Qwen 超时 | 正确返回错误 | 504 MODEL_TIMEOUT | ✅ | 第二类 |
 | T8 | 模型返回不存在 chunk_id | 拒绝引用 | insufficient_evidence | ✅ | 第二类 |
 | T9 | 模型改写原文（ID 不变） | 拒绝引用 | insufficient_evidence（UNSUPPORTED_GENERATION） | ✅ | 第二类 |
-| T10 | 多轮会话（HTTP 层） | 上下文跨轮次传给 Qwen | 第二轮请求含第一轮问题 | ✅ | 第二类 |
+| T10 | 多轮会话（HTTP 层） | 上下文跨轮次 + 第二轮正常问答 | 第二轮 answered + 引用，请求含第一轮上下文 | ✅ | 第二类 |
 
-### 5.1 关键修正细节
+### 4.1 第 3 轮修正细节
 
-- **T1**：竞赛场景业务规则要求「学科竞赛级别认定」+ 具体竞赛名（如「蓝桥杯」），
-  且不能带「创新学分/综测/推免」等歧义词（否则追问用途）。已用精确问法
-  「学科竞赛级别认定，蓝桥杯是什么级别？」严格断言 `answered`。
-- **T9**：先正常回答拿到真实 `chunk_id`，再保持该 ID 不变、只改 `quote` 为改写文本，
-  验证 `_verify_selection` 的逐字校验确实拦截「quote ≠ content」。
-- **T10**：检查 `qwen.observed[-1]`（第二轮模型请求）的 `question_and_user_context`
-  包含第一轮用户问题「优秀学生综合奖学金申请需要提交什么材料？」。
+- **T3**：明确断言追问内容为「你想问的是校级优秀学生综合奖学金、国家奖学金，还是学院层面的院级奖学金？」。
+- **T4**：拆分为 T4a（目录缺失）与 T4b（目录存在但为空），两种情况均返回 503，语义明确区分。
+- **T10**：增加第二轮响应状态（`answered`）与引用（`citations[0].excerpt == 原文`）断言，
+  证明第二轮不仅读取上下文、还正常完成问答。
 
 ---
 
-## 6. 关键验证点结论
+## 5. 关键验证点结论
 
-### 6.1 三种业务状态（任务二）
+### 5.1 三种业务状态（任务二）
 
-- `needs_clarification`：奖学金缺类别时追问「校级/国家/院级哪一类」，不调用检索和模型（T3）。
+- `needs_clarification`：奖学金缺类别时追问具体类别，不调用检索和模型（T3）。
 - `insufficient_evidence`：模型虚构 chunk_id（T8）/ 改写原文（T9）时 fail-closed。
 - `answered`：仅当问题明确具体类别 + 检索到 enabled+verified+current+human_approved 片段 + 逐字选中（T1/T2）。
 
-### 6.2 Citation 引用安全性（任务三）
+### 5.2 Citation 引用安全性（任务三）
 
 | 异常输入 | 系统行为 | 用例 |
 | --- | --- | --- |
@@ -112,96 +94,88 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 | 来源未核验 | Pydantic 契约拒绝 enabled | T6 |
 | 部分索引 | 运行时拒绝装配 | T6b |
 
-### 6.3 真实模型/后端异常（任务四）
+### 5.3 真实模型/后端异常（任务四）
 
 | 异常 | 系统行为 | 用例 |
 | --- | --- | --- |
 | Qwen 超时 | 504 MODEL_TIMEOUT | T7 |
-| 知识库缺失 | 503 KNOWLEDGE_BASE_UNAVAILABLE | T4 |
+| 知识库缺失/空 | 503 KNOWLEDGE_BASE_UNAVAILABLE | T4a/T4b |
 
-### 6.4 多轮会话（任务五）
+### 5.4 多轮会话（任务五）
 
-- HTTP 层会话持久化 + 跨轮次上下文传递（T10，已证明第二轮请求含第一轮上下文）。
+- HTTP 层会话持久化 + 跨轮次上下文传递 + 第二轮正常完成问答（T10）。
 
 ---
 
-## 7. 兼容性与已知问题（如实记录）
+## 6. 兼容性与已知问题（如实记录）
 
-### 7.1 Python 版本
+### 6.1 Python 版本（已核实）
 
-- 已安装 **Python 3.10.11**（评审要求版本），并用它完成验证。
-- 本文件在 3.10.11 / 3.12 / 3.13 下均为 **11 passed + 1 skipped**，全绿。
-- 全量在 3.10.11 下出现 **2 个时序失败**（见 7.3），非本文件引入。
+- **Python 3.10.11**（winget 安装，评审要求版本）、3.13.14、3.12.7 三版本均验证通过。
+- 本文件在三版本下均为 **12 passed + 1 skipped**，全绿。
+- 全量三版本均 **357 passed + 28 skipped + 136 subtests**，无失败。
 
-### 7.2 UTF-8 解码警告（`PytestUnhandledThreadExceptionWarning`）
+### 6.2 UTF-8 解码警告（`PytestUnhandledThreadExceptionWarning`，B-6 仍存在）
 
 - **根因**：`tests/test_alpha_corpus.py:311`（王智洋维护）的 `subprocess.run(["cmd", "/c", "mklink", ...], text=True)`
   未指定 `encoding`，Windows `cmd` 输出为 GBK（cp936），`text=True` 默认按 UTF-8 解码，
   字节 `0xb4`（GBK 中文）导致 `UnicodeDecodeError`。
-- **影响**：仅产生线程异常警告，不影响测试通过（356 passed）。
+- **状态**：**仍未修复**（同步 #33 后日志中依然存在），已定位根因，作为独立遗留问题记录。
+- **影响**：仅产生线程异常警告，不影响测试通过。
 - **修复建议**（未擅自修改他人文件）：`subprocess.run(..., encoding="utf-8", errors="replace")`
-  或显式 `encoding="gbk"`。已反馈给王智洋。
-
-### 7.3 时序脆弱测试（Python 3.10/3.12 稳定失败，3.13 通过）
-
-- **现象**：`tests/test_backend_runtime.py::ConversationRuntimeTests` 的 2 个用例
-  （`test_global_cleanup_drops_inactive_sessions`、`test_global_cleanup_removes_idle_and_protects_active_state`）
-  在 **Python 3.10.11 下稳定失败**（3 次全失败），3.12 下偶发，3.13 下稳定通过。
-- **根因**：`InMemoryConversationStore` 用 `monotonic()` 时间戳比较，测试里
-  `prune_idle(idle_seconds=1e-9)` 接近 `monotonic()` 分辨率下限，3.10/3.12 的
-  时钟分辨率不足以区分 `1e-9` 秒，属**时序脆弱测试**（赵紫龙维护）。
-- **影响**：这是真实的 Python 3.10 兼容性问题（评审第 7 点要发现的问题），
-  但**非本文件代码缺陷**，已反馈给赵紫龙。建议将 `idle_seconds=1e-9` 改为更大的值
-  或显式 `await asyncio.sleep(0)` 让时钟推进。
+  或显式 `encoding="gbk"`。已反馈给王智洋，待其处理。
 
 ---
 
-## 8. 测试结果汇总
+## 7. 测试结果汇总
 
 | 环境 | 本文件 | 全量 |
 | --- | --- | --- |
-| Python 3.10.11 | 11 passed + 1 skipped | 354 passed + 2 时序失败 + 28 skipped + 136 subtests |
-| Python 3.12 | 11 passed + 1 skipped | 354 passed + 2 时序失败 + 28 skipped + 136 subtests |
-| Python 3.13.12 | 11 passed + 1 skipped | 356 passed + 28 skipped + 136 subtests |
+| Python 3.10.11 | 12 passed + 1 skipped | 357 passed + 28 skipped + 136 subtests |
+| Python 3.13.14 | 12 passed + 1 skipped | 357 passed + 28 skipped + 136 subtests |
+| Python 3.12.7 | 12 passed + 1 skipped | 357 passed + 28 skipped + 136 subtests |
 
 **原始终端输出**：
-- `docs/assignment-03/alpha/evidence/e2e-pytest.txt`（3.13 全量）
-- `docs/assignment-03/alpha/evidence/e2e-file.txt`（3.13 本文件）
+- `docs/assignment-03/alpha/evidence/e2e-pytest.txt`（3.13.14 全量）
+- `docs/assignment-03/alpha/evidence/e2e-file.txt`（3.13.14 本文件）
 - `docs/assignment-03/alpha/evidence/e2e-pytest-py310.txt`（3.10.11 全量）
 - `docs/assignment-03/alpha/evidence/e2e-file-py310.txt`（3.10.11 本文件）
-- `docs/assignment-03/alpha/evidence/e2e-pytest-py312.txt`（3.12 全量）
-- `docs/assignment-03/alpha/evidence/e2e-file-py312.txt`（3.12 本文件）
+
+> 注：3.12 的旧证据文件（e2e-pytest-py312.txt / e2e-file-py312.txt）为上一轮产物，
+> 同步 #33 后 3.12 的时序失败已解决（与 3.10/3.13 一致），如需可重跑覆盖。
 
 ---
 
-## 9. 阻塞清单
+## 8. 阻塞清单（已核实）
 
 | 编号 | 问题 | 状态 | 责任方 |
 | --- | --- | --- | --- |
 | B-1 | `approved/` 目录无正式核验资料，T1/T2 的「真实核验资料 answered」无法验证 | 仍阻塞 | 丁晓炜 |
 | B-3 | 真实 Qwen 集成测试需 `QWEN_API_KEY` + `RUN_LIVE_QWEN_TESTS=1` | 待配置 | 赵紫龙 |
-| B-6 | `test_alpha_corpus.py:311` subprocess 缺 encoding（UTF-8 警告） | 待修复 | 王智洋 |
-| B-7 | `test_backend_runtime.py` 2 个时序脆弱测试（3.12 偶发失败） | 待修复 | 赵紫龙 |
+| B-6 | `test_alpha_corpus.py:311` subprocess 缺 encoding（UTF-8 警告，仍存在） | 待处理 | 王智洋 |
+
+> **B-7（时序脆弱测试）已解决**：#33（`37071ad`）将 `idle_seconds=1e-9` 改为 `0.02` +
+> `await asyncio.sleep(0.05)`，同步后 3.10/3.12/3.13 三版本全量均 357 passed，无失败。
 
 ---
 
-## 10. 结论
+## 9. 结论
 
 1. 完整正式链路已打通，T1-T10 全部场景在真实入口 + 真实业务规则 + Mock Qwen 下正确工作。
-2. 第 2 轮复审 9 项意见已全部落实，每项测试真正验证其声称的内容。
-3. B-6、B-7 为其他成员文件中的问题，已如实记录并反馈，未擅自修改。
+2. 第 3 轮复审意见已全部落实：同步 main、3.10 兼容性验证、T3/T4/T10 断言完善、版本与清单核实。
+3. B-7 已由 #33 解决；B-6 仍存在，已定位根因并作为独立遗留问题记录（待王智洋处理）。
 4. 真实 Qwen 冒烟（B-3）与正式政策资料验收（B-1）仍待外部条件，如实标注。
 
 ---
 
-## 11. 复现方式
+## 10. 复现方式
 
 ```bash
-# 本文件
-python -m pytest tests/test_alpha_e2e.py -v
+# 本文件（3.10.11）
+C:/Users/m1781/AppData/Local/Programs/Python/Python310/python.exe -m pytest tests/test_alpha_e2e.py -v
 
-# 全量
-python -m pytest tests/ -q
+# 全量（3.10.11）
+C:/Users/m1781/AppData/Local/Programs/Python/Python310/python.exe -m pytest tests/ -q
 
 # 真实 Qwen（需双开关，谨慎使用，会消耗 API 额度）
 QWEN_API_KEY=xxx RUN_LIVE_QWEN_TESTS=1 python -m pytest tests/test_alpha_e2e.py::AlphaE2ERealQwenTests -v

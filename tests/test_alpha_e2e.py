@@ -276,7 +276,7 @@ class AlphaE2ETests(unittest.TestCase):
         self.assertEqual(len(qwen.observed), 1)
 
     def test_T3_scholarship_without_category_needs_clarification(self):
-        """T3 缺类别：业务规则应追问类别，而非直接生成笼统答案。"""
+        """T3 缺类别：业务规则应追问类别（明确断言追问内容），而非生成笼统答案。"""
         qwen = _MockQwen()
         qwen.build()
         _install_qwen_cleanup(self, qwen)
@@ -289,12 +289,15 @@ class AlphaE2ETests(unittest.TestCase):
         body = response.json()
         self.assertEqual(body["status"], "needs_clarification")
         self.assertIsNone(body["answer"])
-        self.assertTrue(body["clarifying_question"])
+        self.assertEqual(
+            body["clarifying_question"],
+            "你想问的是校级优秀学生综合奖学金、国家奖学金，还是学院层面的院级奖学金？",
+        )
         self.assertEqual(body["citations"], [])
         self.assertEqual(qwen.observed, [])  # 追问时不调用模型
 
-    def test_T4_empty_knowledge_base_yields_503(self):
-        """T4 空/缺失知识库：正式入口应返回 503 KNOWLEDGE_BASE_UNAVAILABLE。"""
+    def test_T4_missing_knowledge_base_dir_yields_503(self):
+        """T4a 知识库目录缺失：正式入口应返回 503 KNOWLEDGE_BASE_UNAVAILABLE。"""
         qwen = _MockQwen()
         qwen.build()
         _install_qwen_cleanup(self, qwen)
@@ -303,6 +306,21 @@ class AlphaE2ETests(unittest.TestCase):
             response = client.post("/api/v1/ask", json={"query": "推免条件是什么？"})
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["error"]["code"], "KNOWLEDGE_BASE_UNAVAILABLE")
+
+    def test_T4_empty_knowledge_base_dir_yields_503(self):
+        """T4b 知识库目录存在但为空：正式入口同样返回 503（无可用已审核资料）。"""
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            empty_dir = Path(folder) / "approved"
+            empty_dir.mkdir()
+            qwen = _MockQwen()
+            qwen.build()
+            _install_qwen_cleanup(self, qwen)
+            app = self._app(qwen, package_dir=empty_dir)
+            with TestClient(app) as client:
+                response = client.post("/api/v1/ask", json={"query": "推免条件是什么？"})
+            self.assertEqual(response.status_code, 503)
+            self.assertEqual(response.json()["error"]["code"], "KNOWLEDGE_BASE_UNAVAILABLE")
 
     def test_T5_unapproved_data_is_skipped(self):
         """T5 未审核资料：human_approved=false 的资料被加载器跳过，无法装配正式运行时。"""
@@ -454,6 +472,11 @@ class AlphaE2EMultiTurnTests(unittest.TestCase):
 
         self.assertEqual(first.status_code, 200)
         self.assertEqual(second.status_code, 200)
+        # 第二轮正常完成问答：状态 answered 且带有效引用
+        second_body = second.json()
+        self.assertEqual(second_body["status"], "answered")
+        self.assertTrue(second_body["citations"])
+        self.assertEqual(second_body["citations"][0]["excerpt"], _APPROVED_CONTENT)
         # 会话存储确实保存了 4 条记录（2 用户 + 2 助手）
         self.assertEqual(len(history), 4)
         self.assertEqual(history[0].content, "优秀学生综合奖学金申请需要提交什么材料？")

@@ -1,23 +1,4 @@
-============================= test session starts =============================
-platform win32 -- Python 3.13.14, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\m1781\.workbuddy\binaries\python\envs\fluxdemo\Scripts\python.exe
-cachedir: .pytest_cache
-rootdir: C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\codemind-fzu-full
-plugins: anyio-4.15.1
-collecting ... collected 12 items
-
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T1_competition_answered_with_traceable_citation PASSED [  8%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T2_scholarship_answered_with_exact_excerpt PASSED [ 16%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T3_scholarship_without_category_needs_clarification PASSED [ 25%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T4_empty_knowledge_base_yields_503 PASSED [ 33%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T5_unapproved_data_is_skipped PASSED [ 41%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T6b_partial_index_package_is_rejected_by_runtime PASSED [ 50%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T7_qwen_timeout_returns_sanitized_error PASSED [ 58%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T8_model_returns_unknown_chunk_id_is_rejected PASSED [ 66%]
-tests/test_alpha_e2e.py::AlphaE2ETests::test_T9_model_rewrites_quote_is_rejected PASSED [ 75%]
-tests/test_alpha_e2e.py::AlphaContractGateTests::test_T6_unverified_source_cannot_be_enabled PASSED [ 83%]
-tests/test_alpha_e2e.py::AlphaE2EMultiTurnTests::test_T10_http_conversation_context_across_turns PASSED [ 91%]
-tests/test_alpha_e2e.py::AlphaE2ERealQwenTests::test_real_qwen_end_to_end SKIPPED [100%]
-
+............s                                                            [100%]
 ============================== warnings summary ===============================
 ..\..\..\.workbuddy\binaries\python\envs\fluxdemo\Lib\site-packages\fastapi\testclient.py:1
   C:\Users\m1781\.workbuddy\binaries\python\envs\fluxdemo\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
@@ -28,4 +9,4 @@ tests/test_alpha_e2e.py::AlphaE2ERealQwenTests::test_real_qwen_end_to_end SKIPPE
     _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================== 11 passed, 1 skipped, 2 warnings in 1.29s ==================
+12 passed, 1 skipped, 2 warnings in 1.49s
