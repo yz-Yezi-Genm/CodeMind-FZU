@@ -1,8 +1,8 @@
 # Alpha FastAPI 真实运行组装
 
-日期：2026-11-19
+日期：2026-11-21
 分支：`feat/alpha-real-runtime`
-基线：`origin/main` `f5fcabc`
+基线：`origin/main` `e86f6b8`
 
 ## 1. 当前接口确认
 
@@ -26,7 +26,7 @@
 2. 要求 manifest（如存在）与 `temporal_notes["human_approved"]` 都是严格布尔 `true`；
 3. 使用仓库根目录作为 `file_root`，核对加载报告中的非空包列表、片段总数、全部 `IndexingStatus.INDEXED` 和无 warnings；
 4. 业务规则使用 #36 的 `build_from_retriever(retriever)` 绑定当前 Retriever 的元数据与片段查询；
-5. 初始化 Qwen 客户端和 #32 提供时的 `create_alpha_workflow()`，旧 main 期间使用同签名的 `AgentWorkflow`；
+5. 初始化 Qwen 客户端并调用已合并的 #32 `create_alpha_workflow()`；
 6. 用 `InMemoryConversationStore` 和 `ConversationAgentService` 管理会话。
 
 `backend/app/alpha.py` 使用 FastAPI lifespan 异步完成上述组装，不在模块导入时运行嵌套事件循环。知识库或模型配置失败时，应用仍可启动并提供健康检查；问答返回脱敏的 503，不会切换到 Raw/Mock 资料。
@@ -100,10 +100,16 @@ Mock 入口保持不变：
 `answered`。该记录见 [Qwen 真实调用记录](evidence/qwen-live-smoke.txt)，仍不代表
 正式政策资料或 #36 业务规则已经验收。
 
+2026-11-21 在最终 `main e86f6b8` 合并代码上重新执行了真实 HTTP 链路。请求经过
+正式 #35 加载器、#32 `create_alpha_workflow()`、#36 `build_from_retriever()`、
+真实 Qwen 和 Citation 校验，返回 `HTTP 200 / answered / 非空引用`。脱敏记录见
+[最终 Qwen HTTP 记录](evidence/final-qwen-http.txt)。资料仍是明确标记的
+`example.invalid` 合成审核夹具，不是 #31 候选政策。
+
 ## 6. 复跑命令
 
 ```powershell
-.\.venv\Scripts\python.exe -X utf8 -m unittest tests.test_backend_runtime tests.test_agent_workflow_api -v
+.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q
 ```
 
 当前通过项覆盖：
@@ -119,13 +125,13 @@ Mock 入口保持不变：
 - `build_from_retriever()` 绑定当前 Retriever，业务拒绝时零模型调用；
 - 奇数消息上限归一化、LRU 数量上限、空闲清理与活动会话保护。
 
-第二轮审核对应的 #32/#36 临时集成版本、全量结果和上游测试口径冲突见
+最终全量 pytest 结果为 `345 passed, 27 skipped, 136 subtests passed`。
+定向运行层、API、Retriever、审核加载器和 #36 规则测试为
+`198 passed, 26 skipped, 48 subtests passed`。上游版本与历史临时验证记录见
 [运行时上游集成复核](evidence/runtime-upstream-review.md)。
 
 ## 7. 待上游交付
 
 - 丁晓炜完成人工签核，并提供 `knowledge_base/processed/alpha/approved/` 下的正式 `enabled` 包；
-- 王智洋确认正式包的最终加载与索引边界；
-- 吴诗莹确认业务规则模块合入后的两个回调签名；
-- 在 #32/#36 合并后的正式资料包上再执行一次正向联网调用；
+- 在正式人工签核资料包上执行一次政策正向真实 Qwen 验收；
 - 薛锦荣将 `backend.app.alpha:app` 启动方式同步到统一环境文档。

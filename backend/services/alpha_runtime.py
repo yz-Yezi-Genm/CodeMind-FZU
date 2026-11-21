@@ -28,7 +28,7 @@ from backend.retrieval.alpha_corpus import (
     load_approved_alpha_retriever,
 )
 from backend.retrieval.local import LocalBM25Retriever
-from backend.services.agent_workflow import AgentWorkflow
+from backend.services.agent_workflow import create_alpha_workflow
 from backend.services.errors import (
     KnowledgeBaseUnavailableError,
     LLMConfigurationError,
@@ -388,27 +388,13 @@ async def build_alpha_runtime(
             evidence_check=evidence_check,
         )
         client = llm_client or create_qwen_client_from_env()
-        workflow_module = import_module("backend.services.agent_workflow")
-        workflow_factory = getattr(workflow_module, "create_alpha_workflow", None)
-        if callable(workflow_factory):
-            workflow = await workflow_factory(
-                retriever=retriever,
-                file_root=file_root or PROJECT_ROOT,
-                llm_client=client,
-                clarification_rule=clarification_rule,
-                evidence_check=evidence_check,
-            )
-        else:
-            logger.info(
-                "Using base AgentWorkflow constructor; create_alpha_workflow "
-                "will be used automatically when PR #32 is merged."
-            )
-            workflow = AgentWorkflow(
-                retriever,
-                client,
-                clarification_rule=clarification_rule,
-                evidence_check=evidence_check,
-            )
+        workflow = await create_alpha_workflow(
+            retriever=retriever,
+            file_root=file_root or PROJECT_ROOT,
+            llm_client=client,
+            clarification_rule=clarification_rule,
+            evidence_check=evidence_check,
+        )
     except ServiceError:
         raise
     except Exception as exc:

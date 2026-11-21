@@ -61,6 +61,11 @@ class RuntimeFailureAgentService:
         raise RuntimeError("unexpected internal detail")
 
 
+class AsyncioTimeoutAgentService:
+    async def run(self, _request):
+        raise asyncio.TimeoutError()
+
+
 class RecordingConversationAgent:
     def __init__(self) -> None:
         self.requests: list[AgentRequest] = []
@@ -207,6 +212,20 @@ class BackendRuntimeTests(unittest.TestCase):
         self.assertEqual(response.json()["error"]["code"], "RETRIEVAL_FAILED")
         self.assertTrue(response.json()["error"]["retryable"])
         UUID(response.json()["request_id"])
+
+    def test_asyncio_timeout_maps_to_504_for_python310_compatibility(self):
+        client = TestClient(
+            create_app(AsyncioTimeoutAgentService(), settings=self.settings)
+        )
+
+        response = client.post("/api/v1/ask", json={"query": "测试超时"})
+
+        self.assertEqual(response.status_code, 504)
+        self.assertEqual(response.json()["error"]["code"], "MODEL_TIMEOUT")
+        self.assertEqual(
+            response.headers["x-request-id"],
+            response.json()["request_id"],
+        )
 
     def test_invalid_agent_return_type_is_hidden_as_internal_error(self):
         client = TestClient(create_app(InvalidAgentService(), settings=self.settings))
