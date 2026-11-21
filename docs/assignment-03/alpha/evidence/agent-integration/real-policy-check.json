@@ -1,0 +1,106 @@
+{
+  "dataset": "real_packages_unchanged_blocked",
+  "business_rules": "Explicit permissive test callbacks to exercise the retrieval gate; not delivered production rules",
+  "retriever": "backend.retrieval.local.LocalBM25Retriever with file_root and SHA-256 checks",
+  "model": "Real QwenLLMClient adapter, offline MockTransport, expected zero calls",
+  "qwen_calls": 0,
+  "cases": [
+    {
+      "path": "knowledge_base/processed/alpha/competition-recognition-2026.json",
+      "sha256": "5db45e6f707e61e4eb17f924435c56301c95157552100092cecf42f07f80d947",
+      "record_code": "福大-2026-竞赛项目级别认定",
+      "source_url": "https://jwch.fzu.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=14534&wbtreeid=1039",
+      "source_verification_status": "partial",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "query": "竞赛创新学分认定条件",
+      "index": {
+        "document_id": "182e383c-9674-5dd8-952c-c67c35d56482",
+        "version_id": "690a466f-5f97-5955-a143-132ab7ea2d7a",
+        "status": "indexed",
+        "chunk_count": 13,
+        "indexed_count": 13,
+        "warnings": []
+      },
+      "retrieval_hits": 0,
+      "agent_result": {
+        "status": "insufficient_evidence",
+        "answer": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。",
+        "answer_mode": "insufficient_data",
+        "clarifying_question": null,
+        "citations": [],
+        "warnings": [
+          {
+            "code": "NO_ELIGIBLE_EVIDENCE",
+            "message": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。"
+          }
+        ]
+      }
+    },
+    {
+      "path": "knowledge_base/processed/alpha/scholarship-2026.json",
+      "sha256": "62f57425b6b6ed9dbd0f545a76919df809b015090f134c6c859348205c8d62dd",
+      "record_code": "福大-2026-本科奖学金",
+      "source_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+      "source_verification_status": "pending",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "query": "2026年校级奖学金申请条件",
+      "index": {
+        "document_id": "77223b58-e0a0-58d7-a25b-ca1b84477ef3",
+        "version_id": "4b95ecfb-5f7b-5e76-a3a3-6b6d596366fb",
+        "status": "indexed",
+        "chunk_count": 4,
+        "indexed_count": 4,
+        "warnings": []
+      },
+      "retrieval_hits": 0,
+      "agent_result": {
+        "status": "insufficient_evidence",
+        "answer": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。",
+        "answer_mode": "insufficient_data",
+        "clarifying_question": null,
+        "citations": [],
+        "warnings": [
+          {
+            "code": "NO_ELIGIBLE_EVIDENCE",
+            "message": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。"
+          }
+        ]
+      }
+    },
+    {
+      "path": "knowledge_base/processed/alpha/recommendation-eligibility-2027.json",
+      "sha256": "fa04b5731f0187997adaf8c66abe3cbe993cd0552039e0992001a67c6f905dc3",
+      "record_code": "计算机学院-2027-推免资格推荐",
+      "source_url": "https://ccds.fzu.edu.cn/info/1119/11932.htm",
+      "source_verification_status": "partial",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "query": "2027年推免复试条件",
+      "index": {
+        "document_id": "f72578c7-c46a-5302-9243-469bbc86ec40",
+        "version_id": "7552f762-b20d-5036-b745-b59bb08ab282",
+        "status": "indexed",
+        "chunk_count": 6,
+        "indexed_count": 6,
+        "warnings": []
+      },
+      "retrieval_hits": 0,
+      "agent_result": {
+        "status": "insufficient_evidence",
+        "answer": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。",
+        "answer_mode": "insufficient_data",
+        "clarifying_question": null,
+        "citations": [],
+        "warnings": [
+          {
+            "code": "NO_ELIGIBLE_EVIDENCE",
+            "message": "未找到检索已开放、来源已核验且时效为当前的有效证据，暂时不能给出确定结论。"
+          }
+        ]
+      }
+    }
+  ],
+  "acceptance": "Safety refusal only; approved-policy answer and paid Qwen acceptance remain pending"
+}
