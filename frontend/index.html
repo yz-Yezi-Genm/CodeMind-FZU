@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="面向福州大学学生的校园事务与发展信息助手" />
+    <title>CodeMind-FZU · 学生端</title>
+  </head>
+  <body>
+    <div class="student-workspace">
+      <header class="student-brand">
+        <img src="/src/student/assets/fzu.png" alt="" width="48" height="48" />
+        <div><strong>CodeMind-FZU</strong><small>福州大学 · 校园成长助手</small></div>
+      </header>
+      <div class="student-toolbar">
+        <a class="student-active-tab" href="#ask-input">
+          <img src="/src/student/assets/search.svg" alt="" />校园问答
+        </a>
+        <div class="student-health" role="status">
+          <span id="health-dot" class="status-dot" aria-hidden="true"></span>
+          <span id="health-text">正在检查后端连接…</span>
+          <button id="health-retry" type="button" hidden>重试</button>
+        </div>
+      </div>
+
+      <aside class="student-sidebar">
+        <button id="new-chat" class="student-new-chat" type="button">＋ 新建对话</button>
+        <div class="student-sidebar-current">
+          <img src="/src/student/assets/home.svg" alt="" />
+          <span id="conversation-title">首页 / 工作台</span>
+        </div>
+      </aside>
+
+      <main class="student-main">
+        <section id="student-welcome" aria-labelledby="student-heading">
+          <div class="student-welcome">
+            <p class="student-welcome-eyebrow"><span aria-hidden="true">✦</span> 校园成长信息助手</p>
+            <h1 id="student-heading">今天想解决什么问题？</h1>
+            <p>从校园事务查询到发展信息获取，让每一步都有依据。</p>
+          </div>
+          <div id="student-topics" class="student-topics" aria-label="校园问答主题">
+            <button type="button" data-query="申请国家奖学金需要满足什么条件？">
+              <span class="student-topic-icon"><img src="/src/student/assets/policy.svg" alt="" /></span>
+              <span class="student-topic-copy"><strong>政策与事务办理</strong><small>查询奖学金申报、综测管理和教务事务。</small></span>
+              <span class="student-topic-arrow" aria-hidden="true">›</span>
+            </button>
+            <button type="button" data-query="申请推免需要满足哪些基本条件？">
+              <span class="student-topic-icon"><img src="/src/student/assets/study.svg" alt="" /></span>
+              <span class="student-topic-copy"><strong>升学与就业发展</strong><small>了解推免条件、升学与就业相关信息。</small></span>
+              <span class="student-topic-arrow" aria-hidden="true">›</span>
+            </button>
+            <button type="button" data-query="如何核验这项竞赛是否在学院认定范围内？">
+              <span class="student-topic-icon"><img src="/src/student/assets/research.svg" alt="" /></span>
+              <span class="student-topic-copy"><strong>竞赛与科研信息</strong><small>查找竞赛认定要求和科研入门信息。</small></span>
+              <span class="student-topic-arrow" aria-hidden="true">›</span>
+            </button>
+            <button type="button" data-query="学院有哪些公开科研资源？">
+              <span class="student-topic-icon"><img src="/src/student/assets/resources.svg" alt="" /></span>
+              <span class="student-topic-copy"><strong>学院资源导航</strong><small>寻找学院官网、导师信息与实验室资源。</small></span>
+              <span class="student-topic-arrow" aria-hidden="true">›</span>
+            </button>
+          </div>
+        </section>
+
+        <section id="ask-result" class="student-thread" role="log" aria-label="问答记录"></section>
+
+        <div class="student-composer">
+          <p id="ask-status" class="student-request-status" role="status"></p>
+          <form id="ask-form" class="student-form">
+            <label for="ask-input" class="student-sr-only">输入问题</label>
+            <textarea id="ask-input" rows="2" maxlength="4000"
+              placeholder="描述你的问题，例如：学院有哪些公开科研资源？"></textarea>
+            <div class="student-form-actions">
+              <span>Enter 发送 · Shift + Enter 换行</span>
+              <button id="ask-button" type="submit">发送</button>
+            </div>
+          </form>
+          <p class="student-disclaimer">政策信息请以学校和学院发布的正式通知为准。</p>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/student/main.ts"></script>
+  </body>
+</html>

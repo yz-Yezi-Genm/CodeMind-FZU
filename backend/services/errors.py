@@ -44,6 +44,36 @@ class LLMConfigurationError(ServiceError):
         )
 
 
+class KnowledgeBaseUnavailableError(ServiceError):
+    """Approved policy packages could not be loaded into a usable index."""
+
+    def __init__(
+        self,
+        message: str = "经审核的政策知识库尚未就绪。",
+    ) -> None:
+        super().__init__(
+            message,
+            code="KNOWLEDGE_BASE_UNAVAILABLE",
+            http_status=503,
+            retryable=True,
+        )
+
+
+class RuntimeUnavailableError(ServiceError):
+    """The Alpha runtime could not assemble one or more required services."""
+
+    def __init__(
+        self,
+        message: str = "Alpha 后端运行组件尚未就绪。",
+    ) -> None:
+        super().__init__(
+            message,
+            code="SERVICE_NOT_CONFIGURED",
+            http_status=503,
+            retryable=True,
+        )
+
+
 class LLMTimeoutError(ServiceError):
     """The upstream model service timed out."""
 

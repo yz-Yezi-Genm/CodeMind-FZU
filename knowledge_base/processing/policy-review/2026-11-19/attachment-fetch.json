@@ -1,0 +1,68 @@
+[
+  {
+    "key": "recommendation-pdf",
+    "url": "https://ccds.fzu.edu.cn/__local/2/65/3C/D04CE20168D8D7DDFDA27D48782_915BB2AE_383A0.pdf",
+    "checked_at": "2026-11-19T11:17:58.797747+00:00",
+    "final_url": "https://ccds.fzu.edu.cn/__local/2/65/3C/D04CE20168D8D7DDFDA27D48782_915BB2AE_383A0.pdf",
+    "status": 200,
+    "content_type": "application/pdf",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/recommendation-pdf.pdf",
+    "sha256": "39e96e8a22588c1b1b1d8fed10144df40df417b54a64ed1278395c6f85ed8fa7",
+    "byte_size": 230304
+  },
+  {
+    "key": "college-attachments.zip",
+    "url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18248426",
+    "checked_at": "2026-11-19T11:17:58.798748+00:00",
+    "final_url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18248426",
+    "status": 200,
+    "content_type": "application/octet-stream",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip",
+    "sha256": "3023a76d80d3ff80ad5fa474727a4d754f1dc3b71774af15588f98505338902d",
+    "byte_size": 53103
+  },
+  {
+    "key": "xinghuo-forms.rar",
+    "url": "https://ccds.fzu.edu.cn/2026nianxinghuojiangjiaojinshenqingbiao.rar",
+    "checked_at": "2026-11-19T11:17:58.798748+00:00",
+    "final_url": "https://ccds.fzu.edu.cn/2026nianxinghuojiangjiaojinshenqingbiao.rar",
+    "status": 200,
+    "content_type": "application/x-rar-compressed",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar",
+    "sha256": "b99ec34294b07689725302a25aed8575057da551a040b6f7353484e7701d9ade",
+    "byte_size": 163092
+  },
+  {
+    "key": "competition-attachment-1",
+    "url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766605",
+    "checked_at": "2026-11-19T11:17:58.798748+00:00",
+    "final_url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766605",
+    "status": 200,
+    "content_type": "application/octet-stream",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/competition-attachment-1.docx",
+    "sha256": "99e64a99830e59198843a26a9a2b2db19f326b777000ba1c43721fb57ec300ff",
+    "byte_size": 29013
+  },
+  {
+    "key": "competition-attachment-2",
+    "url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766606",
+    "checked_at": "2026-11-19T11:17:58.798748+00:00",
+    "final_url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766606",
+    "status": 200,
+    "content_type": "application/octet-stream",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/competition-attachment-2.docx",
+    "sha256": "596c62ee1f2694b08f421605275e0eb53161bdd5e247a40f149af2feef94704c",
+    "byte_size": 36064
+  },
+  {
+    "key": "competition-attachment-3",
+    "url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766607",
+    "checked_at": "2026-11-19T11:17:58.799747+00:00",
+    "final_url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766607",
+    "status": 200,
+    "content_type": "application/octet-stream",
+    "storage_key": "knowledge_base/processing/policy-review/2026-11-19/competition-attachment-3.docx",
+    "sha256": "07a6abe9417a03e122118d28e1e302937a03ebe41c89261902ab932b21d7dd57",
+    "byte_size": 15371
+  }
+]

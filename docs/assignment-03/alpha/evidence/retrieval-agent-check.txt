@@ -1,0 +1,7 @@
+Agent: backend.services.agent_workflow.AgentWorkflow (current checkout)
+LLM: offline test double. Clarification and applicability callbacks are test inputs.
+{"query": "竞赛认定", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
+{"query": "奖学金", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
+{"query": "推免", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
+{"query": "星桥奖学金申请需要什么", "status": "answered", "warnings": ["ALPHA_EXTRACTIVE_ANSWER"], "llm_calls": 1, "citations": [{"document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548", "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0", "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159", "title": "合成测试资料：星桥奖学金", "publisher": "合成测试机构", "source_url": "https://example.invalid/alpha/scholarship", "published_on": null, "effective_on": null, "locator": "第 2 行", "original_locator": "第 1 页", "excerpt": "星桥奖学金申请需要提交申请表和实践记录。", "source_verification_status": "verified", "timeliness_verification_status": "current", "retrieval_status": "enabled"}]}
+PASS: 4 Agent -> Retriever cases

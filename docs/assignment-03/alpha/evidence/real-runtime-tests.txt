@@ -1,0 +1,43 @@
+Alpha final runtime verification
+Date: 2026-11-21 (Asia/Shanghai)
+Main baseline: e86f6b8
+Python: 3.14.4
+Test runner: pytest 9.2.0
+
+Full project tests:
+  Command: .venv\Scripts\python.exe -X utf8 -m pytest tests -q
+  Result: 345 passed, 27 skipped, 136 subtests passed
+
+Directed runtime integration tests:
+  Command: pytest
+    tests/test_backend_runtime.py
+    tests/test_agent_workflow_api.py
+    tests/test_agent_workflow_qwen.py
+    tests/test_local_retrieval.py
+    tests/test_alpha_corpus.py
+    tests/test_alpha_business_rules.py -q
+  Result: 198 passed, 26 skipped, 48 subtests passed
+
+Official upstream integration script:
+  Command: python -X utf8 -m scripts.verify_alpha_upstream_integration
+  Result: Ran 25 tests, OK
+
+Coverage:
+  - approved corpus loading with manifest and package human approval gates;
+  - missing, unapproved, partial, failed and warning-bearing corpora fail closed;
+  - #36 rules bound to the live Retriever metadata/chunk lookups;
+  - clarification, answered and insufficient_evidence states;
+  - multi-turn history and conversation isolation;
+  - model timeout, upstream failure and sanitized HTTP errors;
+  - real Qwen HTTP 200 / answered / non-empty citation in final-qwen-http.txt;
+  - citation quote, chunk identity, version consistency and withdrawal recheck.
+
+Environment limitation:
+  Python 3.10.11 was not installed on this host. The cross-version
+  asyncio.TimeoutError path is implemented and covered by a regression test that
+  raises asyncio.TimeoutError directly.
+
+Data limitation:
+  The production approved directory still has no human-signed policy package.
+  The real HTTP Qwen test used only tests/fixtures/alpha_approved with an
+  explicit example.invalid synthetic source. It is not a formal policy answer.

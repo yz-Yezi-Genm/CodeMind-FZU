@@ -1,0 +1,69 @@
+{
+  "reviewed_on": "2026-11-19",
+  "package_format": "backend.contracts.DocumentPackage",
+  "storage_root": "repository root",
+  "human_approved_packages": 0,
+  "enabled_packages": 0,
+  "packages": [
+    {
+      "key": "scholarship",
+      "record_code": "福大-2026-本科奖学金",
+      "package": "knowledge_base/processed/alpha/pending-review/scholarship.json",
+      "chunk_count": 59,
+      "source_units": 59,
+      "files": 2,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "uncertain",
+      "retrieval_status": "review_only",
+      "human_approved": false
+    },
+    {
+      "key": "college-scholarship",
+      "record_code": "计算机学院-2026-院级奖学金",
+      "package": "knowledge_base/processed/alpha/pending-review/college-scholarship.json",
+      "chunk_count": 33,
+      "source_units": 33,
+      "files": 3,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "xinghuo",
+      "record_code": "计算机学院-2026-星火奖学金",
+      "package": "knowledge_base/processed/alpha/pending-review/xinghuo.json",
+      "chunk_count": 35,
+      "source_units": 35,
+      "files": 3,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "expired",
+      "retrieval_status": "review_only",
+      "human_approved": false
+    },
+    {
+      "key": "competition",
+      "record_code": "福大-2026-竞赛项目级别认定",
+      "package": "knowledge_base/processed/alpha/pending-review/competition.json",
+      "chunk_count": 224,
+      "source_units": 224,
+      "files": 5,
+      "source_verification_status": "partial",
+      "timeliness_verification_status": "pending",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "recommendation",
+      "record_code": "计算机学院-2027-推免资格推荐",
+      "package": "knowledge_base/processed/alpha/pending-review/recommendation.json",
+      "chunk_count": 20,
+      "source_units": 20,
+      "files": 3,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "expired",
+      "retrieval_status": "review_only",
+      "human_approved": false
+    }
+  ]
+}

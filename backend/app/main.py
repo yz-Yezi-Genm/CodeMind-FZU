@@ -1,6 +1,7 @@
 """FastAPI application and HTTP contract adaptation."""
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import datetime, timezone
 from typing import Any
@@ -82,12 +83,18 @@ def create_app(
     *,
     llm_client: LLMClient | None = None,
     settings: AppSettings | None = None,
+    lifespan: Any | None = None,
+    description: str | None = None,
 ) -> FastAPI:
     app_settings = settings or AppSettings.from_env()
     app = FastAPI(
         title="CodeMind-FZU API",
         version="0.1.0",
-        description="Alpha interface contract shell; business services are connected separately.",
+        description=(
+            description
+            or "Alpha interface contract; business services are injected separately."
+        ),
+        lifespan=lifespan,
     )
     app.state.agent_service = agent_service
     app.state.llm_client = llm_client
@@ -129,7 +136,8 @@ def create_app(
         return _service_error_response(request, exc)
 
     @app.exception_handler(TimeoutError)
-    async def timeout_error_handler(request: Request, _exc: TimeoutError) -> JSONResponse:
+    @app.exception_handler(asyncio.TimeoutError)
+    async def timeout_error_handler(request: Request, _exc: BaseException) -> JSONResponse:
         return _error_response(
             _request_id(request),
             status_code=504,
@@ -210,7 +218,7 @@ def create_app(
             )
         except ServiceError as exc:
             return _service_error_response(request, exc)
-        except TimeoutError:
+        except (asyncio.TimeoutError, TimeoutError):
             return _error_response(
                 request_id,
                 status_code=504,

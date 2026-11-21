@@ -1,0 +1,16 @@
+{
+  "request_id": "64eaceea-3578-4ece-94ac-1b185ade0502",
+  "conversation_id": "e9d12bd3-481c-46a8-bfed-e059ffa64384",
+  "status": "answered",
+  "answer": "[Mock 演示] 已收到你的问题：通过 Vite 代理调用 Mock Agent\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。",
+  "answer_mode": null,
+  "clarifying_question": null,
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前响应由 MockAgentService 生成，未调用真实模型和知识库。"
+    }
+  ],
+  "created_at": "2026-11-17T14:46:42.200313Z"
+}

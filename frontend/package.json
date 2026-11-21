@@ -1,0 +1,20 @@
+{
+  "name": "codemind-fzu-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CodeMind-FZU 前端工程骨架：Vite + 原生 TypeScript 多页面应用（学生端 / 后台管理端）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}
