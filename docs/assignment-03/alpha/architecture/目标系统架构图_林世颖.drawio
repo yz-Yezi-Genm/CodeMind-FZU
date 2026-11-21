@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2026-11-19T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
+<mxfile host="app.diagrams.net" modified="2026-11-21T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
   <diagram name="目标系统架构图" id="c0-target-arch">
     <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="830" math="0" shadow="0">
       <root>
@@ -28,8 +28,8 @@
         <mxCell id="n6" value="数据资源层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontColor=#0d47a1;fontSize=13;fontStyle=1;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="250" y="480" width="1100" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="n7" value="关系数据库&#10;PostgreSQL 16 + SQLAlchemy 2.0（候选基线）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="300" y="515" width="300" height="50" as="geometry" />
+        <mxCell id="n7" value="关系数据库&#10;PostgreSQL 16 + SQLAlchemy 2.0（候选基线）&#10;会话历史落库" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="300" y="510" width="300" height="60" as="geometry" />
         </mxCell>
         <mxCell id="n8" value="向量 / 全文检索索引&#10;嵌入模型与部署方案待定" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="650" y="515" width="300" height="50" as="geometry" />
@@ -73,7 +73,7 @@
             <mxPoint x="560" y="700" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-19 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="300" y="800" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>

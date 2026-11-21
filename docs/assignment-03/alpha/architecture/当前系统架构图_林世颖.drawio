@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2026-11-19T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
+<mxfile host="app.diagrams.net" modified="2026-11-21T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
   <diagram name="当前系统架构图" id="c0-current-arch">
-    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="890" math="0" shadow="0">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1026" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="1" />
@@ -8,13 +8,13 @@
           <mxGeometry x="300" y="10" width="1000" height="30" as="geometry" />
         </mxCell>
         <mxCell id="n0" value="已实现（代码落地）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="320" y="44" width="180" height="26" as="geometry" />
+          <mxGeometry x="120" y="44" width="200" height="26" as="geometry" />
         </mxCell>
         <mxCell id="n1" value="仅契约 / 尚未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;fontColor=#757575;fontSize=12;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="540" y="44" width="200" height="26" as="geometry" />
+          <mxGeometry x="520" y="44" width="240" height="26" as="geometry" />
         </mxCell>
         <mxCell id="n2" value="公共契约层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="780" y="44" width="180" height="26" as="geometry" />
+          <mxGeometry x="880" y="44" width="200" height="26" as="geometry" />
         </mxCell>
         <mxCell id="n3" value="学生端前端（已实现）&#10;健康检查 · 问答提交 · 三状态与引用渲染 · 追问展示 · 反馈本地标记" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="120" y="88" width="660" height="64" as="geometry" />
@@ -34,65 +34,83 @@
         <mxCell id="n8" value="CORS · 请求 ID · 统一错误信封" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="970" y="224" width="290" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="n9" value="Agent 未注入时返回 503 SERVICE_NOT_CONFIGURED，不伪造回答" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#757575;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="320" y="272" width="960" height="24" as="geometry" />
+        <mxCell id="n9" value="Agent 未注入或正式资料未就位时降级不可用服务，返回 503 SERVICE_NOT_CONFIGURED，不伪造回答" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#757575;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="120" y="272" width="1360" height="24" as="geometry" />
         </mxCell>
         <mxCell id="n10" value="公共契约层（已落地）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontColor=#0d47a1;fontSize=13;fontStyle=1;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="320" y="316" width="960" height="34" as="geometry" />
+          <mxGeometry x="320" y="312" width="960" height="34" as="geometry" />
         </mxCell>
         <mxCell id="n11" value="models.py 公共 DTO 与状态枚举" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="340" y="360" width="450" height="36" as="geometry" />
+          <mxGeometry x="340" y="356" width="450" height="36" as="geometry" />
         </mxCell>
         <mxCell id="n12" value="protocols.py 六个模块协议边界" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="810" y="360" width="450" height="36" as="geometry" />
+          <mxGeometry x="810" y="356" width="450" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="n13" value="已落地服务与适配器" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontColor=#6a1b9a;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="120" y="416" width="1360" height="24" as="geometry" />
+        <mxCell id="n13" value="已落地服务、适配器与运行时" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontColor=#6a1b9a;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="120" y="408" width="1360" height="24" as="geometry" />
         </mxCell>
         <mxCell id="n14" value="MockAgentService&#10;三状态 answered / needs_clarification / insufficient_evidence 演示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="120" y="448" width="430" height="70" as="geometry" />
+          <mxGeometry x="120" y="440" width="430" height="66" as="geometry" />
         </mxCell>
         <mxCell id="n15" value="QwenLLMClient&#10;实现 LLMClient 协议；超时/重试/限流/错误映射；真实付费模型未接通" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="585" y="448" width="430" height="70" as="geometry" />
+          <mxGeometry x="585" y="440" width="430" height="66" as="geometry" />
         </mxCell>
         <mxCell id="n16" value="errors.py&#10;服务错误类型与公共错误码映射" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="1050" y="448" width="430" height="70" as="geometry" />
+          <mxGeometry x="1050" y="440" width="430" height="66" as="geometry" />
         </mxCell>
-        <mxCell id="n17" value="AgentWorkflow&#10;AgentService.run 结构实现&#10;追问规则 · 证据门槛 · 版本冲突校验&#10;引用逐字核验；不持久化会话" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="120" y="530" width="430" height="78" as="geometry" />
+        <mxCell id="n17" value="AgentWorkflow + create_alpha_workflow&#10;AgentService.run 结构实现 · 追问规则 · 证据资格门槛&#10;版本冲突校验 · 引用逐字核验；不持久化会话" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="120" y="524" width="430" height="84" as="geometry" />
         </mxCell>
-        <mxCell id="n18" value="LocalBM25Retriever&#10;本地 BM25 检索 + 内存入库索引；仅暴露 enabled 状态片段；无持久化存储" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="585" y="530" width="430" height="70" as="geometry" />
+        <mxCell id="n18" value="AlphaRuntime · 内存会话&#10;InMemoryConversationStore 按会话隔离与有界历史&#10;ConversationAgentService 注入 history；启动失败降级不可用服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="585" y="524" width="430" height="84" as="geometry" />
         </mxCell>
-        <mxCell id="n19" value="TextDocumentParser&#10;Markdown/TXT 解码、标题切片、定位与哈希；不联网/不写库/不建索引/不开放检索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="1050" y="530" width="430" height="70" as="geometry" />
+        <mxCell id="n19" value="alpha_business_rules&#10;三场景追问规则与证据适用性回调&#10;只读元数据/片段查询绑定；规则缺失即配置错误，不静默回退演示规则" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="524" width="430" height="84" as="geometry" />
         </mxCell>
-        <mxCell id="n20" value="仅契约 / 尚未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;fontColor=#757575;fontSize=13;fontStyle=1;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="100" y="628" width="1400" height="160" as="geometry" />
+        <mxCell id="n20" value="LocalBM25Retriever&#10;本地 BM25 中文分词检索 + 内存入库；仅暴露 enabled 片段；无持久化存储" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="120" y="628" width="430" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="n21" value="管理后端服务与管理 API&#10;DocumentAdminService：列表/详情/导入/重索引后端与管理 HTTP 接口未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="130" y="668" width="430" height="48" as="geometry" />
+        <mxCell id="n21" value="alpha_corpus 加载器&#10;已审核资料统一加载入口与完整性报告；人工批准门禁；路径与符号链接安全校验" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="585" y="628" width="430" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="n22" value="真实 LLM 付费调用&#10;适配器仅离线协议测试，API Key 未配置、未接通真实模型" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="585" y="668" width="430" height="48" as="geometry" />
+        <mxCell id="n22" value="TextDocumentParser&#10;Markdown/TXT 解码、切片、定位与哈希；不联网/不写库/不建索引/不开放检索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="628" width="430" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="n23" value="关系数据库 / ORM 持久化&#10;未引入 SQLAlchemy 与数据库驱动；当前检索为内存索引，无在线持久化库" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="668" width="430" height="48" as="geometry" />
+        <mxCell id="n23" value="仅契约 / 尚未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;fontColor=#757575;fontSize=13;fontStyle=1;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="716" width="1400" height="196" as="geometry" />
         </mxCell>
-        <mxCell id="n24" value="向量 / 全文持久化索引&#10;持久化索引与嵌入模型部署方案待定" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="130" y="724" width="430" height="48" as="geometry" />
+        <mxCell id="n24" value="管理后端服务与管理 API&#10;DocumentAdminService 列表/详情/导入/重索引后端与 HTTP 接口未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="752" width="430" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="n25" value="对话历史持久化&#10;AgentRequest.history 契约已定义；未接存储与跨会话恢复" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="585" y="724" width="430" height="48" as="geometry" />
+        <mxCell id="n25" value="真实 LLM 付费调用&#10;适配器仅离线协议测试，Key 未配置、未接通真实模型" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="585" y="752" width="430" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="n26" value="认证授权&#10;未接入；管理 API 在鉴权完成前仅限本地或受控测试环境" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="724" width="430" height="48" as="geometry" />
+        <mxCell id="n26" value="关系数据库 / ORM 持久化&#10;未引入 SQLAlchemy 与数据库驱动；当前为内存索引与内存会话" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="752" width="430" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="n27" value="知识库资料已收集；未完成政策核验、未开放检索，默认 retrieval_status=blocked；PDF/DOCX/OCR 解析待完成" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#999999;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="130" y="796" width="1340" height="24" as="geometry" />
+        <mxCell id="n27" value="向量 / 全文持久化索引&#10;持久化索引与嵌入模型部署方案待定" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="808" width="430" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="n28" value="tests/ 契约与接口测试：153 项运行，152 通过，0 失败，1 跳过（系统账户不允许创建符号链接）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="100" y="828" width="1400" height="30" as="geometry" />
+        <mxCell id="n28" value="持久化入库与索引链路&#10;KnowledgeIndexer 落库、片段索引与结果回写未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="585" y="808" width="430" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n29" value="会话历史持久化&#10;当前仅服务端内存会话；跨会话恢复与历史落库未实现" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="808" width="430" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n30" value="认证授权&#10;未接入；管理 API 鉴权完成前仅限本地或受控环境" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="864" width="430" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="n31" value="资料核验开放与格式解析&#10;正式资料待人工签核；PDF/DOCX/OCR 解析待完成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="585" y="864" width="430" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="n32" value="approved/ 目录当前仅 README&#10;候选资料位于 pending-review/，未签核不开放检索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="864" width="430" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="n33" value="知识库候选资料已收集；未完成人工核验签核前默认 blocked/review_only，不进入正式问答检索" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#999999;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="100" y="924" width="1400" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="n34" value="tests/ 覆盖后端运行时、接口契约、Agent 工作流、业务规则、本地检索、approved 资料加载、Qwen 客户端与文档解析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="956" width="1400" height="30" as="geometry" />
         </mxCell>
         <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
@@ -109,23 +127,23 @@
         <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1976d2;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="800" y="210" as="sourcePoint" />
-            <mxPoint x="800" y="316" as="targetPoint" />
+            <mxPoint x="800" y="312" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1976d2;strokeWidth=2;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="800" y="396" as="sourcePoint" />
-            <mxPoint x="800" y="416" as="targetPoint" />
+            <mxPoint x="800" y="392" as="sourcePoint" />
+            <mxPoint x="800" y="408" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9e9e9e;strokeWidth=2;dashed=1;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="800" y="608" as="sourcePoint" />
-            <mxPoint x="800" y="628" as="targetPoint" />
+            <mxPoint x="800" y="698" as="sourcePoint" />
+            <mxPoint x="800" y="716" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-19 | 依据：main 分支实际代码与 Alpha 接口规范 V1.0" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="300" y="860" width="1000" height="25" as="geometry" />
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-21 | 依据：main 分支实际代码与 Alpha 接口规范 V1.0" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="996" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
