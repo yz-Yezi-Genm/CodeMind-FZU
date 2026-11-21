@@ -9,9 +9,12 @@
 测试分类（统计口径不得混淆）：
 
 - 第一类 Mock 测试：全替身（见其他 test_*.py）。
-- 第二类 真实资料测试：真实 DocumentPackage（官方 fixture / 临时合成）+ 真实
-  LocalBM25Retriever + 真实业务规则 + Mock Qwen。本文件主体。
-- 第三类 真实 Qwen 集成测试：真实 Qwen API（需 QWEN_API_KEY，自动 skip）。
+- 第二类 真实资料 + Mock Qwen：真实 DocumentPackage（官方 fixture / 临时合成）+ 真实
+  LocalBM25Retriever + 真实业务规则 + Mock Qwen。本文件 AlphaE2ETests / AlphaE2EMultiTurnTests。
+- 契约测试（非端到端）：AlphaContractGateTests（T6 来源核验门槛，Pydantic 契约层），
+  不计入端到端统计。
+- 第三类 真实 Qwen 集成测试：真实 Qwen API，需同时满足 QWEN_API_KEY 与
+  RUN_LIVE_QWEN_TESTS=1 两个开关才运行，避免普通全量测试意外消耗额度。
 
 重要：本文件使用的资料是「测试夹具」，不代表任何真实政策已经人工核验。
 真实核验资料（knowledge_base/processed/alpha/approved/）就绪前，T1/T2 的
@@ -19,6 +22,7 @@
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import unittest
@@ -120,7 +124,12 @@ def _write_package_files(root: Path, package: DocumentPackage) -> None:
 
 
 class _MockQwen:
-    """离线 Qwen 替身：从 workflow 发来的证据里选第一条逐字返回。"""
+    """离线 Qwen 替身：从 workflow 发来的证据里选第一条逐字返回。
+
+    通过 `output` 可返回固定内容（用于伪造 chunk_id / 改写 quote 测试），
+    通过 `fail` / `status` 模拟超时与上游错误。所有出站 HTTP client 由测试
+    用例通过 `addCleanup` 统一 await 关闭。
+    """
 
     def __init__(self, *, output=None, fail=None, status=None):
         self.observed: list[dict] = []
@@ -160,9 +169,27 @@ class _MockQwen:
         )
         return self.llm
 
-    def close(self):
+    async def aclose(self):
+        """异步关闭底层 HTTP client，避免遗留资源。"""
         if self.upstream is not None:
-            self.upstream.aclose()
+            await self.upstream.aclose()
+
+
+def _close_qwen_sync(qwen: _MockQwen) -> None:
+    """同步 addCleanup 包装：在独立事件循环里 await 关闭 upstream。"""
+    if qwen.upstream is not None:
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            asyncio.run(qwen.aclose())
+            return
+        # 若已有运行中的循环（极少见于同步 TestCase），交给异步侧处理
+        asyncio.get_event_loop().run_until_complete(qwen.aclose())
+
+
+def _install_qwen_cleanup(testcase: unittest.TestCase, qwen: _MockQwen) -> None:
+    """注册统一清理，确保每个用例结束时关闭 Mock Qwen 的 HTTP client。"""
+    testcase.addCleanup(_close_qwen_sync, qwen)
 
 
 # ---------------------------------------------------------------------------
@@ -185,10 +212,53 @@ class AlphaE2ETests(unittest.TestCase):
 
         return create_alpha_app(settings=settings, runtime_builder=runtime_builder)
 
+    def test_T1_competition_answered_with_traceable_citation(self):
+        """T1 竞赛认定：补齐业务所需信息（竞赛级别认定 + 具体竞赛名），
+        严格断言 answered 且引用可追溯。"""
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            package = _build_package(
+                record_code="福大-2026-竞赛项目级别认定",
+                title="福州大学2026年大学生学科竞赛级别认定结果",
+                category_name="竞赛与创新创业",
+                content="蓝桥杯全国软件和信息技术专业人才大赛认定为国家级A类学科竞赛。",
+                applicability={"适用对象": "本科生", "适用年度": "2026年"},
+            )
+            _write_package_files(root, package)
+            (root / "competition.json").write_text(
+                package.model_dump_json(), encoding="utf-8"
+            )
+
+            qwen = _MockQwen()
+            qwen.build()
+            _install_qwen_cleanup(self, qwen)
+            settings = AppSettings(alpha_package_dir=root)
+
+            async def runtime_builder():
+                return await build_alpha_runtime(
+                    settings, llm_client=qwen.llm, file_root=root,
+                )
+
+            app = create_alpha_app(settings=settings, runtime_builder=runtime_builder)
+            with TestClient(app) as client:
+                response = client.post(
+                    "/api/v1/ask",
+                    json={"query": "学科竞赛级别认定，蓝桥杯是什么级别？"},
+                )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["status"], "answered")
+        self.assertTrue(body["citations"])
+        citation = body["citations"][0]
+        self.assertEqual(citation["excerpt"], package.chunks[0].content)
+        self.assertEqual(citation["source_url"], "https://example.invalid/e2e-policy")
+        self.assertEqual(len(qwen.observed), 1)
+
     def test_T2_scholarship_answered_with_exact_excerpt(self):
         """T2 奖学金场景：官方 fixture + 真实业务规则，问具体类别触发 answered。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
         with TestClient(app) as client:
             response = client.post(
@@ -205,50 +275,11 @@ class AlphaE2ETests(unittest.TestCase):
         )
         self.assertEqual(len(qwen.observed), 1)
 
-    def test_T1_competition_answered_with_traceable_citation(self):
-        """T1 竞赛认定场景：临时合成一份竞赛资料，验证 answered + 可追溯引用。"""
-        with TemporaryDirectory() as folder:
-            root = Path(folder)
-            package = _build_package(
-                record_code="E2E-竞赛项目级别认定",
-                title="大学生学科竞赛级别认定办法",
-                category_name="竞赛与创新创业",
-                content="国家级A类学科竞赛获奖可用于竞赛学分认定，须提供获奖证书原件。",
-                applicability={"适用对象": "本科生", "适用年度": "2026年"},
-            )
-            _write_package_files(root, package)
-            # 把 package 作为 approved 语料写入临时目录，供 build_alpha_runtime 加载
-            (root / "competition.json").write_text(
-                package.model_dump_json(), encoding="utf-8"
-            )
-
-            qwen = _MockQwen()
-            qwen.build()
-            settings = AppSettings(alpha_package_dir=root)
-
-            async def runtime_builder():
-                return await build_alpha_runtime(
-                    settings, llm_client=qwen.llm, file_root=root,
-                )
-
-            app = create_alpha_app(settings=settings, runtime_builder=runtime_builder)
-            with TestClient(app) as client:
-                response = client.post(
-                    "/api/v1/ask",
-                    json={"query": "学科竞赛学分认定，蓝桥杯获奖能认定学分吗？"},
-                )
-            self.assertEqual(response.status_code, 200)
-            body = response.json()
-            # 竞赛认定业务规则较复杂（需作品名/等级目录），这里验证合法契约状态 + 链路无崩溃
-            self.assertIn(body["status"], {"answered", "needs_clarification", "insufficient_evidence"})
-            if body["status"] == "answered":
-                self.assertTrue(body["citations"])
-                self.assertEqual(body["citations"][0]["source_url"], "https://example.invalid/e2e-policy")
-
     def test_T3_scholarship_without_category_needs_clarification(self):
         """T3 缺类别：业务规则应追问类别，而非直接生成笼统答案。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
         with TestClient(app) as client:
             response = client.post(
@@ -266,6 +297,7 @@ class AlphaE2ETests(unittest.TestCase):
         """T4 空/缺失知识库：正式入口应返回 503 KNOWLEDGE_BASE_UNAVAILABLE。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen, package_dir=MISSING_DIR)
         with TestClient(app) as client:
             response = client.post("/api/v1/ask", json={"query": "推免条件是什么？"})
@@ -276,6 +308,7 @@ class AlphaE2ETests(unittest.TestCase):
         """T5 未审核资料：human_approved=false 的资料被加载器跳过，无法装配正式运行时。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen, package_dir=UNAPPROVED_DIR)
         with TestClient(app) as client:
             response = client.post(
@@ -285,25 +318,12 @@ class AlphaE2ETests(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["error"]["code"], "KNOWLEDGE_BASE_UNAVAILABLE")
 
-    def test_T6_unverified_source_cannot_be_enabled(self):
-        """T6 来源核验未通过：source_verification_status 非 verified 的资料，
-        无法以 retrieval_status=enabled 构造（pydantic 契约强制），不能绕过审核。"""
-        from pydantic import ValidationError
-        with self.assertRaises(ValidationError):
-            _build_package(
-                record_code="E2E-SCHOLARSHIP",
-                title="本科生奖学金评定管理办法",
-                category_name="综评与奖学金",
-                content="优秀学生综合奖学金一等奖1500元/学期。",
-                applicability={"适用对象": "本科生", "适用年度": "2026年"},
-                source_verified="pending",  # 未核验
-            )
-
     def test_T6b_partial_index_package_is_rejected_by_runtime(self):
-        """T6 补充：human_approved 但源文件未就绪（needs_ocr）的部分索引资料，
+        """T6b：human_approved 但源文件未就绪（needs_ocr）的部分索引资料，
         无法装配正式运行时（返回 503 KNOWLEDGE_BASE_UNAVAILABLE）。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen, package_dir=PARTIAL_DIR)
         with TestClient(app) as client:
             response = client.post(
@@ -317,6 +337,7 @@ class AlphaE2ETests(unittest.TestCase):
         """T7 Qwen 超时：上游超时应映射为 504 MODEL_TIMEOUT，而非业务 answered。"""
         qwen = _MockQwen(fail=httpx.TimeoutException("simulated", request=None))
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
         with TestClient(app, raise_server_exceptions=False) as client:
             response = client.post(
@@ -332,6 +353,7 @@ class AlphaE2ETests(unittest.TestCase):
         """T8 模型返回不存在的 chunk_id：拒绝该引用。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
 
         # 先正常回答一次，拿到真实 chunk_id
@@ -340,7 +362,7 @@ class AlphaE2ETests(unittest.TestCase):
             real_chunk_id = ok.json()["citations"][0]["chunk_id"]
         self.assertTrue(real_chunk_id)
 
-        # 再让模型返回一个伪造的 chunk_id
+        # 再让模型返回一个伪造的 chunk_id（quote 保持原文不变）
         qwen._output = {"evidence": [{"chunk_id": str(uuid4()), "quote": _APPROVED_CONTENT}]}
         with TestClient(app) as client:
             response = client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
@@ -350,17 +372,21 @@ class AlphaE2ETests(unittest.TestCase):
         self.assertTrue(any(w["code"] == "UNSUPPORTED_GENERATION" for w in body["warnings"]))
 
     def test_T9_model_rewrites_quote_is_rejected(self):
-        """T9 模型改写原文作引用：拒绝该引用。"""
+        """T9 模型改写原文作引用：保持 chunk_id 不变，只改 quote，验证拦截改写。"""
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
 
+        # 先正常回答一次，拿到真实 chunk_id
         with TestClient(app) as client:
-            client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
+            ok = client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
+            real_chunk_id = ok.json()["citations"][0]["chunk_id"]
+        self.assertTrue(real_chunk_id)
 
-        # 改写原文：返回一个伪造 chunk_id + 改写的 quote
+        # 保持 chunk_id 不变，只改写 quote（模拟模型擅自改写原文）
         qwen._output = {"evidence": [{
-            "chunk_id": "00000000-0000-0000-0000-000000000000",
+            "chunk_id": real_chunk_id,
             "quote": "改写后的政策结论（非原文）",
         }]}
         with TestClient(app) as client:
@@ -372,6 +398,27 @@ class AlphaE2ETests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# 契约测试（非端到端）：T6 来源核验门槛在 Pydantic 契约层强制
+# ---------------------------------------------------------------------------
+class AlphaContractGateTests(unittest.TestCase):
+    """资料审核契约门槛测试，不计入端到端（E2E）统计。"""
+
+    def test_T6_unverified_source_cannot_be_enabled(self):
+        """T6 来源核验未通过：source_verification_status 非 verified 的资料，
+        无法以 retrieval_status=enabled 构造（Pydantic 契约强制），不能绕过审核。"""
+        from pydantic import ValidationError
+        with self.assertRaises(ValidationError):
+            _build_package(
+                record_code="E2E-SCHOLARSHIP",
+                title="本科生奖学金评定管理办法",
+                category_name="综评与奖学金",
+                content="优秀学生综合奖学金一等奖1500元/学期。",
+                applicability={"适用对象": "本科生", "适用年度": "2026年"},
+                source_verified="pending",  # 未核验
+            )
+
+
+# ---------------------------------------------------------------------------
 # T10 多轮会话（HTTP 层，正式入口）
 # ---------------------------------------------------------------------------
 class AlphaE2EMultiTurnTests(unittest.TestCase):
@@ -380,6 +427,7 @@ class AlphaE2EMultiTurnTests(unittest.TestCase):
     def test_T10_http_conversation_context_across_turns(self):
         qwen = _MockQwen()
         qwen.build()
+        _install_qwen_cleanup(self, qwen)
         settings = AppSettings(alpha_package_dir=APPROVED_DIR)
 
         async def runtime_builder():
@@ -406,18 +454,33 @@ class AlphaE2EMultiTurnTests(unittest.TestCase):
 
         self.assertEqual(first.status_code, 200)
         self.assertEqual(second.status_code, 200)
-        self.assertEqual(len(history), 4)  # user + assistant + user + assistant
+        # 会话存储确实保存了 4 条记录（2 用户 + 2 助手）
+        self.assertEqual(len(history), 4)
         self.assertEqual(history[0].content, "优秀学生综合奖学金申请需要提交什么材料？")
         self.assertEqual(history[2].content, "还需要成绩单吗？")
 
+        # 第二轮触发了第二次模型调用，且发给 Qwen 的用户上下文包含了第一轮问题
+        self.assertGreaterEqual(len(qwen.observed), 2)
+        second_payload = qwen.observed[-1]
+        user_message = json.loads(second_payload["messages"][-1]["content"])
+        context = user_message["question_and_user_context"]
+        self.assertIn("优秀学生综合奖学金申请需要提交什么材料？", context)
+        self.assertIn("还需要成绩单吗？", context)
+
 
 # ---------------------------------------------------------------------------
-# 第三类：真实 Qwen 集成测试（需 QWEN_API_KEY，未配置则 skip）
+# 第三类：真实 Qwen 集成测试（需 QWEN_API_KEY 且 RUN_LIVE_QWEN_TESTS=1）
 # ---------------------------------------------------------------------------
 class AlphaE2ERealQwenTests(unittest.TestCase):
-    """真实 Retriever + 真实 Qwen API。仅在配置 QWEN_API_KEY 时运行。"""
+    """真实 Retriever + 真实 Qwen API。
+
+    仅当同时满足 QWEN_API_KEY 与 RUN_LIVE_QWEN_TESTS=1 两个条件时才运行，
+    避免普通全量测试意外消耗真实 API 额度。
+    """
 
     def test_real_qwen_end_to_end(self):
+        if os.getenv("RUN_LIVE_QWEN_TESTS") != "1":
+            self.skipTest("未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。")
         if not os.getenv("QWEN_API_KEY"):
             self.skipTest("未配置 QWEN_API_KEY，跳过真实 Qwen 集成测试。")
 

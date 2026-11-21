@@ -34,4 +34,4 @@ tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_exte
     warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-356 passed, 28 skipped, 3 warnings, 136 subtests passed in 60.86s (0:01:00)
+356 passed, 28 skipped, 3 warnings, 136 subtests passed in 35.16s

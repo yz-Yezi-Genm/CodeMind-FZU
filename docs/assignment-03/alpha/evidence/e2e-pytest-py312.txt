@@ -1,0 +1,83 @@
+...........................................................................sssssssssssssssssssssssss.s.... [ 27%]
+........................................................................ [ 46%]
+.....................................................s.................. [ 65%]
+........FF......................................s......... [ 80%]
+............................................................ [ 95%]
+................                                                         [100%]
+================================== FAILURES ===================================
+____ ConversationRuntimeTests.test_global_cleanup_drops_inactive_sessions _____
+
+self = <test_backend_runtime.ConversationRuntimeTests testMethod=test_global_cleanup_drops_inactive_sessions>
+
+    async def test_global_cleanup_drops_inactive_sessions(self):
+        agent = RecordingConversationAgent()
+        store = InMemoryConversationStore(
+            max_conversations=2,
+            idle_seconds=1,
+        )
+        service = ConversationAgentService(agent, store)
+    
+        for _ in range(3):
+            await service.run(self.request(uuid4(), "独立会话"))
+    
+        self.assertEqual(store.conversation_count, 2)
+        await asyncio.sleep(0)
+>       self.assertEqual(await store.prune_idle(idle_seconds=1e-9), 2)
+E       AssertionError: 0 != 2
+
+tests\test_backend_runtime.py:495: AssertionError
+_ ConversationRuntimeTests.test_global_cleanup_removes_idle_and_protects_active_state _
+
+self = <test_backend_runtime.ConversationRuntimeTests testMethod=test_global_cleanup_removes_idle_and_protects_active_state>
+
+    async def test_global_cleanup_removes_idle_and_protects_active_state(self):
+        agent = BlockingConversationAgent()
+        store = InMemoryConversationStore(max_messages=4, max_chars=1000)
+        service = ConversationAgentService(agent, store)
+        conversation_id = uuid4()
+    
+        task = asyncio.create_task(
+            service.run(self.request(conversation_id, "清理测试"))
+        )
+        await agent.first_entered.wait()
+        self.assertEqual(await store.clear_all(), 0)
+        self.assertEqual(store.conversation_count, 1)
+        agent.allow_second.set()
+        await task
+    
+>       self.assertEqual(await store.prune_idle(idle_seconds=1e-9), 1)
+E       AssertionError: 0 != 1
+
+tests\test_backend_runtime.py:479: AssertionError
+============================== warnings summary ===============================
+D:\Python3.12\Lib\site-packages\fastapi\testclient.py:1
+  D:\Python3.12\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+D:\Python3.12\Lib\site-packages\starlette\testclient.py:53
+  D:\Python3.12\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_external_directory_is_rejected
+  D:\Python3.12\Lib\site-packages\_pytest\threadexception.py:54: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-23 (_readerthread)
+  
+  Traceback (most recent call last):
+    File "D:\Python3.12\Lib\threading.py", line 1075, in _bootstrap_inner
+      self.run()
+    File "D:\Python3.12\Lib\threading.py", line 1012, in run
+      self._target(*self._args, **self._kwargs)
+    File "D:\Python3.12\Lib\subprocess.py", line 1599, in _readerthread
+      buffer.append(fh.read())
+                    ^^^^^^^^^
+    File "<frozen codecs>", line 322, in decode
+  UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb4 in position 135: invalid start byte
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_backend_runtime.py::ConversationRuntimeTests::test_global_cleanup_drops_inactive_sessions
+FAILED tests/test_backend_runtime.py::ConversationRuntimeTests::test_global_cleanup_removes_idle_and_protects_active_state
+2 failed, 354 passed, 28 skipped, 3 warnings, 136 subtests passed in 25.88s
