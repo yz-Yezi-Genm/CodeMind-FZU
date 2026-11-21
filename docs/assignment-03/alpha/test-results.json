@@ -1,19 +1,123 @@
 {
   "command": "python -m scripts.check_document_processing",
-  "tested_at": "2026-11-18T10:49:52.840477+00:00",
-  "python": "3.13.14",
+  "tested_at": "2026-11-21T06:21:32.430899+00:00",
+  "python": "3.10.11",
   "platform": "Windows",
   "dependencies": {
-    "pydantic": "2.13.5",
-    "fastapi": "0.141.1",
+    "pydantic": "2.14.3",
+    "fastapi": "0.162.5",
     "httpx": "0.28.1",
-    "starlette": "1.6.0"
+    "starlette": "1.7.0"
   },
-  "tests_run": 153,
-  "passed": 152,
+  "tests_run": 262,
+  "passed": 235,
   "failures": 0,
   "errors": 0,
   "skipped": [
+    {
+      "test": "test_agent_workflow_qwen.LiveAlphaAcceptanceTests.test_approved_policy_answer_has_real_retrieved_citations",
+      "reason": "Real Qwen acceptance requires explicit opt-in and approved packages"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_and_evidence_share_injected_clock",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_exception_has_strict_agent_refusal_contract",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_competition_or_work_switch_does_not_inherit_previous_rank",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_external_college_without_scope_field_is_filtered_before_qwen",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_formal_corpus_report_rejects_partial_failed_empty_and_missing",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_formal_eligibility_overrides_preparation_wording_before_qwen",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_historical_evidence_stays_blocked_by_workflow_gate",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_historical_rule_applicability_cannot_relax_agent_current_gate",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_latest_loader_and_agent_reject_every_unapproved_marker",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_manifest_approval_cannot_replace_package_approval",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_merged_business_rules_match_snapshot_and_run_without_snapshot_replacement",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_merged_retriever_matches_latest_upstream_without_replacement",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_missing_or_broken_metadata_blocks_before_qwen",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_no_current_work_cannot_inherit_history_rank_or_reach_retriever",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_non_sensitive_document_can_answer_without_chapter_metadata",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_per_retriever_rule_closures_do_not_share_metadata",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_loader_rules_and_qwen_adapter_answer_with_source",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_rules_clarify_before_retrieval_and_model",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_rules_use_user_history_to_complete_category",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_recommendation_grade_eligibility_and_reference_are_distinct",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_review_only_package_skipped_by_actual_approved_loader",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_sensitive_sections_fail_closed_for_every_missing_lookup_case",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_teacher_section_filtered_out_of_real_qwen_prompt",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_unknown_applicability_and_wrong_policy_kind_rejected",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_year_mismatch_rejected_using_real_metadata",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
     {
       "test": "test_document_processing.DocumentProcessingTests.test_symlink_escaping_storage_root_is_rejected",
       "reason": "当前操作系统账户不允许创建符号链接"
