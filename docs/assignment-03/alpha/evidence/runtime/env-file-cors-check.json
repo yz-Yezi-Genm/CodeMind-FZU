@@ -1,0 +1,11 @@
+{
+  "env_file": "CORS_ALLOW_ORIGINS=http://127.0.0.1:5199",
+  "allowed_origin_5199": {
+    "status": 200,
+    "allow_origin": "http://127.0.0.1:5199"
+  },
+  "not_allowed_5173": {
+    "status": 200,
+    "allow_origin": null
+  }
+}

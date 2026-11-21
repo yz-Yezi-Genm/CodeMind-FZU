@@ -476,7 +476,10 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
         agent.allow_second.set()
         await task
 
-        self.assertEqual(await store.prune_idle(idle_seconds=1e-9), 1)
+        # Windows 的 time.monotonic 分辨率约 15ms，1e-9 阈值会因差值被舍入为 0
+        # 而无法过期；这里等待一个可观测的时间片再按 20ms 阈值清理。
+        await asyncio.sleep(0.05)
+        self.assertEqual(await store.prune_idle(idle_seconds=0.02), 1)
         self.assertEqual(store.conversation_count, 0)
 
     async def test_global_cleanup_drops_inactive_sessions(self):
@@ -491,8 +494,9 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
             await service.run(self.request(uuid4(), "独立会话"))
 
         self.assertEqual(store.conversation_count, 2)
-        await asyncio.sleep(0)
-        self.assertEqual(await store.prune_idle(idle_seconds=1e-9), 2)
+        # 同上：等待可观测时间片，避免 Windows 低分辨率时钟导致未过期。
+        await asyncio.sleep(0.05)
+        self.assertEqual(await store.prune_idle(idle_seconds=0.02), 2)
         self.assertEqual(store.conversation_count, 0)
 
     async def test_business_rules_factory_binds_the_live_retriever(self):

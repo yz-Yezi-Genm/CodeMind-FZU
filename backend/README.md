@@ -1,8 +1,33 @@
-# Backend API 与模型适配
+# Backend API、Agent 与检索
 
-本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、真实运行组装、服务端会话历史、Mock Agent 演示入口和 Qwen 模型适配器。已实现可注入的 `AgentWorkflow`、Markdown/TXT 文档解析和本地 BM25 检索。
+本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 契约、真实运行组装、服务端会话历史、Mock Agent、Qwen 适配器、AgentWorkflow、Markdown/TXT 文档解析和本地 BM25 检索。
 
-## 环境与启动
+## 一、运行入口
+
+| 入口 | 用途 | 说明 |
+|---|---|---|
+| `backend.app.alpha:app` | **真实 Alpha 运行** | 启动时加载已审核资料、初始化 Qwen、装配 AgentWorkflow 与会话历史 |
+| `backend.app.dev:app` | Mock 联调 | 固定模拟回答，不需要 Qwen 密钥 |
+| `backend.app.main:app` | 默认骨架 | 未注入 Agent，`/api/v1/ask` 返回 503 |
+
+真实入口通过 FastAPI lifespan 调用审核加载入口，默认只扫描 `knowledge_base/processed/alpha/approved/`，并要求 `retrieval_status=enabled` 与 manifest/`temporal_notes` 的人工审核标记为严格 `true`。`blocked`、`review_only`、未审核和测试侧车 JSON 不会进入正式索引。
+
+目录缺失、没有已审核资料包、部分索引或出现 warnings 时，服务仍可启动，但问答返回 `503 KNOWLEDGE_BASE_UNAVAILABLE`，**不会改用原始测试资料**。
+
+## 二、环境要求
+
+| 项目 | 要求 | 本次干净环境验证 |
+|---|---|---|
+| Python | **3.10 及以上**（推荐 3.10 / 3.11） | Python 3.10.11 |
+| 运行依赖 | `backend/requirements.txt` | fastapi 0.162.5、pydantic 2.14.3、uvicorn 0.54.0、httpx 0.28.1 |
+| 完整验证依赖 | `scripts/requirements-alpha-verification.txt`（pytest 等） | 已验证安装 |
+| 系统 | Windows / macOS / Linux | Windows 11 |
+
+> 干净环境验证中发现并修复了两个 Python 3.10 / Windows 兼容问题：
+> 1. `asyncio.wait_for` 在 3.10 抛 `asyncio.TimeoutError`，原代码只捕获内建 `TimeoutError`，已兼容两种类型；
+> 2. 会话清理测试使用 `1e-9` 秒阈值，Windows `monotonic()` 分辨率约 15ms 导致误判，测试已改为可观测时间片（不影响运行时逻辑）。
+
+## 三、安装依赖
 
 从仓库根目录执行：
 
@@ -14,163 +39,154 @@ python -m venv .venv
 source .venv/bin/activate
 
 python -m pip install -r backend/requirements.txt
+```
 
-# 默认入口（未注入真实 Agent，/api/v1/ask 返回 503，属预期）
-python -m uvicorn backend.app.main:app --reload --port 8000
+跑完整测试/验证脚本时再安装：
 
-# Mock Agent 演示入口（用于前后端联调）
-python -m uvicorn backend.app.dev:app --reload --port 8000
+```bash
+python -m pip install -r scripts/requirements-alpha-verification.txt
+```
 
-# 真实 Alpha 入口（需要本地 Qwen 配置和已审核资料）
+国内网络可加镜像：`-i https://pypi.tuna.tsinghua.edu.cn/simple`。
+
+## 四、启动
+
+### 4.1 真实 Alpha 入口
+
+```bash
 python -m uvicorn backend.app.alpha:app --reload --port 8000 --env-file backend/.env
 ```
 
-访问：
-- 健康检查：`http://127.0.0.1:8000/api/v1/health`
-- OpenAPI 页面：`http://127.0.0.1:8000/docs`
-- 问答入口：`POST http://127.0.0.1:8000/api/v1/ask`
+需要：
 
-`backend.app.main:app` 是默认入口，未注入真实 Agent 时，问答接口返回统一格式的 `503 SERVICE_NOT_CONFIGURED`，不会伪造回答。
+- 本地 `backend/.env` 中配置 `QWEN_API_KEY`；
+- `ALPHA_PACKAGE_DIR` 指向已审核资料目录（默认 `knowledge_base/processed/alpha/approved`）；
+- 该目录中至少有一份审核通过、`retrieval_status=enabled` 的资料包。
 
-`backend.app.alpha:app` 通过 FastAPI lifespan 调用 #35 的统一审核加载入口、初始化 Qwen 客户端并装配 `AgentWorkflow`。默认只扫描 `knowledge_base/processed/alpha/approved/`，同时要求 `retrieval_status=enabled` 和 manifest/`temporal_notes` 的人工审核标记为严格 `true`；`blocked`、`review_only`、未审核和侧车 JSON 不会进入正式索引。目录缺失、没有已审核包、部分索引或 warnings 时，服务仍可启动，但问答返回 `503 KNOWLEDGE_BASE_UNAVAILABLE`，不会改用原始测试资料。
+缺少密钥或资料时服务仍会启动，但 `/api/v1/ask` 返回 503 与明确错误码，不伪造回答。
 
-本地 Mock 演示使用独立入口，不改变默认入口：
+### 4.2 Mock Agent（前后端联调，无需密钥）
 
 ```bash
 python -m uvicorn backend.app.dev:app --reload --port 8000
 ```
 
-默认 API 为 `/api/v1`：
-
-- `GET /api/v1/health`
-- `POST /api/v1/ask`
-- 请求字段严格使用 `query` 和可选的 `conversation_id`
-- `answered`、`needs_clarification`、`insufficient_evidence` 三种状态由公共契约统一约束
-
-默认入口和 Mock 入口共用同一套路由、校验、错误 envelope、CORS 与 Agent 适配逻辑。
-
-完整的环境安装、启动、测试与常见问题见 [Alpha 阶段运行说明](../docs/assignment-03/alpha/run-guide.md)。
-
-## CORS
-
-CORS 使用显式来源列表，不允许 `*`。内置本地开发默认值覆盖：
-
-- `http://localhost:5173`、`http://127.0.0.1:5173`
-- `http://localhost:3000`、`http://127.0.0.1:3000`
-- `http://localhost:5500`、`http://127.0.0.1:5500`
-
-前端实际端口确定后，通过环境变量覆盖，不需要修改代码：
+### 4.3 默认骨架
 
 ```bash
-CORS_ALLOW_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+python -m uvicorn backend.app.main:app --reload --port 8000
 ```
 
-来源格式非法或配置为 `*` 时，应用会在启动阶段拒绝配置。
-允许的方法为 `GET`、`POST`、`PATCH`、`OPTIONS`，其中 `PATCH` 预留给后续后台元数据修改接口。
+`/api/v1/ask` 返回 `503 SERVICE_NOT_CONFIGURED`，属预期行为。
 
-## 环境变量与 Qwen
+### 4.4 离线验证（不调用真实模型）
 
-复制模板并仅在本地填写密钥：
+```bash
+python -m scripts.check_retrieval_agent
+python -m scripts.check_document_processing
+python -m examples.agent_workflow_demo
+```
+
+## 五、环境变量与 Qwen
 
 ```bash
 cp backend/.env.example backend/.env
-python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
+python -m uvicorn backend.app.alpha:app --port 8000 --env-file backend/.env
 ```
 
-可用变量：
+变量说明见 [`backend/.env.example`](.env.example)：
 
-- `CORS_ALLOW_ORIGINS`
-- `QWEN_API_KEY`：仅从本地环境读取，禁止提交
-- `QWEN_BASE_URL`：默认 OpenAI-compatible DashScope 地址
-- `QWEN_MODEL`：默认 `qwen-flash`，真实小样本验证可用；可配置为 `qwen-plus`
-- `QWEN_TIMEOUT_SECONDS`：默认 28 秒，适配 AgentWorkflow 的 30 秒总预算
-- `QWEN_MAX_RETRIES`：默认 0，范围 0–3；启用重试时需同步缩短单次超时
-- `ALPHA_PACKAGE_DIR`：人工审核资料包目录，默认 `knowledge_base/processed/alpha/approved`
-- `CONVERSATION_MAX_MESSAGES`：每个会话最多保留的消息数，默认 12；奇数会向下取整为完整问答对
-- `CONVERSATION_HISTORY_CHAR_LIMIT`：每个会话历史的字符预算，默认 6000
-- `CONVERSATION_MAX_COUNT`：内存中最多保留的会话数，默认 1000
-- `CONVERSATION_IDLE_SECONDS`：空闲会话回收时间，默认 3600 秒
-- `CONVERSATION_CLEANUP_INTERVAL_SECONDS`：后台清理间隔，默认 300 秒
+| 变量 | 是否必填 | 默认 | 说明 |
+|---|---|---|---|
+| `CORS_ALLOW_ORIGINS` | 可选 | 覆盖 5173/3000/5500 | 逗号分隔，禁止 `*` |
+| `QWEN_API_KEY` | 真实调用必填 | 空 | 仅本地保存，禁止提交 |
+| `QWEN_BASE_URL` | 可选 | DashScope compatible | 必须是 http(s) |
+| `QWEN_MODEL` | 可选 | `qwen-flash` | 需账号有权限 |
+| `QWEN_TIMEOUT_SECONDS` | 可选 | `28` | 必须 > 0 |
+| `QWEN_MAX_RETRIES` | 可选 | `0` | 0–3 |
+| `ALPHA_PACKAGE_DIR` | 可选 | `knowledge_base/processed/alpha/approved` | 已审核资料目录 |
+| `CONVERSATION_MAX_MESSAGES` | 可选 | `12` | 2–50，奇数向下取整为完整轮次 |
+| `CONVERSATION_HISTORY_CHAR_LIMIT` | 可选 | `6000` | 200–50000 |
+| `CONVERSATION_MAX_COUNT` | 可选 | `1000` | 内存会话上限 |
+| `CONVERSATION_IDLE_SECONDS` | 可选 | `3600` | 空闲回收时间 |
+| `CONVERSATION_CLEANUP_INTERVAL_SECONDS` | 可选 | `300` | 清理间隔 |
 
-完整本地、systemd 和 Kubernetes Secret 配置见
-[Alpha 环境变量与部署配置](../docs/assignment-03/alpha/environment-deployment.md)。
+`QwenLLMClient.generate()` 遵循公共 `LLMClient` 协议；超时、限流、上游异常会转换为可安全返回的服务错误。未配置密钥时真实入口返回配置错误，不会伪造回答。
 
-服务端会话只在内存中保存，进程重启后丢失。同一 `conversation_id` 的请求串行执行，后续请求会获得此前的用户和 Agent 消息；不同 ID 的历史严格隔离。模型或检索异常不会写入失败轮次。运行时会按数量和空闲时间清理非活动会话，清理操作不会移除正在处理的轮次。
+## 六、知识库与审核资料加载
 
-`backend.services.qwen_client.QwenLLMClient` 实现公共 `LLMClient.generate()` 协议，不修改公共 `LLMGenerateRequest` / `LLMResult`。适配器处理超时、有限重试、限流和上游异常，并将错误转换为可安全返回的服务错误。
+1. 读取 `ALPHA_PACKAGE_DIR` 下的 `DocumentPackage` JSON；
+2. 只接受 `retrieval_status=enabled` 且人工审核标记严格为 `true` 的资料；
+3. 用 `LocalBM25Retriever` 建内存索引，同一实例同时用于索引与检索；
+4. 任一份资料索引失败、出现 warnings 或目录为空时，正式问答整体不可用（503），不会部分开放；
+5. 三个 Alpha 样例资料仍为 `blocked`，因此样例不会进入正式问答。
 
-正式运行只通过 `backend.retrieval.alpha_corpus.load_approved_alpha_retriever()` 加载资料，要求 manifest（如有）和 `temporal_notes` 都明确人工审核通过，并核对加载报告中的完整索引状态、warnings 与片段数量。业务规则通过 `alpha_business_rules.build_from_retriever(retriever)` 绑定当前只读元数据/片段查询；不会使用未绑定 Retriever 的全局证据函数。
+相关实现：`backend/retrieval/alpha_corpus.py`；诊断脚本：`scripts/run_alpha_agent.py`。
 
-`httpx` 已包含在正式依赖 `backend/requirements.txt` 中，因为
-`backend.services` 在导入时会加载 Qwen 适配器；只安装运行依赖即可启动 API。
+## 七、接口与 CORS
 
-## 测试
+默认 API 前缀 `/api/v1`：
+
+- `GET /api/v1/health`
+- `POST /api/v1/ask`（`query`，可选 `conversation_id`）
+- 状态值：`answered`、`needs_clarification`、`insufficient_evidence`
+- 服务端按 `conversation_id` 保存有界会话历史（仅内存）
+
+CORS 使用显式来源列表，不允许 `*`；默认覆盖 5173/3000/5500，非法来源或 `*` 会在启动阶段被拒绝。
+
+## 八、测试
 
 ```bash
-.venv\\Scripts\\python.exe -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
-测试包含：
+本次干净环境（Python 3.10.11）结果：**262 项执行，235 通过、27 跳过、0 失败**。
 
-- 契约模型校验；
-- 默认入口 503 防护与 Mock 演示入口；
-- AgentRequest/AgentResult 包装；
-- `conversation_id` 和 `request_id` 传递；
-- CORS 允许/拒绝与非法通配符配置；
-- Agent 服务异常和错误返回脱敏；
-- Agent 抛出普通 `RuntimeError` 时仍经过 CORS/request ID 中间件；
-- Qwen 成功、超时、限流、重试、不可用及缺失密钥。
+跳过项主要来自环境限制与未启用的真实验收（如 Windows 符号链接权限、真实 Qwen 验收开关、未交付的业务规则替身等），不是失败。
 
-运行依赖还使用以下方式做了干净环境验证：新建临时虚拟环境，仅安装
-`backend/requirements.txt`，确认 `httpx` 可导入并以 Uvicorn 启动健康检查。
+专项检查：
 
-## 公共契约
+```bash
+python -m scripts.check_document_processing
+python -m scripts.check_retrieval_agent
+```
 
-- `contracts/models.py`：请求、响应、引用、检索片段、资料入库包、索引结果及模型调用数据结构。
-- `contracts/protocols.py`：Agent、Retriever、DocumentParser、KnowledgeIndexer、LLMClient 和 DocumentAdminService 的模块边界。
-- 完整说明见 [Alpha 接口规范 V1.0](../docs/assignment-03/interface-contract-v1.md)。
+## 九、文档解析（Alpha）
 
-各成员应直接复用公共模型，不要在自己的模块中复制定义同名 DTO。公共字段、状态值或函数签名需要修改时，先向罗宇泽提出并等待统一更新。
-
-## 当前边界
-
-- 对话历史持久化；
-- Qwen 真实网络调用需要本地配置 API Key，本次使用 MockTransport 完成适配器测试；
-- 文件存储服务和完整资料入库流程；
-- PostgreSQL/SQLAlchemy 在线连接与迁移；
-- Chroma 和 RRF 混合检索；
-- 管理端业务 API 和认证授权。
-
-数据库设计中的资料默认 `retrieval_status=blocked`。解析、入库或建立索引均不会自动开放正式问答检索。
-
-当前 `approved/` 尚无人工签核后开放的正式包，配置中也没有真实 `QWEN_API_KEY`，因此不能用 MockTransport 结果宣称真实模型或正式政策正向链路已经验收。完整说明见 [Alpha 真实运行说明](../docs/assignment-03/alpha/real-runtime.md)。
-
-## 文档解析（Alpha）
-
-`backend.document_processing.TextDocumentParser` 实现现有 `DocumentParser` 协议，返回公共 `DocumentPackage`。支持 Markdown/TXT、标题层级、片段编号、行号/字符定位和哈希；输出全部保持 `retrieval_status=blocked`。文件业务角色可用构造参数`file_role`或CLI的`--file-role`显式指定；已知业务角色时应传入，未传时保留原默认值。PDF及其他格式仅登记待处理，不伪造正文。
+`backend.document_processing.TextDocumentParser` 实现 `DocumentParser` 协议，返回公共 `DocumentPackage`。支持 Markdown/TXT、标题层级、片段编号、行号/字符定位和哈希；输出保持 `retrieval_status=blocked`。PDF/OCR 仅登记待处理，不伪造正文。
 
 ```bash
 python -m scripts.parse_alpha_documents
 python -m scripts.check_document_processing
 ```
 
-三个场景样例位于 `knowledge_base/processed/alpha/`，共 23 个片段，均已通过内存索引联调。正文和附件仍待政策核验，问答检索保持关闭。使用方法见 [文档处理说明](../docs/assignment-03/alpha/document-processing.md)。
+## 十、本地知识检索（Alpha）
 
-PDF/OCR、文件存储服务和持久化入库仍待接入。
-
-## 本地知识检索（Alpha）
-
-`backend.retrieval.LocalBM25Retriever` 实现 `KnowledgeIndexer` 和 `Retriever`。两个接口共用同一内存实例。配置 `file_root` 可检查真实资料文件及登记的 SHA-256。检索仅返回已明确开放的资料片段，并保留文档、版本和来源定位。
-
-统一加载与只读查询入口（PR #35）：
-- `load_approved_alpha_retriever()` / `build_approved_alpha_retriever()`：从 `knowledge_base/processed/alpha/approved/` 加载人工审核通过（要求严格满足 `retrieval_status=enabled` 且 `temporal_notes["human_approved"] is True`；若存在 `manifest.json` 亦须显式标记 `human_approved: true`）的正式资料包，并拒绝符号链接与目录越界。
-- `LocalBM25Retriever.get_document_metadata(version_id: UUID)`（示例：`retriever.get_document_metadata(chunk.version_id)`）与 `get_parsed_chunk(chunk_id: UUID)`：供业务规则侧只读查询元数据与原始片段（返回深拷贝；不存在、未开放或重索引被剔除时返回 `None` 不抛异常）。
-- **正式组装边界**：`build_approved_alpha_retriever()` 会丢弃 `AlphaCorpusLoadReport`；`load_approved_alpha_retriever()` 会将 `partial`（含来源未就绪导致 `indexed_count=0`）也计入 `loaded_packages`，且默认 `allow_missing=True` 缺目录时返回空索引与空报告。由于目录缺失与空目录都会返回空的 `index_results`（以及各 `IndexResult.warnings`）和 `total_indexed_chunks=0`，正式后端入口不能仅凭空报告判断知识库正常，应在正式组装时传入 `allow_missing=False` 或显式检查 `report.corpus_dir.is_dir()`，并核对 `report.index_results`（保守约定要求完整 `indexed` 且核查每条 `IndexResult.warnings`）与 `report.total_indexed_chunks`，以区分“知识库目录缺失/未就绪”与“正常无命中”。
+`backend.retrieval.LocalBM25Retriever` 实现 `KnowledgeIndexer` 与 `Retriever`，两个接口共用同一内存实例。配置 `file_root` 可检查真实资料文件及登记 SHA-256；检索只返回已开放片段。
 
 ```bash
 python -X utf8 -m scripts.demo_local_retrieval
 python -X utf8 -m scripts.demo_local_retrieval --real
-python -X utf8 -m unittest discover -s tests -p test_local_retrieval.py -v
 ```
 
-默认示例用合成资料演示有命中和无命中两种情况。`--real` 校验仓库的三个真实资料包，预期问答检索均为空。接入方式和运行记录见 [检索报告](../docs/assignment-03/alpha/retrieval-report.md)。
+## 十一、公共契约
+
+- `contracts/models.py`：请求、响应、引用、检索片段、资料入库包、索引结果及模型调用数据结构。
+- `contracts/protocols.py`：Agent、Retriever、DocumentParser、KnowledgeIndexer、LLMClient、DocumentAdminService 的模块边界。
+- 说明见 [Alpha 接口规范 V1.0](../docs/assignment-03/interface-contract-v1.md)。
+
+公共字段、状态值或函数签名需要修改时，先向罗宇泽提出并等待统一更新。
+
+## 十二、当前边界
+
+- 真实 Qwen 调用需要本地密钥与已审核资料，本轮未使用真实密钥做正向验收；
+- `knowledge_base/processed/alpha/approved/` 目前没有正式审核包时，真实问答返回 503；
+- 文件存储服务与持久化资料入库；
+- PostgreSQL/SQLAlchemy 在线连接与迁移；
+- Chroma/RRF 混合检索（当前为本地 BM25）；
+- 管理端业务 API 与认证授权（前端管理页调用后台接口会得到 404）。
+
+## 十三、运行指南与验证记录
+
+- 完整环境、前后端启动、联调与常见问题：[Alpha 阶段运行说明](../docs/assignment-03/alpha/run-guide.md)
+- 本轮干净环境验证证据：[evidence/runtime](../docs/assignment-03/alpha/evidence/runtime/)

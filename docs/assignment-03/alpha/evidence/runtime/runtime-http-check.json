@@ -1,0 +1,26 @@
+{
+  "mock_health": {
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"service\":\"codemind-fzu-api\",\"version\":\"0.1.0\",\"timestamp\":\"2026-11-21T06:21:33.101644Z\"}"
+  },
+  "mock_ask": {
+    "status": 200,
+    "body": "{\"request_id\":\"42ee2e9f-9f21-42ec-8243-bb447982b69e\",\"conversation_id\":\"a3711af1-05b6-419b-b051-82643d603c54\",\"status\":\"answered\",\"answer\":\"[Mock 演示] 已收到你的问题：奖学金申请需要什么条件\\n\\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。\",\"answer_mode\":null,\"clarifying_question\":null,\"citations\":[],\"warnings\":[{\"code\":\"MOCK_AGENT\",\"message\":\"当前响应由 MockAgentService 生成，未调用真实模型和知识库。\"}],\"created_at\":\"2026-11-21T06:21:33.108323Z\"}"
+  },
+  "vite_student": {
+    "status": 200,
+    "body": "<!doctype html>\r\n<html lang=\"zh-CN\">\r\n  <head>\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\r\n    <meta charset=\"UTF-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <meta name=\"description\" content=\"面向福州大学学生的校园事务与发展信息助手\" />\r\n    <title>CodeMind-FZU · 学生端</title>\r\n  </head>\r\n  <body>\r\n    <div class=\"student-workspace\">\r\n      <header class=\"student-brand\">\r\n        <img src=\"/src/student/assets/fzu.png\" alt=\"\" width=\"48\" height=\"48\" />\r\n        <div><strong>CodeMind-FZU</strong><small>福州大学 · 校园成长助手</small></div>\r\n      </header>\r\n      <div c"
+  },
+  "vite_admin": {
+    "status": 200,
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"description\" content=\"CodeMind-FZU 后台管理端（Alpha 工程骨架）\" />\n    <title>CodeMind-FZU · 后台管理端</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/admin/main.ts\"></script>\n  </body>\n</html>\n"
+  },
+  "vite_proxy_health": {
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"service\":\"codemind-fzu-api\",\"version\":\"0.1.0\",\"timestamp\":\"2026-11-21T06:21:33.159482Z\"}"
+  },
+  "vite_proxy_ask": {
+    "status": 200,
+    "body": "{\"request_id\":\"fe9c65bc-ce93-49f7-b715-91462dc18d94\",\"conversation_id\":\"d39e2234-38f7-435d-8ea6-b7cb2a8417cd\",\"status\":\"answered\",\"answer\":\"[Mock 演示] 已收到你的问题：奖学金申请需要什么条件\\n\\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。\",\"answer_mode\":null,\"clarifying_question\":null,\"citations\":[],\"warnings\":[{\"code\":\"MOCK_AGENT\",\"message\":\"当前响应由 MockAgentService 生成，未调用真实模型和知识库。\"}],\"created_at\":\"2026-11-21T06:21:33.179454Z\"}"
+  }
+}

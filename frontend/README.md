@@ -10,7 +10,7 @@ CodeMind-FZU 前端工程骨架：**Vite + 原生 TypeScript 多页面应用（H
 |---|---|---|
 | Node.js | **18.18 及以上**（推荐 20 LTS / 22 LTS） | Node 24.18.0 |
 | npm | 随 Node 安装（推荐 9+） | npm 11.x |
-| 后端 | 按 `backend/README.md` 启动在 `http://127.0.0.1:8000` | — |
+| 后端 | 按 `backend/README.md` 启动；真实入口 `backend.app.alpha:app`，Mock 联调 `backend.app.dev:app`，均监听 `http://127.0.0.1:8000` | — |
 
 ## 安装依赖
 
@@ -43,6 +43,13 @@ npm run dev
 ```
 
 因此前端代码统一使用相对路径 `/api/v1/...`，不要写死后端地址，也不需要在前端处理跨域。后端 CORS 已覆盖 `http://localhost:5173` 与 `http://127.0.0.1:5173`。
+
+### 后端入口说明
+
+- **真实 Alpha 入口**：`python -m uvicorn backend.app.alpha:app --reload --port 8000 --env-file backend/.env`。需要本地 `QWEN_API_KEY` 与已审核资料（`ALPHA_PACKAGE_DIR`）；缺配置时服务可启动，但问答返回 503，不会伪造回答。
+- **Mock 联调入口**：`python -m uvicorn backend.app.dev:app --reload --port 8000`，不需要密钥。
+- 前端无需区分两种入口，统一走 `/api/v1` 契约。
+- 后台管理端调用 `/api/v1/admin/...` 时，当前后端返回 404，管理页会显示“后台管理接口当前不可用”，属 Alpha 当前边界。
 
 ## 生产构建
 
