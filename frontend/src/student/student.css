@@ -271,6 +271,21 @@
   font-size: 16px;
 }
 
+.student-answer-mode,
+.student-test-fixture-notice {
+  margin: 8px 0 0;
+  color: var(--student-muted);
+  font-size: 13px;
+}
+
+.student-test-fixture-notice {
+  padding: 8px 10px;
+  border-left: 3px solid #bd596b;
+  border-radius: 4px;
+  color: #842337;
+  background: var(--student-accent-soft);
+}
+
 .student-warnings,
 .student-request-status {
   color: var(--student-muted);
