@@ -129,9 +129,9 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 
 ### 7.1 Python 版本
 
-- 本机无 Python 3.10（评审要求的 3.10.11 不可用），仅有 3.12 与 3.13。
-- 用 **3.12**（最接近且官方支持范围内）验证：本文件 11 passed + 1 skipped，全绿。
-- 全量 3.12 下出现 **2 个时序脆弱失败**（见 7.3），非本文件引入。
+- 已安装 **Python 3.10.11**（评审要求版本），并用它完成验证。
+- 本文件在 3.10.11 / 3.12 / 3.13 下均为 **11 passed + 1 skipped**，全绿。
+- 全量在 3.10.11 下出现 **2 个时序失败**（见 7.3），非本文件引入。
 
 ### 7.2 UTF-8 解码警告（`PytestUnhandledThreadExceptionWarning`）
 
@@ -142,14 +142,17 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 - **修复建议**（未擅自修改他人文件）：`subprocess.run(..., encoding="utf-8", errors="replace")`
   或显式 `encoding="gbk"`。已反馈给王智洋。
 
-### 7.3 时序脆弱测试（Python 3.12 偶发失败）
+### 7.3 时序脆弱测试（Python 3.10/3.12 稳定失败，3.13 通过）
 
 - **现象**：`tests/test_backend_runtime.py::ConversationRuntimeTests` 的 2 个用例
   （`test_global_cleanup_drops_inactive_sessions`、`test_global_cleanup_removes_idle_and_protects_active_state`）
-  在 3.12 下偶发失败（`prune_idle(idle_seconds=1e-9)` 断言 0 != 1）。
-- **根因**：`InMemoryConversationStore` 用 `monotonic()` 时间戳比较，`idle_seconds=1e-9`
-  接近 `monotonic()` 分辨率下限，3.12 的时钟分辨率不足以区分，属**时序脆弱测试**（赵紫龙维护）。
-- **影响**：3.13 下稳定通过；3.12 下偶发。非本文件代码缺陷。已反馈给赵紫龙。
+  在 **Python 3.10.11 下稳定失败**（3 次全失败），3.12 下偶发，3.13 下稳定通过。
+- **根因**：`InMemoryConversationStore` 用 `monotonic()` 时间戳比较，测试里
+  `prune_idle(idle_seconds=1e-9)` 接近 `monotonic()` 分辨率下限，3.10/3.12 的
+  时钟分辨率不足以区分 `1e-9` 秒，属**时序脆弱测试**（赵紫龙维护）。
+- **影响**：这是真实的 Python 3.10 兼容性问题（评审第 7 点要发现的问题），
+  但**非本文件代码缺陷**，已反馈给赵紫龙。建议将 `idle_seconds=1e-9` 改为更大的值
+  或显式 `await asyncio.sleep(0)` 让时钟推进。
 
 ---
 
@@ -157,12 +160,15 @@ Qwen 证据选择 → Citation 校验 → 返回结果」这条**完整正式链
 
 | 环境 | 本文件 | 全量 |
 | --- | --- | --- |
-| Python 3.13.12 | 11 passed + 1 skipped | 356 passed + 28 skipped + 136 subtests |
+| Python 3.10.11 | 11 passed + 1 skipped | 354 passed + 2 时序失败 + 28 skipped + 136 subtests |
 | Python 3.12 | 11 passed + 1 skipped | 354 passed + 2 时序失败 + 28 skipped + 136 subtests |
+| Python 3.13.12 | 11 passed + 1 skipped | 356 passed + 28 skipped + 136 subtests |
 
 **原始终端输出**：
 - `docs/assignment-03/alpha/evidence/e2e-pytest.txt`（3.13 全量）
 - `docs/assignment-03/alpha/evidence/e2e-file.txt`（3.13 本文件）
+- `docs/assignment-03/alpha/evidence/e2e-pytest-py310.txt`（3.10.11 全量）
+- `docs/assignment-03/alpha/evidence/e2e-file-py310.txt`（3.10.11 本文件）
 - `docs/assignment-03/alpha/evidence/e2e-pytest-py312.txt`（3.12 全量）
 - `docs/assignment-03/alpha/evidence/e2e-file-py312.txt`（3.12 本文件）
 
