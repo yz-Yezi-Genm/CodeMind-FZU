@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" modified="2026-11-21T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
+  <diagram name="目标系统架构图" id="c0-target-arch">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="830" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="1" />
+        <mxCell id="title" value="CodeMind-FZU 目标系统架构图（Alpha 接口规范约定）" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="1000" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="n0" value="学生浏览器（学生端前端）&#10;问题输入 · 回答与引用展示 · 追问交互 · 反馈" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=13;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="600" y="70" width="400" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="FastAPI 后端&#10;HTTP 入口 · 请求校验 · ID 管理 · Agent 调用入口 · 错误处理与 CORS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#34a853;strokeColor=#1b5e20;fontColor=#ffffff;fontSize=13;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="170" width="600" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="Agent 工作流" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9c27b0;strokeColor=#4a148c;fontColor=#ffffff;fontSize=14;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="290" width="800" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="业务规则配置&#10;场景与追问规则" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="430" y="355" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="Retriever 检索&#10;RetrievalRequest → RetrievedChunk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="660" y="355" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="LLMClient（Qwen 适配）&#10;LLMGenerateRequest → LLMResult" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="890" y="355" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="数据资源层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontColor=#0d47a1;fontSize=13;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="250" y="480" width="1100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" value="关系数据库&#10;PostgreSQL 16 + SQLAlchemy 2.0（候选基线）&#10;会话历史落库" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="300" y="510" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" value="向量 / 全文检索索引&#10;嵌入模型与部署方案待定" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="515" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" value="知识库资料文件&#10;原件 · 附件 · 提取正文 · 整理稿" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="515" width="300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n10" value="后台管理端&#10;管理页面 · DocumentAdminService&#10;资料列表 / 详情 / 元数据 / 导入 / 重索引" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="640" width="340" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n11" value="管理服务链路&#10;DocumentParser 文档解析&#10;KnowledgeIndexer 入库与索引" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="640" width="340" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n12" value="认证授权（RBAC · 后续建设）&#10;登录鉴权 · 角色与权限&#10;管理 API 访问控制；当前未接入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="640" width="340" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="134" as="sourcePoint" />
+            <mxPoint x="800" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="240" as="sourcePoint" />
+            <mxPoint x="800" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="420" as="sourcePoint" />
+            <mxPoint x="800" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="580" as="sourcePoint" />
+            <mxPoint x="730" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="700" as="sourcePoint" />
+            <mxPoint x="560" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="700" as="sourcePoint" />
+            <mxPoint x="1020" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="800" width="1000" height="25" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
