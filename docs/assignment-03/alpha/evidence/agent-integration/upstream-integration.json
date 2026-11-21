@@ -1,15 +1,16 @@
 {
-  "time_asia_shanghai": "2026-11-21T00:32:26.826565+08:00",
-  "agent_commit": "116b157ce81c626067104db422d00ad475f05724",
+  "time_asia_shanghai": "2026-11-21T08:22:43.922010+08:00",
+  "agent_commit": "a05cfeefe4645608d7ca82cf2ef20a170993189c",
   "agent_worktree_changes_included": true,
   "agent_source_state": {
-    "base_commit": "116b157ce81c626067104db422d00ad475f05724",
+    "base_commit": "a05cfeefe4645608d7ca82cf2ef20a170993189c",
     "source_sha256_lf": {
       "backend/__init__.py": "845da59f5760bf8179adad042a26eb8865c357b20d8b774809352368b8185e62",
       "backend/app/__init__.py": "45390889d8a4a81a685fa8f8fb38422e5f6ff8840d7df1405f088ab5347ae8e2",
-      "backend/app/config.py": "83e0e11aae39dd03e472bc3a85c1bab0c5c6ef2e4557243dc46513594cbc851f",
+      "backend/app/alpha.py": "cef2c63e38c193189cd31364ac4618949c73823855d5bb15553bd4d0b38a543f",
+      "backend/app/config.py": "d9f47bd6b7cd6e91cc064c5696271bac87849dc801fce60d45d32f70afc76819",
       "backend/app/dev.py": "7215a8294c12ff938697166a7e3f169cf4fa41f4e535d56b333706176065ada0",
-      "backend/app/main.py": "eb93f8f82465588b5e9f22ae66892672c324fb939ea203400971cfd4105f4f8c",
+      "backend/app/main.py": "ee0f6cf010afda034f618f6e408b26d0161c5724b6a7a712d3ed8b09be756156",
       "backend/contracts/__init__.py": "7099da0012fd9542890c97a37bd126ff738a4ca0f7fc06d3bc12e28f5b65c614",
       "backend/contracts/models.py": "45a57f627ce6a7981f24a037bcc19f013821f58af49dd7d897448b952ca00efc",
       "backend/contracts/protocols.py": "28294bca7d1b6b4a3d8d9060b902927e7e4ffae9148e4da39220acebb630a590",
@@ -22,11 +23,12 @@
       "backend/retrieval/alpha_corpus.py": "fe69d6e4eb82d9970496a28c3c3868fe0b167fdf555239972457abb4239e187e",
       "backend/retrieval/local.py": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20",
       "backend/services/__init__.py": "7f046044817ea7579f0327f16c769a32c9b053c9e428a42dc15cba1de8c5658a",
-      "backend/services/agent_workflow.py": "ff54a12e47479cbe161efd11d4950d4af92efc7044e6aecbd5ba371fa4f618d4",
+      "backend/services/agent_workflow.py": "2a735ec0cd6b01f2f3614e40594b09c13ed45c44f66b1cec93627551c6ba8f89",
       "backend/services/alpha_business_rules.py": "9d4d187b4aa5778fe23ccc3ea6b3d2c15a7a720b15d6b884b156b74d187b8d96",
-      "backend/services/errors.py": "cdaa522d135d79d5ded52669bb89eaa2fc64d56b1bf4bd7d35c6557fed835e77",
+      "backend/services/alpha_runtime.py": "70580d0b080677be5dcc100d87d07fa7b665c5372b2e05252fb6bc55bc1dc075",
+      "backend/services/errors.py": "0944be58169e7b674806a926c0819f99685b6664cc34a59ecfa6e1abf9254c50",
       "backend/services/mock_agent.py": "13b8ce18677d6e2d032fc534bb9cf86beebd9b020a8fbab3593e6374ca390f8f",
-      "backend/services/qwen_client.py": "cc5259d3359fb1792729e9c7240d0678970a3c693c17e35e363c03f1c1876b0d",
+      "backend/services/qwen_client.py": "fbd8bcfbc1990161798b68c1f1f8f321bdb40564a4da4004ace1e5cde08c1eb6",
       "examples/agent_workflow_demo.py": "0df77ff76eb0f9990d88b8a63a12aa5659e6c5b30ce15a0bf41e1320b3041a57",
       "knowledge_base/processing/audit_policy_forms.py": "3651c79938a2341b4892bbbe1f0d41b9cd7dfe8d6be515d9fbef03fc0c337017",
       "knowledge_base/processing/build_policy_review.py": "93f5aa545b867c902528a4f70313d0070f12a22aa2081d25c7aab272687e698c",
@@ -36,6 +38,7 @@
       "knowledge_base/processing/test_policy_review.py": "061a8101a3da51a987253af0903ef92945ef48bb686a02bd83a09355556a7deb",
       "scripts/check_document_processing.py": "de3832c09805e38d5be3deb1d781d7294c86095c790a01f6329fef36b3111049",
       "scripts/check_qwen_live.py": "aacec90857cf1f057ba1d4b8b73cb1747c541c632a0764c8df5c1a53b62b2fa6",
+      "scripts/check_qwen_runtime_live.py": "c5215949b646ebddc09dbf2e3d926edcdc7c9892476d1bd0ec0f512a378158dd",
       "scripts/check_retrieval_agent.py": "8f54d786e1c47bbfa46fb279b78d6cb224ccaebdbf0962c963c349950efea0fd",
       "scripts/demo_local_retrieval.py": "19ae6493b7b425c18828b294169ff39c5a052914b214d6d84488665da0d32c22",
       "scripts/parse_alpha_documents.py": "2e8c6fba5e03c834b0089bf87f9225ed774cdd7b84965277ab0078943b5b4bf3",
@@ -45,35 +48,35 @@
       "scripts/verify_alpha_agent_integration.py": "5a434885fc5dd846af6c506ed80e85648467af10d15df89e31916d35db0a1081",
       "scripts/verify_alpha_upstream_integration.py": "51223737e439bb1a632b96b94824e278ab333d0dcef8810f182b094a4c501639",
       "tests/test_agent_workflow.py": "0f4ac0d8117b52864c488734b202adb6666c3eee3f32887c1fda9d9aa68d9f0c",
-      "tests/test_agent_workflow_api.py": "2addcf904df32f466490d46d12b2d3668b1c6ce1df495efb63ff76b37735ef7a",
-      "tests/test_agent_workflow_qwen.py": "fbb8b2a98ef0f8f7d6877b5e903c6983f4f41f837ef32bb656965a4e1f43539a",
+      "tests/test_agent_workflow_api.py": "164ca97f8bef9af376b7354a3a5096badce26f063f9a7e97d313fa44def71649",
+      "tests/test_agent_workflow_qwen.py": "4084cd7315965de289f16b3df1ebd1c20967019a8bd2f6a517ec099672f237ec",
       "tests/test_alpha_business_rules.py": "4bc2c84dcab365a1efb18fad0b497c0cbd06c0f8b6efdd023339daafd35e4cfd",
       "tests/test_alpha_corpus.py": "bcf10abb793c12d762537f2d6f7d2bf20913598eeb108e5ff31e0db82b9ba3d7",
       "tests/test_api_validation.py": "63e93cd049a90d2656c91d8a7ff34ed216507929cca0043f3065135118fe5f1b",
-      "tests/test_backend_runtime.py": "b0f196d174f54c853dfe403ec5617c9372f5edc79db59e720defb5d26392d594",
+      "tests/test_backend_runtime.py": "b984fc5d907865588a209fab7b354d61b9e35bd27595cf3dd0d7828b8198d43d",
       "tests/test_document_processing.py": "f0f8fa336a99261b089a4cf1dfa90693c388b2936e25295c2d3715e6cdca8a01",
       "tests/test_interface_contracts.py": "250235bfac1334c3b3b01ec329285c9b9babded9d2c45c9f4cbef1e46f4a335f",
       "tests/test_local_retrieval.py": "cb94c0398a4b2ae99d82c8adf5a5586a17d3328cc80bc47559c21735d0b71a40",
       "tests/test_mock_agent_api.py": "b2eb3fa086449af92fec543e7c9ce40452248cef8db249067f81a28a621918f0",
-      "tests/test_qwen_client.py": "42f1d52b29eec6893dfd320e782ae1017084471b7536aed6d8e91bcc487444ec"
+      "tests/test_qwen_client.py": "aaee52d6adc521cd43d8f2af830209d8591779b2564d29215ea146912b4c006c"
     },
-    "main_commit": "474574eac35bda331ac9eea2a003eb332be0138c",
-    "pending_merge_parent": "474574eac35bda331ac9eea2a003eb332be0138c",
+    "main_commit": "e86f6b8ce03dee58cb792fc7aadb1fecc657c756",
+    "pending_merge_parent": null,
     "required_merged_history": {
       "main_with_pr36": {
         "commit": "474574eac35bda331ac9eea2a003eb332be0138c",
-        "in_HEAD": false,
-        "in_pending_merge": true
+        "in_HEAD": true,
+        "in_pending_merge": false
       },
       "main_with_pr35": {
         "commit": "a87182c5dd6f805f316df0b75896b8f84fa4415f",
         "in_HEAD": true,
-        "in_pending_merge": true
+        "in_pending_merge": false
       },
       "pr31": {
         "commit": "4282ea785195ab3fccfe07c52b7c0bf3d1b18a10",
         "in_HEAD": true,
-        "in_pending_merge": true
+        "in_pending_merge": false
       }
     },
     "record_scope": "Tested source contents; base_commit is not a claim that uncommitted edits are already committed"
@@ -99,7 +102,7 @@
     }
   ],
   "command": [
-    "D:\\se_teamalpha\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\22120\\Desktop\\软件工程团队实践\\CodeMind-FZU\\.venv\\Scripts\\python.exe",
     "-X",
     "utf8",
     "-m",

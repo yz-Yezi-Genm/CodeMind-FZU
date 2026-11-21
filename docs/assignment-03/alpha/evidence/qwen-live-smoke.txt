@@ -1,0 +1,33 @@
+Real Qwen connection and synthetic runtime smoke
+Date: 2026-11-20 (Asia/Shanghai)
+Secret handling: backend/.env is ignored by Git; the API key was never printed.
+
+Test 1: minimal adapter call
+  Model: qwen-flash
+  Response: OK
+  Usage: prompt_tokens=22, completion_tokens=1, total_tokens=23
+  Latency: 3105 ms
+
+Test 2: FastAPI runtime component chain
+  Components:
+    approved-file test fixture
+    -> LocalBM25Retriever
+    -> AgentWorkflow
+    -> real QwenLLMClient over DashScope
+    -> exact quote/chunk_id verification
+    -> Citation
+  Data: tests/fixtures/alpha_approved, synthetic example.invalid only
+  Business callbacks: explicit permissive test-only callbacks because #36 is not
+    merged into the current main checkout
+  Result:
+    status=answered
+    citation title=2026年本科生奖学金评定管理办法（测试夹具）
+    source_url=https://example.invalid/test-policy
+    excerpt=2026年奖学金申请需提交申请表和成绩单。
+    warning=ALPHA_EXTRACTIVE_ANSWER
+
+Interpretation:
+  Real Qwen networking, timeout/error mapping boundary, runtime assembly,
+  retrieval, evidence selection and citation verification all executed.
+  This is NOT a formal policy answer and NOT acceptance of unapproved policy
+  data. The production approved directory still contains no signed-off package.

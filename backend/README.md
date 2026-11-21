@@ -1,6 +1,6 @@
 # Backend API 与模型适配
 
-本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、Mock Agent 演示入口和 Qwen 模型适配器。已实现可注入的 `AgentWorkflow`、Markdown/TXT 文档解析和本地 BM25 检索。
+本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 数据模型、Python Protocol 接口、真实运行组装、服务端会话历史、Mock Agent 演示入口和 Qwen 模型适配器。已实现可注入的 `AgentWorkflow`、Markdown/TXT 文档解析和本地 BM25 检索。
 
 ## 环境与启动
 
@@ -20,6 +20,9 @@ python -m uvicorn backend.app.main:app --reload --port 8000
 
 # Mock Agent 演示入口（用于前后端联调）
 python -m uvicorn backend.app.dev:app --reload --port 8000
+
+# 真实 Alpha 入口（需要本地 Qwen 配置和已审核资料）
+python -m uvicorn backend.app.alpha:app --reload --port 8000 --env-file backend/.env
 ```
 
 访问：
@@ -28,6 +31,8 @@ python -m uvicorn backend.app.dev:app --reload --port 8000
 - 问答入口：`POST http://127.0.0.1:8000/api/v1/ask`
 
 `backend.app.main:app` 是默认入口，未注入真实 Agent 时，问答接口返回统一格式的 `503 SERVICE_NOT_CONFIGURED`，不会伪造回答。
+
+`backend.app.alpha:app` 通过 FastAPI lifespan 调用 #35 的统一审核加载入口、初始化 Qwen 客户端并装配 `AgentWorkflow`。默认只扫描 `knowledge_base/processed/alpha/approved/`，同时要求 `retrieval_status=enabled` 和 manifest/`temporal_notes` 的人工审核标记为严格 `true`；`blocked`、`review_only`、未审核和侧车 JSON 不会进入正式索引。目录缺失、没有已审核包、部分索引或 warnings 时，服务仍可启动，但问答返回 `503 KNOWLEDGE_BASE_UNAVAILABLE`，不会改用原始测试资料。
 
 本地 Mock 演示使用独立入口，不改变默认入口：
 
@@ -77,11 +82,24 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - `CORS_ALLOW_ORIGINS`
 - `QWEN_API_KEY`：仅从本地环境读取，禁止提交
 - `QWEN_BASE_URL`：默认 OpenAI-compatible DashScope 地址
-- `QWEN_MODEL`：默认 `qwen-plus`
-- `QWEN_TIMEOUT_SECONDS`
-- `QWEN_MAX_RETRIES`：0–3
+- `QWEN_MODEL`：默认 `qwen-flash`，真实小样本验证可用；可配置为 `qwen-plus`
+- `QWEN_TIMEOUT_SECONDS`：默认 28 秒，适配 AgentWorkflow 的 30 秒总预算
+- `QWEN_MAX_RETRIES`：默认 0，范围 0–3；启用重试时需同步缩短单次超时
+- `ALPHA_PACKAGE_DIR`：人工审核资料包目录，默认 `knowledge_base/processed/alpha/approved`
+- `CONVERSATION_MAX_MESSAGES`：每个会话最多保留的消息数，默认 12；奇数会向下取整为完整问答对
+- `CONVERSATION_HISTORY_CHAR_LIMIT`：每个会话历史的字符预算，默认 6000
+- `CONVERSATION_MAX_COUNT`：内存中最多保留的会话数，默认 1000
+- `CONVERSATION_IDLE_SECONDS`：空闲会话回收时间，默认 3600 秒
+- `CONVERSATION_CLEANUP_INTERVAL_SECONDS`：后台清理间隔，默认 300 秒
+
+完整本地、systemd 和 Kubernetes Secret 配置见
+[Alpha 环境变量与部署配置](../docs/assignment-03/alpha/environment-deployment.md)。
+
+服务端会话只在内存中保存，进程重启后丢失。同一 `conversation_id` 的请求串行执行，后续请求会获得此前的用户和 Agent 消息；不同 ID 的历史严格隔离。模型或检索异常不会写入失败轮次。运行时会按数量和空闲时间清理非活动会话，清理操作不会移除正在处理的轮次。
 
 `backend.services.qwen_client.QwenLLMClient` 实现公共 `LLMClient.generate()` 协议，不修改公共 `LLMGenerateRequest` / `LLMResult`。适配器处理超时、有限重试、限流和上游异常，并将错误转换为可安全返回的服务错误。
+
+正式运行只通过 `backend.retrieval.alpha_corpus.load_approved_alpha_retriever()` 加载资料，要求 manifest（如有）和 `temporal_notes` 都明确人工审核通过，并核对加载报告中的完整索引状态、warnings 与片段数量。业务规则通过 `alpha_business_rules.build_from_retriever(retriever)` 绑定当前只读元数据/片段查询；不会使用未绑定 Retriever 的全局证据函数。
 
 `httpx` 已包含在正式依赖 `backend/requirements.txt` 中，因为
 `backend.services` 在导入时会加载 Qwen 适配器；只安装运行依赖即可启动 API。
@@ -124,6 +142,8 @@ python -m uvicorn backend.app.dev:app --env-file backend/.env --port 8000
 - 管理端业务 API 和认证授权。
 
 数据库设计中的资料默认 `retrieval_status=blocked`。解析、入库或建立索引均不会自动开放正式问答检索。
+
+当前 `approved/` 尚无人工签核后开放的正式包，配置中也没有真实 `QWEN_API_KEY`，因此不能用 MockTransport 结果宣称真实模型或正式政策正向链路已经验收。完整说明见 [Alpha 真实运行说明](../docs/assignment-03/alpha/real-runtime.md)。
 
 ## 文档解析（Alpha）
 

@@ -239,7 +239,7 @@ class AgentWorkflow:
         except ServiceError:
             # Preserve the backend adapter's sanitized error code and HTTP status.
             raise
-        except TimeoutError as exc:
+        except (asyncio.TimeoutError, TimeoutError) as exc:
             raise LLMTimeoutError() from exc
         except Exception as exc:
             logger.warning("LLM failed; request_id=%s", request.request_id)

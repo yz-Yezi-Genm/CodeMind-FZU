@@ -69,7 +69,7 @@ class AgentWorkflowQwenTests(unittest.TestCase):
             self.assertEqual(body["citations"][0]["excerpt"], demo_chunk().content)
             self.assertEqual(body["citations"][0]["source_url"], demo_chunk().source_url)
             self.assertEqual(len(observed), 1)
-            self.assertEqual(observed[0]["model"], "qwen-plus")
+            self.assertEqual(observed[0]["model"], "qwen-flash")
             self.assertEqual(observed[0]["temperature"], 0)
             client.portal.call(upstream.aclose)
 
