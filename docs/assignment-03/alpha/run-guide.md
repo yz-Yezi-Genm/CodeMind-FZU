@@ -1,15 +1,10 @@
 # Alpha 阶段运行说明（工程环境与部署支持）
 
 > 适用对象：CodeMind-FZU 全体开发成员
-> 适用阶段：Alpha（后端接口骨架 + Mock Agent + 前端工程骨架）
+> 适用阶段：Alpha（FastAPI 真实运行入口 + AgentWorkflow/检索 + Vite 前端）
 > 维护人：薛锦荣（工程环境与部署支持）
-> 最后验证：2026-11-17，Windows 11 + Python 3.10.11 + Node 24.18.0
-> 验证方式：从零创建 Python/Node 环境，按本文命令启动前后端、完成接口联调与构建
-
-本文说明如何在**本地**把 CodeMind-FZU 的 Alpha 环境跑起来：
-
-- 后端：FastAPI 接口骨架 + Mock Agent（无需数据库、无需 Qwen/Tavily 密钥）
-- 前端：Vite + 原生 TypeScript 多页面应用（学生端 / 后台管理端）
+> 最后验证：2026-11-21，Windows 11 + Python 3.10.11 + Node 24.18.0
+> 验证方式：全新 Python 虚拟环境安装、按本文命令启动前后端、完成接口联调与构建
 
 ---
 
@@ -19,13 +14,14 @@
 |---|---|---|
 | 操作系统 | Windows / macOS / Linux | Windows 11 |
 | Python | **3.10 及以上**（推荐 3.10 / 3.11） | Python 3.10.11 |
-| Node.js | **18.18 及以上**（推荐 20 LTS / 22 LTS） | Node 24.18.0 |
+| Node.js | **18.18 及以上**（推荐 20 / 22 LTS） | Node 24.18.0 |
 | npm | 随 Node 安装（推荐 9+） | npm 11.16.0 |
-| 浏览器 | Chrome / Edge（访问 `/docs` 与前端页面） | Edge |
-| 网络 | 仅首次安装依赖时需要（可用国内镜像） | 清华 PyPI 镜像 / npmmirror |
-| 数据库 / 密钥 | **不需要**（Mock 阶段） | — |
+| 浏览器 | Chrome / Edge | Edge |
+| 网络 | 首次安装依赖需要（可用国内镜像） | 清华 PyPI / npmmirror |
+| 数据库 | 不需要（会话为内存存储） | — |
+| Qwen 密钥 | **仅真实入口需要**；Mock 不需要 | 本轮未使用真实密钥 |
 
-> 前端技术栈已统一为 **Vite + 原生 TypeScript（HTML + CSS）**，不引入 React、Vue 等框架。具体业务页面由吴欣键、洪添军、林彦翔等负责人基于该工程开发。
+前端技术栈统一为 **Vite + 原生 TypeScript（HTML + CSS）**，不引入 React、Vue。
 
 ---
 
@@ -36,7 +32,7 @@ git clone https://github.com/yz-Yezi-Genm/CodeMind-FZU.git
 cd CodeMind-FZU
 ```
 
-后续命令（除前端安装外）都在**仓库根目录**执行；不在根目录会出现 `ModuleNotFoundError: No module named 'backend'`。
+除前端安装命令外，后续命令均在**仓库根目录**执行。
 
 ---
 
@@ -58,13 +54,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-若 PowerShell 禁止运行脚本，仅对当前窗口放开：
+PowerShell 禁止脚本时，仅对当前窗口放开：
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
-
-也可以不激活，直接用 `.\.venv\Scripts\python.exe`。
 
 ### 3.2 安装依赖
 
@@ -72,353 +66,334 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 python -m pip install -r backend/requirements.txt
 ```
 
-国内网络建议加镜像：
+国内镜像：
 
 ```powershell
 python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r backend/requirements.txt
 ```
 
-说明：
+跑完整测试/验证脚本时再安装：
 
-- `backend/requirements.txt` 已包含 `fastapi`、`pydantic`、`uvicorn[standard]`、`httpx`；
-- `backend/requirements-dev.txt` 目前等价于 `-r requirements.txt`（预留后续测试工具），跑测试**不需要额外安装**；
-- 本次安装到的版本：fastapi 0.162.5、pydantic 2.14.3、uvicorn 0.54.0、httpx 0.28.1。
+```powershell
+python -m pip install -r scripts/requirements-alpha-verification.txt
+```
+
+本次干净环境版本：fastapi 0.162.5、pydantic 2.14.3、uvicorn 0.54.0、httpx 0.28.1。
 
 ---
 
 ## 四、启动后端
 
-### 4.1 Mock Agent（前后端联调推荐）
+### 4.1 真实 Alpha 入口（推荐）
+
+```powershell
+copy backend\.env.example backend\.env
+# 编辑 backend\.env，填写 QWEN_API_KEY
+python -m uvicorn backend.app.alpha:app --reload --port 8000 --env-file backend/.env
+```
+
+真实入口启动时会：
+
+1. 读取 `ALPHA_PACKAGE_DIR`（默认 `knowledge_base/processed/alpha/approved/`）；
+2. 只加载人工审核通过、`retrieval_status=enabled` 的资料包；
+3. 初始化 Qwen 客户端并装配 `AgentWorkflow` 与会话历史。
+
+**缺少密钥或已审核资料时**：服务仍可启动，但 `/api/v1/ask` 返回 503（如 `KNOWLEDGE_BASE_UNAVAILABLE`），不会伪造回答。
+
+### 4.2 Mock Agent（前后端联调，无需密钥）
 
 ```powershell
 python -m uvicorn backend.app.dev:app --reload --port 8000
 ```
 
-成功标志：
-
-```text
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Application startup complete.
-```
-
-### 4.2 默认入口（未注入 Agent）
+### 4.3 默认骨架入口
 
 ```powershell
 python -m uvicorn backend.app.main:app --reload --port 8000
 ```
 
-该入口没有注入 Agent，`POST /api/v1/ask` 会返回 `503 SERVICE_NOT_CONFIGURED`，属**预期行为**。日常联调请用 4.1 的 `dev:app`。
+未注入 Agent，`/api/v1/ask` 返回 `503 SERVICE_NOT_CONFIGURED`，属预期行为。
 
-### 4.3 可选：读取本地环境变量
+### 4.4 离线检查（不调用真实模型）
 
-Qwen 适配器与 CORS 支持从本地 `.env` 读取配置（**不要提交密钥**）：
+```powershell
+python -m scripts.check_retrieval_agent
+python -m scripts.check_document_processing
+python -m examples.agent_workflow_demo
+```
+
+---
+
+## 五、环境变量与 Qwen 配置
+
+### 5.1 复制模板
 
 ```powershell
 copy backend\.env.example backend\.env
-python -m uvicorn backend.app.dev:app --reload --port 8000 --env-file backend/.env
 ```
+
+`backend/.env` 已被 `.gitignore` 忽略，**不会提交**；模板不含真实密钥。
+
+### 5.2 变量说明
+
+| 变量 | 是否必填 | 默认/示例 | 说明 |
+|---|---|---|---|
+| `CORS_ALLOW_ORIGINS` | 可选 | 覆盖 5173/3000/5500 | 逗号分隔，禁止 `*` |
+| `QWEN_API_KEY` | 真实调用必填 | 空 | 仅本地保存，禁止提交 |
+| `QWEN_BASE_URL` | 可选 | DashScope compatible | 必须是 http(s) |
+| `QWEN_MODEL` | 可选 | `qwen-flash` | 需账号有权限 |
+| `QWEN_TIMEOUT_SECONDS` | 可选 | `28` | 必须 > 0 |
+| `QWEN_MAX_RETRIES` | 可选 | `0` | 0–3 |
+| `ALPHA_PACKAGE_DIR` | 可选 | `knowledge_base/processed/alpha/approved` | 已审核资料目录 |
+| `CONVERSATION_MAX_MESSAGES` | 可选 | `12` | 2–50；奇数向下取整为完整轮次 |
+| `CONVERSATION_HISTORY_CHAR_LIMIT` | 可选 | `6000` | 200–50000 |
+| `CONVERSATION_MAX_COUNT` | 可选 | `1000` | 内存会话上限 |
+| `CONVERSATION_IDLE_SECONDS` | 可选 | `3600` | 空闲回收 |
+| `CONVERSATION_CLEANUP_INTERVAL_SECONDS` | 可选 | `300` | 清理间隔 |
+
+### 5.3 加载方式与验证
+
+```powershell
+python -m uvicorn backend.app.alpha:app --port 8000 --env-file backend/.env
+```
+
+已验证：修改 `CORS_ALLOW_ORIGINS` 后，响应头只允许新配置来源。
+
+### 5.4 Qwen 配置要点
+
+1. 在阿里云 DashScope 控制台创建 API Key；
+2. 仅写入本地 `backend/.env` 或系统环境变量；
+3. 默认使用 DashScope 的 OpenAI-compatible 端点与 `qwen-flash`；
+4. 未配置密钥时 Mock 不受影响，真实入口问答返回 503；
+5. 密钥不得进入仓库、PR、命令历史或截图。
 
 ---
 
-## 五、后端接口验证
+## 六、知识库加载与审核资料
 
-### 5.1 健康检查
+1. 资料包为 `DocumentPackage` JSON，默认目录 `knowledge_base/processed/alpha/approved/`；
+2. 只接受 `retrieval_status=enabled` 且 manifest/`temporal_notes` 人工审核标记为严格 `true` 的资料；
+3. `LocalBM25Retriever` 建立内存索引，同一实例用于索引和检索；
+4. 任一份资料索引失败、产生 warnings 或目录为空时，正式问答整体 503，不会部分开放；
+5. 原始样例（`knowledge_base/processed/alpha/*.json`）仍为 `blocked`，不进入正式问答。
 
-浏览器打开 <http://127.0.0.1:8000/api/v1/health>，或用命令：
-
-```powershell
-curl.exe http://127.0.0.1:8000/api/v1/health
-```
-
-预期：
-
-```json
-{
-  "status": "ok",
-  "service": "codemind-fzu-api",
-  "version": "0.1.0",
-  "timestamp": "2026-11-17T13:47:38.875682Z"
-}
-```
-
-### 5.2 Swagger 文档
-
-浏览器打开 <http://127.0.0.1:8000/docs>，可看到 `GET /api/v1/health`、`POST /api/v1/ask` 及公共模型。
-
-### 5.3 问答接口（Mock）
-
-```powershell
-$body = @{ query = "大二申请院级奖学金需要什么条件？" } | ConvertTo-Json
-Invoke-RestMethod -Uri http://127.0.0.1:8000/api/v1/ask -Method Post `
-  -ContentType "application/json; charset=utf-8" -Body $body
-```
-
-Mock Agent 内置分支：
-
-| 请求 `query` | 预期 `status` | 说明 |
-|---|---|---|
-| `__mock_clarify__` | `needs_clarification` | 返回 `clarifying_question`，`answer` 为 null |
-| `__mock_insufficient__` | `insufficient_evidence` | `answer_mode = insufficient_data` |
-| 其他非空文本 | `answered` | 返回 `[Mock 演示]` 回答 |
-| 空字符串 / 多余字段 | HTTP 422 | `error.code = INVALID_REQUEST` |
-
-> `AskRequest` 为 `extra="forbid"`，请求体出现未定义字段会直接 422；`query` 长度为 1–4000。
-
-### 5.4 PowerShell 中文乱码
-
-Windows PowerShell 5.1 的 `Invoke-WebRequest` 可能按 Latin-1 解码 JSON，终端显示乱码，但**接口返回本身是 UTF-8**。可改用：
-
-```powershell
-curl.exe ... -o response.json
-Get-Content response.json -Encoding UTF8
-```
-
-或在浏览器 `/docs` 中用 “Try it out” 验证。
+参考：`backend/retrieval/alpha_corpus.py`、`scripts/run_alpha_agent.py`。
 
 ---
 
-## 六、前端环境
+## 七、后端接口验证
 
-代码位于仓库根目录 `frontend/`，结构：
+### 7.1 健康检查
+
+<http://127.0.0.1:8000/api/v1/health>，预期 `status=ok`。
+
+### 7.2 Swagger
+
+<http://127.0.0.1:8000/docs>，应看到 `GET /api/v1/health`、`POST /api/v1/ask`。
+
+### 7.3 问答接口
+
+Mock 入口分支：
+
+| `query` | 预期状态 |
+|---|---|
+| `__mock_clarify__` | `needs_clarification` |
+| `__mock_insufficient__` | `insufficient_evidence` |
+| 其他非空文本 | `answered` |
+| 空 / 多余字段 | 422 `INVALID_REQUEST` |
+
+真实入口在缺少密钥/审核资料时返回 503；配置齐全后返回 `answered` / `needs_clarification` / `insufficient_evidence` 与引用。
+
+> PowerShell 5.1 可能把 JSON 中文按 Latin-1 解码显示乱码，接口本身是 UTF-8；可保存文件后 `Get-Content -Encoding UTF8` 查看。
+
+---
+
+## 八、前端环境
 
 ```text
 frontend/
-├── index.html              # 学生端入口
-├── admin/index.html        # 后台管理端入口
-├── src/
-│   ├── student/main.ts
-│   ├── admin/main.ts
-│   └── shared/             # api.ts / types.ts / dom.ts / styles.css
-├── package.json
-├── package-lock.json
-├── tsconfig.json           # 严格模式
-├── vite.config.ts          # 5173 端口 + /api 代理
+├── index.html              # 学生端
+├── admin/index.html        # 后台管理端
+├── src/student/            # 学生端问答页面
+├── src/admin/              # 管理端页面
+├── src/shared/             # api.ts / types.ts / dom.ts / styles.css
+├── package.json / package-lock.json
+├── tsconfig.json / vite.config.ts
 └── README.md
 ```
 
-### 6.1 安装依赖
+### 8.1 安装
 
 ```bash
 cd frontend
 npm install
 ```
 
-- 请**提交 `package-lock.json`**，不要提交 `node_modules/`；
-- 国内网络较慢时：`npm install --registry=https://registry.npmmirror.com`。
+国内镜像：`npm install --registry=https://registry.npmmirror.com`。
 
-### 6.2 启动开发服务器
+### 8.2 启动
 
 ```bash
 npm run dev
 ```
-
-固定监听 **5173** 端口（`strictPort`）：
 
 | 页面 | 地址 |
 |---|---|
 | 学生端 | <http://127.0.0.1:5173/> |
 | 后台管理端 | <http://127.0.0.1:5173/admin/index.html> |
 
-页面顶部的状态条会请求 `/api/v1/health`，显示“后端已连接”即表示前后端链路正常。
-
-### 6.3 生产构建
+### 8.3 构建与预览
 
 ```bash
-npm run build      # 先 tsc 严格类型检查，再 vite build
-npm run preview    # 本地预览 dist，默认 http://127.0.0.1:4173/
+npm run build      # tsc 严格检查 + vite build
+npm run preview    # http://127.0.0.1:4173/
 ```
-
-构建产物：`dist/index.html`、`dist/admin/index.html` 及 `dist/assets/`。`dist/` 已在 `.gitignore` 中。
 
 ---
 
-## 七、前后端联调
+## 九、前后端联调
 
-### 7.1 API 代理
+### 9.1 代理
 
-Vite 开发服务器已配置：
+Vite 已把 `/api` 代理到 `http://127.0.0.1:8000`：
 
 ```text
-前端请求 /api/v1/xxx  →  Vite dev server（5173）  →  http://127.0.0.1:8000/api/v1/xxx
+浏览器 /api/v1/xxx → Vite(5173) → FastAPI(8000)
 ```
 
-因此前端统一使用相对路径 `/api/v1/...`，不写死后端地址，也不需要在开发期处理跨域。
+前端统一使用相对路径 `/api/v1/...`，不写死后端地址。
 
-### 7.2 同时启动前后端
-
-开两个终端：
+### 9.2 同时启动
 
 ```powershell
-# 终端 1：后端（仓库根目录，已激活 venv）
-python -m uvicorn backend.app.dev:app --reload --port 8000
+# 终端 1（仓库根目录）
+python -m uvicorn backend.app.dev:app --reload --port 8000   # 或 alpha 真实入口
 
-# 终端 2：前端
+# 终端 2
 cd frontend
 npm run dev
 ```
 
-然后访问 <http://127.0.0.1:5173/>，在学生端输入问题即可看到 Mock 回答。
+访问 <http://127.0.0.1:5173/>，学生端状态条显示“后端已连接”即可联调。
 
-### 7.3 当前 Mock 与未来真实 Agent 的区别
+### 9.3 入口选择
 
-| 场景 | 启动方式 | 行为 |
+| 场景 | 入口 | 行为 |
 |---|---|---|
-| 当前 Mock 联调 | `backend.app.dev:app` | 注入 `MockAgentService`，返回固定的模拟回答/追问/证据不足，不调用模型与知识库 |
-| 默认骨架 | `backend.app.main:app` | 未注入 Agent，`/api/v1/ask` 返回 503 |
-| 未来真实 Agent | 由后端把真实 `AgentService` 注入 `create_app()`（预计替换 `dev.py` 的 Mock 注入） | 同一套 `/api/v1` 契约，前端代码**无需改动** |
-
-真实 Qwen 调用需要本地配置 `QWEN_API_KEY` 等环境变量；密钥只放在本地 `.env`，禁止提交。
+| Mock 联调 | `backend.app.dev:app` | 固定模拟回答，无需密钥 |
+| 真实 Alpha | `backend.app.alpha:app` | 审核资料 + Qwen，缺配置时 503 |
+| 默认骨架 | `backend.app.main:app` | 问答固定 503 |
 
 ---
 
-## 八、运行测试
+## 十、测试与检查
 
-在仓库根目录执行：
+### 10.1 全仓库测试
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
-本次结果：**Ran 69 tests，68 passed、1 skipped、0 failed**（约 10 秒）。
+本次干净环境结果：**262 项执行，235 通过、27 跳过、0 失败**。
 
-> 其中 1 项跳过是 Windows 下符号链接权限限制（`test_symlink_escaping_storage_root_is_rejected`），属预期环境差异。
+跳过项主要来自环境限制与未启用的真实验收（Windows 符号链接权限、真实 Qwen 验收开关、业务规则替身等），不是失败。
 
-覆盖：
-
-- `test_interface_contracts.py`：公共契约、检索状态约束；
-- `test_mock_agent_api.py`：健康检查、正常回答、追问、证据不足、参数校验、默认入口 503；
-- `test_backend_runtime.py`：CORS、错误 envelope、Agent 适配、request_id 传递；
-- `test_qwen_client.py`：Qwen 适配器的成功、超时、限流、重试、缺失密钥等；
-- `test_document_processing.py`：Alpha 文档解析、分块、元数据与三个样例包的契约校验。
-
-### 8.1 文档解析检查脚本
-
-同步 #19 后，还可以直接运行文档处理专用检查（会执行全仓库测试并输出 JSON 报告）：
+### 10.2 专项检查
 
 ```powershell
+python -m scripts.check_retrieval_agent
 python -m scripts.check_document_processing
 ```
 
-本次结果：`tests_run=69`、`passed=68`、`failures=0`、`successful=true`，退出码 0。
+结果：`check_retrieval_agent` 的 4 个用例全部 PASS（三个真实样例按审核门槛安全拒答，合成测试资料在带 `temporal_notes.human_approved=true` 时正常回答），退出码 0；`check_document_processing` 为 `successful=true`。
 
-> 测试中可能出现 `StarletteDeprecationWarning`（httpx TestClient 弃用提示），不影响结果；后续升级 Starlette 时统一处理。
+### 10.3 前端
+
+```bash
+cd frontend
+npm ci
+npm run build
+```
+
+本次均成功，锁文件可复现安装。
 
 ---
 
-## 九、本次验证记录
+## 十一、干净环境验证记录（2026-11-21）
 
 | 检查项 | 结果 | 证据 |
 |---|---|---|
-| Python 3.10.11 全新 venv + 依赖安装 | 通过 | `evidence/versions.txt` |
-| 后端 `backend.app.dev:app --reload` | 启动成功 | `screenshots/docs-swagger.png` |
-| `GET /api/v1/health` | 200 `status=ok` | `screenshots/health.png`、`evidence/health.json` |
-| `POST /api/v1/ask` 正常/追问/证据不足 | 200，状态正确 | `evidence/normal.json`、`clarify.json`、`insufficient.json` |
-| 空 query | 422 `INVALID_REQUEST` | `evidence/invalid.json` |
-| `/docs` | 200 | `screenshots/docs-swagger.png` |
-| 前端 `npm install` + `npm run dev` | 启动成功（5173） | `screenshots/frontend-student.png`、`frontend-admin.png` |
-| 前端经代理调用后端 | 200，返回 Mock 回答 | `evidence/vite-proxy-ask.json`、`vite-proxy-health.json` |
-| `npm run build` | 成功，产出两个页面 | `evidence/frontend-build.txt` |
-| Python 测试 | 69 项执行，68 通过、1 跳过、0 失败 | `evidence/tests.txt` |
-| `scripts.check_document_processing` | `successful=true`，退出码 0 | 终端输出（tests_run=69） |
-| 汇总截图 | — | `screenshots/api-demo.png` |
+| 全新 Python 3.10.11 venv + 运行依赖 | 通过 | `evidence/runtime/versions.txt` |
+| 完整验证依赖（pytest 等） | 通过 | 同上 |
+| 全仓库测试 | 262 项，235 通过、27 跳过、0 失败 | `evidence/runtime/tests.txt` |
+| `scripts.check_document_processing` | successful=true | `evidence/runtime/check-document-processing.txt` |
+| `scripts.check_retrieval_agent` | 4 个用例 PASS，退出码 0 | `evidence/runtime/check-retrieval-agent.txt` |
+| 真实入口启动（无密钥/无审核包） | 可启动，问答 503 | `evidence/runtime/runtime-http-check.json` |
+| Mock 入口 health/docs/ask | 200 | 同上 |
+| `.env` 加载与 CORS 覆盖 | 生效 | `evidence/runtime/env-file-cors-check.json` |
+| `npm ci` + `npm run build` | 通过 | `evidence/runtime/frontend-ci-build.txt` |
+| 学生端 / 管理端 / Vite 代理 | 200，正常 | `screenshots/frontend-student.png`、`frontend-admin.png` |
+
+> 真实 Qwen 正向验收未执行：本轮未使用真实密钥与正式审核资料。
 
 ---
 
-## 十、常见问题
+## 十二、常见问题
 
 ### 1. `python` 不是 3.10
+`py -3.10 -m venv .venv` 指定版本。
 
-```powershell
-python --version
-py -0p
-```
+### 2. PowerShell 禁止 `Activate.ps1` / `npm.ps1`
+`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`，或用 `npm.cmd`。
 
-用 `py -3.10 -m venv .venv` 显式指定版本。
-
-### 2. PowerShell 禁止运行 `Activate.ps1` 或 `npm.ps1`
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
-```
-
-npm 也可直接用 `npm.cmd install` / `npm.cmd run dev`。
-
-### 3. `pip install` 慢或超时
-
-```powershell
-python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r backend/requirements.txt
-```
+### 3. pip 慢
+使用清华镜像。
 
 ### 4. `ModuleNotFoundError: No module named 'backend'`
+不在仓库根目录。
 
-不在仓库根目录执行。`cd` 到包含 `backend/` 的目录后再启动或测试。
+### 5. `uvicorn` 找不到
+未激活 venv，使用 `python -m uvicorn ...`。
 
-### 5. `uvicorn` 不是内部或外部命令
+### 6. 端口占用（8000 / 5173）
+`netstat -ano | findstr :8000` + `taskkill /PID <PID> /F`；Vite `strictPort` 会直接报错。
 
-虚拟环境未激活，用模块方式：`python -m uvicorn backend.app.dev:app --reload --port 8000`。
+### 7. 真实入口 `/api/v1/ask` 返回 503
+检查：`QWEN_API_KEY` 是否配置、`ALPHA_PACKAGE_DIR` 是否有审核通过且 `enabled` 的资料包、启动日志中的错误码。这是“缺配置”的预期行为，不是代码崩溃。
 
-### 6. 端口被占用（8000 / 5173）
+### 8. Mock 入口 503
+使用了 `backend.app.main:app`；改用 `backend.app.dev:app`。
 
-```powershell
-netstat -ano | findstr :8000
-taskkill /PID <PID> /F
-```
+### 9. 前端显示“后端未连接”
+确认 8000 已启动，且在 `frontend/` 下执行 `npm run dev`；访问 <http://127.0.0.1:5173/api/v1/health> 检查代理。
 
-Vite 使用 `strictPort`，5173 被占用会直接报错而不是自动换端口；如改端口，请同步后端 `CORS_ALLOW_ORIGINS`。
+### 10. 管理端提示后台接口不可用（`RESOURCE_NOT_FOUND`）
+管理端业务 API 尚未实现，属当前边界。
 
-### 7. `/api/v1/ask` 返回 503 `SERVICE_NOT_CONFIGURED`
+### 11. 系统代理导致脚本访问 127.0.0.1 出现 502
+Python 脚本用 `httpx.Client(trust_env=False)`，或在代理软件中把 `127.0.0.1/localhost` 设为直连。
 
-使用了 `backend.app.main:app`。改用 `backend.app.dev:app`。
-
-### 8. `/api/v1/ask` 返回 422 `INVALID_REQUEST`
-
-`query` 为空/超长，或请求体包含未定义字段，或 `Content-Type` 不是 `application/json`。
-
-### 9. 前端页面显示“后端未连接”
-
-- 确认后端已在 8000 端口启动；
-- 确认在 `frontend/` 目录执行 `npm run dev`（代理配置只在该目录生效）；
-- 打开 <http://127.0.0.1:5173/api/v1/health> 检查代理是否正常。
-
-### 10. `npm install` 报 esbuild / 安装脚本警告
-
-npm 新版本可能提示 `allow-scripts`；当前 Vite 5 + esbuild 在本次环境（npm 11）可直接完成安装与构建。若构建时报 esbuild 二进制缺失，执行：
-
-```bash
-npm rebuild esbuild
-```
-
-### 11. 访问 `localhost:5173` 打不开，但 `127.0.0.1:5173` 可以
-
-Vite 已固定 `host: '127.0.0.1'`，请使用文档中的 `127.0.0.1` 地址；`localhost` 在部分环境解析到 IPv6 会失败。
-
-### 12. 本机开了系统代理，脚本访问 127.0.0.1 出现 502
-
-部分 HTTP 客户端会读取 Windows 系统代理，把 localhost 也转发出去。浏览器访问不受影响；脚本可显式绕过（例如 Python `httpx.Client(trust_env=False)`），或在代理软件中把 `127.0.0.1/localhost` 加入直连。
-
-### 13. 测试出现 Starlette/httpx 弃用警告
-
-见第八节，不影响当前结果。
+### 12. 测试出现 Starlette/httpx 弃用提示
+不影响结果。
 
 ---
 
-## 十一、Alpha 阶段已知限制
+## 十三、已知限制
 
-- Mock Agent 为确定性模拟实现，不调用真实模型与知识库；
-- 不保存会话历史，`conversation_id` 仅保证响应字段完整；
-- 无认证与权限控制；
-- 数据库、Chroma/BM25、真实 Qwen 调用、Tavily 尚未接入；
-- 前端只提供工程入口与问答联调示例，业务页面由对应负责人继续开发。
+- 真实 Qwen 未使用真实密钥做正向验收；
+- `approved/` 尚无正式审核包时，真实问答 503；
+- 无持久化会话、无认证、无管理端 API；
+- Chroma/RRF 未接入，当前为本地 BM25。
 
-接口字段与状态值以 `docs/assignment-03/interface-contract-v1.md` 为准，不得擅自修改。
+接口字段与状态值以 `docs/assignment-03/interface-contract-v1.md` 为准。
 
 ---
 
-## 十二、变更记录
+## 十四、变更记录
 
 | 日期 | 变更 | 验证人 |
 |---|---|---|
-| 2026-11-17 | 初版：后端干净环境、Mock 启动、接口与测试验证 | 薛锦荣 |
-| 2026-11-17 | 增加 Vite + TypeScript 前端工程、代理联调、构建与双端启动说明；测试更新为 30 项 | 薛锦荣 |
-| 2026-11-17 | 同步 #19 文档解析成果，测试更新为 69 项（68 通过 / 1 跳过），补充文档解析检查脚本说明 | 薛锦荣 |
+| 2026-11-17 | 初版：Mock、前端工程与联调 | 薛锦荣 |
+| 2026-11-17 | 同步 #19 文档解析，69 项测试 | 薛锦荣 |
+| 2026-11-19 | 同步 main，171 项测试，`.env` 与 CORS 验证，Python 3.10 超时修复 | 薛锦荣 |
+| 2026-11-21 | 同步真实运行入口 #34/#35/#36/#39：262 项测试、`backend.app.alpha:app`、`ALPHA_PACKAGE_DIR`、会话参数、Windows 清理测试可移植性修复 | 薛锦荣 |

@@ -1,0 +1,14 @@
+{
+  "health": {
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"service\":\"codemind-fzu-api\",\"version\":\"0.1.0\",\"timestamp\":\"2026-11-21T06:18:22.236570Z\"}"
+  },
+  "ask": {
+    "status": 503,
+    "body": "{\"request_id\":\"5dd8efd6-4083-4838-a263-30e106ecfa54\",\"error\":{\"code\":\"KNOWLEDGE_BASE_UNAVAILABLE\",\"message\":\"没有通过人工审核且完整建立索引的正式政策资料包。\",\"retryable\":true}}"
+  },
+  "docs": {
+    "status": 200,
+    "body": "HTTP 200, len=1015"
+  }
+}

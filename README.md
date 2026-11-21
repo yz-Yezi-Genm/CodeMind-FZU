@@ -97,7 +97,7 @@ Chroma / BM25 并行检索 → RRF 融合排序
 ```text
 CodeMind-FZU/
 ├── README.md                       # 项目简介与开发路线
-├── backend/                        # FastAPI 接口骨架、Mock Agent、Qwen 适配器、文档解析
+├── backend/                        # FastAPI 真实运行入口、AgentWorkflow、检索、Qwen 适配器与文档解析
 ├── frontend/                       # Vite + 原生 TypeScript 多页面应用（学生端 / 管理端）
 ├── scripts/                        # Alpha 文档解析与全仓库检查脚本
 ├── knowledge_base/                 # 官方资料登记、整理稿、索引与 Alpha 样例
@@ -107,7 +107,7 @@ CodeMind-FZU/
     └── assignment-03/              # Alpha 接口规范、运行说明与联调记录
 ```
 
-本仓库已包含 Alpha 阶段的 FastAPI 接口骨架、Mock Agent、Qwen 适配器、文档解析模块与 Vite + TypeScript 前端工程。按 [Alpha 阶段运行说明](docs/assignment-03/alpha/run-guide.md) 可在本地启动前后端并完成联调；前端业务页面仍在开发中。数据库生成、核验工具请按各自子目录 README 操作。
+本仓库已包含 Alpha 阶段的 FastAPI 真实运行入口（`backend.app.alpha:app`）、AgentWorkflow、本地 BM25 检索、Qwen 适配器、文档解析、Mock Agent 与 Vite + TypeScript 前端工程。按 [Alpha 阶段运行说明](docs/assignment-03/alpha/run-guide.md) 可在本地启动前后端并完成联调；前端业务页面仍在持续开发中。数据库生成、核验工具请按各自子目录 README 操作。
 
 ## 六、v1.0 开发计划（四周）
 

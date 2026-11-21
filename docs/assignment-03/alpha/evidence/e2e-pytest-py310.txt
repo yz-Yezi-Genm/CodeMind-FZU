@@ -1,0 +1,35 @@
+=== interpreter ===
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+sys.executable = C:\Users\m1781\AppData\Local\Programs\Python\Python310\python.exe
+
+=== pytest tests/ ===
+...........................................................................sssssssssssssssssssssssss.s.... [ 27%]
+........................................................................ [ 46%]
+......................................................s................. [ 64%]
+.................................................s........ [ 80%]
+.............................................................................                                                        [100%]
+============================== warnings summary ===============================
+..\..\..\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\testclient.py:1
+  C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_external_directory_is_rejected
+  C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\threadexception.py:54: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-23 (_readerthread)
+  
+  Traceback (most recent call last):
+    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1016, in _bootstrap_inner
+      self.run()
+    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\threading.py", line 953, in run
+      self._target(*self._args, **self._kwargs)
+    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\subprocess.py", line 1515, in _readerthread
+      buffer.append(fh.read())
+    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\codecs.py", line 322, in decode
+      (result, consumed) = self._buffer_decode(data, self.errors, final)
+  UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb4 in position 135: invalid start byte
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+357 passed, 28 skipped, 2 warnings, 136 subtests passed in 19.43s
