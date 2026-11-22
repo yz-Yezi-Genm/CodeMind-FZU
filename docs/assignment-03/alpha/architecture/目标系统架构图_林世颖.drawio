@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" modified="2026-11-21T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
   <diagram name="目标系统架构图" id="c0-target-arch">
-    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="830" math="0" shadow="0">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="1" />
@@ -37,53 +37,74 @@
         <mxCell id="n9" value="知识库资料文件&#10;原件 · 附件 · 提取正文 · 整理稿" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1976d2;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="1000" y="515" width="300" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="n10" value="后台管理端&#10;管理页面 · DocumentAdminService&#10;资料列表 / 详情 / 元数据 / 导入 / 重索引" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="100" y="640" width="340" height="120" as="geometry" />
+        <mxCell id="n10" value="管理端前端（管理页面）&#10;列表/筛选/详情/编辑/上传/重索引交互&#10;通过 HTTP/JSON 调用管理 API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="320" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="n11" value="管理服务链路&#10;DocumentParser 文档解析&#10;KnowledgeIndexer 入库与索引" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="560" y="640" width="340" height="120" as="geometry" />
+        <mxCell id="n11" value="FastAPI 管理 API（规划）&#10;请求接入与参数校验&#10;管理端前端经 HTTP/JSON 调用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="630" width="320" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="n12" value="认证授权（RBAC · 后续建设）&#10;登录鉴权 · 角色与权限&#10;管理 API 访问控制；当前未接入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
-          <mxGeometry x="1020" y="640" width="340" height="120" as="geometry" />
+        <mxCell id="n12" value="RBAC 认证授权（规划）&#10;位于管理 API 访问控制层&#10;登录鉴权/角色权限；当前未接入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="630" width="320" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="n13" value="DocumentAdminService（后端管理服务 · 规划）&#10;列表/详情/元数据维护/导入/重索引&#10;由管理 API 经访问控制后调用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="630" width="320" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="n14" value="DocumentParser 文档解析&#10;由管理服务调用完成文档处理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="746" width="320" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="n15" value="KnowledgeIndexer 入库与索引&#10;由管理服务调用完成索引回写" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="746" width="320" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="800" y="134" as="sourcePoint" />
             <mxPoint x="800" y="170" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="800" y="240" as="sourcePoint" />
             <mxPoint x="800" y="290" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="800" y="420" as="sourcePoint" />
             <mxPoint x="800" y="480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="730" y="580" as="sourcePoint" />
-            <mxPoint x="730" y="640" as="targetPoint" />
+            <mxPoint x="380" y="678" as="sourcePoint" />
+            <mxPoint x="400" y="678" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="440" y="700" as="sourcePoint" />
-            <mxPoint x="560" y="700" as="targetPoint" />
+            <mxPoint x="720" y="678" as="sourcePoint" />
+            <mxPoint x="740" y="678" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;" edge="1" parent="1">
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="900" y="700" as="sourcePoint" />
-            <mxPoint x="1020" y="700" as="targetPoint" />
+            <mxPoint x="1060" y="678" as="sourcePoint" />
+            <mxPoint x="1080" y="678" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1180" y="726" as="sourcePoint" />
+            <mxPoint x="900" y="746" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1240" y="726" as="sourcePoint" />
+            <mxPoint x="1240" y="746" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="note" value="编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="300" y="800" width="1000" height="25" as="geometry" />
+          <mxGeometry x="300" y="820" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -1,12 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 830" width="1600" height="830">
-<rect width="1600" height="830" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 850" width="1600" height="850">
+<rect width="1600" height="850" fill="#ffffff"/>
 <text x="800.0" y="35" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="18" font-weight="bold" fill="#333333">CodeMind-FZU 目标系统架构图（Alpha 接口规范约定）</text>
 <line x1="800" y1="134" x2="800" y2="170" stroke="#34a853" stroke-width="2"/>
+<polygon points="800.0,170.0 795.9,160.9 804.1,160.9" fill="#34a853"/>
 <line x1="800" y1="240" x2="800" y2="290" stroke="#34a853" stroke-width="2"/>
+<polygon points="800.0,290.0 795.9,280.9 804.1,280.9" fill="#34a853"/>
 <line x1="800" y1="420" x2="800" y2="480" stroke="#9c27b0" stroke-width="2"/>
-<line x1="730" y1="580" x2="730" y2="640" stroke="#f9ab00" stroke-width="2"/>
-<line x1="440" y1="700" x2="560" y2="700" stroke="#f9ab00" stroke-width="2"/>
-<line x1="900" y1="700" x2="1020" y2="700" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="800.0,480.0 795.9,470.9 804.1,470.9" fill="#9c27b0"/>
+<line x1="380" y1="678" x2="400" y2="678" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="400.0,678.0 390.9,682.1 390.9,673.9" fill="#f9ab00"/>
+<line x1="720" y1="678" x2="740" y2="678" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="740.0,678.0 730.9,682.1 730.9,673.9" fill="#f9ab00"/>
+<line x1="1060" y1="678" x2="1080" y2="678" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="1080.0,678.0 1070.9,682.1 1070.9,673.9" fill="#f9ab00"/>
+<line x1="1180" y1="726" x2="900" y2="746" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="900.0,746.0 908.8,741.3 909.4,749.4" fill="#f9ab00"/>
+<line x1="1240" y1="726" x2="1240" y2="746" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="1240.0,746.0 1235.9,736.9 1244.1,736.9" fill="#f9ab00"/>
 <rect x="600" y="70" width="400" height="64" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="800.0" y="97.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">学生浏览器（学生端前端）</text>
 <text x="800.0" y="115.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#333333">问题输入 · 回答与引用展示 · 追问交互 · 反馈</text>
@@ -36,17 +46,27 @@
 <rect x="1000" y="515" width="300" height="50" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
 <text x="1150.0" y="535.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">知识库资料文件</text>
 <text x="1150.0" y="553.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">原件 · 附件 · 提取正文 · 整理稿</text>
-<rect x="100" y="640" width="340" height="120" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
-<text x="270.0" y="662" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">后台管理端</text>
-<text x="270.0" y="690" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">管理页面 · DocumentAdminService</text>
-<text x="270.0" y="708" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">资料列表 / 详情 / 元数据 / 导入 / 重索引</text>
-<rect x="560" y="640" width="340" height="120" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
-<text x="730.0" y="686.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">管理服务链路</text>
-<text x="730.0" y="704.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">DocumentParser 文档解析</text>
-<text x="730.0" y="722.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">KnowledgeIndexer 入库与索引</text>
-<rect x="1020" y="640" width="340" height="120" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
-<text x="1190.0" y="662" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">认证授权（RBAC · 后续建设）</text>
-<text x="1190.0" y="690" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">登录鉴权 · 角色与权限</text>
-<text x="1190.0" y="708" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">管理 API 访问控制；当前未接入</text>
-<text x="800.0" y="812" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON</text>
+<rect x="60" y="630" width="320" height="96" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="220.0" y="652" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" font-weight="bold" fill="#333333">管理端前端（管理页面）</text>
+<text x="220.0" y="680" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" font-weight="bold" fill="#333333">列表/筛选/详情/编辑/上传/重索引交互</text>
+<text x="220.0" y="698" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" font-weight="bold" fill="#333333">通过 HTTP/JSON 调用管理 API</text>
+<rect x="400" y="630" width="320" height="96" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="560.0" y="652" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">FastAPI 管理 API（规划）</text>
+<text x="560.0" y="680" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">请求接入与参数校验</text>
+<text x="560.0" y="698" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">管理端前端经 HTTP/JSON 调用</text>
+<rect x="740" y="630" width="320" height="96" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="900.0" y="652" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">RBAC 认证授权（规划）</text>
+<text x="900.0" y="680" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">位于管理 API 访问控制层</text>
+<text x="900.0" y="698" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">登录鉴权/角色权限；当前未接入</text>
+<rect x="1080" y="630" width="320" height="96" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="1240.0" y="652" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">DocumentAdminService（后端管理服务 · 规划）</text>
+<text x="1240.0" y="680" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">列表/详情/元数据维护/导入/重索引</text>
+<text x="1240.0" y="698" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">由管理 API 经访问控制后调用</text>
+<rect x="740" y="746" width="320" height="64" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="900.0" y="773.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">DocumentParser 文档解析</text>
+<text x="900.0" y="791.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">由管理服务调用完成文档处理</text>
+<rect x="1080" y="746" width="320" height="64" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="1240.0" y="773.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">KnowledgeIndexer 入库与索引</text>
+<text x="1240.0" y="791.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">由管理服务调用完成索引回写</text>
+<text x="800.0" y="832" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-21 | 内部调用使用 Python 类型化接口，浏览器与后端使用 HTTP/JSON</text>
 </svg>
