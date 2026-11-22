@@ -1,0 +1,437 @@
+<clean-venv>\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_4000_character_contract_query_is_not_silently_truncated (test_agent_workflow.AgentWorkflowTests) ... ok
+test_academic_year_end_boundary (test_agent_workflow.AgentWorkflowTests) ... ok
+test_ambiguous_json_and_partially_forged_selections_are_rejected (test_agent_workflow.AgentWorkflowTests) ... ok
+test_answer_uses_exact_retrieval_metadata_and_excerpt (test_agent_workflow.AgentWorkflowTests) ... ok
+test_approval_withdrawn_during_model_call_discards_answer (test_agent_workflow.AgentWorkflowTests) ... ok
+test_assistant_history_cannot_fill_slots_or_supply_policy (test_agent_workflow.AgentWorkflowTests) ... ok
+test_bad_or_fabricated_model_outputs_are_rejected (test_agent_workflow.AgentWorkflowTests) ... ok
+test_both_dependencies_have_timeouts (test_agent_workflow.AgentWorkflowTests) ... Retriever failed; request_id=3de37a8e-43b9-4ee7-80f3-c93f19231b10
+ok
+test_business_verifier_can_only_tighten_evidence_gate (test_agent_workflow.AgentWorkflowTests) ... ok
+test_business_verifier_failure_is_conservative (test_agent_workflow.AgentWorkflowTests) ... Evidence validation failed; request_id=8df14248-bfd5-4ed2-8139-24282271d533
+ok
+test_cancellation_is_not_swallowed (test_agent_workflow.AgentWorkflowTests) ... ok
+test_citations_follow_selected_subset_and_order (test_agent_workflow.AgentWorkflowTests) ... ok
+test_clarification_rule_errors_and_wrong_types_stop_dependencies (test_agent_workflow.AgentWorkflowTests) ... Clarification rule failed; request_id=bf096373-4f1d-487a-b947-28da97b38219
+Clarification rule failed; request_id=3b922c20-550a-4b67-8203-66a66d708c60
+Clarification rule failed; request_id=57437167-f329-4a9b-a4ed-746febfb1349
+Clarification rule failed; request_id=b9a6b420-d444-49e9-ac1c-2e99f6f59115
+ok
+test_conflicting_duplicate_id_is_rejected (test_agent_workflow.AgentWorkflowTests) ... Evidence validation failed; request_id=9557ea43-f3c4-430a-8799-c3e1edfcc9f8
+ok
+test_current_academic_year_ranges_can_reach_generation (test_agent_workflow.AgentWorkflowTests) ... ok
+test_duplicate_chunks_are_deduplicated (test_agent_workflow.AgentWorkflowTests) ... ok
+test_empty_evidence_never_calls_llm (test_agent_workflow.AgentWorkflowTests) ... ok
+test_enabled_evidence_requires_explicit_human_approval (test_agent_workflow.AgentWorkflowTests) ... ok
+test_ended_academic_year_ranges_are_unsupported (test_agent_workflow.AgentWorkflowTests) ... ok
+test_evidence_budget_is_enforced (test_agent_workflow.AgentWorkflowTests) ... ok
+test_evidence_rule_requires_boolean_not_truthy_unknown (test_agent_workflow.AgentWorkflowTests) ... Evidence validation failed; request_id=696acb38-1a62-401b-b581-81b2e4c5e1d6
+Evidence validation failed; request_id=41eb5be3-bc26-42bf-8da1-86eb16450475
+Evidence validation failed; request_id=11bed2bb-675e-4aa3-a67c-be5840393b06
+Evidence validation failed; request_id=89589d9d-c17c-4d41-8e4b-3e0d2dcebdca
+Evidence validation failed; request_id=2284f57b-5716-4d2d-b1d1-a0f1e8b718ec
+ok
+test_extended_chunk_metadata_reaches_rules_and_prompt_not_citation (test_agent_workflow.AgentWorkflowTests) ... ok
+test_followup_uses_user_history_for_query_and_slots (test_agent_workflow.AgentWorkflowTests) ... ok
+test_grade_is_not_academic_year (test_agent_workflow.AgentWorkflowTests) ... ok
+test_historical_requests_fail_closed (test_agent_workflow.AgentWorkflowTests) ... ok
+test_history_overflow_is_not_silently_truncated (test_agent_workflow.AgentWorkflowTests) ... ok
+test_ineligible_evidence_and_forged_models_fail_closed (test_agent_workflow.AgentWorkflowTests) ... Evidence validation failed; request_id=66709a51-04d2-4852-b044-7fb61955d705
+Evidence validation failed; request_id=8d657c53-f353-4669-8eb1-3018e7ca8538
+Evidence validation failed; request_id=d053ec3f-3ff9-40b8-b465-cefd139ba149
+ok
+test_invalid_configuration_is_rejected (test_agent_workflow.AgentWorkflowTests) ... ok
+test_metadata_unavailable_or_mismatched_cannot_be_approved_by_business_rule (test_agent_workflow.AgentWorkflowTests) ... ok
+test_missing_year_clarifies_without_dependencies (test_agent_workflow.AgentWorkflowTests) ... ok
+test_mixed_evidence_sends_only_eligible_chunks (test_agent_workflow.AgentWorkflowTests) ... ok
+test_model_cancellation_is_not_swallowed (test_agent_workflow.AgentWorkflowTests) ... ok
+test_model_cannot_select_filtered_or_previous_round_evidence (test_agent_workflow.AgentWorkflowTests) ... ok
+test_multiple_current_versions_are_rejected (test_agent_workflow.AgentWorkflowTests) ... ok
+test_personal_and_deadline_claims_need_business_verifier (test_agent_workflow.AgentWorkflowTests) ... ok
+test_personal_question_requires_grade (test_agent_workflow.AgentWorkflowTests) ... ok
+test_retrieval_and_generation_errors_do_not_leak_details (test_agent_workflow.AgentWorkflowTests) ... Retriever failed; request_id=08086930-25e3-4d8d-bdd0-84d53f271df8
+LLM failed; request_id=bbbfc7c3-6bff-444f-8620-30acb3c251cf
+ok
+test_rules_cannot_mutate_request_or_verified_source (test_agent_workflow.AgentWorkflowTests) ... ok
+test_vague_topic_clarifies (test_agent_workflow.AgentWorkflowTests) ... ok
+test_wrong_provider_return_types_are_rejected (test_agent_workflow.AgentWorkflowTests) ... Evidence validation failed; request_id=db270618-fcaa-4f83-8b50-4ca73b622761
+Evidence validation failed; request_id=8929615c-4ff1-4647-9a5d-6170a2a63cf5
+Evidence validation failed; request_id=39d4d51d-fb52-43e6-8f8a-9bf2c32afb1e
+ok
+test_year_scope_mismatch_and_unknown_fail_before_model (test_agent_workflow.AgentWorkflowTests) ... ok
+test_alpha_lifespan_failure_is_reported_without_crashing_app (test_agent_workflow_api.AgentWorkflowApiTests) ... Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
+ok
+test_alpha_lifespan_uses_real_bm25_workflow_and_http_adapter (test_agent_workflow_api.AgentWorkflowApiTests) ... ok
+test_alpha_runtime_model_timeout_is_not_answered_status (test_agent_workflow_api.AgentWorkflowApiTests) ... ok
+test_alpha_runtime_uses_prior_user_history_across_http_turns (test_agent_workflow_api.AgentWorkflowApiTests) ... ok
+test_backend_preserves_conversation_id (test_agent_workflow_api.AgentWorkflowApiTests) ... ok
+test_injected_workflow_returns_all_three_contract_statuses (test_agent_workflow_api.AgentWorkflowApiTests) ... ok
+test_invalid_http_query_still_returns_existing_error_envelope (test_agent_workflow_api.AgentWorkflowApiTests) ... ok
+test_unexpected_model_exception_uses_sanitized_backend_error_envelope (test_agent_workflow_api.AgentWorkflowApiTests) ... LLM failed; request_id=6a6f9dc1-4200-4fe6-8a5b-d693715f8abc
+ok
+test_existing_qwen_adapter_can_supply_verified_extractive_answer (test_agent_workflow_qwen.AgentWorkflowQwenTests) ... ok
+test_invalid_provider_envelope_is_502_with_cors_and_request_id (test_agent_workflow_qwen.AgentWorkflowQwenTests) ... ok
+test_model_failures_keep_backend_error_codes_instead_of_business_status (test_agent_workflow_qwen.AgentWorkflowQwenTests) ... ok
+test_qwen_free_text_cannot_bypass_workflow_evidence_verification (test_agent_workflow_qwen.AgentWorkflowQwenTests) ... ok
+test_missing_scholarship_category_clarifies_without_model (test_agent_workflow_qwen.DeliveredBusinessRulesTests) ... ok
+test_approved_policy_answer_has_real_retrieved_citations (test_agent_workflow_qwen.LiveAlphaAcceptanceTests) ... skipped 'Real Qwen acceptance requires explicit opt-in and approved packages'
+test_adapter_timeout_and_connection_error_keep_backend_mapping (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_corrupt_missing_and_partial_sources_block_assembly (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_default_factory_uses_owner_rule_module_and_qwen_env_factory (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_direct_packages_reject_missing_or_false_review_before_indexing (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_empty_index_and_no_match_never_call_qwen (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_factory_rejects_ambiguous_or_missing_corpus_source (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_factory_reuses_preloaded_retriever_and_its_citation_identities (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_forged_chunk_id_or_rewritten_quote_fails_through_real_modules (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_legacy_package_snapshot_is_read_only_and_metadata_is_detached (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_missing_owner_rules_never_fall_back_to_demo_rules (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_mixed_network_and_http_failures_share_adapter_retry_budget (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_real_modules_complete_clarify_retrieve_select_cite_chain (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_real_retriever_historical_evidence_is_not_current_answer (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_real_three_policy_packages_stay_blocked_and_skip_qwen (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... Executing <Task pending name='Task-461' coro=<IsolatedAsyncioTestCase._asyncioLoopRunner() running at D:\python\lib\unittest\async_case.py:101> created at D:\python\lib\unittest\async_case.py:117> took 0.125 seconds
+ok
+test_recommended_live_profile_reaches_transport_and_does_not_retry (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_rule_rejection_occurs_after_real_retrieval_before_qwen (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_startup_entry_reads_packages_and_serves_same_qwen_workflow (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_startup_entry_requires_packages_inside_file_root (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_workflow_total_timeout_cancels_real_adapter_request (test_agent_workflow_qwen.LocalRetrieverQwenIntegrationTests) ... ok
+test_probe_does_not_read_environment_or_create_client_without_opt_in (test_agent_workflow_qwen.QwenLiveProbeOfflineTests) ... ok
+test_probe_rejects_fabricated_quote (test_agent_workflow_qwen.QwenLiveProbeOfflineTests) ... ok
+test_probe_uses_short_synthetic_evidence_and_verified_output (test_agent_workflow_qwen.QwenLiveProbeOfflineTests) ... ok
+test_clarification_and_evidence_share_injected_clock (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_clarification_exception_has_strict_agent_refusal_contract (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_competition_or_work_switch_does_not_inherit_previous_rank (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_external_college_without_scope_field_is_filtered_before_qwen (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_formal_corpus_report_rejects_partial_failed_empty_and_missing (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_formal_eligibility_overrides_preparation_wording_before_qwen (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_historical_evidence_stays_blocked_by_workflow_gate (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_historical_rule_applicability_cannot_relax_agent_current_gate (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_latest_loader_and_agent_reject_every_unapproved_marker (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_manifest_approval_cannot_replace_package_approval (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_merged_business_rules_match_snapshot_and_run_without_snapshot_replacement (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_merged_retriever_matches_latest_upstream_without_replacement (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_missing_or_broken_metadata_blocks_before_qwen (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_no_current_work_cannot_inherit_history_rank_or_reach_retriever (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_non_sensitive_document_can_answer_without_chapter_metadata (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_per_retriever_rule_closures_do_not_share_metadata (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_real_loader_rules_and_qwen_adapter_answer_with_source (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_real_rules_clarify_before_retrieval_and_model (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_real_rules_use_user_history_to_complete_category (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_recommendation_grade_eligibility_and_reference_are_distinct (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_review_only_package_skipped_by_actual_approved_loader (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_sensitive_sections_fail_closed_for_every_missing_lookup_case (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_teacher_section_filtered_out_of_real_qwen_prompt (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_unknown_applicability_and_wrong_policy_kind_rejected (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_year_mismatch_rejected_using_real_metadata (test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests) ... skipped 'Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration'
+test_agent_workflow_evidence_check_reads_applicability_and_deadline (test_alpha_corpus.AlphaCorpusLoaderTests) ... ok
+test_corpus_dir_external_root_and_intermediate_symlink_are_rejected (test_alpha_corpus.AlphaCorpusLoaderTests) ... ok
+test_corpus_dir_link_to_external_directory_is_rejected (test_alpha_corpus.AlphaCorpusLoaderTests) ... Executing <Task pending name='Task-601' coro=<IsolatedAsyncioTestCase._asyncioLoopRunner() running at D:\python\lib\unittest\async_case.py:95> wait_for=<Future pending cb=[Task.task_wakeup()] created at D:\python\lib\asyncio\base_events.py:429> created at D:\python\lib\unittest\async_case.py:117> took 0.204 seconds
+ok
+test_directory_loader_skips_unapproved_and_failed_packages (test_alpha_corpus.AlphaCorpusLoaderTests) ... Executing <Task pending name='Task-604' coro=<IsolatedAsyncioTestCase._asyncioLoopRunner() running at D:\python\lib\unittest\async_case.py:95> wait_for=<Future pending cb=[Task.task_wakeup()] created at D:\python\lib\asyncio\base_events.py:429> created at D:\python\lib\unittest\async_case.py:117> took 0.203 seconds
+ok
+test_empty_approved_dir_loads_cleanly (test_alpha_corpus.AlphaCorpusLoaderTests) ... ok
+test_manifest_loader_enforces_human_approved_and_directory_boundary (test_alpha_corpus.AlphaCorpusLoaderTests) ... Executing <Task pending name='Task-610' coro=<IsolatedAsyncioTestCase._asyncioLoopRunner() running at D:\python\lib\unittest\async_case.py:95> wait_for=<Future pending cb=[Task.task_wakeup()] created at D:\python\lib\asyncio\base_events.py:429> created at D:\python\lib\unittest\async_case.py:117> took 0.172 seconds
+ok
+test_missing_dir_returns_empty_by_default_and_raises_when_disallowed (test_alpha_corpus.AlphaCorpusLoaderTests) ... ok
+test_partial_package_with_zero_indexed_chunks_is_observable_in_report (test_alpha_corpus.AlphaCorpusLoaderTests) ... ok
+test_extra_unknown_field_is_rejected (test_api_validation.AskInputValidationTests) ... ok
+test_missing_query_field_is_rejected (test_api_validation.AskInputValidationTests) ... ok
+test_non_json_body_is_rejected (test_api_validation.AskInputValidationTests) ... ok
+test_overlong_query_is_rejected_with_422 (test_api_validation.AskInputValidationTests) ... ok
+test_query_exactly_4000_chars_is_accepted (test_api_validation.AskInputValidationTests) ... ok
+test_query_wrong_type_is_rejected (test_api_validation.AskInputValidationTests) ... ok
+test_health_has_no_extra_fields (test_api_validation.HealthResponseContractTests) ... ok
+test_health_request_id_header_is_valid_uuid (test_api_validation.HealthResponseContractTests) ... ok
+test_health_returns_200_and_all_required_fields (test_api_validation.HealthResponseContractTests) ... ok
+test_503_envelope_is_complete_and_sanitized (test_api_validation.ServiceNotConfiguredTests) ... ok
+test_agent_result_is_wrapped_with_shared_ids (test_backend_runtime.BackendRuntimeTests) ... ok
+test_agent_service_error_uses_contract_envelope (test_backend_runtime.BackendRuntimeTests) ... ok
+test_allowed_cors_origin (test_backend_runtime.BackendRuntimeTests) ... ok
+test_alpha_package_dir_environment_is_relative_to_project_root (test_backend_runtime.BackendRuntimeTests) ... ok
+test_asyncio_timeout_maps_to_504_for_python310_compatibility (test_backend_runtime.BackendRuntimeTests) ... ok
+test_cors_origins_can_be_overridden_from_environment (test_backend_runtime.BackendRuntimeTests) ... ok
+test_dev_entry_keeps_mock_agent_enabled (test_backend_runtime.BackendRuntimeTests) ... ok
+test_health_and_request_id_header (test_backend_runtime.BackendRuntimeTests) ... ok
+test_invalid_agent_return_type_is_hidden_as_internal_error (test_backend_runtime.BackendRuntimeTests) ... Internal service contract error request_id=1bbe8970-06ff-4c42-b238-c1b47e7b3c96 detail=AgentService.run() ���뷵�� AgentResult��
+ok
+test_patch_cors_is_enabled_for_admin_contracts (test_backend_runtime.BackendRuntimeTests) ... ok
+test_runtime_error_keeps_request_id_and_cors_headers (test_backend_runtime.BackendRuntimeTests) ... Unhandled AgentService error request_id=0aab334a-85f7-4f9c-9ea1-2c45b64ea27a type=RuntimeError
+Traceback (most recent call last):
+  File "<repository>\backend\app\main.py", line 212, in ask
+    result = await service.run(
+  File "<repository>\tests\test_backend_runtime.py", line 61, in run
+    raise RuntimeError("unexpected internal detail")
+RuntimeError: unexpected internal detail
+ok
+test_unlisted_cors_origin_is_not_allowed (test_backend_runtime.BackendRuntimeTests) ... ok
+test_wildcard_cors_origin_is_rejected (test_backend_runtime.BackendRuntimeTests) ... ok
+test_business_rules_factory_binds_the_live_retriever (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_conversation_histories_are_isolated (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_failed_turn_does_not_corrupt_history (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_global_cleanup_drops_inactive_sessions (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_global_cleanup_removes_idle_and_protects_active_state (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_history_is_bounded_by_complete_turns (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_history_is_injected_and_reply_is_saved (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_odd_message_limit_is_rounded_down_to_complete_turns (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_retriever_initialization_failure_is_sanitized (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_runtime_rejects_partial_or_warning_index (test_backend_runtime.ConversationRuntimeTests) ... Approved corpus rejected loaded=1 skipped=0 detail=
+ok
+test_runtime_rejects_unapproved_enabled_corpus (test_backend_runtime.ConversationRuntimeTests) ... Approved corpus rejected loaded=0 skipped=1 detail=temporal_notes δ��� human_approved=true��δͨ���˹����
+ok
+test_same_conversation_requests_are_serialized (test_backend_runtime.ConversationRuntimeTests) ... ok
+test_approved_corpus_and_retriever_bound_rules_reach_qwen (test_backend_runtime.DeliveredBusinessRulesRuntimeTests) ... ok
+test_binary_control_character_in_txt_is_rejected (test_document_processing.DocumentProcessingTests) ... ok
+test_bom_crlf_unicode_filename_hash_and_source_reference (test_document_processing.DocumentProcessingTests) ... ok
+test_cli_does_not_overwrite_input (test_document_processing.DocumentProcessingTests) ... ok
+test_cli_explicit_markdown_and_docx_roles (test_document_processing.DocumentProcessingTests) ... ok
+test_cli_invalid_file_role_exits_before_writing_output (test_document_processing.DocumentProcessingTests) ... ok
+test_cli_success_and_exception_exit_codes (test_document_processing.DocumentProcessingTests) ... ok
+test_declared_gb18030_is_supported (test_document_processing.DocumentProcessingTests) ... ok
+test_directory_traversal_is_rejected_before_read (test_document_processing.DocumentProcessingTests) ... ok
+test_docx_explicit_attachment_role_does_not_enable_extraction (test_document_processing.DocumentProcessingTests) ... ok
+test_docx_is_registered_pending_without_extracting_zip_bytes (test_document_processing.DocumentProcessingTests) ... ok
+test_empty_or_front_matter_only_file_is_rejected (test_document_processing.DocumentProcessingTests) ... ok
+test_even_explicit_enabled_metadata_is_returned_blocked (test_document_processing.DocumentProcessingTests) ... ok
+test_file_size_limit_and_invalid_chunk_limit (test_document_processing.DocumentProcessingTests) ... ok
+test_heading_level_gaps_and_same_level_siblings (test_document_processing.DocumentProcessingTests) ... ok
+test_invalid_encoding_is_not_silently_replaced (test_document_processing.DocumentProcessingTests) ... ok
+test_invalid_explicit_file_role_is_rejected (test_document_processing.DocumentProcessingTests) ... ok
+test_long_chinese_paragraph_no_text_loss_or_duplicate_and_sequential_numbers (test_document_processing.DocumentProcessingTests) ... ok
+test_markdown_explicit_curated_role_is_not_overridden_by_front_matter (test_document_processing.DocumentProcessingTests) ... ok
+test_markdown_explicit_extracted_role_preserves_content_and_metadata (test_document_processing.DocumentProcessingTests) ... ok
+test_markdown_front_matter_hierarchy_and_real_line_numbers (test_document_processing.DocumentProcessingTests) ... ok
+test_markdown_ocr_placeholder_is_not_treated_as_extracted_policy (test_document_processing.DocumentProcessingTests) ... ok
+test_markdown_table_text_and_values_are_preserved (test_document_processing.DocumentProcessingTests) ... ok
+test_metadata_is_not_mutated_and_verification_is_not_promoted (test_document_processing.DocumentProcessingTests) ... ok
+test_missing_file (test_document_processing.DocumentProcessingTests) ... ok
+test_omitted_file_role_preserves_legacy_defaults (test_document_processing.DocumentProcessingTests) ... ok
+test_parse_twice_is_identical_and_json_validates_against_public_contract (test_document_processing.DocumentProcessingTests) ... ok
+test_pdf_waiting_for_ocr_produces_no_fabricated_chunks (test_document_processing.DocumentProcessingTests) ... ok
+test_relative_path_resolves_against_root (test_document_processing.DocumentProcessingTests) ... ok
+test_review_only_also_remains_blocked_in_this_parser (test_document_processing.DocumentProcessingTests) ... ok
+test_setext_headings_and_fenced_hash_are_handled (test_document_processing.DocumentProcessingTests) ... ok
+test_symlink_escaping_storage_root_is_rejected (test_document_processing.DocumentProcessingTests) ... skipped '��ǰ����ϵͳ�˻�������������������'
+test_txt_with_markdown_like_text_is_not_treated_as_headings (test_document_processing.DocumentProcessingTests) ... ok
+test_unbroken_line_is_bounded_and_keeps_final_character (test_document_processing.DocumentProcessingTests) ... ok
+test_unclosed_front_matter_is_rejected (test_document_processing.DocumentProcessingTests) ... ok
+test_unknown_pdf_type_is_pending_not_assumed_scanned (test_document_processing.DocumentProcessingTests) ... ok
+test_checked_in_three_scenarios_match_contract_and_source_files (test_document_processing.RepositoryPackageTests) ... ok
+test_copied_archives_keep_recorded_bytes_without_claiming_new_policy_verification (test_document_processing.RepositoryPackageTests) ... ok
+test_revised_samples_cover_actual_recognition_rules_and_recommendation_eligibility (test_document_processing.RepositoryPackageTests) ... ok
+test_sample_generation_is_repeatable_in_an_isolated_checkout (test_document_processing.RepositoryPackageTests) ... ok
+test_list_response_pagination (test_interface_contracts.AdminContractTests) ... ok
+test_page_size_max_100 (test_interface_contracts.AdminContractTests) ... ok
+test_reindex_response (test_interface_contracts.AdminContractTests) ... ok
+test_upload_response (test_interface_contracts.AdminContractTests) ... ok
+test_history_accepts_turns (test_interface_contracts.AgentRequestTests) ... ok
+test_history_defaults_empty (test_interface_contracts.AgentRequestTests) ... ok
+test_invalid_role_rejected (test_interface_contracts.AgentRequestTests) ... ok
+test_answered_requires_answer (test_interface_contracts.AgentResultTests) ... ok
+test_answered_valid (test_interface_contracts.AgentResultTests) ... ok
+test_insufficient_evidence_mode (test_interface_contracts.AgentResultTests) ... ok
+test_needs_clarification_rules (test_interface_contracts.AgentResultTests) ... ok
+test_error_envelope (test_interface_contracts.ApiErrorTests) ... ok
+test_retryable_defaults_false (test_interface_contracts.ApiErrorTests) ... ok
+test_conversation_id_must_be_uuid (test_interface_contracts.AskRequestTests) ... ok
+test_query_rejects_blank (test_interface_contracts.AskRequestTests) ... ok
+test_query_rejects_over_4000_chars (test_interface_contracts.AskRequestTests) ... ok
+test_query_required_non_empty (test_interface_contracts.AskRequestTests) ... ok
+test_answered_requires_non_empty_answer (test_interface_contracts.AskResponseTests) ... ok
+test_citations_default_to_empty_list (test_interface_contracts.AskResponseTests) ... ok
+test_insufficient_evidence_requires_matching_mode (test_interface_contracts.AskResponseTests) ... ok
+test_needs_clarification_requires_question_and_null_answer (test_interface_contracts.AskResponseTests) ... ok
+test_rejects_unknown_field (test_interface_contracts.AskResponseTests) ... ok
+test_title_must_not_be_blank (test_interface_contracts.CitationTests) ... ok
+test_valid_citation (test_interface_contracts.CitationTests) ... ok
+test_defaults_to_blocked (test_interface_contracts.DocumentMetadataTests) ... ok
+test_enabled_accepts_verified_metadata (test_interface_contracts.DocumentMetadataTests) ... ok
+test_enabled_requires_all_prerequisites (test_interface_contracts.DocumentMetadataTests) ... ok
+test_rejects_duplicate_storage_key (test_interface_contracts.DocumentPackageTests) ... ok
+test_rejects_unknown_chunk_file (test_interface_contracts.DocumentPackageTests) ... ok
+test_valid_package (test_interface_contracts.DocumentPackageTests) ... ok
+test_failed_requires_zero_indexed (test_interface_contracts.IndexResultTests) ... ok
+test_indexed_requires_all_indexed (test_interface_contracts.IndexResultTests) ... ok
+test_partial_allowed (test_interface_contracts.IndexResultTests) ... ok
+test_messages_required_non_empty (test_interface_contracts.LLMContractTests) ... ok
+test_temperature_range (test_interface_contracts.LLMContractTests) ... ok
+test_valid_result (test_interface_contracts.LLMContractTests) ... ok
+test_optional_filters_none_by_default (test_interface_contracts.RetrievalRequestTests) ... ok
+test_top_k_default_5 (test_interface_contracts.RetrievalRequestTests) ... ok
+test_top_k_range (test_interface_contracts.RetrievalRequestTests) ... ok
+test_blocked_chunk_rejected (test_interface_contracts.RetrievedChunkTests) ... ok
+test_score_is_float (test_interface_contracts.RetrievedChunkTests) ... ok
+test_valid_enabled_chunk (test_interface_contracts.RetrievedChunkTests) ... ok
+test_code_and_message (test_interface_contracts.WarningItemTests) ... ok
+test_bad_chunk_references_and_duplicate_numbers_are_rejected (test_local_retrieval.LocalRetrievalTests) ... ok
+test_chunk_numbers_are_scoped_to_their_source_file (test_local_retrieval.LocalRetrievalTests) ... ok
+test_chunks_without_searchable_terms_are_not_counted (test_local_retrieval.LocalRetrievalTests) ... ok
+test_disabled_chunks_stay_unsearchable (test_local_retrieval.LocalRetrievalTests) ... ok
+test_invalid_revocation_still_removes_only_its_version (test_local_retrieval.LocalRetrievalTests) ... ok
+test_local_files_are_checked_before_indexing (test_local_retrieval.LocalRetrievalTests) ... ok
+test_metadata_and_chunk_lookups_expose_enabled_snapshots_only (test_local_retrieval.LocalRetrievalTests) ... ok
+test_missing_unready_source_is_ignored_only_when_unused (test_local_retrieval.LocalRetrievalTests) ... ok
+test_mutating_package_or_results_does_not_change_index (test_local_retrieval.LocalRetrievalTests) ... ok
+test_rank_and_trace_matching_chunks (test_local_retrieval.LocalRetrievalTests) ... ok
+test_real_parser_handoff_indexes_without_exposing_policies (test_local_retrieval.LocalRetrievalTests) ... ok
+test_reindex_clears_old_hits_when_all_source_chunks_are_skipped (test_local_retrieval.LocalRetrievalTests) ... ok
+test_reindex_replaces_version_and_revokes_access (test_local_retrieval.LocalRetrievalTests) ... ok
+test_rejects_invalid_storage_location (test_local_retrieval.LocalRetrievalTests) ... ok
+test_request_filters_and_no_match (test_local_retrieval.LocalRetrievalTests) ... ok
+test_reviewed_source_remains_searchable (test_local_retrieval.LocalRetrievalTests) ... ok
+test_unopened_packages_do_not_affect_results_or_scores (test_local_retrieval.LocalRetrievalTests) ... ok
+test_unprocessed_source_files_are_skipped_in_mixed_package (test_local_retrieval.LocalRetrievalTests) ... ok
+test_unvalidated_mutations_cannot_open_a_package (test_local_retrieval.LocalRetrievalTests) ... ok
+test_clarification (test_mock_agent_api.MockAgentApiTests) ... ok
+test_default_app_does_not_enable_mock (test_mock_agent_api.MockAgentApiTests) ... ok
+test_health_endpoint (test_mock_agent_api.MockAgentApiTests) ... ok
+test_insufficient_evidence (test_mock_agent_api.MockAgentApiTests) ... ok
+test_invalid_request (test_mock_agent_api.MockAgentApiTests) ... ok
+test_normal_answer (test_mock_agent_api.MockAgentApiTests) ... ok
+test_default_budget_fits_agent_timeout (test_qwen_client.QwenClientTests) ... ok
+test_missing_api_key_fails_before_network_call (test_qwen_client.QwenClientTests) ... ok
+test_mixed_failures_share_one_retry_budget (test_qwen_client.QwenClientTests) ... ok
+test_rate_limit_maps_to_rate_limited_error (test_qwen_client.QwenClientTests) ... ok
+test_retryable_status_is_retried (test_qwen_client.QwenClientTests) ... ok
+test_server_failure_maps_to_unavailable_error (test_qwen_client.QwenClientTests) ... ok
+test_settings_do_not_expose_api_key (test_qwen_client.QwenClientTests) ... ok
+test_success_response_is_adapted (test_qwen_client.QwenClientTests) ... ok
+test_timeout_maps_to_sanitized_service_error (test_qwen_client.QwenClientTests) ... ok
+
+----------------------------------------------------------------------
+Ran 262 tests in 55.278s
+
+OK (skipped=27)
+
+{
+  "command": "python -m scripts.check_document_processing",
+  "tested_at": "2026-11-21T06:21:32.430899+00:00",
+  "python": "3.10.11",
+  "platform": "Windows",
+  "dependencies": {
+    "pydantic": "2.14.3",
+    "fastapi": "0.162.5",
+    "httpx": "0.28.1",
+    "starlette": "1.7.0"
+  },
+  "tests_run": 262,
+  "passed": 235,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_agent_workflow_qwen.LiveAlphaAcceptanceTests.test_approved_policy_answer_has_real_retrieved_citations",
+      "reason": "Real Qwen acceptance requires explicit opt-in and approved packages"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_and_evidence_share_injected_clock",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_clarification_exception_has_strict_agent_refusal_contract",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_competition_or_work_switch_does_not_inherit_previous_rank",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_external_college_without_scope_field_is_filtered_before_qwen",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_formal_corpus_report_rejects_partial_failed_empty_and_missing",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_formal_eligibility_overrides_preparation_wording_before_qwen",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_historical_evidence_stays_blocked_by_workflow_gate",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_historical_rule_applicability_cannot_relax_agent_current_gate",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_latest_loader_and_agent_reject_every_unapproved_marker",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_manifest_approval_cannot_replace_package_approval",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_merged_business_rules_match_snapshot_and_run_without_snapshot_replacement",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_merged_retriever_matches_latest_upstream_without_replacement",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_missing_or_broken_metadata_blocks_before_qwen",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_no_current_work_cannot_inherit_history_rank_or_reach_retriever",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_non_sensitive_document_can_answer_without_chapter_metadata",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_per_retriever_rule_closures_do_not_share_metadata",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_loader_rules_and_qwen_adapter_answer_with_source",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_rules_clarify_before_retrieval_and_model",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_real_rules_use_user_history_to_complete_category",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_recommendation_grade_eligibility_and_reference_are_distinct",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_review_only_package_skipped_by_actual_approved_loader",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_sensitive_sections_fail_closed_for_every_missing_lookup_case",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_teacher_section_filtered_out_of_real_qwen_prompt",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_unknown_applicability_and_wrong_policy_kind_rejected",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests.test_year_mismatch_rejected_using_real_metadata",
+      "reason": "Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration"
+    },
+    {
+      "test": "test_document_processing.DocumentProcessingTests.test_symlink_escaping_storage_root_is_rejected",
+      "reason": "��ǰ����ϵͳ�˻�������������������"
+    }
+  ],
+  "successful": true,
+  "note": "ʵ��ִ��ȫ�ֿ�unittest������ͨ������ʾ�������ߺ��顢����������롣"
+}
+
+
+exit=0

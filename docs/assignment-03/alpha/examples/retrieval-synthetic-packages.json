@@ -13,7 +13,8 @@
       "timeliness_verification_status": "current",
       "extraction_status": "extracted",
       "v1_inclusion_status": "included",
-      "retrieval_status": "enabled"
+      "retrieval_status": "enabled",
+      "temporal_notes": {"human_approved": true}
     },
     "files": [
       {"file_role": "extracted", "storage_key": "synthetic/scholarship.md", "original_name": "scholarship.md", "processing_status": "extracted"},
@@ -49,7 +50,8 @@
       "timeliness_verification_status": "current",
       "extraction_status": "extracted",
       "v1_inclusion_status": "included",
-      "retrieval_status": "enabled"
+      "retrieval_status": "enabled",
+      "temporal_notes": {"human_approved": true}
     },
     "files": [
       {"file_role": "extracted", "storage_key": "synthetic/competition.md", "original_name": "competition.md", "processing_status": "extracted"}
