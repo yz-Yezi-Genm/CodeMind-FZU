@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "title": "部分索引奖学金测试包",
+    "document_type": "管理办法",
+    "category_name": "综评与奖学金",
+    "business_direction_codes": [
+      "POLICY_AFFAIRS"
+    ],
+    "record_code": "TEST-PARTIAL-SCHOLARSHIP-2026",
+    "version_no": "partial-v1",
+    "source_url": "https://example.invalid/partial-policy",
+    "source_verification_status": "verified",
+    "timeliness_verification_status": "current",
+    "extraction_status": "extracted",
+    "v1_inclusion_status": "included",
+    "retrieval_status": "enabled",
+    "temporal_notes": {
+      "human_approved": true
+    }
+  },
+  "files": [
+    {
+      "file_role": "extracted",
+      "storage_key": "tests/fixtures/alpha_partial/policy.md",
+      "original_name": "policy.md",
+      "processing_status": "needs_ocr"
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_no": 1,
+      "content": "2026年奖学金申请需提交申请表和成绩单。",
+      "locator": "第1行",
+      "source_file_key": "tests/fixtures/alpha_partial/policy.md"
+    }
+  ]
+}

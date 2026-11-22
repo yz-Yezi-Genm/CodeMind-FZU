@@ -92,6 +92,42 @@ class LocalBM25Retriever:
         if self._file_root is not None and not self._file_root.is_dir():
             raise ValueError("file_root 必须是目录")
         self._versions: dict[UUID, _IndexedVersion] = {}
+        self._chunk_index: dict[UUID, tuple[UUID, _IndexedChunk]] = {}
+
+    def _remove_version(self, version_id: UUID) -> None:
+        removed = self._versions.pop(version_id, None)
+        if removed is not None:
+            for chunk in removed.chunks:
+                self._chunk_index.pop(chunk.chunk_id, None)
+
+    def _put_version(self, indexed: _IndexedVersion) -> None:
+        self._remove_version(indexed.version_id)
+        self._versions[indexed.version_id] = indexed
+        for chunk in indexed.chunks:
+            self._chunk_index[chunk.chunk_id] = (indexed.version_id, chunk)
+
+    def get_document_metadata(self, version_id: UUID) -> DocumentMetadata | None:
+        """Return a detached DocumentMetadata copy for an enabled indexed version.
+
+        Intended for downstream evidence_check callers (e.g. reading
+        applicability_raw, deadline_on, temporal_notes) without modifying the
+        shared RetrievedChunk contract.
+        """
+        version = self._versions.get(version_id)
+        if version is None or version.metadata.retrieval_status != RetrievalStatus.ENABLED:
+            return None
+        return version.metadata.model_copy(deep=True)
+
+    def get_parsed_chunk(self, chunk_id: UUID) -> ParsedChunk | None:
+        """Return a detached ParsedChunk copy for an enabled indexed chunk."""
+        entry = self._chunk_index.get(chunk_id)
+        if entry is None:
+            return None
+        version_id, chunk = entry
+        version = self._versions.get(version_id)
+        if version is None or version.metadata.retrieval_status != RetrievalStatus.ENABLED:
+            return None
+        return chunk.parsed.model_copy(deep=True)
 
     def _file_warnings(self, files: Iterable[ParsedFile]) -> list[WarningItem]:
         root = self._file_root
@@ -135,7 +171,7 @@ class LocalBM25Retriever:
         # of the package is malformed. The version still cannot be re-indexed
         # until the complete package passes validation.
         _, version_id = _document_and_version_ids(record_code.strip(), version_no.strip())
-        self._versions.pop(version_id, None)
+        self._remove_version(version_id)
 
     async def index_document(self, package: DocumentPackage) -> IndexResult:
         # Revalidate nested DTOs and detach from caller-owned mutable models.
@@ -219,14 +255,14 @@ class LocalBM25Retriever:
         if integrity_warnings:
             # A failed integrity check on the replacement invalidates the old
             # snapshot as well.
-            self._versions.pop(version_id, None)
+            self._remove_version(version_id)
             return IndexResult(
                 **result_ids, status=IndexingStatus.FAILED, indexed_count=0, warnings=warnings
             )
         status = IndexingStatus.PARTIAL if warnings else IndexingStatus.INDEXED
-        self._versions[version_id] = _IndexedVersion(
+        self._put_version(_IndexedVersion(
             metadata, document_id, version_id, tuple(entries)
-        )
+        ))
         return IndexResult(
             **result_ids, status=status, indexed_count=len(entries), warnings=warnings
         )

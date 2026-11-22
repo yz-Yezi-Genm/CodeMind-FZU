@@ -202,6 +202,14 @@ class QwenClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertNotIn("local-secret", repr(settings))
 
+    def test_default_budget_fits_agent_timeout(self):
+        with patch.dict(os.environ, {}, clear=True):
+            settings = QwenSettings.from_env()
+
+        self.assertEqual(settings.timeout_seconds, 28.0)
+        self.assertEqual(settings.max_retries, 0)
+        self.assertEqual(settings.model, "qwen-flash")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -10,24 +10,51 @@ import json
 import logging
 import math
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from datetime import date
+from functools import partial
+from pathlib import Path
 from uuid import UUID
 
 from pydantic import ValidationError
 
 from backend.contracts.models import (
-    AgentRequest, AgentResult, AnswerMode, AnswerStatus, Citation,
+    AgentRequest, AgentResult, AnswerMode, AnswerStatus, Citation, DocumentMetadata, DocumentPackage,
+    IndexingStatus,
     LLMGenerateRequest, LLMMessage, LLMResult, LLMRole, RetrievalRequest,
     RetrievedChunk, RetrievalStatus, SourceVerificationStatus,
     TimelinessVerificationStatus, WarningItem,
 )
 from backend.contracts.protocols import LLMClient, Retriever
-from backend.services.errors import LLMTimeoutError, ServiceError
+from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 
 logger = logging.getLogger(__name__)
 ClarificationRule = Callable[[AgentRequest], str | None]
 EvidenceCheck = Callable[[AgentRequest, RetrievedChunk], bool]
+
+
+def _human_approved(metadata: DocumentMetadata) -> bool:
+    return (isinstance(metadata.temporal_notes, dict)
+            and metadata.temporal_notes.get("human_approved") is True)
+
+
+class _PackageSnapshotRetriever:
+    """Read-only view of factory-indexed packages for the legacy local index.
+
+    The legacy implementation has no metadata queries. Do not expose its mutable
+    index with cached approval: callers needing updates must use PR #35 instead.
+    """
+
+    def __init__(self, retriever: Retriever, metadata: dict[UUID, DocumentMetadata]):
+        self.__retriever = retriever
+        self.__metadata = metadata
+
+    async def retrieve(self, request: RetrievalRequest) -> list[RetrievedChunk]:
+        return await self.__retriever.retrieve(request)
+
+    def get_document_metadata(self, version_id: UUID) -> DocumentMetadata | None:
+        metadata = self.__metadata.get(version_id)
+        return metadata.model_copy(deep=True) if metadata is not None else None
 
 _TOPIC = re.compile(r"奖学金|综评|综合素质|学分|推免|保研|转专业|辅修|选课|重修|学位|毕业|学生证|学籍|课程|英语|竞赛|创新创业")
 _YEAR = re.compile(r"20\d{2}(?!\s*级)|本学年|本学期|今年|这学期|当前学年")
@@ -88,6 +115,10 @@ class AgentWorkflow:
             raise ValueError("timeout_seconds must be positive and finite")
         if max_evidence_chars < 1:
             raise ValueError("max_evidence_chars must be positive")
+        if not callable(clarification_rule):
+            raise ValueError("clarification_rule must be callable")
+        if evidence_check is not None and not callable(evidence_check):
+            raise ValueError("evidence_check must be callable")
         self.retriever = retriever
         self.llm_client = llm_client
         self.clarification_rule = clarification_rule
@@ -98,7 +129,13 @@ class AgentWorkflow:
         self.today = today
 
     async def run(self, request: AgentRequest) -> AgentResult:
-        question = self.clarification_rule(request)
+        try:
+            question = self.clarification_rule(request.model_copy(deep=True))
+            if question is not None and (not isinstance(question, str) or not question.strip()):
+                raise ValueError("Clarification rule must return a nonblank question or None")
+        except Exception:
+            logger.warning("Clarification rule failed; request_id=%s", request.request_id)
+            return _insufficient("CLARIFICATION_RULE_FAILED", "必要信息检查暂时不可用，本次不生成政策答案。")
         if question:
             return AgentResult(
                 status=AnswerStatus.NEEDS_CLARIFICATION,
@@ -157,11 +194,24 @@ class AgentWorkflow:
                 # snapshot and apply gates again even if an adapter returns models.
                 if not isinstance(raw, RetrievedChunk):
                     raise ValueError("Unexpected retrieval item type")
-                chunk = RetrievedChunk.model_validate(raw.model_dump())
+                snapshot = raw.model_dump()
+                # Validate the public base contract even for a typed extension,
+                # then retain that extension for the business owner's callback.
+                RetrievedChunk.model_validate({
+                    key: value for key, value in snapshot.items()
+                    if key in RetrievedChunk.model_fields
+                })
+                chunk = type(raw).model_validate(snapshot)
                 if not self._eligible(chunk):
                     continue
-                if self.evidence_check is not None and not self.evidence_check(request, chunk):
-                    continue
+                if self.evidence_check is not None:
+                    applicable = self.evidence_check(
+                        request.model_copy(deep=True), chunk.model_copy(deep=True),
+                    )
+                    if not isinstance(applicable, bool):
+                        raise ValueError("Evidence rule must return bool")
+                    if not applicable:
+                        continue
                 if chunk.chunk_id in seen:
                     if chunk != seen[chunk.chunk_id]:
                         raise ValueError("Conflicting duplicate chunk identity")
@@ -189,17 +239,22 @@ class AgentWorkflow:
         except ServiceError:
             # Preserve the backend adapter's sanitized error code and HTTP status.
             raise
-        except TimeoutError as exc:
+        except (asyncio.TimeoutError, TimeoutError) as exc:
             raise LLMTimeoutError() from exc
-        except Exception:
+        except Exception as exc:
             logger.warning("LLM failed; request_id=%s", request.request_id)
-            return _insufficient("GENERATION_UNAVAILABLE", "回答组织服务暂时不可用，本次未生成正式回答，请稍后重试。")
+            raise LLMUnavailableError() from exc
 
         try:
             if not isinstance(generated, LLMResult):
                 raise ValueError("LLMClient must return LLMResult")
             generated = LLMResult.model_validate(generated.model_dump())
             citations = self._verify_selection(generated.content, chunks)
+            # A reviewer can withdraw a version while the model is running.
+            # Recheck against the same index before publishing any citation.
+            selected_ids = {citation.chunk_id for citation in citations}
+            if any(not self._eligible(chunk) for chunk in chunks if chunk.chunk_id in selected_ids):
+                return _insufficient("EVIDENCE_APPROVAL_CHANGED", "证据审核或开放状态已变化，本次不生成政策答案。")
         except (ValueError, TypeError, KeyError, AttributeError):
             return _insufficient("UNSUPPORTED_GENERATION", "模型未返回可逐字核对的有效证据摘录，本次不提供确定性答案。")
 
@@ -218,7 +273,7 @@ class AgentWorkflow:
         )
 
     def _eligible(self, chunk: RetrievedChunk) -> bool:
-        return (
+        basic = (
             chunk.retrieval_status == RetrievalStatus.ENABLED
             and chunk.source_verification_status == SourceVerificationStatus.VERIFIED
             and chunk.timeliness_verification_status == TimelinessVerificationStatus.CURRENT
@@ -227,6 +282,23 @@ class AgentWorkflow:
             and math.isfinite(chunk.score)
             and bool(chunk.title.strip())
         )
+        if not basic:
+            return False
+        lookup = getattr(self.retriever, "get_document_metadata", None)
+        if not callable(lookup):
+            return False
+        try:
+            metadata = lookup(chunk.version_id)
+            if not isinstance(metadata, DocumentMetadata):
+                return False
+            metadata = DocumentMetadata.model_validate(metadata.model_dump())
+            return _human_approved(metadata) and all(
+                getattr(metadata, field) == getattr(chunk, field)
+                for field in ("title", "source_url", "publisher", "published_on", "effective_on",
+                              "retrieval_status", "source_verification_status", "timeliness_verification_status")
+            )
+        except Exception:
+            return False
 
     @staticmethod
     def _generation_request(context: str, chunks: list[RetrievedChunk]) -> LLMGenerateRequest:
@@ -247,7 +319,15 @@ class AgentWorkflow:
 
     @staticmethod
     def _verify_selection(content: str, chunks: list[RetrievedChunk]) -> list[Citation]:
-        payload = json.loads(content)
+        def unique_keys(pairs):
+            result = {}
+            for key, value in pairs:
+                if key in result:
+                    raise ValueError("Repeated JSON key")
+                result[key] = value
+            return result
+
+        payload = json.loads(content, object_pairs_hook=unique_keys)
         if not isinstance(payload, dict) or set(payload) != {"evidence"}:
             raise ValueError("Invalid generation shape")
         selected = payload["evidence"]
@@ -266,6 +346,92 @@ class AgentWorkflow:
             if item["quote"] != chunk.content:
                 raise ValueError("Quote differs from full source content")
             used.add(chunk_id)
-            fields = chunk.model_dump(exclude={"file_id", "content", "score", "retrieval_method"})
+            # Internal applicability/deadline fields belong to retrieval/rules,
+            # and must not leak into the extra=forbid public Citation contract.
+            fields = chunk.model_dump(include=set(Citation.model_fields) - {"excerpt"})
             citations.append(Citation(**fields, excerpt=chunk.content))
         return citations
+
+
+async def create_alpha_workflow(
+    packages: Iterable[DocumentPackage] | None = None,
+    *,
+    file_root: Path,
+    retriever: Retriever | None = None,
+    corpus_dir: Path | None = None,
+    llm_client: LLMClient | None = None,
+    clarification_rule: ClarificationRule | None = None,
+    evidence_check: EvidenceCheck | None = None,
+    top_k: int = 5,
+    timeout_seconds: float = 30.0,
+    max_evidence_chars: int = 24000,
+    today: Callable[[], date] = date.today,
+) -> AgentWorkflow:
+    """Assemble the real local retriever, business callbacks and Qwen adapter.
+
+    The default rule module is owned by the business team. A missing module is
+    a configuration error, never a silent fallback to the legacy demo rules.
+    Explicit callbacks/client support owner handoff and labelled offline tests.
+    With no explicit source, use PR #35's approved loader and check its report.
+    Direct packages must also carry human_approved is True; indexing is not approval.
+    Injected retrievers must expose approved metadata for every accepted version.
+    Inject the result with create_app(agent_service=workflow,
+    llm_client=workflow.llm_client). The caller loads its approved package list.
+    """
+    from importlib import import_module
+
+    from backend.retrieval.local import LocalBM25Retriever
+    from backend.services.errors import LLMConfigurationError
+    from backend.services.qwen_client import create_qwen_client_from_env
+
+    if sum(source is not None for source in (packages, retriever, corpus_dir)) > 1:
+        raise ValueError("Provide only one of packages, retriever or corpus_dir")
+    if (clarification_rule is None) != (evidence_check is None):
+        raise ValueError("Provide both business callbacks or neither")
+    if packages is not None:
+        # Validate the entire input before indexing anything or creating a model
+        # client. Never turn an enabled flag into an implicit human approval.
+        packages = [DocumentPackage.model_validate(package.model_dump()) for package in packages]
+        if any(not _human_approved(package.metadata) for package in packages):
+            raise ServiceError("政策资料缺少明确的人工审核通过标记。",
+                               code="SERVICE_NOT_CONFIGURED", http_status=503)
+        retriever = LocalBM25Retriever(file_root=file_root)
+    elif retriever is None:
+        try:
+            loader = import_module("backend.retrieval.alpha_corpus")
+            retriever, report = await loader.load_approved_alpha_retriever(
+                corpus_dir=corpus_dir if corpus_dir is not None else file_root / "knowledge_base/processed/alpha/approved",
+                file_root=file_root, allow_missing=False,
+            )
+            if (not report.corpus_dir.is_dir() or not report.loaded_packages
+                    or not report.index_results or report.total_indexed_chunks <= 0
+                    or any(result.status != IndexingStatus.INDEXED or result.warnings
+                           for result in report.index_results)):
+                raise ValueError("Approved corpus is not fully indexed")
+        except Exception as exc:
+            raise ServiceError("正式审核资料目录或加载报告未通过完整性检查。",
+                               code="SERVICE_NOT_CONFIGURED", http_status=503) from exc
+    indexed_metadata: dict[UUID, DocumentMetadata] = {}
+    for package in packages if packages is not None else ():
+        indexed = await retriever.index_document(package)
+        if indexed.status != IndexingStatus.INDEXED:
+            raise ServiceError(
+                "政策资料未完整通过索引检查，不能启用正式工作流。",
+                code="SERVICE_NOT_CONFIGURED", http_status=503,
+            )
+        indexed_metadata[indexed.version_id] = package.metadata.model_copy(deep=True)
+    if packages is not None and not callable(getattr(retriever, "get_document_metadata", None)):
+        retriever = _PackageSnapshotRetriever(retriever, indexed_metadata)
+    if clarification_rule is None:
+        try:
+            rules = import_module("backend.services.alpha_business_rules")
+            clarification_rule = partial(rules.alpha_clarification_rule, today=today)
+            evidence_check = rules.build_from_retriever(retriever, today=today)
+        except (ImportError, AttributeError) as exc:
+            raise LLMConfigurationError("Alpha 业务规则模块未就绪，不能启用正式工作流。") from exc
+    return AgentWorkflow(
+        retriever, llm_client if llm_client is not None else create_qwen_client_from_env(),
+        clarification_rule=clarification_rule, evidence_check=evidence_check,
+        top_k=top_k, timeout_seconds=timeout_seconds,
+        max_evidence_chars=max_evidence_chars, today=today,
+    )

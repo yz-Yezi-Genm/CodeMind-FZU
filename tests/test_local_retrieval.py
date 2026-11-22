@@ -326,3 +326,62 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(result.indexed_count, count)
                 self.assertEqual(package.metadata.retrieval_status, RetrievalStatus.BLOCKED)
                 self.assertEqual(await store.retrieve(RetrievalRequest(query=query)), [])
+
+    async def test_metadata_and_chunk_lookups_expose_enabled_snapshots_only(self):
+        from datetime import date
+        from uuid import uuid4
+
+        package = sample(
+            deadline_on=date(2026, 4, 26),
+            applicability_raw={"audience": "计算机学院本科生", "grade": "2024级"},
+            temporal_notes={"deadline_exact_local": "2026-04-26T17:00:00+08:00"},
+        )
+        package.chunks[0].locator_note = '{"heading": "二、学生评选条件"}'
+        indexed = await self.indexer.index_document(package)
+        hits = await self.search()
+        self.assertTrue(hits)
+
+        meta = self.store.get_document_metadata(hits[0].version_id)
+        self.assertIsNotNone(meta)
+        self.assertEqual(meta.deadline_on, date(2026, 4, 26))
+        self.assertEqual(meta.applicability_raw, {"audience": "计算机学院本科生", "grade": "2024级"})
+        self.assertEqual(meta.temporal_notes, {"deadline_exact_local": "2026-04-26T17:00:00+08:00"})
+
+        parsed = self.store.get_parsed_chunk(hits[0].chunk_id)
+        self.assertIsNotNone(parsed)
+        self.assertEqual(parsed.locator_note, '{"heading": "二、学生评选条件"}')
+        self.assertEqual(parsed.original_file_key, "policy.pdf")
+
+        # Returned snapshots must be detached copies.
+        meta.applicability_raw["audience"] = "已篡改"
+        parsed.locator_note = "已篡改"
+        self.assertEqual(
+            self.store.get_document_metadata(hits[0].version_id).applicability_raw["audience"],
+            "计算机学院本科生",
+        )
+        self.assertEqual(
+            self.store.get_parsed_chunk(hits[0].chunk_id).locator_note,
+            '{"heading": "二、学生评选条件"}',
+        )
+
+        # Unknown IDs and unopened versions must return None.
+        self.assertIsNone(self.store.get_document_metadata(uuid4()))
+        self.assertIsNone(self.store.get_parsed_chunk(uuid4()))
+        for status in ("blocked", "review_only"):
+            unopened = sample(f"UNOPENED-{status}", retrieval_status=status)
+            unopened_res = await self.indexer.index_document(unopened)
+            self.assertIsNone(self.store.get_document_metadata(unopened_res.version_id))
+
+        # Reindexing with fewer chunks must evict removed chunk IDs.
+        removed_chunk_id = hits[1].chunk_id
+        self.assertIsNotNone(self.store.get_parsed_chunk(removed_chunk_id))
+        package.chunks.pop()
+        await self.indexer.index_document(package)
+        self.assertIsNone(self.store.get_parsed_chunk(removed_chunk_id))
+        self.assertIsNotNone(self.store.get_parsed_chunk(hits[0].chunk_id))
+
+        # Withdrawal clears both version metadata and chunk lookup immediately.
+        package.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await self.indexer.index_document(package)
+        self.assertIsNone(self.store.get_document_metadata(indexed.version_id))
+        self.assertIsNone(self.store.get_parsed_chunk(hits[0].chunk_id))
