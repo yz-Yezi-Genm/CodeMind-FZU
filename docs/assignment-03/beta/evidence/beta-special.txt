@@ -1,0 +1,42 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\m1781\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\codemind-fzu-full
+plugins: anyio-4.16.0
+collecting ... collected 31 items
+
+tests/test_beta_contracts.py::AnswerModeContractTests::test_answer_mode_has_exactly_four_beta_values PASSED [  3%]
+tests/test_beta_contracts.py::AnswerModeContractTests::test_historical_and_procedure_reference_values PASSED [  6%]
+tests/test_beta_contracts.py::AgentResultShapeContractTests::test_answered_requires_nonempty_answer PASSED [  9%]
+tests/test_beta_contracts.py::AgentResultShapeContractTests::test_insufficient_evidence_requires_insufficient_data_mode PASSED [ 12%]
+tests/test_beta_contracts.py::AgentResultShapeContractTests::test_needs_clarification_shape PASSED [ 16%]
+tests/test_beta_contracts.py::TimelinessEnumContractTests::test_forbidden_states_are_defined_and_distinct PASSED [ 19%]
+tests/test_beta_contracts.py::TimelinessEnumContractTests::test_historical_modes_are_defined PASSED [ 22%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_blocked_version_returns_none_for_chunk PASSED [ 25%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_blocked_version_returns_none_for_metadata PASSED [ 29%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_document_metadata_returns_correct_metadata PASSED [ 32%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_document_metadata_returns_deep_copy PASSED [ 35%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_parsed_chunk_returns_correct_chunk PASSED [ 38%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_parsed_chunk_returns_deep_copy PASSED [ 41%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_local_bm25_retriever_has_three_methods PASSED [ 45%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_unknown_chunk_returns_none PASSED [ 48%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_unknown_version_returns_none PASSED [ 51%]
+tests/test_beta_contracts.py::RetrievalStatusContractTests::test_retrieval_status_values PASSED [ 54%]
+tests/test_beta_contracts.py::RetrievalStatusContractTests::test_source_verification_values PASSED [ 58%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_duplicate_evidence_id_rejected PASSED [ 61%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_duplicate_json_key_rejected PASSED [ 64%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_empty_answer_rejected PASSED [ 67%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_empty_used_evidence_ids_rejected PASSED [ 70%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_invalid_json_rejected 
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_invalid_json_rejected PASSED [ 74%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_markdown_fence_rejected PASSED [ 77%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_missing_answer_rejected PASSED [ 80%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_missing_used_evidence_ids_rejected PASSED [ 83%]
+tests/test_beta_qwen_output.py::QwenOutputFormatTests::test_valid_output_passes PASSED [ 87%]
+tests/test_beta_qwen_output.py::QwenEvidenceIdSafetyTests::test_evidence_id_set_membership_bidirectional PASSED [ 90%]
+tests/test_beta_qwen_output.py::QwenEvidenceIdSafetyTests::test_id_not_in_current_set_rejected 
+tests/test_beta_qwen_output.py::QwenEvidenceIdSafetyTests::test_id_not_in_current_set_rejected PASSED [ 93%]
+tests/test_beta_qwen_output.py::QwenEvidenceIdSafetyTests::test_model_generated_citation_field_rejected PASSED [ 96%]
+tests/test_beta_qwen_output.py::QwenEvidenceIdSafetyTests::test_model_generated_url_field_rejected PASSED [100%]
+
+==================== 31 passed, 7 subtests passed in 1.24s ====================

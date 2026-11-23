@@ -128,7 +128,7 @@
 | Q-4 | `answer` 为空 | 拒绝 |
 | Q-5 | 缺 `used_evidence_ids` | 拒绝 |
 | Q-6/Q-7 | 引用不存在或不属于本次证据集合的 evidence_id | 拒绝（合并为一个测试方法，内部用两个 subTest） |
-| Q-8 | 两个不同请求的证据集合，双向验证跨请求 ID 隔离 | A 接受 E1 拒绝 F1，B 接受 F1 拒绝 E1 |
+| Q-8 | 两个独立证据 ID 集合的成员关系校验 | A 接受 E1 拒绝 F1，B 接受 F1 拒绝 E1（**非真正跨请求隔离**） |
 | Q-9 | 模型自行生成 Citation / 来源 URL | 拒绝 |
 | Q-10 | 回答含证据无法支持的确定性结论 | 拒绝/降级 insufficient_evidence |
 | Q-11 | 模型试图引用未审核/未开放资料 | 拒绝 |
@@ -141,8 +141,9 @@
 >   的完整过程（这需要 Agent 生产实现，属后续集成测试）。
 > - Q-6 与 Q-7 已合并为一个测试方法（`test_id_not_in_current_set_rejected`），
 >   内部用两个 subTest 分别验证「完全不存在」与「不属于本次集合」两种 ID。
-> - Q-8（`test_cross_request_evidence_id_isolation`）做**双向验证**：A 接受 E1 拒绝
->   F1，B 接受 F1 拒绝 E1。
+> - Q-8（`test_evidence_id_set_membership_bidirectional`）只是**独立证据 ID 集合的
+>   成员关系校验**，手动构造两个集合验证 ID 成员关系，**不是**真正测试 Agent 的
+>   跨请求隔离——真正的跨请求隔离测试留待 Final PR（Agent 集成后）。
 > - Q-10（事实一致性）需接真实证据后补测，属于后续阶段。
 
 ---
@@ -161,17 +162,20 @@
 | R-6 | `retrieval_status` 非 enabled 不能进入正式回答 | 业务证据门禁 | `test_alpha_business_rules.py` |
 | R-7 | 来源核验失败（source≠verified）不能使用 | 业务证据门禁 | `test_alpha_business_rules.py` |
 | R-8 | 资料适用范围不符不能作为证据 | 业务证据门禁 | `test_alpha_business_rules.py` |
-| R-9 | 多业务方向问题不因错误单一分类漏掉资料 | Agent 工作流 | `test_agent_workflow.py` / `test_agent_workflow_qwen.py` |
+| R-9 | 未明确业务方向时不擅自使用单一方向过滤 | Agent 工作流 | `test_agent_workflow.py` / `test_agent_workflow_qwen.py`（仅覆盖未指定 business_direction_code 的场景） |
 
 > **分层说明**：
 > - **BM25 检索**（R-1~R-4）：验证 `LocalBM25Retriever` 的召回、空结果、元数据/章节查询。
 > - **业务证据门禁**（R-5~R-8）：验证 `alpha_evidence_check` 对审核/开放/来源/适用范围的门禁。
-> - **Agent 工作流**（R-9）：验证 AgentWorkflow 在多业务方向问题上的检索范围决策。
+> - **Agent 工作流**（R-9）：验证 AgentWorkflow 在**未明确业务方向时**不擅自使用单一
+>   方向过滤。现有测试只覆盖「未指定 `business_direction_code` 时执行全库检索」，
+>   尚未覆盖「真正的多业务方向问题」——那需要补充测试，不夸大现有覆盖范围。
 >
-> 注意：公共 `Retriever Protocol`（`backend/contracts/protocols.py`）目前只声明了
-> `retrieve`，`get_document_metadata` / `get_parsed_chunk` 两方法待王智洋补齐后，
-> 再补充公共 Protocol 的三方法契约测试（V2.1 §8.4）。本测试计划当前只检查
-> `LocalBM25Retriever` 实现类，不擅自修改他人负责的公共接口。
+> 注意：公共 `Retriever Protocol`（`backend/contracts/protocols.py`）的三方法
+> （`retrieve` / `get_document_metadata` / `get_parsed_chunk`）已由 #51 正式纳入，
+> 对应的 Protocol 签名一致性测试在 `test_local_retrieval.py` /
+> `test_interface_contracts.py`。本测试计划的 `test_beta_contracts.py` 聚焦
+> `LocalBM25Retriever` 实现类的数据正确性（深拷贝、blocked 返回 None、字段完整性）。
 
 ---
 
@@ -225,7 +229,9 @@
 - [ ] 历史政策专项测试（等吴诗莹调整 `_eligible` 支持 historical/superseded/expired）
 - [ ] Qwen 受约束生成真实校验（等赵紫龙/吴诗莹实现 evidence_id 机制）
 - [ ] 检索门禁 + 异常测试接入真实模块
-- [ ] 公共 Retriever Protocol 三方法契约测试（等王智洋补齐 Protocol 后补充）
+- [ ] 真正的 Agent 跨请求 ID 隔离测试（当前仅覆盖证据集合成员校验，见 Q-8）
+
+> 说明：公共 Retriever Protocol 三方法已由 #51 正式纳入，不再是待办项。
 
 ---
 
@@ -233,7 +239,7 @@
 
 | 成员 | 需确认 |
 | --- | --- |
-| 王智洋 | Retriever Protocol 三方法正式纳入、测试数据、元数据/章节查询 |
+| 王智洋 | 测试数据、元数据/章节查询（Protocol 三方法已由 #51 纳入） |
 | 雷葭雨 | S1-S4 业务规则及边界条件、S4 资源分类 |
 | 吴诗莹 | AgentWorkflow 历史政策处理、evidence_id 校验行为 |
 | 赵紫龙 | Qwen 调用、受约束生成、模型异常处理 |

@@ -162,10 +162,11 @@ class TimelinessEnumContractTests(unittest.TestCase):
 class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
     """V2.1 §8.1/8.2/8.3 LocalBM25Retriever 三方法实现检查。
 
-    注意：本测试只检查 LocalBM25Retriever 这个**实现类**是否提供三个方法并
-    正确工作，不检查公共 Retriever Protocol（backend/contracts/protocols.py
-    目前只声明了 retrieve，另外两个方法待王智洋补齐）。公共 Protocol 的三方法
-    契约测试，待王智洋完成上游修改后补充，本文件不擅自修改他人负责的公共接口。
+    检查 LocalBM25Retriever 实现类的三个方法（retrieve / get_document_metadata /
+    get_parsed_chunk）是否正确工作。公共 Retriever Protocol 的三方法已由 #51
+    正式纳入，对应的 Protocol 签名一致性测试在 test_local_retrieval.py /
+    test_interface_contracts.py 中，本文件聚焦实现类的数据正确性（深拷贝、
+    blocked 返回 None、字段完整性等）。
     """
 
     async def asyncSetUp(self):
@@ -249,19 +250,30 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_blocked_version_returns_none_for_chunk(self):
-        # V2.1 §8.3：未开放（blocked）资料的片段查询也应返回 None
+        # V2.1 §8.3：未开放（blocked）资料的片段查询也应返回 None。
+        # 做法：先用 enabled 资料通过公开 retrieve 接口拿到 chunk_id，
+        # 再把同一资料重新索引为 blocked，最后验证 get_parsed_chunk 返回 None。
+        # 不依赖 LocalBM25Retriever 的私有 ID 生成函数。
+        from backend.contracts.models import RetrievalRequest
+
+        # 1. 先用 enabled 资料索引，通过公开 retrieve 接口拿到 chunk_id
+        enabled = _enabled_package(record_code="BETA-BLOCKED-2")
+        await self.retriever.index_document(enabled)
+        hits = await self.retriever.retrieve(RetrievalRequest(query="优秀学生综合奖学金"))
+        # 找到对应 BETA-BLOCKED-2 的 chunk
+        target = next((h for h in hits if h.title == "【测试替身】Beta 契约测试资料"), None)
+        self.assertIsNotNone(target, "enabled 资料应能被检索到")
+        chunk_id = target.chunk_id
+        # 确认 enabled 状态下 get_parsed_chunk 能返回数据（对照）
+        self.assertIsNotNone(self.retriever.get_parsed_chunk(chunk_id))
+
+        # 2. 把同一资料（同 record_code + version_no）重新索引为 blocked
         blocked = _enabled_package(record_code="BETA-BLOCKED-2")
         blocked.metadata.retrieval_status = RetrievalStatus.BLOCKED
         blocked_result = await self.retriever.index_document(blocked)
-        # 先确认资料确实成功索引、片段进入内部索引（避免假阳性）
         self.assertEqual(blocked_result.status, IndexingStatus.INDEXED)
-        self.assertEqual(blocked_result.indexed_count, 1)
-        # blocked 资料无法被检索到，其 chunk_id 需按 LocalBM25Retriever 的确定性
-        # 生成规则推算（与 index_document 内部一致的 UUID5 规则）
-        from backend.retrieval.local import _local_id, _document_and_version_ids
-        _document_id, version_id = _document_and_version_ids("BETA-BLOCKED-2", "v1")
-        file_id = _local_id("file", str(version_id), "policy.md")
-        chunk_id = _local_id("chunk", str(file_id), "1")
+
+        # 3. blocked 后 get_parsed_chunk 应返回 None（chunk_id 不变，因为是确定性 UUID5）
         self.assertIsNone(self.retriever.get_parsed_chunk(chunk_id))
 
 

@@ -33,10 +33,10 @@ def _validate_qwen_output(
     返回 (是否通过, 拒绝原因)。这不是生产实现，仅用于固化 V2.1 校验规则。
 
     规则（V2.1 §11.3）：
-    1. 必须是合法 JSON（严格，无 Markdown 代码围栏）。
+    1. 必须是合法 JSON（严格，无 Markdown 代码围栏，无重复键）。
     2. 顶层必须且只能有 answer / used_evidence_ids 两个字段。
     3. answer 必须是非空字符串。
-    4. used_evidence_ids 必须是非空字符串列表，且每个 ID 都在 available_ids 中。
+    4. used_evidence_ids 必须是非空字符串列表，每个 ID 都在 available_ids 中，且无重复。
     5. 不得出现 citation / source_url 等模型自造字段。
     """
     stripped = content.strip()
@@ -45,10 +45,24 @@ def _validate_qwen_output(
     if stripped.startswith("```"):
         return False, "模型输出包含 Markdown 代码围栏"
 
-    # 2. 解析 JSON
+    # 2. 解析 JSON，同时检测重复键（json.loads 默认会静默取最后一个重复键）
+    def _reject_duplicate_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"JSON 包含重复键：{key}")
+            result[key] = value
+        return result
+
     try:
-        payload = json.loads(stripped)
-    except (json.JSONDecodeError, TypeError, ValueError):
+        payload = json.loads(stripped, object_pairs_hook=_reject_duplicate_keys)
+    except (json.JSONDecodeError, TypeError):
+        return False, "模型输出不是合法 JSON"
+    except ValueError as exc:
+        # 重复键等语义错误，透传具体原因
+        msg = str(exc)
+        if "重复键" in msg:
+            return False, msg
         return False, "模型输出不是合法 JSON"
 
     if not isinstance(payload, dict):
@@ -71,6 +85,10 @@ def _validate_qwen_output(
         return False, "模型输出缺少或包含空的 used_evidence_ids"
     if not all(isinstance(item, str) for item in ids):
         return False, "used_evidence_ids 包含非字符串元素"
+
+    # 5b. 拒绝重复 evidence_id（同一 ID 重复引用）
+    if len(set(ids)) != len(ids):
+        return False, "used_evidence_ids 包含重复的 evidence_id"
 
     # 6. 每个 ID 必须在本次请求的可用集合中
     for eid in ids:
@@ -133,6 +151,22 @@ class QwenOutputFormatTests(unittest.TestCase):
             '{"answer": "x", "used_evidence_ids": []}', available_ids=self.AVAILABLE,
         )
         self.assertFalse(ok)
+
+    def test_duplicate_json_key_rejected(self):
+        # json.loads 默认会静默采用最后一个重复键，这里必须显式拒绝
+        content = '{"answer": "a", "answer": "b", "used_evidence_ids": ["E1"]}'
+        ok, reason = _validate_qwen_output(content, available_ids=self.AVAILABLE)
+        self.assertFalse(ok)
+        self.assertIn("重复键", reason)
+
+    def test_duplicate_evidence_id_rejected(self):
+        # 同一 evidence_id 重复引用应拒绝
+        ok, reason = _validate_qwen_output(
+            '{"answer": "x", "used_evidence_ids": ["E1", "E1"]}',
+            available_ids=self.AVAILABLE,
+        )
+        self.assertFalse(ok)
+        self.assertIn("重复", reason)
 
 
 class QwenEvidenceIdSafetyTests(unittest.TestCase):
