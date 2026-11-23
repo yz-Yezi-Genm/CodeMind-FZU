@@ -1,10 +1,10 @@
-# CodeMind-FZU Beta 冲刺 · 测试计划（Draft）
+# CodeMind-FZU Beta 冲刺 · 测试计划（第一阶段）
 
 > 负责人：颜俊宇（测试与质量保障）
 > 阶段：Beta 冲刺（2026-11-23 至 2026-12-06）
 > 规范基线：《CodeMind-FZU Beta 接口规范 V2.1-Final》
 > 分支：`test/beta-e2e`
-> 状态：**Draft**（第一阶段测试准备，核心功能尚未集成）
+> 状态：**第一阶段测试准备**（核心功能尚未集成）
 
 ---
 
@@ -20,7 +20,7 @@
 
 **关键原则**：
 1. 不依赖尚未实现的功能写测试；不能为了 CI 变绿而删测试或降标准。
-2. 测试不通过就保留在 Draft PR，如实标注「待上游集成」。
+2. 测试不通过就保留在测试分支，如实标注「待上游集成」。
 3. 不擅自修改吴诗莹、王智洋、雷葭雨、赵紫龙的生产代码，发现问题只反馈。
 
 ---
@@ -51,13 +51,23 @@
 
 ### S3 推免条件咨询
 
+> 现有官方资料：`knowledge_base/processed/alpha/recommendation-eligibility-2027.json`，
+> 对应「计算机与大数据学院（软件学院）2027 年推荐优秀应届本科毕业生免试攻读研究生工作方案」。
+> 该资料当前 `retrieval_status=blocked`、`source_verification_status=partial`、
+> `timeliness_verification_status=pending`（**未审核、未开放**）。
+
 | 用例 | 输入 | 预期 |
 | --- | --- | --- |
-| S3-1 | 「计算机学院 2026 届推免资格条件？」 | answered + 引用推荐资格方案 |
+| S3-1 | 「计算机学院 2027 届推免资格条件？」（真实资料，未审核未开放） | insufficient_evidence（不能直接回答，不绕过审核门禁） |
+| S3-1b | 「计算机学院 2027 届推免资格条件？」（审核通过的测试 Fixture） | answered + 引用推荐资格方案 |
 | S3-2 | 「推免」 | needs_clarification（追问届别/学院） |
-| S3-3 | 「未来年度推免条件」（库中无） | insufficient_evidence |
+| S3-3 | 「2030 届推免条件」（库中无） | insufficient_evidence |
 | S3-4 | citation 溯源 | 引用原文逐字一致 |
 | S3-5 | 已过申请期的往年推免方案 | historical + 标注届别 |
+
+> **S3 说明**：S3-1 与 S3-1b 必须区分——真实资料未审核未开放时应返回
+> `insufficient_evidence`（S3-1），只有经过审核并允许检索的 Fixture 才验证
+> `answered + citation`（S3-1b）。不得为让测试通过而绕过资料审核和检索门禁。
 
 ### S4 学院资源导航（Beta 新增）
 
@@ -110,7 +120,7 @@
 
 **核心原则**：Citation 必须由 Agent 根据真实 RetrievedChunk 构造，不直接信任 Qwen 返回的引用；证据 ID 合法 ≠ 答案正确，须检查答案与原文一致。
 
-> 当前进度：Q-1~Q-9 的格式/ID 校验规则已在 `tests/test_beta_qwen_output.py` 用参考校验函数固化（Draft 阶段，非生产实现）。Q-10（事实一致性）需在 Final 阶段接真实证据后补测。
+> 当前进度：Q-1~Q-9 的格式/ID 校验规则已在 `tests/test_beta_qwen_output.py` 用参考校验函数固化（第一阶段，非生产实现）。Q-10（事实一致性）需在后续阶段接真实证据后补测。
 
 ---
 
@@ -128,7 +138,11 @@
 | R-8 | 资料适用范围不符不能作为证据 |
 | R-9 | 多业务方向问题不因错误单一分类漏掉资料 |
 
-> 当前：R-1~R-9 的底层检索能力在 Alpha 已实现（`test_local_retrieval.py`），Beta 需配合王智洋确认 Retriever Protocol 三方法正式纳入（V2.1 §8.4）。
+> 当前：R-1~R-9 的底层检索能力在 Alpha 已实现（`test_local_retrieval.py`）。
+> 注意：公共 `Retriever Protocol`（`backend/contracts/protocols.py`）目前只声明了
+> `retrieve`，`get_document_metadata` / `get_parsed_chunk` 两方法待王智洋补齐后，
+> 再补充公共 Protocol 的三方法契约测试（V2.1 §8.4）。本测试计划当前只检查
+> `LocalBM25Retriever` 实现类，不擅自修改他人负责的公共接口。
 
 ---
 
@@ -149,9 +163,9 @@
 
 ## 七、已完成 / 待办清单
 
-### 已完成（Draft 阶段）
+### 已完成（第一阶段）
 
-- [x] `tests/test_beta_contracts.py`：V2.1 契约测试（AnswerMode 四枚举、AgentResult 三状态、Retriever 三方法、时效/检索状态枚举）
+- [x] `tests/test_beta_contracts.py`：V2.1 契约测试（AnswerMode 四枚举、AgentResult 三状态、LocalBM25Retriever 三方法实现检查、时效/检索状态枚举）
 - [x] `tests/test_beta_qwen_output.py`：Qwen 受约束输出格式 + 证据 ID 安全校验规则测试
 
 ### 待办（需上游集成后接入）
@@ -160,6 +174,7 @@
 - [ ] 历史政策专项测试（等吴诗莹调整 `_eligible` 支持 historical/superseded/expired）
 - [ ] Qwen 受约束生成真实校验（等赵紫龙/吴诗莹实现 evidence_id 机制）
 - [ ] 检索门禁 + 异常测试接入真实模块
+- [ ] 公共 Retriever Protocol 三方法契约测试（等王智洋补齐 Protocol 后补充）
 
 ---
 

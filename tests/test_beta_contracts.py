@@ -2,7 +2,7 @@
 
 基于《CodeMind-FZU Beta 接口规范 V2.1-Final》的公共契约验证，只测试**已冻结的
 规范**与**已实现的代码**，不依赖尚未实现的 Beta 功能（历史政策处理、S4、受约束
-生成等），确保 Draft 阶段测试即可通过、不阻塞 main。
+生成等），确保第一阶段测试即可通过、不阻塞 main。
 
 覆盖：
 - AnswerMode 四枚举完整性（current_policy / historical / procedure_reference /
@@ -12,7 +12,7 @@
 - 历史政策相关状态枚举（TimelinessVerificationStatus 的 historical / superseded /
   expired 等）。
 
-注意：本文件只做「规范符合性」断言，不判定业务规则正确性（那属于 Final PR 的
+注意：本文件只做「规范符合性」断言，不判定业务规则正确性（那属于后续阶段的
 真实 E2E 验收）。
 """
 from __future__ import annotations
@@ -108,12 +108,13 @@ class TimelinessEnumContractTests(unittest.TestCase):
         )
 
 
-class RetrieverProtocolContractTests(unittest.TestCase):
-    """V2.1 §8.4 Retriever 三方法契约。
+class LocalBM25RetrieverApiTests(unittest.TestCase):
+    """V2.1 §8.1/8.2/8.3 LocalBM25Retriever 三方法实现检查。
 
-    注意：这是「契约符合性」测试。当前 LocalBM25Retriever 已实现三方法，
-    但 Retriever Protocol 只声明了 retrieve（缺口由王智洋补齐）。本测试
-    验证实现类是否符合 V2.1 要求，不改动 Protocol 定义。
+    注意：本测试只检查 LocalBM25Retriever 这个**实现类**是否提供三个方法，
+    不检查公共 Retriever Protocol（backend/contracts/protocols.py 目前只声明了
+    retrieve，另外两个方法待王智洋补齐）。公共 Protocol 的三方法契约测试，
+    待王智洋完成上游修改后补充，本文件不擅自修改他人负责的公共接口。
     """
 
     def test_local_bm25_retriever_has_three_methods(self):
