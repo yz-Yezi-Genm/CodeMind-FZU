@@ -1,4 +1,4 @@
-"""Assemble the Alpha Retriever, AgentWorkflow, Qwen client and conversations."""
+"""Assemble the Beta Retriever, AgentWorkflow, Qwen client and conversations."""
 from __future__ import annotations
 
 import asyncio
@@ -269,7 +269,7 @@ class UnavailableAgentService:
 
 @dataclass
 class AlphaRuntime:
-    """Live Alpha components owned by one FastAPI application lifespan."""
+    """Live components owned by one FastAPI application lifespan."""
 
     agent_service: AgentService
     retriever: Retriever

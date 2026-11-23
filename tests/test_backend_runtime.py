@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 
+from backend.app.alpha import create_alpha_app
 from backend.app.config import PROJECT_ROOT, AppSettings, ConfigurationError
 from backend.app.main import create_app
 from backend.contracts.models import (
@@ -303,6 +304,30 @@ class BackendRuntimeTests(unittest.TestCase):
         self.assertEqual(settings.conversation_max_count, 25)
         self.assertEqual(settings.conversation_idle_seconds, 600)
         self.assertEqual(settings.conversation_cleanup_interval_seconds, 30)
+
+    def test_health_stays_available_when_qwen_configuration_is_missing(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_approved",
+        )
+        with patch.dict(os.environ, {"QWEN_API_KEY": ""}, clear=False):
+            app = create_alpha_app(settings=settings)
+            with TestClient(app) as client:
+                health = client.get("/api/v1/health")
+                response = client.post(
+                    "/api/v1/ask",
+                    json={"query": "测试未配置模型"},
+                )
+
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(
+            response.json()["error"]["code"],
+            "SERVICE_NOT_CONFIGURED",
+        )
+        self.assertEqual(
+            response.headers["x-request-id"],
+            response.json()["request_id"],
+        )
 
 
 class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
