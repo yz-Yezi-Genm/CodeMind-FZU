@@ -387,6 +387,63 @@ class QwenClientTests(unittest.IsolatedAsyncioTestCase):
                     with self.assertRaises(LLMConfigurationError):
                         QwenSettings.from_env()
 
+    def test_direct_settings_reject_invalid_timeout_and_retries(self):
+        invalid = (
+            {"timeout_seconds": float("nan")},
+            {"timeout_seconds": float("inf")},
+            {"timeout_seconds": -1},
+            {"timeout_seconds": 0},
+            {"timeout_seconds": True},
+            {"max_retries": -1},
+            {"max_retries": 4},
+            {"max_retries": True},
+            {"max_retries": 1.5},
+        )
+        for overrides in invalid:
+            with self.subTest(overrides=overrides):
+                with self.assertRaises(LLMConfigurationError):
+                    QwenSettings(
+                        api_key="test-key",
+                        model="qwen-test",
+                        **overrides,
+                    )
+
+        self.assertEqual(
+            QwenSettings(
+                api_key="test-key",
+                model="qwen-test",
+                timeout_seconds=0.1,
+                max_retries=0,
+            ).max_retries,
+            0,
+        )
+        self.assertEqual(
+            QwenSettings(
+                api_key="test-key",
+                model="qwen-test",
+                timeout_seconds=30,
+                max_retries=3,
+            ).max_retries,
+            3,
+        )
+
+    def test_retry_budget_includes_timeout_and_backoff(self):
+        no_retry = QwenSettings(
+            api_key="test-key",
+            model="qwen-test",
+            timeout_seconds=28,
+            max_retries=0,
+        )
+        one_retry = QwenSettings(
+            api_key="test-key",
+            model="qwen-test",
+            timeout_seconds=20,
+            max_retries=1,
+        )
+
+        self.assertEqual(no_retry.maximum_call_budget_seconds, 28)
+        self.assertEqual(one_retry.maximum_call_budget_seconds, 40.25)
+
 
 if __name__ == "__main__":
     unittest.main()

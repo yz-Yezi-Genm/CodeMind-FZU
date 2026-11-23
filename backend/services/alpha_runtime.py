@@ -36,11 +36,12 @@ from backend.services.errors import (
     ServiceContractError,
     ServiceError,
 )
-from backend.services.qwen_client import create_qwen_client_from_env
+from backend.services.qwen_client import QwenLLMClient, QwenSettings
 
 
 logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_WORKFLOW_TIMEOUT_SECONDS = 30.0
 ClarificationRule = Callable[[AgentRequest], str | None]
 EvidenceCheck = Callable[[AgentRequest, RetrievedChunk], bool]
 
@@ -373,6 +374,7 @@ async def build_alpha_runtime(
     file_root: Path | None = None,
     clarification_rule: ClarificationRule | None = None,
     evidence_check: EvidenceCheck | None = None,
+    workflow_timeout_seconds: float = DEFAULT_WORKFLOW_TIMEOUT_SECONDS,
 ) -> AlphaRuntime:
     """Build the real runtime graph without starting a nested event loop."""
 
@@ -387,13 +389,26 @@ async def build_alpha_runtime(
             clarification_rule=clarification_rule,
             evidence_check=evidence_check,
         )
-        client = llm_client or create_qwen_client_from_env()
+        if llm_client is None:
+            qwen_settings = QwenSettings.from_env()
+            if (
+                qwen_settings.maximum_call_budget_seconds
+                > workflow_timeout_seconds
+            ):
+                raise LLMConfigurationError(
+                    "Qwen 超时与重试预算超过 AgentWorkflow 单阶段超时，"
+                    "请减少重试次数或缩短单次超时。"
+                )
+            client = QwenLLMClient(qwen_settings)
+        else:
+            client = llm_client
         workflow = await create_alpha_workflow(
             retriever=retriever,
             file_root=file_root or PROJECT_ROOT,
             llm_client=client,
             clarification_rule=clarification_rule,
             evidence_check=evidence_check,
+            timeout_seconds=workflow_timeout_seconds,
         )
     except ServiceError:
         raise

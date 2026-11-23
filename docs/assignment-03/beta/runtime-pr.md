@@ -9,8 +9,12 @@
 - `backend/app/alpha.py`
 - `backend/services/alpha_runtime.py`
 - `backend/services/qwen_client.py`
+- `scripts/check_qwen_live.py`
+- `scripts/check_qwen_runtime_live.py`
+- `scripts/run_alpha_agent.py`
 - `tests/test_backend_runtime.py`
 - `tests/test_qwen_client.py`
+- `tests/test_beta_script_lifecycle.py`
 - `docs/assignment-03/beta/runtime-stability.md`
 - `docs/assignment-03/beta/evidence/`
 
@@ -19,10 +23,12 @@
 - FastAPI lifespan 继续使用统一审核资料加载器、Agent 工厂和 Retriever 绑定业务规则。
 - Qwen 自有 HTTP 连接首次创建后复用，应用关闭时释放。
 - 调用方注入的 HTTP client 不因 FastAPI 重启而被适配器永久关闭。
+- 三个独立诊断脚本在成功和异常路径均关闭自己创建的 Qwen 客户端。
 - Qwen 返回的 JSON 内容、内部换行和 usage 信息完整交给 Agent。
 - Qwen 适配器不解析 `answer` / `used_evidence_ids`，不创建 Citation。
 - 完善超时、鉴权、限流、5xx、连接失败、非法/空响应处理。
-- 拒绝 `nan`/`inf` 超时、布尔/负数 usage 和缺失配置。
+- Settings 与 Client 共用构造阶段校验，拒绝非有限/布尔超时、非法重试次数、布尔/负数 usage 和缺失配置。
+- Runtime 检查 Qwen 超时与重试预算，禁止超过 AgentWorkflow 单阶段超时。
 - 验证无模型 Key 时健康检查仍可用、问答返回统一 503。
 - 验证会话隔离、历史限制、并发串行和后台清理。
 
@@ -38,19 +44,22 @@
 ## 测试
 
 ```powershell
-.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q
+.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs
 ```
 
-结果：`367 passed, 28 skipped, 145 subtests passed`。
+Python 3.14.4：`378 passed, 28 skipped, 154 subtests passed`。
+
+Python 3.10.11：`378 passed, 28 skipped, 154 subtests passed`。
 
 ```powershell
 .\.venv\Scripts\python.exe -X utf8 -m pytest `
   tests/test_backend_runtime.py `
   tests/test_qwen_client.py `
-  tests/test_agent_workflow_qwen.py -q
+  tests/test_agent_workflow_qwen.py `
+  tests/test_beta_script_lifecycle.py -q -rs
 ```
 
-结果：`72 passed, 26 skipped, 42 subtests passed`。
+结果：`81 passed, 26 skipped, 51 subtests passed`。
 
 ## 阶段拆分
 

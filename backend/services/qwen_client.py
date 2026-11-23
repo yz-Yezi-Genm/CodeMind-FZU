@@ -34,6 +34,25 @@ class QwenSettings:
     timeout_seconds: float = 28.0
     max_retries: int = 0
 
+    def __post_init__(self) -> None:
+        if (
+            not isinstance(self.timeout_seconds, (int, float))
+            or isinstance(self.timeout_seconds, bool)
+            or not math.isfinite(self.timeout_seconds)
+            or self.timeout_seconds <= 0
+        ):
+            raise LLMConfigurationError(
+                "QWEN_TIMEOUT_SECONDS 必须是大于 0 的有限数字。"
+            )
+        if (
+            not isinstance(self.max_retries, int)
+            or isinstance(self.max_retries, bool)
+            or not 0 <= self.max_retries <= 3
+        ):
+            raise LLMConfigurationError(
+                "QWEN_MAX_RETRIES 必须是 0 到 3 的整数。"
+            )
+
     @classmethod
     def from_env(cls) -> "QwenSettings":
         timeout_raw = os.getenv("QWEN_TIMEOUT_SECONDS", "28")
@@ -61,6 +80,15 @@ class QwenSettings:
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
         )
+
+    @property
+    def maximum_call_budget_seconds(self) -> float:
+        """Upper-bound duration including retries and inter-attempt backoff."""
+        backoff = sum(
+            0.25 * (2**attempt)
+            for attempt in range(self.max_retries)
+        )
+        return self.timeout_seconds * (self.max_retries + 1) + backoff
 
 
 class QwenLLMClient:

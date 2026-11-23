@@ -1,20 +1,28 @@
 Beta runtime stability tests
 Date: 2026-11-23 (Asia/Shanghai)
 Branch: feat/beta-runtime-stability
-Base main: a789f53
-Python: 3.14.4
+Base main: 306c15d
+Python: 3.14.4 and 3.10.11
 pytest: 9.2.0
 
 Full tests:
-  Command: .venv\Scripts\python.exe -X utf8 -m pytest tests -q
-  Result: 367 passed, 28 skipped, 1 warning, 145 subtests passed
+  Command: .venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs
+  Result: 378 passed, 28 skipped, 1 warning, 154 subtests passed
+
+Python 3.10.11 full tests:
+  Command: python310.exe -X utf8 -m pytest tests -q -rs
+  Result: 378 passed, 28 skipped, 1 warning, 154 subtests passed
+  Complete output: runtime-pytest-py310.txt
+
+Python 3.14.4 complete output: runtime-pytest-py314.txt
 
 Directed tests:
   Command: pytest
     tests/test_backend_runtime.py
     tests/test_qwen_client.py
-    tests/test_agent_workflow_qwen.py -q
-  Result: 72 passed, 26 skipped, 1 warning, 42 subtests passed
+    tests/test_agent_workflow_qwen.py
+    tests/test_beta_script_lifecycle.py -q -rs
+  Result: 81 passed, 26 skipped, 1 warning, 51 subtests passed
 
 Coverage:
   - FastAPI lifespan startup and health check;
@@ -23,6 +31,8 @@ Coverage:
   - malformed and empty provider envelopes;
   - complete JSON response transport for Agent parsing;
   - persistent owned HTTP connection and caller-owned injected connection;
+  - direct QwenSettings validation and retry/timeout budget;
+  - diagnostic scripts close clients on success and failure;
   - conversation isolation, bounded history, serialization and cleanup;
   - approved corpus failure-closed checks.
 
