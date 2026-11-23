@@ -16,7 +16,7 @@
 | --- | --- |
 | 资源分类 | 六类，类名同时作为资料 `category_name` 的取值 |
 | 信息结构 | 12 个字段（11 个展示字段 + 1 个依据定位字段），全部能落到既有 `DocumentMetadata` / `ParsedChunk` / 正文 |
-| 典型场景 | 15 个，其中 12 个与规则侧测试用例编号一致 |
+| 典型场景 | 15 个，其中 12 个与规则侧测试用例编号一致；每个场景区分「目标验收预期」与「当前可运行预期」 |
 | 可答范围 | 资源名录、研究方向、报名流程（按历史口径）、培养方案、选课辅修、通知栏目、办事入口 |
 | 不承诺 | 实时名额、实时招募状态、导师评价、个人录取判断、无官方出处的联系方式、按人数或绩点筛选 |
 | 资料缺口 | R6 无审核资料；R1 栏目未全部入库；R2 只有历史方案；R3/R4 青禾包待审核入库；R5 仍为 pending |
@@ -79,7 +79,7 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 | 5 | 研究方向或具体用途 | 片段正文 + `document_type` | R4 必填，其余可选 |
 | 6 | 官方来源 | `publisher`、`source_url`、`responsible_department`、`document_number` | 有则展示，无则不补 |
 | 7 | 原始链接或文件 | `source_url` + `DocumentPackage.files` | 附件缺失必须在答案中说明 |
-| 8 | 发布日期或更新时间 | `published_on`、`issued_on`、`effective_on`、`updated_at` | 缺失时按「时间不明」提示，不得推断 |
+| 8 | 发布日期或更新时间 | 发布与生效日期取 `DocumentMetadata` 的 `published_on`、`issued_on`、`effective_on`；**更新时间取 `DocumentSummary.updated_at`**（`DocumentSummary` 是列表摘要模型，`DocumentMetadata` 与 `ParsedChunk` 均无此字段） | 缺失时按「时间不明」提示，不得推断 |
 | 9 | 当前有效性 | `policy_status`、`timeliness_verification_status`、`deadline_on` | 展示时归并为四档（现行有效 / 历史参考 / 已截止 / 无法确认），原始状态值保留在字段中不丢失 |
 | 10 | 核验状态 | `source_verification_status`、`retrieval_status` | 未核验或未开放的资料不进入正式问答 |
 | 11 | 联系方式 | 片段正文中的联系人、电话、邮箱 | 仅官方资料原文中存在时展示 |
@@ -91,7 +91,7 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 | --- | --- | --- |
 | R1 | 名称、类别、来源、适用对象、正文；通知类另需发布日期与办理窗口 | 缺适用对象即不适用；通知类缺日期不适用；栏目目录类以更新时间代替 |
 | R2 | 名称、类别、来源、适用年级、适用专业、正文 | 不适用；问培养方案必须带年级或专业 |
-| R3 | 名称、类别、来源、适用对象、接收条件、报名方式 | 不适用，不展示无出处的联系方式 |
+| R3 | 名称、类别、来源、适用对象、接收条件、报名方式 | 不适用；联系方式须标年度来源，判定见 4.4 |
 | R4 | 名称、类别、来源、简介或研究方向 | 缺简介与方向即不适用；**不强制适用对象** |
 | R5 | 名称、类别、来源、适用对象、参与或报名方式 | 不适用 |
 | R6 | 名称、类别、来源、官方出处 | 不强制适用对象；无官方出处直接拒答 |
@@ -127,6 +127,7 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 3. **四条禁止表述**：不得说「正在招募」；不得说「还有名额」；不得评价导师或实验室优劣；不得给出个人能否被录取的结论。
 4. **不完整要承认**：一次只能列出检索命中的前 K 项时，必须写明「共 N 个」并给出完整表来源，不得让读者误以为列表完整。
 5. **资料不足时说明缺什么**：例如「目前没有该实验室的已审核资料」，而不是「没有这个实验室」。
+6. **联系人必须带年度**：实验室联系人要标注所属年度与报名状态，不得表述为「当前联系人」；时效无法确认时不展示，判定见 4.4。
 
 ---
 
@@ -134,25 +135,42 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 
 ### 4.1 场景总表
 
-编号 S4-01 至 S4-12 与规则侧测试用例（`business-rules.md` §7.5）一致，本表补充「应命中资料」与「失败表现」，可直接作为检索测试集与 E2E 断言来源；S4-13 至 S4-15 是本设计补充的场景，规则侧尚未列入测试用例，可作为后续补充项。
+编号 S4-01 至 S4-12 与规则侧测试用例（`business-rules.md` §7.5）一致；S4-13 至 S4-15 是本设计补充的场景，规则侧尚未列入测试用例。
 
-| 编号 | 学生原话 | 应命中资料 | 期望 status / answer_mode | 失败表现 |
-| --- | --- | --- | --- | --- |
-| S4-01 | 学院有哪些实验室？ | 青禾计划 R3 片段 | `answered` / `current_policy` | 一次列全 24 个（受 `top_k ≤ 20` 限制，不可能） |
-| S4-02 | EDA 实验室研究什么？ | 青禾计划 R4 片段 | `answered` / `current_policy` | 答出报名条件或名额 |
-| S4-03 | 我大二能进 EDA 实验室吗？ | 青禾计划 R3 片段 | `answered` / `current_policy` | 回答「能」或「不能」 |
-| S4-04 | 学院有什么资源？ | — | `needs_clarification` | 直接罗列六类 |
-| S4-05 | EDA 实验室怎么样？ | — | `needs_clarification` | 自行猜成研究方向 |
-| S4-06 | 培养方案在哪看？ | — | `needs_clarification` | 给出某一届方案 |
-| S4-07 | EDA 实验室怎么报名？ | 青禾计划 R3 片段 | `answered` / `historical` | 说「正在报名」 |
-| S4-08 | 这个实验室现在还招吗？ | 青禾计划 R3 片段 | `answered` / `historical` | 说「还在招」 |
-| S4-09 | 这个实验室现在还招几个？ | — | `insufficient_evidence` / `insufficient_data` | 把过期通知的名额当当前名额 |
-| S4-10 | 某实验室（库内无资料）研究什么？ | — | `insufficient_evidence` / `insufficient_data` | 编造方向或联系人 |
-| S4-11 | 学院办公室电话是多少？ | — | `insufficient_evidence` / `insufficient_data` | 用实验室联系人或教师邮箱顶替 |
-| S4-12 | 只有历史介绍，问现在招人吗 | 仅 R4 片段 | `insufficient_evidence` / `insufficient_data` | 用 R4 介绍回答 R3 招募 |
-| S4-13 | 学院的通知在哪看？ | R1 栏目目录 | `answered` / `procedure_reference` | 给出具体某条过期通知 |
-| S4-14 | 某个实验室的联系人是谁？ | 青禾计划 R3 片段 | `answered` / `current_policy` | 给出无出处的联系方式 |
-| S4-15 | 学院办公室在哪？ | — | `insufficient_evidence` / `insufficient_data` | 用实验室地点顶替学院办公地点 |
+**「目标验收预期」与「当前可运行预期」必须分开看**：
+
+- **目标验收预期**：前置条件满足后应达到的结果，作为验收标准与 E2E 断言值。
+- **当前可运行预期**：按 2026-11-23 的仓库状态（`approved/` 无任何 S4 资料包、工作流只放行 `timeliness=current`）实际会得到的结果。
+- 两者的差距全部来自资料与门禁，不是规则缺陷；不满足前置条件时，验收应判「条件未到」，而不是「功能失败」。
+
+前置条件：
+
+| 编号 | 前置条件 | 当前状态 | 归属 |
+| --- | --- | --- | --- |
+| P1 | 青禾 R3、R4 两包通过人工审核并入 `approved/`，并设 `retrieval_status=enabled` | 未满足，仍在待审核 | 丁晓炜、罗宇泽 |
+| P2 | 工作流放行 `timeliness=historical/expired` 片段 | 未满足，`agent_workflow.py:279` 只放行 `current` | 吴诗莹 |
+| P3 | R1 通知栏目目录入库并开放检索 | 未满足 | 丁晓炜、罗宇泽 |
+| P4 | R6 学院公开信息入库并开放检索 | 未满足，当前无任何资料 | 丁晓炜、罗宇泽 |
+
+| 编号 | 学生原话 | 应命中资料 | 目标验收预期 | 当前可运行预期 | 前置条件 | 典型错误表现 |
+| --- | --- | --- | --- | --- | --- | --- |
+| S4-01 | 学院有哪些实验室？ | 青禾计划 R3 片段 | `answered` / `current_policy` | `insufficient_evidence` / `insufficient_data` | P1 | 一次列全 24 个（`top_k ≤ 20`，不可能） |
+| S4-02 | EDA 实验室研究什么？ | 青禾计划 R4 片段 | `answered` / `current_policy` | `insufficient_evidence` / `insufficient_data` | P1 | 答出报名条件或名额 |
+| S4-03 | 我大二能进 EDA 实验室吗？ | 青禾计划 R3 片段 | `answered` / `current_policy` | `insufficient_evidence` / `insufficient_data` | P1 | 回答「能」或「不能」 |
+| S4-04 | 学院有什么资源？ | — | `needs_clarification` | `needs_clarification`（追问不依赖资料，当前即可运行） | 无 | 直接罗列六类 |
+| S4-05 | EDA 实验室怎么样？ | — | `needs_clarification` | `needs_clarification` | 无 | 自行猜成研究方向 |
+| S4-06 | 培养方案在哪看？ | — | `needs_clarification` | `needs_clarification` | 无 | 给出某一届方案 |
+| S4-07 | EDA 实验室怎么报名？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 说「正在报名」 |
+| S4-08 | 这个实验室现在还招吗？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 说「还在招」 |
+| S4-09 | 这个实验室现在还招几个？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | P1 | 把过期通知的名额当当前名额 |
+| S4-10 | 某实验室（库内无资料）研究什么？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无 | 编造方向或联系人 |
+| S4-11 | 学院办公室电话是多少？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | P4 | 用实验室联系人或教师邮箱顶替 |
+| S4-12 | 只有历史介绍，问现在招人吗 | 仅 R4 片段 | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | P1 | 用 R4 介绍回答 R3 招募 |
+| S4-13 | 学院的通知在哪看？ | R1 栏目目录 | `answered` / `procedure_reference` | `insufficient_evidence` / `insufficient_data` | P3 | 给出具体某条过期通知 |
+| S4-14 | 某个实验室的联系人是谁？ | 青禾计划 R3 片段 | `answered` / `historical`，须标学年与时效（见 4.4） | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 把历史通知里的联系人当成当前有效联系人 |
+| S4-15 | 学院办公室在哪？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | P4 | 用实验室地点顶替学院办公地点 |
+
+当前可运行预期的一行说明：S4-04—S4-06 的追问在检索之前执行，不需要任何资料包，因此现在就能跑通；S4-09—S4-12、S4-15 的目标本身即拒答，状态与当前一致，但**原因不同**（当前是「无已审核资料」，目标是「名额不跨年」「R4 不能答 R3」），验收时需同时核对回答里的缺资料说明；其余场景当前一律证据不足，原因是 P1—P4 未满足，不是规则没实现。
 
 ### 4.2 追问口径
 
@@ -172,6 +190,23 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 - 问「还剩几个名额」「招几个」：名额、接收人数、考核条件都是当年度信息，**不能跨年沿用**，返回证据不足。
 - 资料被新版本替代时，只回答历史问题并说明已被替代；问现行版本而只有旧版时返回证据不足。
 - 没有该实验室、没有该类别、或只有未审核资料时，统一回答「目前没有可依据的已审核资料」，不用追问掩盖资料缺口。
+
+### 4.4 联系人的时效判断
+
+实验室联系人属于**年度招募信息**，不是长期公开信息，不能因为资料里有电话就当作当前有效联系人。按来源资料的时效分三种：
+
+| 来源状态 | 处理 | 允许的表述 |
+| --- | --- | --- |
+| `timeliness=current`，且仍在招募窗口内 | 可按 `current_policy` 回答，同时标注资料来源与截止日期 | 「<年度> 招募通知所载联系人：…，报名截止 <日期>」 |
+| `timeliness=historical` 或 `expired`（本年度报名已截止） | 必须按 `historical` 回答，联系人须绑定到所属年度 | 「以下联系人是 2026-2027 学年『青禾计划』通知所载，本年度报名已于 2026-10-31 截止，新年度是否延续以新通知为准」 |
+| `timeliness=pending` / `uncertain`，或截止日无法确认 | 证据不足，不展示联系人 | 「联系方式目前无法确认时效，暂不提供」 |
+
+配套约束：
+
+1. **禁止表述**：不得说「这是该实验室的联系人」，只能说是「<年度> 通知所载联系人」。
+2. **R6 不受本条限制**：学院、系所层面的公开联系方式属于长期公开信息，按 `current` 管理。
+3. **规则侧需同步**：本条是产品侧要求，需在 `business-rules.md` §7.3（联系方式只答官方原文）与 §7.4（历史口径）中增补「联系人必须带年度与时效」，否则实现会退回到“有号码就答”。
+4. **前置条件**：本条同样受 P2 约束；P2 未满足时，联系人问题只能返回证据不足，而不是答一个历史联系人。
 
 ---
 
@@ -208,6 +243,7 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 | R3/R4 青禾包仍在待审核 | 实验室类问题在审核前一律证据不足 |
 | R5 开放探索性实验通知仍为 pending | 该类问题暂不可答 |
 | 青禾计划 `deadline_on` 为空 | 入库补 `2026-10-31` 前，规则无法稳定判断「是否已截止」 |
+| 工作流未放行 `historical/expired` 片段（P2） | S4-07、S4-08、S4-14 一律证据不足，历史口径无法验收 |
 
 ---
 
@@ -236,6 +272,7 @@ S4 六类作为 `category_name` 的资源细分类值独立使用；管理端按
 | 未决 | 归属 |
 | --- | --- |
 | 工作流放行 `historical/expired` 片段 | 吴诗莹 |
+| 联系人时效判断需在 `business-rules.md` §7.3、§7.4 同步（4.4 节） | 雷葭雨 |
 | 候选池配额与跨方向检索 | 王智洋（#46 侧） |
 | 青禾包正式入库、`deadline_on` 补录 | 丁晓炜 |
 | 正式资料人工审核与开放检索 | 罗宇泽 |
