@@ -106,6 +106,17 @@ def metadata_for(key, preview):
     return DocumentMetadata.model_validate(data)
 
 
+def render_source_units(metadata, units):
+    """Return the retained conversion text and each original unit's interval."""
+    text, intervals = "", []
+    for number, unit in enumerate(units, 1):
+        start = len(text)
+        scope = " / ".join(unit.get("heading_path", []))
+        text += f"## {metadata.title} | {scope} | 来源单元{number:04d}\n\n{unit['content']}\n\n"
+        intervals.append((start, len(text), number, unit))
+    return text, intervals
+
+
 def build():
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
@@ -119,12 +130,7 @@ def build():
     for key, units in sources["documents"].items():
         metadata = metadata_for(key, preview)
         md_key = OUTPUT / "texts" / f"{key}.md"
-        text, intervals = "", []
-        for number, unit in enumerate(units, 1):
-            start = len(text)
-            scope = " / ".join(unit.get("heading_path", []))
-            text += f"## {metadata.title} | {scope} | 来源单元{number:04d}\n\n{unit['content']}\n\n"
-            intervals.append((start, len(text), number, unit))
+        text, intervals = render_source_units(metadata, units)
         (ROOT / md_key).parent.mkdir(parents=True, exist_ok=True)
         (ROOT / md_key).write_text(text, encoding="utf-8", newline="\n")
         package = TextDocumentParser(ROOT, max_chunk_chars=2400, file_role="curated" if key == "recommendation" else "extracted").parse_document(md_key, metadata)
@@ -167,6 +173,21 @@ async def check():
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
     manifest = read(OUTPUT / "manifest.json")
+    if manifest.get("stage") != "pending-review":
+        raise ValueError("Manifest stage must be pending-review")
+    for field in ("enabled_packages", "human_approved_packages"):
+        if type(manifest.get(field)) is not int or manifest[field] != 0:
+            raise ValueError(f"Manifest {field} must be integer zero")
+    rows = manifest.get("packages")
+    if (not isinstance(rows, list) or len(rows) != len(RECORDS)
+        or any(not isinstance(row, dict) or not isinstance(row.get("key"), str) for row in rows)
+        or {row.get("key") for row in rows} != set(RECORDS)):
+        raise ValueError("Manifest must list each of the eight candidates exactly once")
+    for row in rows:
+        if row.get("retrieval_status") != "blocked" or row.get("human_approved") is not False:
+            raise ValueError("Manifest entries must remain blocked and human_approved=false")
+        if row.get("package") != (OUTPUT / f"{row['key']}.json").as_posix():
+            raise ValueError("Manifest candidate package path inconsistent")
     mapping = read(REVIEW / "chunk-source-map.json")
     lookup = {(r["package"], r["chunk_no"]): r for r in mapping}
     if len(lookup) != len(mapping):
@@ -174,11 +195,25 @@ async def check():
     retriever = LocalBM25Retriever(file_root=ROOT)
     count, metadata_hidden, chunks_hidden = 0, 0, 0
     index_results = []
-    for row in manifest["packages"]:
+    for row in rows:
         package = DocumentPackage.model_validate(read(Path(row["package"])))
-        if package.metadata.retrieval_status.value != "blocked" or package.metadata.temporal_notes.get("human_approved") is not False:
+        temporal = package.metadata.temporal_notes or {}
+        if package.metadata.retrieval_status.value != "blocked" or temporal.get("human_approved") is not False:
             raise ValueError("Beta candidates cannot approve/enable policies")
-        if package.metadata.version_no != VERSION or len(package.chunks) != row["chunk_count"]:
+        units = sources["documents"][row["key"]]
+        metadata_fields = {
+            "record_code": package.metadata.record_code,
+            "domains": temporal.get("beta_domains"),
+            "source_verification_status": package.metadata.source_verification_status.value,
+            "timeliness_verification_status": package.metadata.timeliness_verification_status.value,
+            "retrieval_status": package.metadata.retrieval_status.value,
+            "human_approved": temporal.get("human_approved"),
+        }
+        if (package.metadata.version_no != VERSION or package.metadata.record_code != RECORDS[row["key"]]
+            or row.get("domains") != DOMAINS[row["key"]]
+            or any(row.get(field) != value for field, value in metadata_fields.items())
+            or type(row.get("chunk_count")) is not int or row["chunk_count"] != len(package.chunks)
+            or type(row.get("source_units")) is not int or row["source_units"] != len(units)):
             raise ValueError("Package manifest inconsistent")
         if row["key"] == "qinghe" and (
             row["domains"] != ["S4"]
@@ -189,16 +224,39 @@ async def check():
         for file in package.files:
             if digest(Path(file.storage_key)) != file.sha256:
                 raise ValueError("Package file hash mismatch")
+        md_key = (OUTPUT / "texts" / f"{row['key']}.md").as_posix()
+        text = (ROOT / md_key).read_text(encoding="utf-8")
+        expected_text, intervals = render_source_units(package.metadata, units)
+        if text != expected_text:
+            raise ValueError("Conversion text differs from retained source units")
         for chunk in package.chunks:
-            evidence = lookup[(Path(row["package"]).name, chunk.chunk_no)]
+            evidence = lookup.get((Path(row["package"]).name, chunk.chunk_no))
+            if evidence is None:
+                raise ValueError("Missing source mapping for chunk")
             note = json.loads(chunk.locator_note)
-            text = (ROOT / chunk.source_file_key).read_text(encoding="utf-8")
-            if text[note["char_start"]:note["char_end"]] != chunk.content:
+            if chunk.source_file_key != md_key or evidence.get("source_file_key") != chunk.source_file_key:
+                raise ValueError("Source mapping source_file_key mismatch")
+            if json.dumps(evidence.get("locator_note"), sort_keys=True) != json.dumps(note, sort_keys=True):
+                raise ValueError("Source mapping locator_note mismatch")
+            start, end = note.get("char_start"), note.get("char_end")
+            if (type(start) is not int or type(end) is not int or not 0 <= start < end <= len(text)
+                or text[start:end] != chunk.content):
                 raise ValueError("Chunk text interval differs from conversion")
-            unit = sources["documents"][row["key"]][evidence["source_unit"] - 1]
+            number = evidence.get("source_unit")
+            if type(number) is not int or not 1 <= number <= len(intervals):
+                raise ValueError("Source mapping source_unit outside retained units")
+            unit_start, unit_end, _, unit = intervals[number - 1]
+            if not unit_start <= start < end <= unit_end:
+                raise ValueError("Chunk interval outside mapped source unit")
+            if evidence.get("transformation") != unit["method"]:
+                raise ValueError("Source mapping transformation mismatch")
             if evidence["source_unit_sha256"] != sha256(unit["content"].encode()).hexdigest():
                 raise ValueError("Source unit hash mismatch")
-            if (evidence["original_file_key"], evidence["original_locator"], evidence["original_sha256"]) != (chunk.original_file_key, chunk.original_locator, digest(Path(chunk.original_file_key))):
+            if (chunk.original_file_key not in sources["inputs"]
+                or not isinstance(chunk.original_locator, str) or not chunk.original_locator.strip()
+                or (unit["original_file_key"], unit["locator"]) != (chunk.original_file_key, chunk.original_locator)
+                or (evidence["original_file_key"], evidence["original_locator"], evidence["original_sha256"])
+                != (chunk.original_file_key, chunk.original_locator, sources["inputs"].get(chunk.original_file_key))):
                 raise ValueError("Original mapping mismatch")
         indexed = await retriever.index_document(package)
         if (indexed.status.value != "indexed" or indexed.warnings

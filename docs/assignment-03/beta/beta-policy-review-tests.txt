@@ -7,16 +7,24 @@ test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits (knowledge_b
 test_checker_rejects_qinghe_s1_mapping_even_when_blocked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_qinghe_s1_mapping_even_when_blocked) ... ok
 test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
 test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
+test_manifest_cannot_omit_duplicate_or_redirect_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_cannot_omit_duplicate_or_redirect_candidates) ... ok
+test_manifest_entry_approval_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_entry_approval_tampering_is_rejected) ... ok
+test_manifest_fields_must_match_package_metadata_and_counts (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_fields_must_match_package_metadata_and_counts) ... ok
+test_manifest_header_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_header_tampering_is_rejected) ... ok
+test_mapping_source_file_locator_note_and_transformation_tampering (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_source_file_locator_note_and_transformation_tampering) ... ok
 test_mapping_tamper_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_tamper_is_rejected) ... ok
+test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check) ... ok
+test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check) ... ok
 test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_44_records_preserved_as_import_snapshots) ... ok
 test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_tamper_fails_closed) ... ok
 test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_cells_and_contact_fields_survive_markdown) ... ok
 test_qinghe_mapping_filters_s1_independently_of_blocked_gate (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_mapping_filters_s1_independently_of_blocked_gate) ... ok
 test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_real_packages_hashes_intervals_and_four_domain_isolation) ... ok
 test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_rebuild_does_not_change_approved_or_alpha_candidates) ... ok
+test_source_unit_original_file_and_locator_must_match_chunk (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_source_unit_original_file_and_locator_must_match_chunk) ... ok
 
 ----------------------------------------------------------------------
-Ran 14 tests in 1.927s
+Ran 22 tests in 1.526s
 
 OK
 
@@ -25,12 +33,15 @@ qinghe-conversion
 $ review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v
 test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_changed_headers_fail) ... ok
 test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_complete_workbook_merges_and_empty_sheets) ... ok
+test_extra_merged_region_fails_before_cells_can_be_lost (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_extra_merged_region_fails_before_cells_can_be_lost) ... ok
 test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_formulas_require_review_instead_of_inferred_value) ... ok
 test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_hidden_extra_content_is_not_silently_omitted) ... ok
 test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_field_explicitly_marked) ... ok
+test_missing_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_title_merge_fails) ... ok
+test_replaced_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_replaced_title_merge_fails) ... ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 0.335s
+Ran 8 tests in 0.531s
 
 OK
 
@@ -52,7 +63,7 @@ test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.pro
 test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 1.481s
+Ran 13 tests in 0.693s
 
 OK
 
@@ -70,4 +81,4 @@ $ python -m pytest tests -q
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 1 warning, 136 subtests passed in 39.19s
+357 passed, 28 skipped, 1 warning, 136 subtests passed in 31.10s

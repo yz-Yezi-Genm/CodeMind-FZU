@@ -4,28 +4,28 @@
       "suite": "beta-candidates",
       "command": "python -m unittest knowledge_base.processing.test_beta_policy_review -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T06:24:36.351334+00:00",
-      "tests_run": 14
+      "checked_at_utc": "2026-11-23T06:45:49.732156+00:00",
+      "tests_run": 22
     },
     {
       "suite": "qinghe-conversion",
       "command": "review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T06:24:38.134600+00:00",
-      "tests_run": 5
+      "checked_at_utc": "2026-11-23T06:44:29.256796+00:00",
+      "tests_run": 8
     },
     {
       "suite": "alpha-review-regression",
       "command": "python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T06:24:40.326785+00:00",
+      "checked_at_utc": "2026-11-23T06:44:30.640115+00:00",
       "tests_run": 13
     },
     {
       "suite": "backend-regression",
       "command": "python -m pytest tests -q",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T06:25:21.339707+00:00",
+      "checked_at_utc": "2026-11-23T06:45:02.974762+00:00",
       "passed": 357,
       "skipped": 28,
       "subtests_passed": 136
@@ -34,7 +34,7 @@
   "scope": "Offline real candidate integrity/index/lookup isolation; synthetic routing fixture is in-memory only; no human approval, Qwen or browser E2E",
   "python": "3.12.14",
   "summary": {
-    "beta_tests_passed": 19,
+    "beta_tests_passed": 30,
     "alpha_review_tests_passed": 13,
     "backend_pytest_passed": 357,
     "backend_skipped": 28,
@@ -44,5 +44,5 @@
     "formal_approved_packages_at_start": 0
   },
   "skips_note": "后端既有可选上游快照/业务规则集成/真实模型在线测试未满足运行条件，跳过项不计为通过。未运行真实Qwen。",
-  "revision_scope": "PR #41第一轮修订：Beta文档归档、青禾仅S4、实际索引结果与blocked直查隔离。"
+  "revision_scope": "PR #41第二轮修订：manifest状态和包一致性；来源映射/字符区间/转换方法交叉检查；青禾Sheet1精确合并区域防回归。"
 }

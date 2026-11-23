@@ -14,6 +14,112 @@ from knowledge_base.processing import build_beta_policy_review as build
 
 
 class BetaCandidateTests(unittest.TestCase):
+    def assert_tampered_read_fails(self, path, mutate, message):
+        real_read = build.read
+        def altered_read(candidate):
+            value = real_read(candidate)
+            if candidate == path:
+                mutate(value)
+            return value
+        with patch.object(build, "read", side_effect=altered_read):
+            with self.assertRaisesRegex(ValueError, message):
+                asyncio.run(build.check())
+
+    def test_manifest_header_tampering_is_rejected(self):
+        cases = [("stage", "approved"), ("stage", None)]
+        cases += [(field, value) for field in ("enabled_packages", "human_approved_packages")
+                  for value in (1, -1, "0", False, None)]
+        for field, value in cases:
+            with self.subTest(field=field, value=value):
+                self.assert_tampered_read_fails(build.OUTPUT / "manifest.json",
+                    lambda data: data.__setitem__(field, value), "Manifest (stage|.*integer zero)")
+
+    def test_manifest_entry_approval_tampering_is_rejected(self):
+        cases = [("retrieval_status", "enabled"), ("retrieval_status", "review_only"),
+                 ("retrieval_status", None), ("human_approved", True), ("human_approved", "false"),
+                 ("human_approved", 0), ("human_approved", None)]
+        for field, value in cases:
+            with self.subTest(field=field, value=value):
+                self.assert_tampered_read_fails(build.OUTPUT / "manifest.json",
+                    lambda data: data["packages"][0].__setitem__(field, value), "Manifest entries must remain")
+
+    def test_manifest_fields_must_match_package_metadata_and_counts(self):
+        cases = [("record_code", "wrong-record"), ("source_verification_status", "pending"),
+                 ("timeliness_verification_status", "current"), ("domains", ["S4"]),
+                 ("chunk_count", 223), ("chunk_count", "224"), ("source_units", 1)]
+        for field, value in cases:
+            with self.subTest(field=field):
+                self.assert_tampered_read_fails(build.OUTPUT / "manifest.json",
+                    lambda data: data["packages"][0].__setitem__(field, value), "Package manifest inconsistent")
+        for field, value in [("source_verification_status", "partial"), ("timeliness_verification_status", "historical")]:
+            with self.subTest(metadata_field=field):
+                self.assert_tampered_read_fails(build.OUTPUT / "competition.json",
+                    lambda data: data["metadata"].__setitem__(field, value), "Package manifest inconsistent")
+
+    def test_manifest_cannot_omit_duplicate_or_redirect_candidates(self):
+        for mutate in [lambda data: data["packages"].pop(),
+                       lambda data: data["packages"].__setitem__(1, deepcopy(data["packages"][0])),
+                       lambda data: data["packages"][0].__setitem__("package", "elsewhere/competition.json")]:
+            with self.subTest(mutate=mutate):
+                self.assert_tampered_read_fails(build.OUTPUT / "manifest.json", mutate,
+                                               "Manifest (must list|candidate package path)")
+
+    def test_mapping_source_file_locator_note_and_transformation_tampering(self):
+        cases = [("source_file_key", "texts/wrong.md", "source_file_key mismatch"),
+                 ("transformation", "invented-transformation", "transformation mismatch"),
+                 ("locator_note", {"char_start": 1, "char_end": 2}, "locator_note mismatch"),
+                 ("source_unit", 0, "source_unit outside"),
+                 ("source_unit", 999999, "source_unit outside"),
+                 ("source_unit", 2, "interval outside mapped source unit")]
+        for field, value, message in cases:
+            with self.subTest(field=field, value=value):
+                self.assert_tampered_read_fails(build.REVIEW / "chunk-source-map.json",
+                    lambda data: data[0].__setitem__(field, value), message)
+        def change_only_offset(data):
+            data[0]["locator_note"]["char_end"] += 1
+        self.assert_tampered_read_fails(build.REVIEW / "chunk-source-map.json", change_only_offset,
+                                       "locator_note mismatch")
+        def change_offset_type(data):
+            data[0]["locator_note"]["char_start"] = False  # False == 0 in Python, but not the same JSON type
+        self.assert_tampered_read_fails(build.REVIEW / "chunk-source-map.json", change_offset_type,
+                                       "locator_note mismatch")
+
+    def test_source_unit_original_file_and_locator_must_match_chunk(self):
+        for field, value in [("original_file_key", (build.REVIEW / "scholarship.html").as_posix()),
+                             ("locator", "invented original locator")]:
+            with self.subTest(field=field):
+                self.assert_tampered_read_fails(build.REVIEW / "source-units.json",
+                    lambda data: data["documents"]["competition"][0].__setitem__(field, value),
+                    "Original mapping mismatch")
+
+    def test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check(self):
+        real_read = build.read
+        def altered_read(path):
+            data = real_read(path)
+            if path == build.REVIEW / "chunk-source-map.json":
+                data[0]["locator_note"]["char_end"] += 1
+            elif path == build.OUTPUT / "competition.json":
+                note = json.loads(data["chunks"][0]["locator_note"])
+                note["char_end"] += 1
+                data["chunks"][0]["locator_note"] = json.dumps(note)
+            return data
+        with patch.object(build, "read", side_effect=altered_read):
+            with self.assertRaisesRegex(ValueError, "Chunk text interval differs"):
+                asyncio.run(build.check())
+
+    def test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check(self):
+        real_read = build.read
+        def altered_read(path):
+            data = real_read(path)
+            if path == build.REVIEW / "chunk-source-map.json":
+                data[0]["original_locator"] = "invented locator"
+            elif path == build.OUTPUT / "competition.json":
+                data["chunks"][0]["original_locator"] = "invented locator"
+            return data
+        with patch.object(build, "read", side_effect=altered_read):
+            with self.assertRaisesRegex(ValueError, "Original mapping mismatch"):
+                asyncio.run(build.check())
+
     def test_real_packages_hashes_intervals_and_four_domain_isolation(self):
         result = asyncio.run(build.check())
         self.assertEqual(result["packages"], 8)

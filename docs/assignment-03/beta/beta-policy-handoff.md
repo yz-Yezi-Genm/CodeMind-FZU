@@ -84,7 +84,15 @@ python -m pytest tests -q
 
 新增测试包含正常情况及异常：资料哈希篡改、原件映射篡改、候选误设enabled、XLSX表头变化、隐藏表新增内容、公式、字段空白。合成变体只在临时目录/内存内用于异常测试，不作为真实政策交付。
 
-实际测试：本批专项19项通过（候选包14项、XLSX转换5项），原Alpha资料/隐私审计13项通过，后端pytest 357项通过、28项跳过、136个子测试通过（1条既有依赖弃用警告）。跳过项不计为通过。结果见[JSON记录](beta-policy-review-test-results.json)、[日志](beta-policy-review-tests.txt)及[资料完整性/隔离报告](beta-policy-validation-report.json)。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
+第二轮审核补充以下检查：
+
+- manifest只能为`pending-review`，`enabled_packages`和`human_approved_packages`严格为整数0；条目只能`blocked`、布尔`human_approved=false`。八份候选不得遗漏、重复或改指其他路径；记录编号、场景、来源/时效/检索/审核状态及单元/片段数量逐项与包核对。
+- 501条映射逐一核对`source_file_key`、完整`locator_note`（含JSON类型）、`transformation`与来源单元的`original_file_key`/`locator`。从保留来源单元重建正文及单元边界，检查片段字符区间、正文相等和单元归属；同步伪造映射与片段也不能绕过原来源检查。
+- 青禾Sheet1合并区域必须精确为`A1:I1`；新增其他合并区、移除标题合并或改成`A1:H1`均失败。现有XLSX、转换结果和资料包不改写。
+
+实际测试：本批专项30项通过（候选包22项、XLSX转换8项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引与blocked查询结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
+
+本轮按组长要求继续更新PR #41。合并顺序为#44→#41→#45；只有确认#44已经合并后，才将最新`origin/main`合入`feat/beta-policy-review`并推送。同步情况以PR及本轮最终交接为准，不将尚未合并的#44记作已同步。
 
 ## 5. 可转发消息
 

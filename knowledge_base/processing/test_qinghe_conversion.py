@@ -29,6 +29,18 @@ class QingheWorkbookTests(unittest.TestCase):
     def test_changed_headers_fail(self):
         self.altered_workbook(lambda w: setattr(w["Sheet1"]["B2"], "value", "新字段"), "columns changed")
 
+    def test_extra_merged_region_fails_before_cells_can_be_lost(self):
+        self.altered_workbook(lambda w: w["Sheet1"].merge_cells("J30:K30"), "Sheet1 merged ranges changed")
+
+    def test_missing_title_merge_fails(self):
+        self.altered_workbook(lambda w: w["Sheet1"].unmerge_cells("A1:I1"), "Sheet1 merged ranges changed")
+
+    def test_replaced_title_merge_fails(self):
+        def mutate(wb):
+            wb["Sheet1"].unmerge_cells("A1:I1")
+            wb["Sheet1"].merge_cells("A1:H1")
+        self.altered_workbook(mutate, "Sheet1 merged ranges changed")
+
     def test_hidden_extra_content_is_not_silently_omitted(self):
         def mutate(wb):
             wb["Sheet2"]["A1"] = "additional policy content"

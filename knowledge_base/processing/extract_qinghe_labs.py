@@ -36,6 +36,8 @@ def extract(path):
         if workbook.sheetnames != ["Sheet1", "Sheet2", "Sheet3"]:
             raise ValueError("Qinghe workbook sheets changed; inspect source before conversion")
         sheet = workbook["Sheet1"]
+        if {str(area) for area in sheet.merged_cells.ranges} != {"A1:I1"}:
+            raise ValueError("Qinghe Sheet1 merged ranges changed; inspect source before conversion")
         allowed_coordinates = {sheet.cell(row, col).coordinate for row in range(3, 27) for col in range(1, 10)}
         if set(rich_links) - allowed_coordinates:
             raise ValueError("WPS links outside known Qinghe data rows; conversion stopped")
