@@ -94,5 +94,24 @@
   ],
   "indexed_chunks": 501,
   "blocked_metadata_lookups_returning_none": 8,
-  "blocked_chunk_lookups_returning_none": 501
+  "blocked_chunk_lookups_returning_none": 501,
+  "raw_reextraction": {
+    "documents": 8,
+    "source_units": 501,
+    "by_document": {
+      "competition": 224,
+      "scholarship": 59,
+      "college-scholarship": 33,
+      "xinghuo": 35,
+      "recommendation": 20,
+      "innovation": 86,
+      "retest": 9,
+      "qinghe": 35
+    },
+    "qinghe_lab_rows": 24,
+    "qinghe_nonempty_cells": 226,
+    "qinghe_wps_links": 40,
+    "recommendation_page4": "re-read spatial PDF characters; all non-footer text covered",
+    "method": "offline originals re-extracted in memory; exact unit/field comparison; no writes"
+  }
 }

@@ -45,9 +45,12 @@ S1/S2/S3/S4是场景标签，使用既有数据库业务代码，不修改全局
 
 ## 3. 复现命令
 
-以下在仓库根目录执行。`python`使用现有后端虚拟环境；`review-python`代表另一个安装了`knowledge_base/processing/requirements-beta-review.txt`的审核工具环境，不是项目新API，也不是固定命令名。将其替换为本机对应Python路径。
+以下在仓库根目录执行。`python`使用后端虚拟环境；完整`--check`现在直接重读HTML/DOCX/PDF/XLSX，因此该环境也必须安装审核工具依赖。`review-python`可使用同一个环境，或另一个安装相同审核工具的Python；不是项目新API或固定命令名。将其替换为本机对应Python路径。
 
 ```powershell
+# 仅审核工具环境需要；不改变生产DocumentParser的格式接口
+python -m pip install -r knowledge_base/processing/requirements-beta-review.txt
+
 # 可选联网刷新：会更新本批快照及核验时间。重新下载后必须重新核对并提交新的证据，不能只更新哈希。
 review-python -m knowledge_base.processing.fetch_beta_policy_sources
 review-python -m knowledge_base.processing.fetch_beta_policy_sources --attachments
@@ -59,16 +62,20 @@ review-python -m knowledge_base.processing.extract_beta_policy_review
 python -m knowledge_base.processing.build_beta_policy_review
 python -m knowledge_base.processing.build_beta_policy_review --check
 
+# 可单独运行原件到source-units对照；全程离线，只读且不写报告/覆盖成果
+python -m knowledge_base.processing.reextract_beta_policy_review
+
 # 新增的真实候选与异常门禁测试
 python -m unittest knowledge_base.processing.test_beta_policy_review -v
 review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v
+python -m unittest knowledge_base.processing.test_beta_reextraction -v
 
 # 原Alpha资料检查与现有后端测试回归（不改写原有测试报告）
 python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v
 python -m pytest tests -q
 ```
 
-审核工具实测版本：lxml 6.1.1、openpyxl 3.1.5、pypdf 6.21.4、pypdfium2 5.13.0；生产Markdown/TXT解析器不依赖新XLSX支持。后端全量测试需要另装pytest，本次为9.2.0，未修改生产依赖。复试PDF使用PDFium渲染9页并AI对照；这些图像仅用于本地比对，没有创建新PDF或伪造人工签字。
+审核工具实测版本：lxml 6.1.1、openpyxl 3.1.5、pypdf 6.21.4、pypdfium2 5.13.0、pdfplumber 0.11.9；生产Markdown/TXT解析器不依赖新XLSX支持。后端全量测试需要另装pytest，本次为9.2.0，未修改生产依赖。复试PDF使用PDFium渲染9页并AI对照；这些图像仅用于本地比对，没有创建新PDF或伪造人工签字。
 
 生成过程固定校验输入SHA；若官方附件内容变更、页数/表头改变或工作表出现新内容，应停下重新核验。不得通过仅修改基线哈希让检查“通过”。
 
@@ -90,7 +97,15 @@ python -m pytest tests -q
 - 501条映射逐一核对`source_file_key`、完整`locator_note`（含JSON类型）、`transformation`与来源单元的`original_file_key`/`locator`。从保留来源单元重建正文及单元边界，检查片段字符区间、正文相等和单元归属；同步伪造映射与片段也不能绕过原来源检查。
 - 青禾Sheet1合并区域必须精确为`A1:I1`；新增其他合并区、移除标题合并或改成`A1:H1`均失败。现有XLSX、转换结果和资料包不改写。
 
-实际测试：本批专项30项通过（候选包22项、XLSX转换8项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引与blocked查询结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
+本轮复审新增原件可复现检查：
+
+- `--check`从本批原始HTML、三份竞赛DOCX、两份PDF和青禾XLSX在内存重新提取，不用已生成Markdown、DocumentPackage或旧source-units作为正文提取输入。所有8份资料的501个来源单元（正文、表格字段、定位、方法、标题上下文等）按完整JSON值逐项精确比较；不一致则失败，不自动覆盖基线。
+- 青禾直接重读原XLSX，完整对照25个XLSX来源单元、逐单元格审计字段、24条实验室记录、226个非空值及40个WPS富文本链接；同时对照独立`qinghe-units.json`，不只比较计数或SHA。
+- 推免方案第1—3页重新读PDF文本；第4页直接按已确认布局的坐标区域读取字符、合并表头、8行竞赛分值、4行论文规则及脚注。重新排成既有规范化单元，不复制旧版式转录JSON。坐标仅适用于该固定PDF，原件改变须重新核验；原始空白归一化、竞赛分值后缀“分”、脚注半角逗号规范化及编辑性列名“作者条件”均在代码说明。页脚以外未覆盖文字会失败。这验证转录可复现，不代替人工政策审核。
+- 原件重提取全程无网络、无写入测试；修改XLSX后即使同步新SHA，或伪造source-units后重新生成所有下游文件，仍被原件内容对照拦截。
+- 其余7份资料的业务方向按原44条预览逐条连接记录/文档/方向映射精确核对，不能仅因代码存在于字典就通过。青禾唯一例外是已审核约定的`COLLEGE_RESOURCES`；其他资料误用合法但不对应的代码也会失败。
+
+实际测试：本批专项39项通过（候选包24项、XLSX转换8项、原件重提取7项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引、blocked查询及原件重提取结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
 
 本轮按组长要求继续更新PR #41。合并顺序为#44→#41→#45；只有确认#44已经合并后，才将最新`origin/main`合入`feat/beta-policy-review`并推送。同步情况以PR及本轮最终交接为准，不将尚未合并的#44记作已同步。
 

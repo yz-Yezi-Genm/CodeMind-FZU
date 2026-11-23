@@ -148,6 +148,27 @@ class BetaCandidateTests(unittest.TestCase):
         manifest = build.read(build.OUTPUT / "manifest.json")
         self.assertEqual(next(r for r in manifest["packages"] if r["key"] == "qinghe")["domains"], ["S4"])
 
+    def test_each_package_exactly_matches_original_44_record_direction_mapping(self):
+        preview = build.read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
+        by_id = {direction["id"]: direction["code"] for direction in preview["business_directions"]}
+        for row in build.read(build.OUTPUT / "manifest.json")["packages"]:
+            with self.subTest(key=row["key"]):
+                version = next(v for v in preview["document_versions"] if v["record_code"] == row["record_code"])
+                original = [by_id[link["direction_id"]] for link in preview["document_business_directions"]
+                            if link["document_id"] == version["document_id"]]
+                metadata = build.read(Path(row["package"]))["metadata"]
+                expected = ["COLLEGE_RESOURCES"] if row["key"] == "qinghe" else original
+                self.assertEqual(metadata["business_direction_codes"], expected)
+                if row["key"] == "qinghe":
+                    self.assertEqual(metadata["temporal_notes"]["business_scope_adjustment"]["original_business_direction_codes"], original)
+
+    def test_valid_dictionary_code_in_wrong_package_is_rejected(self):
+        for name in ["competition", "scholarship", "college-scholarship", "xinghuo", "recommendation", "innovation", "retest"]:
+            with self.subTest(key=name):
+                self.assert_tampered_read_fails(build.OUTPUT / f"{name}.json",
+                    lambda data: data["metadata"].__setitem__("business_direction_codes", ["GROWTH_PLANNING"]),
+                    "Business direction mapping differs from original preview")
+
     def test_qinghe_mapping_filters_s1_independently_of_blocked_gate(self):
         # Only the candidate's routing codes are copied. The enabled in-memory
         # fixture has no policy text, origin files, real identity or approval.

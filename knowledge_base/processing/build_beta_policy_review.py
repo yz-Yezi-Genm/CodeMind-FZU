@@ -17,6 +17,7 @@ from backend.contracts import DocumentMetadata, DocumentPackage, ParsedFile, Ret
 from backend.document_processing import TextDocumentParser
 from backend.retrieval.local import LocalBM25Retriever
 from knowledge_base.processing.build_policy_review import metadata_for as alpha_metadata, RECORDS as ALPHA_RECORDS
+from knowledge_base.processing.reextract_beta_policy_review import verify_reextraction
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW = Path("knowledge_base/processing/policy-review/2026-11-23")
@@ -59,6 +60,15 @@ def verify_inputs(sources):
     for key, expected in sources["inputs"].items():
         if digest(Path(key)) != expected:
             raise ValueError(f"Original hash changed; redo extraction/review: {key}")
+
+
+def business_directions_for(key, preview):
+    """Exact 44-record mapping, with only the reviewed Qinghe S4 override."""
+    version = next(r for r in preview["document_versions"] if r["record_code"] == RECORDS[key])
+    directions = {r["id"]: r["code"] for r in preview["business_directions"]}
+    original = [directions[r["direction_id"]] for r in preview["document_business_directions"]
+                if r["document_id"] == version["document_id"]]
+    return ["COLLEGE_RESOURCES"] if key == "qinghe" else original
 
 
 def metadata_for(key, preview):
@@ -172,6 +182,7 @@ def build():
 async def check():
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
+    preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
     manifest = read(OUTPUT / "manifest.json")
     if manifest.get("stage") != "pending-review":
         raise ValueError("Manifest stage must be pending-review")
@@ -221,6 +232,8 @@ async def check():
             or package.metadata.business_direction_codes != ["COLLEGE_RESOURCES"]
         ):
             raise ValueError("Qinghe candidates must be scoped to S4 / COLLEGE_RESOURCES only")
+        if package.metadata.business_direction_codes != business_directions_for(row["key"], preview):
+            raise ValueError(f"Business direction mapping differs from original preview: {row['key']}")
         for file in package.files:
             if digest(Path(file.storage_key)) != file.sha256:
                 raise ValueError("Package file hash mismatch")
@@ -289,11 +302,15 @@ async def check():
         raise ValueError("Blocked candidate leaked into formal retrieval")
     if len(mapping) != count:
         raise ValueError("Incomplete chunk mapping")
+    # Final integrity layer: independently re-read raw files, not just compare
+    # generated artifacts. Never regenerate/overwrite a failed baseline.
+    reextraction = verify_reextraction(ROOT, sources)
     return {"packages": len(manifest["packages"]), "chunks": count, "original_mappings": len(mapping),
             "enabled_packages": 0, "human_approved_packages": 0, "formal_hits_for_blocked_candidates": hits,
             "index_results": index_results, "indexed_chunks": sum(r["indexed_count"] for r in index_results),
             "blocked_metadata_lookups_returning_none": metadata_hidden,
-            "blocked_chunk_lookups_returning_none": chunks_hidden}
+            "blocked_chunk_lookups_returning_none": chunks_hidden,
+            "raw_reextraction": reextraction}
 
 
 def main():
