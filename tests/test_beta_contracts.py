@@ -18,49 +18,41 @@
 from __future__ import annotations
 
 import unittest
+from uuid import uuid4
+
+from pydantic import ValidationError
 
 from backend.contracts.models import (
     AgentResult,
     AnswerMode,
     AnswerStatus,
-    Citation,
-    DocumentMetadata,
-    ParsedChunk,
     RetrievalStatus,
     SourceVerificationStatus,
     TimelinessVerificationStatus,
-    WarningItem,
 )
-from backend.contracts.protocols import Retriever
 from backend.retrieval.local import LocalBM25Retriever
 
 
 class AnswerModeContractTests(unittest.TestCase):
     """V2.1 §5.3 回答模式枚举完整性。"""
 
-    def test_answer_mode_has_four_beta_values(self):
+    def test_answer_mode_has_exactly_four_beta_values(self):
         expected = {"current_policy", "historical", "procedure_reference", "insufficient_data"}
         actual = {mode.value for mode in AnswerMode}
         self.assertEqual(actual, expected)
 
-    def test_answer_mode_historical_and_procedure_reference_defined(self):
-        # V2.1 §9.2 历史政策要求：historical（已结束年度）、procedure_reference（当前办理）
+    def test_historical_and_procedure_reference_values(self):
+        # V2.1 §9.2：historical（已结束年度）、procedure_reference（当前办理）
         self.assertEqual(AnswerMode.HISTORICAL.value, "historical")
         self.assertEqual(AnswerMode.PROCEDURE_REFERENCE.value, "procedure_reference")
-        self.assertEqual(AnswerMode.CURRENT_POLICY.value, "current_policy")
-        self.assertEqual(AnswerMode.INSUFFICIENT_DATA.value, "insufficient_data")
 
 
 class AgentResultShapeContractTests(unittest.TestCase):
     """V2.1 §6.2 AgentResult 三状态结构约束。"""
 
-    def _base(self, status):
-        return AgentResult(status=status)
-
     def test_answered_requires_nonempty_answer(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             AgentResult(status=AnswerStatus.ANSWERED, answer=None)
-        # answered 且 answer 非空 + 明确 answer_mode 是合法的
         result = AgentResult(
             status=AnswerStatus.ANSWERED,
             answer="根据已核验资料……",
@@ -74,10 +66,12 @@ class AgentResultShapeContractTests(unittest.TestCase):
             clarifying_question="请问你咨询的是哪一类奖学金？",
         )
         self.assertIsNone(result.answer)
+        self.assertIsNone(result.answer_mode)
+        self.assertIsNotNone(result.clarifying_question)
         self.assertEqual(result.citations, [])
 
     def test_insufficient_evidence_requires_insufficient_data_mode(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             AgentResult(
                 status=AnswerStatus.INSUFFICIENT_EVIDENCE,
                 answer="证据不足",
@@ -94,26 +88,24 @@ class AgentResultShapeContractTests(unittest.TestCase):
 class TimelinessEnumContractTests(unittest.TestCase):
     """V2.1 §9.3 证据门禁涉及的时效状态。"""
 
-    def test_timeliness_has_historical_superseded_expired(self):
-        # 历史政策允许 historical / superseded / expired，不允许 pending / uncertain / failed
-        allowed_historical = {
-            TimelinessVerificationStatus.HISTORICAL,
-            TimelinessVerificationStatus.SUPERSEDED,
-            TimelinessVerificationStatus.EXPIRED,
-        }
-        for status in allowed_historical:
-            self.assertIn(status.value, {
-                "historical", "superseded", "expired",
-            })
+    def test_historical_modes_are_defined(self):
+        # 历史政策允许的三种时效状态必须在枚举中定义（V2.1 §9.2/9.3）
+        defined = {s.value for s in TimelinessVerificationStatus}
+        for value in ("historical", "superseded", "expired"):
+            self.assertIn(value, defined)
 
-    def test_timeliness_forbidden_states(self):
-        forbidden = {
+    def test_forbidden_states_are_defined_and_distinct(self):
+        # pending / uncertain 是「不能放行」的状态（V2.1 §9.3），且不同于当前/历史状态
+        self.assertEqual(TimelinessVerificationStatus.PENDING.value, "pending")
+        self.assertEqual(TimelinessVerificationStatus.UNCERTAIN.value, "uncertain")
+        self.assertNotEqual(
             TimelinessVerificationStatus.PENDING,
+            TimelinessVerificationStatus.CURRENT,
+        )
+        self.assertNotEqual(
             TimelinessVerificationStatus.UNCERTAIN,
-        }
-        # pending / uncertain 不能放行（V2.1 §9.3 明确列出）
-        self.assertIn(TimelinessVerificationStatus.PENDING, forbidden)
-        self.assertIn(TimelinessVerificationStatus.UNCERTAIN, forbidden)
+            TimelinessVerificationStatus.HISTORICAL,
+        )
 
 
 class RetrieverProtocolContractTests(unittest.TestCase):
@@ -126,31 +118,26 @@ class RetrieverProtocolContractTests(unittest.TestCase):
 
     def test_local_bm25_retriever_has_three_methods(self):
         retriever = LocalBM25Retriever()
-        # V2.1 §8.1/8.2/8.3：retrieve + get_document_metadata + get_parsed_chunk
         self.assertTrue(callable(getattr(retriever, "retrieve", None)))
         self.assertTrue(callable(getattr(retriever, "get_document_metadata", None)))
         self.assertTrue(callable(getattr(retriever, "get_parsed_chunk", None)))
 
     def test_get_document_metadata_returns_none_for_unknown_version(self):
-        from uuid import uuid4
-        retriever = LocalBM25Retriever()
-        self.assertIsNone(retriever.get_document_metadata(uuid4()))
+        self.assertIsNone(LocalBM25Retriever().get_document_metadata(uuid4()))
 
     def test_get_parsed_chunk_returns_none_for_unknown_chunk(self):
-        from uuid import uuid4
-        retriever = LocalBM25Retriever()
-        self.assertIsNone(retriever.get_parsed_chunk(uuid4()))
+        self.assertIsNone(LocalBM25Retriever().get_parsed_chunk(uuid4()))
 
 
 class RetrievalStatusContractTests(unittest.TestCase):
     """V2.1 §9.3 检索开放状态：blocked / review_only 不能进入正式问答。"""
 
-    def test_retrieval_status_has_blocked_review_only_enabled(self):
+    def test_retrieval_status_values(self):
         self.assertEqual(RetrievalStatus.BLOCKED.value, "blocked")
         self.assertEqual(RetrievalStatus.REVIEW_ONLY.value, "review_only")
         self.assertEqual(RetrievalStatus.ENABLED.value, "enabled")
 
-    def test_source_verification_has_verified_and_failed(self):
+    def test_source_verification_values(self):
         self.assertEqual(SourceVerificationStatus.VERIFIED.value, "verified")
         self.assertEqual(SourceVerificationStatus.FAILED.value, "failed")
 

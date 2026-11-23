@@ -4,15 +4,18 @@ V2.1 规定 Qwen 内部输出必须为严格 JSON（无 Markdown 围栏）：
 
     {"answer": "基于已提供证据形成的自然语言回答。", "used_evidence_ids": ["E1", "E2"]}
 
-本文件测试「输出格式与证据引用安全」的校验规则本身，覆盖任务书中列出的全部
-非法输出场景。由于 AgentWorkflow 的受约束生成尚未实现（Beta 开发中），本文件
-用一个**参考校验函数**（_validate_qwen_output）作为测试靶子，验证规则清晰可测；
-它**不是**生产实现，Final PR 阶段应替换为吴诗莹交付的真实校验逻辑。
+本文件测试「输出格式与证据引用安全」的校验规则，覆盖任务书 §11.3/11.4 列出的
+非法输出场景。
 
-重点（V2.1 §11.3/11.4）：
-- 证据 ID 由 Agent 在当前请求内分配，模型只能返回本次提供的 ID。
-- 模型不得自行生成 Citation、来源 URL、文件名。
-- 引用指向真实片段不能单独证明答案正确，测试仍须检查答案与原文一致。
+定位说明：AgentWorkflow 的受约束生成尚未实现（Beta 开发中），因此本文件用一个
+**参考校验函数** `_validate_qwen_output` 作为测试靶子，把 V2.1 的格式/ID 校验规则
+固化为可执行、可测试的用例。该函数**不是**生产实现，Final PR 阶段应替换为吴诗莹
+交付的真实校验逻辑——届时本文件的测试用例直接作用于真实校验函数，验证结果不变。
+
+明确边界：
+- 本文件只校验「输出格式 + 证据 ID 合法性」，不校验「答案内容与原文一致」——
+  后者需要 Agent 接真实 RetrievedChunk 才能做，属于 Final PR 的事实一致性测试。
+- 证据 ID 校验只能证明引用指向真实片段，不能单独证明答案正确（V2.1 §11.4）。
 """
 from __future__ import annotations
 
@@ -24,23 +27,21 @@ def _validate_qwen_output(
     content: str,
     *,
     available_ids: set[str],
-    source_texts: dict[str, str] | None = None,
 ) -> tuple[bool, str]:
     """参考校验实现：解析并校验 Qwen 受约束输出。
 
     返回 (是否通过, 拒绝原因)。这不是生产实现，仅用于固化 V2.1 校验规则。
 
-    规则：
-    1. 必须是合法 JSON（严格，无代码围栏）。
+    规则（V2.1 §11.3）：
+    1. 必须是合法 JSON（严格，无 Markdown 代码围栏）。
     2. 顶层必须且只能有 answer / used_evidence_ids 两个字段。
     3. answer 必须是非空字符串。
     4. used_evidence_ids 必须是非空字符串列表，且每个 ID 都在 available_ids 中。
-    5. 不得出现 citation / url / source 等模型自造字段。
+    5. 不得出现 citation / source_url 等模型自造字段。
     """
-    source_texts = source_texts or {}
-
-    # 1. 去掉可能的 Markdown 代码围栏（V2.1 明确不允许，但检测到即拒绝更安全）
     stripped = content.strip()
+
+    # 1. 拒绝 Markdown 代码围栏（V2.1 明确不允许）
     if stripped.startswith("```"):
         return False, "模型输出包含 Markdown 代码围栏"
 
@@ -55,21 +56,19 @@ def _validate_qwen_output(
 
     # 3. 只允许 answer / used_evidence_ids 两个字段（禁止自造 citation/url）
     allowed = {"answer", "used_evidence_ids"}
-    if set(payload.keys()) != allowed:
-        extra = set(payload.keys()) - allowed
-        if extra:
-            return False, f"模型输出包含非法字段：{sorted(extra)}"
+    extra = set(payload.keys()) - allowed
+    if extra:
+        return False, f"模型输出包含非法字段：{sorted(extra)}"
 
     # 4. answer 非空
     answer = payload.get("answer")
     if not isinstance(answer, str) or not answer.strip():
         return False, "模型输出缺少或包含空的 answer"
 
-    # 5. used_evidence_ids 非空且合法
+    # 5. used_evidence_ids 非空且元素为字符串
     ids = payload.get("used_evidence_ids")
     if not isinstance(ids, list) or not ids:
         return False, "模型输出缺少或包含空的 used_evidence_ids"
-
     if not all(isinstance(item, str) for item in ids):
         return False, "used_evidence_ids 包含非字符串元素"
 
@@ -78,7 +77,6 @@ def _validate_qwen_output(
         if eid not in available_ids:
             return False, f"引用了不存在的 evidence_id：{eid}"
 
-    # 7. 重复 ID 警告（可选，但不阻塞）
     return True, ""
 
 
@@ -149,7 +147,6 @@ class QwenEvidenceIdSafetyTests(unittest.TestCase):
 
     def test_cross_request_evidence_id_rejected(self):
         # 另一请求的 ID 不在本次可用集合中，应拒绝
-        other_request_ids = {"F1", "F2"}
         ok, reason = _validate_qwen_output(
             '{"answer": "x", "used_evidence_ids": ["F1"]}',
             available_ids=self.AVAILABLE,
@@ -158,7 +155,7 @@ class QwenEvidenceIdSafetyTests(unittest.TestCase):
         self.assertIn("F1", reason)
 
     def test_model_generated_citation_field_rejected(self):
-        # V2.1：模型不得自行生成 Citation / 来源 URL
+        # V2.1 §11.3：模型不得自行生成 Citation / 来源 URL
         ok, reason = _validate_qwen_output(
             json.dumps({
                 "answer": "x",
@@ -181,19 +178,6 @@ class QwenEvidenceIdSafetyTests(unittest.TestCase):
         )
         self.assertFalse(ok)
         self.assertIn("source_url", reason)
-
-    def test_evidence_id_maps_to_real_chunk_text(self):
-        # V2.1 §11.4：证据 ID 校验只能证明引用指向真实片段，答案内容仍需与原文一致。
-        # 这里验证「ID 合法 + 原文可追溯」的基础前提：可用集合必须来自真实检索。
-        source_texts = {"E1": "校级奖学金需提交申请表。"}
-        ok, _ = _validate_qwen_output(
-            '{"answer": "校级奖学金需提交申请表。", "used_evidence_ids": ["E1"]}',
-            available_ids={"E1"},
-            source_texts=source_texts,
-        )
-        self.assertTrue(ok)
-        # 答案内容应与原文一致（这里人工核对：answer 与 E1 原文一致）
-        self.assertIn("校级奖学金需提交申请表。", source_texts["E1"])
 
 
 if __name__ == "__main__":
