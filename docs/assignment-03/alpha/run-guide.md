@@ -1,5 +1,10 @@
 # Alpha 阶段运行说明（工程环境与部署支持）
 
+> **Beta 提示（2026-11-23）**：本轮验收以本机运行为准，不要求云服务器/域名，会话使用
+> `InMemoryConversationStore`，不需要 PostgreSQL。Windows 本机运行与干净环境验证的最新说明见
+> [`docs/assignment-03/beta/windows-runtime-test.md`](../beta/windows-runtime-test.md)；
+> 本文保留 Alpha 阶段的环境与联调记录，作为历史参考。
+
 > 适用对象：CodeMind-FZU 全体开发成员
 > 适用阶段：Alpha（FastAPI 真实运行入口 + AgentWorkflow/检索 + Vite 前端）
 > 维护人：薛锦荣（工程环境与部署支持）

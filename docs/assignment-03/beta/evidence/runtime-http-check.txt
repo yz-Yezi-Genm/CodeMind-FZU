@@ -1,0 +1,180 @@
+# Beta Windows 本机运行接口检查记录
+生成时间: 2026-11-23T11:21:46+08:00
+代码版本: 90df0f9 (origin/main 基线)
+环境: Windows 11 / Python 3.10.11 / Node 24.18.0 / 干净 git clone
+
+### GET /api/v1/health（Mock 入口 backend.app.dev:app）
+HTTP 200
+{
+  "status": "ok",
+  "service": "codemind-fzu-api",
+  "version": "0.1.0",
+  "timestamp": "2026-11-23T03:21:46.378791Z"
+}
+
+### GET /api/v1/health（真实入口 backend.app.alpha:app，无审核语料）
+HTTP 200
+{
+  "status": "ok",
+  "service": "codemind-fzu-api",
+  "version": "0.1.0",
+  "timestamp": "2026-11-23T03:21:46.381791Z"
+}
+
+### POST /api/v1/ask（Mock，业务场景）query=国家奖学金申请需要哪些条件？
+HTTP 200
+{
+  "request_id": "89b8829a-1666-465c-9c26-836d608dc471",
+  "conversation_id": "89e40713-3dd7-4712-b0fa-17eb7cf64116",
+  "status": "answered",
+  "answer": "[Mock 演示] 已收到你的问题：国家奖学金申请需要哪些条件？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。",
+  "answer_mode": null,
+  "clarifying_question": null,
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前响应由 MockAgentService 生成，未调用真实模型和知识库。"
+    }
+  ],
+  "created_at": "2026-11-23T03:21:46.407215Z"
+}
+
+### POST /api/v1/ask（Mock，业务场景）query=学科竞赛项目级别怎么认定？
+HTTP 200
+{
+  "request_id": "0def034d-4c3a-41f6-8258-e40020b0de2c",
+  "conversation_id": "3b6de6c7-1016-4510-89cd-d18d2b1efcda",
+  "status": "answered",
+  "answer": "[Mock 演示] 已收到你的问题：学科竞赛项目级别怎么认定？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。",
+  "answer_mode": null,
+  "clarifying_question": null,
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前响应由 MockAgentService 生成，未调用真实模型和知识库。"
+    }
+  ],
+  "created_at": "2026-11-23T03:21:46.411224Z"
+}
+
+### POST /api/v1/ask（Mock，业务场景）query=推免资格需要满足什么条件？
+HTTP 200
+{
+  "request_id": "962a875d-b9dc-4237-b693-f2c12235191a",
+  "conversation_id": "402235d6-0e7d-4341-b724-7a0587d483c1",
+  "status": "answered",
+  "answer": "[Mock 演示] 已收到你的问题：推免资格需要满足什么条件？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。",
+  "answer_mode": null,
+  "clarifying_question": null,
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前响应由 MockAgentService 生成，未调用真实模型和知识库。"
+    }
+  ],
+  "created_at": "2026-11-23T03:21:46.436746Z"
+}
+
+### POST /api/v1/ask（Mock，业务场景）query=计算机学院院级奖学金怎么评定？
+HTTP 200
+{
+  "request_id": "b583888c-b59a-4f1f-ab39-d7f6fd6e8576",
+  "conversation_id": "f6decded-13e4-4b53-a0bd-6e8a9ae44e43",
+  "status": "answered",
+  "answer": "[Mock 演示] 已收到你的问题：计算机学院院级奖学金怎么评定？\n\n当前 API 已成功调用模拟 Agent 并返回结果。这不是经过核验的真实政策答案。",
+  "answer_mode": null,
+  "clarifying_question": null,
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前响应由 MockAgentService 生成，未调用真实模型和知识库。"
+    }
+  ],
+  "created_at": "2026-11-23T03:21:46.452731Z"
+}
+
+### POST /api/v1/ask（Mock，追问分支）
+HTTP 200
+{
+  "request_id": "a6febd48-b33b-46a0-a67e-581a3e4c2a40",
+  "conversation_id": "26534e8b-6244-4a81-9d05-4cc611050335",
+  "status": "needs_clarification",
+  "answer": null,
+  "answer_mode": null,
+  "clarifying_question": "请问你咨询的是哪一学年的相关政策？",
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_AGENT",
+      "message": "当前使用模拟 Agent。"
+    }
+  ],
+  "created_at": "2026-11-23T03:21:46.468521Z"
+}
+
+### POST /api/v1/ask（Mock，证据不足分支）
+HTTP 200
+{
+  "request_id": "7e0c3981-aa94-41d1-8998-7fbc84eee771",
+  "conversation_id": "d619ad4c-3f40-45ca-81e0-d1bb44ce1854",
+  "status": "insufficient_evidence",
+  "answer": "目前尚未接入真实知识库，无法提供经过核验的政策结论。",
+  "answer_mode": "insufficient_data",
+  "clarifying_question": null,
+  "citations": [],
+  "warnings": [
+    {
+      "code": "MOCK_NO_EVIDENCE",
+      "message": "当前没有可用于正式回答的真实证据。"
+    }
+  ],
+  "created_at": "2026-11-23T03:21:46.483528Z"
+}
+
+### POST /api/v1/ask（空 query，预期 422）
+HTTP 422
+{
+  "request_id": "33ef536f-5111-48bc-8b01-febd1de94d03",
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "请求参数不符合接口规范，请检查字段和数据类型。",
+    "retryable": false
+  }
+}
+
+### POST /api/v1/ask（非法 conversation_id，预期 422）
+HTTP 422
+{
+  "request_id": "44e1f658-d226-4c2a-86af-1325a54768c3",
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "请求参数不符合接口规范，请检查字段和数据类型。",
+    "retryable": false
+  }
+}
+
+### GET /api/v1/not-exist（预期 404）
+HTTP 404
+{
+  "request_id": "7e85de46-8307-4d2d-a04b-4143d3dfd297",
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "请求的资源不存在。",
+    "retryable": false
+  }
+}
+
+### POST /api/v1/ask（真实入口，缺审核语料，预期 503）
+HTTP 503
+{
+  "request_id": "85fd7e8c-59d3-4719-a0c5-54d067d7f9f2",
+  "error": {
+    "code": "KNOWLEDGE_BASE_UNAVAILABLE",
+    "message": "没有通过人工审核且完整建立索引的正式政策资料包。",
+    "retryable": true
+  }
+}

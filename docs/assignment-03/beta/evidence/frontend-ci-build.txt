@@ -1,0 +1,45 @@
+# 前端干净环境安装与构建记录
+时间: 2026-11-23 11:22:17　代码版本: 90df0f9
+node: v24.18.0 / npm: 11.16.0
+
+## npm ci（干净 clone，无 node_modules）
+added 12 packages in 2s
+3 packages are looking for funding
+  run `npm fund` for details
+npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+npm warn allow-scripts   esbuild@0.21.5 (postinstall: node install.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+
+## npm run build
+> codemind-fzu-frontend@0.1.0 build
+> tsc --noEmit && vite build
+vite v5.4.21 building for production...
+transforming...
+✓ 17 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/admin/index.html               0.64 kB │ gzip:  0.40 kB
+dist/index.html                     7.63 kB │ gzip:  2.45 kB
+dist/assets/fzu-AItLrWvQ.png      145.30 kB
+dist/assets/dom-wLHvWk9j.css        1.86 kB │ gzip:  0.76 kB
+dist/assets/student-Cwpqny-u.css    6.94 kB │ gzip:  2.05 kB
+dist/assets/admin-QNwx0xXU.css     13.38 kB │ gzip:  3.10 kB
+dist/assets/student-CtbiCW46.js     3.89 kB │ gzip:  2.27 kB │ map: 12.09 kB
+dist/assets/dom-D5uWvpx8.js         3.95 kB │ gzip:  1.95 kB │ map: 11.02 kB
+dist/assets/admin-DerHJd2G.js      73.67 kB │ gzip: 21.15 kB │ map: 93.12 kB
+✓ built in 285ms
+
+## dist 产物
+frontend\dist\index.html    8287 bytes
+frontend\dist\admin\index.html    672 bytes
+frontend\dist\assets\admin-DerHJd2G.js    89880 bytes
+frontend\dist\assets\admin-DerHJd2G.js.map    99475 bytes
+frontend\dist\assets\admin-QNwx0xXU.css    13379 bytes
+frontend\dist\assets\dom-D5uWvpx8.js    4282 bytes
+frontend\dist\assets\dom-D5uWvpx8.js.map    11742 bytes
+frontend\dist\assets\dom-wLHvWk9j.css    1855 bytes
+frontend\dist\assets\fzu-AItLrWvQ.png    145302 bytes
+frontend\dist\assets\student-CtbiCW46.js    4313 bytes
+frontend\dist\assets\student-CtbiCW46.js.map    12514 bytes
+frontend\dist\assets\student-Cwpqny-u.css    6939 bytes

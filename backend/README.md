@@ -1,5 +1,9 @@
 # Backend API、Agent 与检索
 
+> **Beta 阶段说明（2026-11-23）**：本机单进程运行即可验收，不依赖云服务器与 PostgreSQL；
+> 会话使用内存实现 `InMemoryConversationStore`。Windows 本机运行、干净环境验证与四大场景的记录见
+> [`docs/assignment-03/beta/windows-runtime-test.md`](../docs/assignment-03/beta/windows-runtime-test.md)。
+
 本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 契约、真实运行组装、服务端会话历史、Mock Agent、Qwen 适配器、AgentWorkflow、Markdown/TXT 文档解析和本地 BM25 检索。
 
 ## 一、运行入口

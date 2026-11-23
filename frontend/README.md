@@ -1,5 +1,9 @@
 # CodeMind-FZU Frontend
 
+> **Beta 阶段说明（2026-11-23）**：本机运行方式不变（`npm ci` → `npm run dev`），验收不要求云服务器与域名。
+> Windows 干净环境验证、构建记录与常见错误见
+> [`docs/assignment-03/beta/windows-runtime-test.md`](../docs/assignment-03/beta/windows-runtime-test.md)。
+
 CodeMind-FZU 前端工程骨架：**Vite + 原生 TypeScript 多页面应用（HTML + CSS + TypeScript）**，不引入 React、Vue 等大型框架。
 
 学生端首页提供四类校园问答入口，并通过公共 API 完成问答、追问和来源查看。两端共用请求封装与类型定义。
