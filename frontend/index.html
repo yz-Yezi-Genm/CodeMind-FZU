@@ -4,10 +4,81 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="面向福州大学学生的校园事务与发展信息助手" />
-    <title>CodeMind-FZU · 学生端</title>
+    <title>CodeMind-FZU · 演示登录</title>
+    <link rel="icon" href="/src/student/assets/fzu.png" />
   </head>
   <body>
-    <div class="student-workspace">
+    <main id="demo-entry" class="demo-entry">
+      <canvas id="pointer-field" aria-hidden="true"></canvas>
+      <div class="ripple-plane" aria-hidden="true"></div>
+      <header class="demo-header">
+        <div class="demo-brand"><img src="/src/student/assets/fzu.png" alt="福州大学校徽" width="42" height="42"><strong>CodeMind-FZU</strong></div>
+      </header>
+
+      <div class="demo-layout">
+        <div class="sign-in-backlight" aria-hidden="true">
+          <i class="glass-figure glass-figure-near"></i>
+          <i class="glass-figure glass-figure-far"></i>
+        </div>
+        <section class="demo-sign-in" aria-labelledby="demo-title">
+          <div class="sign-in-heading">
+            <h1 id="demo-title">账号登录</h1>
+            <div class="sign-in-progress" aria-hidden="true"><span></span><span></span></div>
+          </div>
+          <form id="demo-form" autocomplete="off" novalidate>
+            <label for="demo-account">用户名</label>
+            <input id="demo-account" required placeholder="请输入用户名" aria-describedby="demo-feedback">
+            <label for="demo-password">密码</label>
+            <div class="password-field">
+              <input id="demo-password" type="password" inputmode="numeric" required autocomplete="off" placeholder="请输入密码" aria-describedby="demo-feedback">
+              <button id="show-password" type="button" aria-label="显示密码" aria-controls="demo-password">
+                <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>
+                <svg class="eye-closed" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 6.1A10.6 10.6 0 0 1 12 6c6.4 0 10 6 10 6a15.3 15.3 0 0 1-2.5 2.9M16.5 17a11 11 0 0 1-4.5 1c-6.4 0-10-6-10-6a15 15 0 0 1 3.8-4.1M10.2 10.2a2.6 2.6 0 0 0 3.6 3.6"/></svg>
+              </button>
+            </div>
+            <p id="demo-feedback" role="status" aria-atomic="true"></p>
+            <button id="demo-submit" type="submit" disabled><span id="demo-submit-label">登录</span></button>
+          </form>
+        </section>
+        <section class="demo-overview" aria-labelledby="preview-title">
+          <div class="preview-intro">
+            <h2 id="preview-title">校园问答，有据可查</h2>
+            <p id="preview-summary">从奖学金申报到科研入门，先找到适用的资料。</p>
+          </div>
+
+          <div class="demo-illustration">
+            <div class="art-index">
+              <div class="index-deck" role="group" aria-label="资料索引">
+                <button class="sheet sheet-far" type="button" data-sheet-tone="resources" aria-pressed="false">
+                  <span class="sheet-title"><img src="/src/student/assets/resources.svg" alt=""><strong>资源目录</strong></span>
+                  <span class="sheet-lines" aria-hidden="true"></span>
+                </button>
+                <button class="sheet sheet-mid" type="button" data-sheet-tone="study" aria-pressed="false">
+                  <span class="sheet-title"><img src="/src/student/assets/study.svg" alt=""><strong>学院细则</strong></span>
+                  <span class="sheet-lines" aria-hidden="true"></span>
+                </button>
+                <button class="sheet sheet-front" type="button" data-sheet-tone="policy" aria-pressed="true">
+                  <span class="sheet-title"><img src="/src/student/assets/policy.svg" alt=""><strong>校园资料</strong></span>
+                  <span class="sheet-lines" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="index-lookup" data-sheet-tone="policy" aria-hidden="true">
+                <div class="lookup-query"><img src="/src/student/assets/search.svg" alt=""><span>校园资料</span></div>
+                <div class="lookup-snippet"><i></i><i></i></div>
+                <div class="lookup-source"><img src="/src/student/assets/policy.svg" alt="">资料出处</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <ul class="campus-topics" aria-label="可查询的校园主题">
+        <li><div class="campus-topic-card"><img src="/src/student/assets/policy.svg" alt=""><div><strong>政策与事务</strong><span>奖学金申报、综测、教务</span></div></div></li>
+        <li><div class="campus-topic-card"><img src="/src/student/assets/study.svg" alt=""><div><strong>升学发展</strong><span>推免条件、升学政策</span></div></div></li>
+        <li><div class="campus-topic-card"><img src="/src/student/assets/research.svg" alt=""><div><strong>竞赛科研</strong><span>竞赛认定、科研入门</span></div></div></li>
+        <li><div class="campus-topic-card"><img src="/src/student/assets/resources.svg" alt=""><div><strong>学院资源</strong><span>导师主页、实验室信息</span></div></div></li>
+      </ul>
+    </main>
+    <div id="demo-workspace" class="student-workspace" hidden>
       <header class="student-brand">
         <img src="/src/student/assets/fzu.png" alt="" width="48" height="48" />
         <div><strong>CodeMind-FZU</strong><small>福州大学 · 校园成长助手</small></div>
@@ -79,6 +150,6 @@
         </div>
       </main>
     </div>
-    <script type="module" src="/src/student/main.ts"></script>
+    <script type="module" src="/src/student/demo-entry.ts"></script>
   </body>
 </html>
