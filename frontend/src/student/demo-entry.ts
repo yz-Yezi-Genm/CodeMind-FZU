@@ -39,6 +39,12 @@ async function enterWorkspace(): Promise<void> {
   } catch {
     // Storage is optional, and the current page has already opened.
   }
+
+  const url = new URL(location.href);
+  if (url.searchParams.has('preview')) {
+    url.searchParams.delete('preview');
+    history.replaceState(history.state, '', url);
+  }
 }
 
 form.addEventListener('submit', (event) => {
