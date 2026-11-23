@@ -1,0 +1,41 @@
+Beta real FastAPI and Qwen HTTP smoke
+Date: 2026-11-23 (Asia/Shanghai)
+Branch: feat/beta-runtime-stability
+Data: tests/fixtures/alpha_approved (synthetic example.invalid only)
+Model: real qwen-flash
+
+GET /api/v1/health
+HTTP/1.1 200 OK
+x-request-id: ca41ab93-f21c-4861-a4f9-f3077aa266b8
+{"status":"ok","service":"codemind-fzu-api","version":"0.1.0",
+ "timestamp":"2026-11-23T10:50:54.600098Z"}
+
+POST /api/v1/ask
+Request:
+  {"query":"2026年校级优秀学生综合奖学金申请需要什么条件？"}
+HTTP/1.1 200 OK
+x-request-id: c07090f3-7a82-4ec2-9cbf-720a1064555c
+{
+  "request_id": "c07090f3-7a82-4ec2-9cbf-720a1064555c",
+  "conversation_id": "50836e5a-14d1-4971-b8d5-a40e3eaf09a0",
+  "status": "answered",
+  "answer": "已核验资料中与本问题相关的原文如下：\n[1] 2026年奖学金申请需提交申请表和成绩单。",
+  "answer_mode": "current_policy",
+  "clarifying_question": null,
+  "citations": [{
+    "document_id": "8d02cf63-8489-5ff2-865c-47b9afaa57cd",
+    "version_id": "605ebbe0-ee72-5aaf-942a-9a82c2c54f5b",
+    "chunk_id": "5c9318b1-ee71-5ea5-98fb-e79c5ef0b075",
+    "title": "2026年本科生奖学金评定管理办法（测试夹具）",
+    "source_url": "https://example.invalid/test-policy",
+    "excerpt": "2026年奖学金申请需提交申请表和成绩单。"
+  }],
+  "warnings": [{"code":"ALPHA_EXTRACTIVE_ANSWER"}],
+  "created_at": "2026-11-23T10:50:47.310666Z"
+}
+
+Interpretation:
+  Real FastAPI, real approved loader, current AgentWorkflow, real Qwen and
+  Citation verification executed. The current main Agent still uses the Alpha
+  extractive response contract. V2.1 constrained generation awaits the Beta
+  AgentWorkflow merge.
