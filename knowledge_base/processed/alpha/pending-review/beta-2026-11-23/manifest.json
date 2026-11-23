@@ -1,0 +1,123 @@
+{
+  "checked_on": "2026-11-23",
+  "package_format": "backend.contracts.DocumentPackage",
+  "storage_root": "repository root",
+  "stage": "pending-review",
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "packages": [
+    {
+      "key": "competition",
+      "domains": [
+        "S1"
+      ],
+      "record_code": "福大-2026-竞赛项目级别认定",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/competition.json",
+      "chunk_count": 224,
+      "source_units": 224,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "scholarship",
+      "domains": [
+        "S2"
+      ],
+      "record_code": "福大-2026-本科奖学金",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/scholarship.json",
+      "chunk_count": 59,
+      "source_units": 59,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "college-scholarship",
+      "domains": [
+        "S2"
+      ],
+      "record_code": "计算机学院-2026-院级奖学金",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/college-scholarship.json",
+      "chunk_count": 33,
+      "source_units": 33,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "xinghuo",
+      "domains": [
+        "S2"
+      ],
+      "record_code": "计算机学院-2026-星火奖学金",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/xinghuo.json",
+      "chunk_count": 35,
+      "source_units": 35,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "recommendation",
+      "domains": [
+        "S3"
+      ],
+      "record_code": "计算机学院-2027-推免资格推荐",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/recommendation.json",
+      "chunk_count": 20,
+      "source_units": 20,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "innovation",
+      "domains": [
+        "S1"
+      ],
+      "record_code": "福大-2024-创新创业学分认定",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/innovation.json",
+      "chunk_count": 86,
+      "source_units": 86,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "retest",
+      "domains": [
+        "S3"
+      ],
+      "record_code": "计算机学院-2026-推免复试参考",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/retest.json",
+      "chunk_count": 9,
+      "source_units": 9,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    },
+    {
+      "key": "qinghe",
+      "domains": [
+        "S4",
+        "S1"
+      ],
+      "record_code": "计算机学院-2026-青禾计划",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/qinghe.json",
+      "chunk_count": 35,
+      "source_units": 35,
+      "source_verification_status": "verified",
+      "timeliness_verification_status": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false
+    }
+  ]
+}

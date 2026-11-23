@@ -1,0 +1,68 @@
+beta-candidates
+$ python -m unittest knowledge_base.processing.test_beta_policy_review -v
+test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_business_codes_preserve_original_dictionary) ... ok
+test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
+test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
+test_mapping_tamper_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_tamper_is_rejected) ... ok
+test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_44_records_preserved_as_import_snapshots) ... ok
+test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_tamper_fails_closed) ... ok
+test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_cells_and_contact_fields_survive_markdown) ... ok
+test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_real_packages_hashes_intervals_and_four_domain_isolation) ... ok
+test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_rebuild_does_not_change_approved_or_alpha_candidates) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.065s
+
+OK
+
+
+alpha-review-regression
+$ python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v
+test_ambiguous_annual_college_notice_is_blocked (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_ambiguous_annual_college_notice_is_blocked) ... ok
+test_cohort_deadline_and_import_history_preserved (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_cohort_deadline_and_import_history_preserved) ... ok
+test_competition_table_structure_and_page4_numeric_columns (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_competition_table_structure_and_page4_numeric_columns) ... ok
+test_real_packages_index_but_do_not_answer (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_real_packages_index_but_do_not_answer) ... ok
+test_review_checker_rejects_enabled_export (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_review_checker_rejects_enabled_export) ... ok
+test_tampered_original_stops_export (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_tampered_original_stops_export) ... ok
+test_teacher_and_student_conditions_keep_heading_context (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_teacher_and_student_conditions_keep_heading_context) ... ok
+test_all_cells_hidden_rows_columns_and_sheets_are_scanned (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_all_cells_hidden_rows_columns_and_sheets_are_scanned) ... ok
+test_changed_or_extra_member_requires_new_review (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_changed_or_extra_member_requires_new_review) ... ok
+test_current_archives_match_full_reviewed_baseline (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_current_archives_match_full_reviewed_baseline) ... ok
+test_doc_converter_includes_hidden_removed_text_and_rejects_warnings (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_doc_converter_includes_hidden_removed_text_and_rejects_warnings) ... ok
+test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_report_never_contains_sensitive_cell_or_property_values) ... ok
+test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.916s
+
+OK
+
+
+backend-regression
+$ python -m pytest tests -q
+...........................................................................sssssssssssssssssssssssss.s.... [ 27%]
+........................................................................ [ 46%]
+......................................................s................. [ 64%]
+.................................................s........ [ 80%]
+.............................................................................                                                        [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  <repository>\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+357 passed, 28 skipped, 1 warning, 136 subtests passed in 35.08s
+
+
+qinghe-conversion
+$ review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v
+test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_changed_headers_fail) ... ok
+test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_complete_workbook_merges_and_empty_sheets) ... ok
+test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_formulas_require_review_instead_of_inferred_value) ... ok
+test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_hidden_extra_content_is_not_silently_omitted) ... ok
+test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_field_explicitly_marked) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.404s
+
+OK

@@ -1,0 +1,41 @@
+{
+  "runs": [
+    {
+      "suite": "alpha-review-regression",
+      "command": "python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v",
+      "exit_code": 0,
+      "checked_at_utc": "2026-11-23T03:13:07.962723+00:00"
+    },
+    {
+      "suite": "backend-regression",
+      "command": "python -m pytest tests -q",
+      "exit_code": 0,
+      "checked_at_utc": "2026-11-23T03:16:00.004772+00:00"
+    },
+    {
+      "suite": "beta-candidates",
+      "command": "python -m unittest knowledge_base.processing.test_beta_policy_review -v",
+      "exit_code": 0,
+      "checked_at_utc": "2026-11-23T03:20:27.386969+00:00"
+    },
+    {
+      "suite": "qinghe-conversion",
+      "command": "review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v",
+      "exit_code": 0,
+      "checked_at_utc": "2026-11-23T03:20:28.950098+00:00"
+    }
+  ],
+  "scope": "Offline real candidate integrity/isolation and unit regressions; no human approval, Qwen or E2E",
+  "environment_note": "首次unittest全量导入缺pytest；在本地测试环境安装pytest后改用pytest执行全部tests（含原生pytest用例）。未修改后端生产依赖。",
+  "summary": {
+    "beta_tests_passed": 14,
+    "alpha_review_tests_passed": 13,
+    "backend_pytest_passed": 357,
+    "backend_skipped": 28,
+    "backend_subtests_passed": 136,
+    "failures": 0,
+    "enabled_packages": 0,
+    "formal_approved_packages_at_start": 0
+  },
+  "skips_note": "后端既有测试的可选上游快照/业务规则集成/真实模型在线测试未满足运行条件；28项跳过不计为通过。未运行真实Qwen。"
+}
