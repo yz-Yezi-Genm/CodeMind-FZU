@@ -16,9 +16,11 @@
 """
 from __future__ import annotations
 
+import inspect
 import unittest
 from datetime import date, datetime, timezone
-from uuid import uuid4
+from typing import get_type_hints
+from uuid import UUID, uuid4
 
 from pydantic import ValidationError
 
@@ -55,6 +57,7 @@ from backend.contracts.models import (
     TimelinessVerificationStatus,
     WarningItem,
 )
+from backend.contracts.protocols import Retriever
 
 
 def _uuid() -> str:
@@ -502,6 +505,42 @@ class AdminContractTests(unittest.TestCase):
             message="重建完成",
         )
         self.assertEqual(r.status, IndexingStatus.INDEXED)
+
+
+# ---------------------------------------------------------------------------
+# 8. Protocol 契约：Retriever
+# ---------------------------------------------------------------------------
+class RetrieverProtocolContractTests(unittest.TestCase):
+    def test_retriever_protocol_declares_retrieve_and_lookup_methods(self):
+        self.assertTrue(inspect.iscoroutinefunction(Retriever.retrieve))
+        self.assertEqual(
+            list(inspect.signature(Retriever.retrieve).parameters),
+            ["self", "request"],
+        )
+        self.assertEqual(
+            get_type_hints(Retriever.retrieve),
+            {"request": RetrievalRequest, "return": list[RetrievedChunk]},
+        )
+
+        self.assertFalse(inspect.iscoroutinefunction(Retriever.get_document_metadata))
+        self.assertEqual(
+            list(inspect.signature(Retriever.get_document_metadata).parameters),
+            ["self", "version_id"],
+        )
+        self.assertEqual(
+            get_type_hints(Retriever.get_document_metadata),
+            {"version_id": UUID, "return": DocumentMetadata | None},
+        )
+
+        self.assertFalse(inspect.iscoroutinefunction(Retriever.get_parsed_chunk))
+        self.assertEqual(
+            list(inspect.signature(Retriever.get_parsed_chunk).parameters),
+            ["self", "chunk_id"],
+        )
+        self.assertEqual(
+            get_type_hints(Retriever.get_parsed_chunk),
+            {"chunk_id": UUID, "return": ParsedChunk | None},
+        )
 
 
 if __name__ == "__main__":
