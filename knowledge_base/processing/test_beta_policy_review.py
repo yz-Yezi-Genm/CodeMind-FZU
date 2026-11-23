@@ -222,6 +222,44 @@ class BetaCandidateTests(unittest.TestCase):
         with patch.object(build, "read", side_effect=reordered):
             self.assertEqual(asyncio.run(build.check())["chunks"], 501)
 
+    def test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha(self):
+        self.assert_tampered_read_fails(build.REVIEW / "source-units.json",
+            lambda data: data["inputs"].pop((build.REVIEW / "qinghe-registration.docx").as_posix()),
+            "Source fetch/input inventory mismatch")
+        for field, value, message in [("sha256", "0" * 64, "Source fetch/input SHA mismatch"),
+                                      ("fetch_status", "unavailable", "not a successful download")]:
+            def mutate(data):
+                next(row for row in data if row.get("name") == "qinghe-registration.docx")[field] = value
+            with self.subTest(field=field):
+                self.assert_tampered_read_fails(build.REVIEW / "source-fetch.json", mutate, message)
+        self.assert_tampered_read_fails(build.REVIEW / "source-fetch.json",
+            lambda data: data.append(deepcopy(data[0])), "Source fetch/input inventory mismatch")
+
+    def test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page(self):
+        real_read = build.read
+        for field, value, error in [("url", "https://ccds.fzu.edu.cn/wrong-source", "not linked by"),
+                                    ("original_name", "wrong-name.docx", "differs from official notice label")]:
+            def altered_read(path):
+                data = real_read(path)
+                if path == build.REVIEW / "source-fetch.json":
+                    next(row for row in data if row.get("name") == "qinghe-registration.docx")[field] = value
+                elif path == build.OUTPUT / "qinghe.json":
+                    target = next(row for row in data["files"] if row["storage_key"].endswith("qinghe-registration.docx"))
+                    target["source_url" if field == "url" else field] = value
+                return data
+            with self.subTest(field=field), patch.object(build, "read", side_effect=altered_read):
+                with self.assertRaisesRegex(ValueError, error):
+                    asyncio.run(build.check())
+
+    def test_attachment_parent_and_final_url_must_remain_official(self):
+        for field, value, error in [("parent_url", "https://ccds.fzu.edu.cn/wrong-page", "parent URL differs"),
+                                    ("final_url", "https://example.invalid/wrong-file", "not an official content endpoint"),
+                                    ("final_url", "https://sso.fzu.edu.cn/cas/login", "not an official content endpoint")]:
+            def mutate(data):
+                next(row for row in data if row.get("name") == "qinghe-registration.docx")[field] = value
+            with self.subTest(field=field, value=value):
+                self.assert_tampered_read_fails(build.REVIEW / "source-fetch.json", mutate, error)
+
     def test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected(self):
         real_read = build.read
         def altered_read(path):

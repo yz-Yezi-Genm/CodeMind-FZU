@@ -117,7 +117,9 @@ python -m pytest tests -q
 - 全部`ParsedFile`字段逐项核对：`storage_key`、`file_role`、`original_name`、`media_type`、`sha256`、`source_url`、`processing_status`。实际文件字节的SHA也必须匹配；清单顺序可以调整，文件身份和元数据不能漂移。已有公共模型、接口及候选资料内容保持原样。
 - 测试覆盖删除未直接引用的原件/附件、加入无关原件、修改Markdown/XLSX/DOCX/HTML的来源链接或角色/原名/类型/处理状态、清空SHA，以及错误来源导致构建失败时旧成果不变。
 
-实际测试：本批专项49项通过（候选包32项、XLSX转换8项、原件重提取9项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引、blocked查询及原件重提取结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
+文件来源关联的自查补充：下载记录、source-units输入清单、实际原件字节的SHA必须三方一致，不能遗漏、重复或以失败下载记录代替成功记录。每份包的预期原件清单取固定批次范围，不依赖可变片段引用推导。附件URL必须能在保留的官方通知链接或嵌入PDF入口中找到，真实附件名与页面标签核对，关联父页面和最终下载域名也必须正确。联合改错下载记录与ParsedFile的URL/文件名，不能仅靠两份错误数据互相吻合就通过。
+
+实际测试：本批专项52项通过（候选包35项、XLSX转换8项、原件重提取9项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引、blocked查询及原件重提取结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
 
 本轮按组长要求继续更新PR #41。合并顺序为#44→#41→#45；只有确认#44已经合并后，才将最新`origin/main`合入`feat/beta-policy-review`并推送。同步情况以PR及本轮最终交接为准，不将尚未合并的#44记作已同步。
 

@@ -12,6 +12,8 @@ from hashlib import sha256
 import json
 import mimetypes
 from pathlib import Path
+import re
+from urllib.parse import urljoin, urlparse
 
 from backend.contracts import DocumentMetadata, DocumentPackage, ParsedFile, RetrievalRequest
 from backend.document_processing import TextDocumentParser
@@ -127,25 +129,67 @@ def render_source_units(metadata, units):
     return text, intervals
 
 
-def file_source_context():
-    fetches = {r["storage_key"]: r for path in [REVIEW / "source-fetch.json", OLD / "attachment-fetch.json"]
-               for r in read(path) if r.get("storage_key")}
-    labels = {a["storage_key"]: a["label"].removeprefix("附件1：").removeprefix("附件2：").removeprefix("附件3：")
-              for document in read(REVIEW / "verification-evidence.json")["documents"].values()
-              for a in document["linked_attachments"] if a["label"] != "embedded PDF"}
+def original_keys_for(key):
+    """Reviewed batch inventory, independent of mutable source-unit references."""
+    keys = {(REVIEW / f"{key}.html").as_posix()}
+    attachments = {"competition": [f"competition-attachment-{n}.docx" for n in range(1, 4)],
+                   "recommendation": ["recommendation-pdf.pdf"], "retest": ["retest.pdf"],
+                   "qinghe": ["qinghe-labs.xlsx", "qinghe-registration.docx"]}
+    keys.update((REVIEW / name).as_posix() for name in attachments.get(key, []))
+    if key in {"college-scholarship", "xinghuo"}:
+        keys.add((OLD / ("college-attachments.zip" if key == "college-scholarship" else "xinghuo-forms.rar")).as_posix())
+    return keys
+
+
+def file_source_context(sources, preview):
+    """Bind fetch records to pinned bytes and links in the retained notices."""
+    from lxml import html
+    fresh = [r for r in read(REVIEW / "source-fetch.json") if r.get("storage_key")]
+    legacy = [r for r in read(OLD / "attachment-fetch.json")
+              if r.get("storage_key") in {(OLD / "college-attachments.zip").as_posix(), (OLD / "xinghuo-forms.rar").as_posix()}]
+    records = fresh + legacy
+    fetches = {r["storage_key"]: r for r in records}
+    if len(fetches) != len(records) or set(fetches) != set(sources["inputs"]):
+        raise ValueError("Source fetch/input inventory mismatch")
+    for key, item in fetches.items():
+        if item.get("sha256") != sources["inputs"][key] or item["sha256"] != digest(Path(key)):
+            raise ValueError("Source fetch/input SHA mismatch")
+        if key.startswith(REVIEW.as_posix() + "/") and item.get("fetch_status") != "downloaded":
+            raise ValueError("Source fetch record is not a successful download")
+    labels = {}
+    for key in RECORDS:
+        metadata = metadata_for(key, preview)
+        page_key = (REVIEW / f"{key}.html").as_posix()
+        if fetches[page_key]["url"] != metadata.source_url:
+            raise ValueError("Source notice URL differs from reviewed metadata")
+        raw = (ROOT / page_key).read_text(encoding="utf-8")
+        page = html.fromstring(raw)
+        links = {urljoin(metadata.source_url, a.get("href")): a.text_content().strip() for a in page.xpath('//a[@href]')}
+        links.update({urljoin(metadata.source_url, value): "embedded PDF"
+                      for value in re.findall(r'showVsbpdfIframe\("([^"\n]+\.pdf)"', raw)})
+        for file_key in original_keys_for(key) - {page_key}:
+            item = fetches[file_key]
+            if item["url"] not in links:
+                raise ValueError("Attachment URL is not linked by the retained official notice")
+            label = links[item["url"]]
+            if label != "embedded PDF":
+                label = label.removeprefix("附件1：").removeprefix("附件2：").removeprefix("附件3：")
+                labels[file_key] = label
+                if item.get("original_name", label) != label:
+                    raise ValueError("Attachment original_name differs from official notice label")
+            if "parent_url" in item and item["parent_url"] != metadata.source_url:
+                raise ValueError("Attachment parent URL differs from official notice")
+            final = urlparse(item.get("final_url", ""))
+            if final.scheme != "https" or not (final.hostname or "").endswith(".fzu.edu.cn") or final.hostname == "sso.fzu.edu.cn":
+                raise ValueError("Attachment final URL is not an official content endpoint")
     return fetches, labels
 
 
-def expected_original_files(key, units, context):
+def expected_original_files(key, context):
     """Include landing pages and non-chunk attachments, not just cited files."""
     fetches, labels = context
-    originals = {u["original_file_key"] for u in units} | {(REVIEW / f"{key}.html").as_posix()}
-    if key in {"college-scholarship", "xinghuo"}:
-        originals.add((OLD / ("college-attachments.zip" if key == "college-scholarship" else "xinghuo-forms.rar")).as_posix())
-    if key == "qinghe":
-        originals.add((REVIEW / "qinghe-registration.docx").as_posix())
     files = []
-    for file_key in sorted(originals):
+    for file_key in sorted(original_keys_for(key)):
         item = fetches[file_key]
         files.append(ParsedFile(file_role="original" if file_key.endswith(".html") else "attachment",
             storage_key=file_key, original_name=item.get("original_name", labels.get(file_key, Path(file_key).name)),
@@ -161,7 +205,7 @@ def build():
     # any package/manifest/mapping. Failed source review must preserve outputs.
     verify_reextraction(ROOT, sources)
     preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
-    context = file_source_context()
+    context = file_source_context(sources, preview)
     mappings, summaries = [], []
     for key, units in sources["documents"].items():
         metadata = metadata_for(key, preview)
@@ -170,7 +214,7 @@ def build():
         (ROOT / md_key).parent.mkdir(parents=True, exist_ok=True)
         (ROOT / md_key).write_text(text, encoding="utf-8", newline="\n")
         package = TextDocumentParser(ROOT, max_chunk_chars=2400, file_role="curated" if key == "recommendation" else "extracted").parse_document(md_key, metadata)
-        package.files.extend(expected_original_files(key, units, context))
+        package.files.extend(expected_original_files(key, context))
         for chunk in package.chunks:
             note = json.loads(chunk.locator_note)
             start, end, number, unit = next(i for i in intervals if i[0] <= note["char_start"] < i[1])
@@ -199,7 +243,7 @@ async def check():
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
     preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
-    context = file_source_context()
+    context = file_source_context(sources, preview)
     manifest = read(OUTPUT / "manifest.json")
     if manifest.get("stage") != "pending-review":
         raise ValueError("Manifest stage must be pending-review")
@@ -254,7 +298,7 @@ async def check():
         if package.metadata != metadata_for(row["key"], preview):
             raise ValueError(f"Candidate metadata differs from reviewed batch: {row['key']}")
         md_key = (OUTPUT / "texts" / f"{row['key']}.md").as_posix()
-        originals = expected_original_files(row["key"], units, context)
+        originals = expected_original_files(row["key"], context)
         if {file.storage_key for file in package.files} != {md_key, *(file.storage_key for file in originals)}:
             raise ValueError(f"Package file inventory mismatch: {row['key']}")
         for file in package.files:

@@ -1,6 +1,7 @@
 beta-candidates
 $ python -m unittest knowledge_base.processing.test_beta_policy_review -v
 test_all_parsed_file_metadata_fields_are_checked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_all_parsed_file_metadata_fields_are_checked) ... ok
+test_attachment_parent_and_final_url_must_remain_official (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_attachment_parent_and_final_url_must_remain_official) ... ok
 test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids) ... ok
 test_blocked_real_metadata_lookup_returns_none_after_successful_indexing (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_metadata_lookup_returns_none_after_successful_indexing) ... ok
 test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_business_codes_preserve_original_dictionary) ... ok
@@ -12,6 +13,8 @@ test_each_package_exactly_matches_original_44_record_direction_mapping (knowledg
 test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
 test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
 test_extra_existing_original_entry_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_extra_existing_original_entry_is_rejected) ... ok
+test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha) ... ok
+test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page) ... ok
 test_manifest_cannot_omit_duplicate_or_redirect_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_cannot_omit_duplicate_or_redirect_candidates) ... ok
 test_manifest_entry_approval_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_entry_approval_tampering_is_rejected) ... ok
 test_manifest_fields_must_match_package_metadata_and_counts (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_fields_must_match_package_metadata_and_counts) ... ok
@@ -34,7 +37,7 @@ test_uncited_original_and_attachment_entries_cannot_be_deleted (knowledge_base.p
 test_valid_dictionary_code_in_wrong_package_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_valid_dictionary_code_in_wrong_package_is_rejected) ... ok
 
 ----------------------------------------------------------------------
-Ran 32 tests in 23.863s
+Ran 35 tests in 10.855s
 
 OK
 
@@ -51,7 +54,7 @@ test_missing_title_merge_fails (knowledge_base.processing.test_qinghe_conversion
 test_replaced_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_replaced_title_merge_fails) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.758s
+Ran 8 tests in 0.535s
 
 OK
 
@@ -69,7 +72,7 @@ test_xlsx_full_cells_and_rich_links_match_retained_audit (knowledge_base.process
 test_xlsx_original_change_with_updated_hash_still_fails_content_comparison (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_xlsx_original_change_with_updated_hash_still_fails_content_comparison) ... ok
 
 ----------------------------------------------------------------------
-Ran 9 tests in 14.668s
+Ran 9 tests in 12.567s
 
 OK
 
@@ -91,7 +94,7 @@ test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.pro
 test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 0.707s
+Ran 13 tests in 0.652s
 
 OK
 
@@ -109,4 +112,4 @@ $ python -m pytest tests -q
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 1 warning, 136 subtests passed in 25.44s
+357 passed, 28 skipped, 1 warning, 136 subtests passed in 23.36s
