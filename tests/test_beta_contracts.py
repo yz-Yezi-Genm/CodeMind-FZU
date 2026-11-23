@@ -193,6 +193,10 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(metadata.applicability_raw, {"适用对象": "本科生", "适用年度": "2026年"})
         self.assertEqual(metadata.deadline_on, date(2026, 12, 31))
         self.assertEqual(metadata.temporal_notes, {"human_approved": True, "备注": "仅测试用"})
+        self.assertEqual(
+            metadata.timeliness_verification_status,
+            TimelinessVerificationStatus.CURRENT,
+        )
 
     def test_get_parsed_chunk_returns_correct_chunk(self):
         chunk = self.retriever.get_parsed_chunk(self.chunk_id)

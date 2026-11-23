@@ -127,9 +127,8 @@
 | Q-3 | 缺 `answer` 字段 | 拒绝 |
 | Q-4 | `answer` 为空 | 拒绝 |
 | Q-5 | 缺 `used_evidence_ids` | 拒绝 |
-| Q-6 | 引用不存在的 evidence_id | 拒绝 |
-| Q-7 | 引用 ID 不属于本次证据集合（同一次请求内） | 拒绝 |
-| Q-8 | 两个不同请求的证据集合，引用对方请求的 ID | 拒绝（真正验证跨请求 ID 隔离） |
+| Q-6/Q-7 | 引用不存在或不属于本次证据集合的 evidence_id | 拒绝（合并为一个测试方法，内部用两个 subTest） |
+| Q-8 | 两个不同请求的证据集合，双向验证跨请求 ID 隔离 | A 接受 E1 拒绝 F1，B 接受 F1 拒绝 E1 |
 | Q-9 | 模型自行生成 Citation / 来源 URL | 拒绝 |
 | Q-10 | 回答含证据无法支持的确定性结论 | 拒绝/降级 insufficient_evidence |
 | Q-11 | 模型试图引用未审核/未开放资料 | 拒绝 |
@@ -140,8 +139,10 @@
 > - 当前 `tests/test_beta_qwen_output.py` 的参考校验函数只覆盖 **Q-1~Q-9 的「格式 +
 >   evidence_id 合法性」**，**不包含**「ID 映射到真实 RetrievedChunk → 构造 Citation」
 >   的完整过程（这需要 Agent 生产实现，属后续集成测试）。
-> - Q-7 与 Q-8 的区别：Q-7 是**同一次请求内**引用一个不属于本次可用集合的 ID；
->   Q-8 是**两个不同请求**各自持有独立证据集合，用对方请求的 ID 验证跨请求隔离。
+> - Q-6 与 Q-7 已合并为一个测试方法（`test_id_not_in_current_set_rejected`），
+>   内部用两个 subTest 分别验证「完全不存在」与「不属于本次集合」两种 ID。
+> - Q-8（`test_cross_request_evidence_id_isolation`）做**双向验证**：A 接受 E1 拒绝
+>   F1，B 接受 F1 拒绝 E1。
 > - Q-10（事实一致性）需接真实证据后补测，属于后续阶段。
 
 ---
