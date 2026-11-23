@@ -8,7 +8,8 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-from backend.contracts import DocumentPackage
+from backend.contracts import DocumentMetadata, DocumentPackage, ParsedChunk, ParsedFile, RetrievalRequest
+from backend.retrieval.local import LocalBM25Retriever
 from knowledge_base.processing import build_beta_policy_review as build
 
 
@@ -17,7 +18,15 @@ class BetaCandidateTests(unittest.TestCase):
         result = asyncio.run(build.check())
         self.assertEqual(result["packages"], 8)
         self.assertEqual(result["chunks"], result["original_mappings"])
-        self.assertGreaterEqual(result["chunks"], 501)
+        self.assertEqual(result["chunks"], 501)
+        self.assertEqual(result["indexed_chunks"], 501)
+        self.assertEqual(result["blocked_metadata_lookups_returning_none"], 8)
+        self.assertEqual(result["blocked_chunk_lookups_returning_none"], 501)
+        for index in result["index_results"]:
+            self.assertEqual(index["status"], "indexed")
+            self.assertEqual(index["indexed_count"], index["chunk_count"])
+            self.assertEqual(index["actual_stored_chunk_count"], index["chunk_count"])
+            self.assertEqual(index["warnings"], [])
         self.assertTrue(all(n == 0 for n in result["formal_hits_for_blocked_candidates"].values()))
 
     def test_business_codes_preserve_original_dictionary(self):
@@ -28,7 +37,86 @@ class BetaCandidateTests(unittest.TestCase):
             self.assertTrue(set(package.metadata.business_direction_codes) <= known)
             self.assertFalse(set(package.metadata.business_direction_codes) & {"S1", "S2", "S3", "S4"})
         qinghe = build.read(build.OUTPUT / "qinghe.json")["metadata"]
-        self.assertIn("COLLEGE_RESOURCES", qinghe["business_direction_codes"])
+        self.assertEqual(qinghe["business_direction_codes"], ["COLLEGE_RESOURCES"])
+        self.assertEqual(qinghe["temporal_notes"]["beta_domains"], ["S4"])
+        manifest = build.read(build.OUTPUT / "manifest.json")
+        self.assertEqual(next(r for r in manifest["packages"] if r["key"] == "qinghe")["domains"], ["S4"])
+
+    def test_qinghe_mapping_filters_s1_independently_of_blocked_gate(self):
+        # Only the candidate's routing codes are copied. The enabled in-memory
+        # fixture has no policy text, origin files, real identity or approval.
+        codes = build.read(build.OUTPUT / "qinghe.json")["metadata"]["business_direction_codes"]
+        fixture = DocumentPackage(
+            metadata=DocumentMetadata(title="SYNTHETIC ROUTING TEST ONLY", document_type="synthetic-test",
+                category_name="synthetic-test", record_code="SYNTHETIC-BETA-S4-ROUTING", version_no="test-only",
+                business_direction_codes=codes, source_url="https://example.invalid/synthetic",
+                source_verification_status="verified", timeliness_verification_status="current",
+                extraction_status="extracted", v1_inclusion_status="included", retrieval_status="enabled",
+                temporal_notes={"synthetic_test_only": True, "human_approved": False}),
+            files=[ParsedFile(storage_key="synthetic-routing.txt", original_name="synthetic-routing.txt",
+                              file_role="extracted", processing_status="extracted")],
+            chunks=[ParsedChunk(chunk_no=1, content="synthetic routing sentinel",
+                                source_file_key="synthetic-routing.txt")])
+        async def run():
+            store = LocalBM25Retriever()
+            result = await store.index_document(fixture)
+            self.assertEqual(result.status.value, "indexed")
+            self.assertEqual(result.indexed_count, 1)
+            s4 = await store.retrieve(RetrievalRequest(query="sentinel", business_direction_code="COLLEGE_RESOURCES"))
+            s1 = await store.retrieve(RetrievalRequest(query="sentinel", business_direction_code="COMPETITION_RESEARCH"))
+            self.assertEqual(len(s4), 1)
+            self.assertEqual(s1, [])
+        asyncio.run(run())
+
+    def test_checker_rejects_qinghe_s1_mapping_even_when_blocked(self):
+        real_read = build.read
+        def altered_read(path):
+            value = real_read(path)
+            if path == build.OUTPUT / "qinghe.json":
+                value["metadata"]["business_direction_codes"].append("COMPETITION_RESEARCH")
+            return value
+        with patch.object(build, "read", side_effect=altered_read):
+            with self.assertRaisesRegex(ValueError, "scoped to S4"):
+                asyncio.run(build.check())
+
+    def test_blocked_real_metadata_lookup_returns_none_after_successful_indexing(self):
+        async def run():
+            store = LocalBM25Retriever(file_root=build.ROOT)
+            for row in build.read(build.OUTPUT / "manifest.json")["packages"]:
+                package = DocumentPackage.model_validate(build.read(Path(row["package"])))
+                indexed = await store.index_document(package)
+                self.assertEqual(indexed.status.value, "indexed")
+                self.assertEqual(indexed.indexed_count, len(package.chunks))
+                self.assertIn(indexed.version_id, store._versions)
+                self.assertIsNone(store.get_document_metadata(indexed.version_id), row["key"])
+        asyncio.run(run())
+
+    def test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids(self):
+        async def run():
+            store = LocalBM25Retriever(file_root=build.ROOT)
+            checked = 0
+            for row in build.read(build.OUTPUT / "manifest.json")["packages"]:
+                package = DocumentPackage.model_validate(build.read(Path(row["package"])))
+                indexed = await store.index_document(package)
+                self.assertEqual(indexed.status.value, "indexed")
+                ids = [chunk_id for chunk_id, entry in store._chunk_index.items() if entry[0] == indexed.version_id]
+                self.assertEqual(len(ids), len(package.chunks))
+                for chunk_id in ids:
+                    self.assertIsNone(store.get_parsed_chunk(chunk_id), str(chunk_id))
+                    checked += 1
+            self.assertEqual(checked, 501)
+        asyncio.run(run())
+
+    def test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits(self):
+        real_index = LocalBM25Retriever.index_document
+        for status, count in [("failed", 0), ("partial", 0), ("indexed", 0)]:
+            with self.subTest(status=status, indexed_count=count):
+                async def incomplete_index(store, package):
+                    result = await real_index(store, package)
+                    return result.model_copy(update={"status": type(result.status)(status), "indexed_count": count})
+                with patch.object(build.LocalBM25Retriever, "index_document", new=incomplete_index):
+                    with self.assertRaisesRegex(ValueError, "indexing incomplete or failed"):
+                        asyncio.run(build.check())
 
     def test_original_44_records_preserved_as_import_snapshots(self):
         preview = build.read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))

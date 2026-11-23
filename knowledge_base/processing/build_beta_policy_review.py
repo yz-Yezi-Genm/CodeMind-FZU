@@ -1,7 +1,8 @@
 """Build/check four-domain Beta candidates, ALWAYS blocked, using public DTOs.
 
 Offline: python -m knowledge_base.processing.build_beta_policy_review [--check]
-Requires the existing backend environment. Never writes approved/ or an index.
+Requires the existing backend environment. Uses a disposable in-memory index
+for validation; never writes approved/ or a persistent production index.
 """
 from __future__ import annotations
 
@@ -21,12 +22,13 @@ ROOT = Path(__file__).resolve().parents[2]
 REVIEW = Path("knowledge_base/processing/policy-review/2026-11-23")
 OLD = Path("knowledge_base/processing/policy-review/2026-11-19")
 OUTPUT = Path("knowledge_base/processed/alpha/pending-review/beta-2026-11-23")
+DOCS = Path("docs/assignment-03/beta")
 VERSION = "beta-review-2026-11-23-1"
 RECORDS = {**ALPHA_RECORDS, "innovation": "福大-2024-创新创业学分认定",
            "retest": "计算机学院-2026-推免复试参考", "qinghe": "计算机学院-2026-青禾计划"}
 DOMAINS = {"competition": ["S1"], "innovation": ["S1"], "scholarship": ["S2"],
            "college-scholarship": ["S2"], "xinghuo": ["S2"], "recommendation": ["S3"],
-           "retest": ["S3"], "qinghe": ["S4", "S1"]}
+           "retest": ["S3"], "qinghe": ["S4"]}
 NOTES = {
     "competition": "2026-11-23真实通知正文、校教〔2026〕9号及三份附件入口已核对；本网络可读取，无需账号。三份DOCX与Alpha原件SHA-256相同，逐行保留合并标记及脚注。竞赛级别认定用于规定的学分/绩效用途，不能直接换成综测加分或奖学金等级。205数据行未获逐项人工签核；后续版本非全站穷尽核验。",
     "scholarship": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；待人工确认。校级通则不能替代院级/专项细则。",
@@ -85,6 +87,15 @@ def metadata_for(key, preview):
         data["temporal_notes"]["deadline_meaning"] = "原文10月31日前；未给时刻" if key == "qinghe" else "首批预报名数据导出截止2026-09-19 11:00；不代表后续批次统一截止"
         data["applicability_raw"] = ({"对象": "计算机与大数据学院（软件学院）全体本科生；另看各实验室接收条件", "批次": "2026—2027学年青禾计划；报名期已过", "资源状态": "发布时计划与联系渠道，非实时招生名额"}
                                      if key == "qinghe" else {"对象": "已取得所在学校推免资格的校内外优秀应届本科毕业生；申请硕士/直博另看细则", "年度": "2027年接收推免；2026年9月实施", "限制": "不是本科推荐资格办法；不适用于下一届或当前开放判断"})
+    if key == "qinghe":
+        # Batch-specific scope override; preserve the original 44-record
+        # dictionary/import snapshot instead of rewriting historical mappings.
+        original_directions = list(data["business_direction_codes"])
+        data["business_direction_codes"] = ["COLLEGE_RESOURCES"]
+        data["temporal_notes"]["business_scope_adjustment"] = {
+            "original_business_direction_codes": original_directions,
+            "reason": "Beta审核要求：青禾计划仅用于S4学院资源导航，不进入S1竞赛认定。",
+        }
     if key == "recommendation":
         data["temporal_notes"]["deadline_exact_local"] = "2026-09-09T21:00:00+08:00"
     if key == "innovation":
@@ -161,13 +172,20 @@ async def check():
     if len(lookup) != len(mapping):
         raise ValueError("Duplicate source mappings")
     retriever = LocalBM25Retriever(file_root=ROOT)
-    count = 0
+    count, metadata_hidden, chunks_hidden = 0, 0, 0
+    index_results = []
     for row in manifest["packages"]:
         package = DocumentPackage.model_validate(read(Path(row["package"])))
         if package.metadata.retrieval_status.value != "blocked" or package.metadata.temporal_notes.get("human_approved") is not False:
             raise ValueError("Beta candidates cannot approve/enable policies")
         if package.metadata.version_no != VERSION or len(package.chunks) != row["chunk_count"]:
             raise ValueError("Package manifest inconsistent")
+        if row["key"] == "qinghe" and (
+            row["domains"] != ["S4"]
+            or package.metadata.temporal_notes.get("beta_domains") != ["S4"]
+            or package.metadata.business_direction_codes != ["COLLEGE_RESOURCES"]
+        ):
+            raise ValueError("Qinghe candidates must be scoped to S4 / COLLEGE_RESOURCES only")
         for file in package.files:
             if digest(Path(file.storage_key)) != file.sha256:
                 raise ValueError("Package file hash mismatch")
@@ -182,7 +200,28 @@ async def check():
                 raise ValueError("Source unit hash mismatch")
             if (evidence["original_file_key"], evidence["original_locator"], evidence["original_sha256"]) != (chunk.original_file_key, chunk.original_locator, digest(Path(chunk.original_file_key))):
                 raise ValueError("Original mapping mismatch")
-        await retriever.index_document(package)
+        indexed = await retriever.index_document(package)
+        if (indexed.status.value != "indexed" or indexed.warnings
+            or indexed.chunk_count != len(package.chunks)
+            or indexed.indexed_count != len(package.chunks)):
+            raise ValueError(f"Candidate indexing incomplete or failed: {row['key']}")
+        # White-box offline audit: use real indexed IDs, not random IDs or an
+        # empty index, so None lookups prove the blocked gate is working.
+        stored_chunks = {chunk_id: entry for chunk_id, entry in retriever._chunk_index.items()
+                         if entry[0] == indexed.version_id}
+        if len(stored_chunks) != indexed.indexed_count:
+            raise ValueError("IndexResult differs from actual stored chunk count")
+        if retriever.get_document_metadata(indexed.version_id) is not None:
+            raise ValueError("Blocked candidate leaked through metadata lookup")
+        metadata_hidden += 1
+        for chunk_id in stored_chunks:
+            if retriever.get_parsed_chunk(chunk_id) is not None:
+                raise ValueError("Blocked candidate leaked through parsed chunk lookup")
+            chunks_hidden += 1
+        index_results.append({"key": row["key"], "status": indexed.status.value,
+                              "chunk_count": indexed.chunk_count, "indexed_count": indexed.indexed_count,
+                              "actual_stored_chunk_count": len(stored_chunks), "warnings": [],
+                              "blocked_metadata_lookup": "None", "blocked_chunk_lookups_returning_none": len(stored_chunks)})
         count += len(package.chunks)
     hits = {}
     for code, query in [("COMPETITION_RESEARCH", "大学生学科竞赛认定创新学分"), ("POLICY_AFFAIRS", "本科生奖学金申请条件"),
@@ -193,7 +232,10 @@ async def check():
     if len(mapping) != count:
         raise ValueError("Incomplete chunk mapping")
     return {"packages": len(manifest["packages"]), "chunks": count, "original_mappings": len(mapping),
-            "enabled_packages": 0, "human_approved_packages": 0, "formal_hits_for_blocked_candidates": hits}
+            "enabled_packages": 0, "human_approved_packages": 0, "formal_hits_for_blocked_candidates": hits,
+            "index_results": index_results, "indexed_chunks": sum(r["indexed_count"] for r in index_results),
+            "blocked_metadata_lookups_returning_none": metadata_hidden,
+            "blocked_chunk_lookups_returning_none": chunks_hidden}
 
 
 def main():
@@ -203,7 +245,7 @@ def main():
     if not args.check:
         build()
     result = asyncio.run(check())
-    write(REVIEW / "validation-report.json", result)
+    write(DOCS / "beta-policy-validation-report.json", result)
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

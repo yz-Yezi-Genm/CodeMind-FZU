@@ -4,7 +4,6 @@
     "document_type": "年度通知",
     "category_name": "科研实践与实验室",
     "business_direction_codes": [
-      "COMPETITION_RESEARCH",
       "COLLEGE_RESOURCES"
     ],
     "record_code": "计算机学院-2026-青禾计划",
@@ -77,12 +76,18 @@
       "human_approved": false,
       "baseline_version": "import-1",
       "beta_domains": [
-        "S4",
-        "S1"
+        "S4"
       ],
       "scope_limitations": "2026—2027学年学院本科生青禾计划；2026-10-31前发送报名表电子版至各实验室邮箱，之后材料初选/面试或笔试。XLSX24条记录、226非空单元格全量转换；2空工作表登记，标题合并不填充为行属性。研究方向、条件、人数和官方公开联系渠道保留原值，人数非实时空缺、联系方式未测可达；报名已过期，不推广到下一批。空白报名表仅作原件关联，不采集学生申请资料。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json",
-      "deadline_meaning": "原文10月31日前；未给时刻"
+      "deadline_meaning": "原文10月31日前；未给时刻",
+      "business_scope_adjustment": {
+        "original_business_direction_codes": [
+          "COMPETITION_RESEARCH",
+          "COLLEGE_RESOURCES"
+        ],
+        "reason": "Beta审核要求：青禾计划仅用于S4学院资源导航，不进入S1竞赛认定。"
+      }
     }
   },
   "files": [

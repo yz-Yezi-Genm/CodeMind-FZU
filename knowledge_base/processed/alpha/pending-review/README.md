@@ -14,8 +14,8 @@
 
 [beta-2026-11-23/](beta-2026-11-23/)保存四领域8份重新核验/新增处理的候选包，共501片段，全部blocked、未人工签核。它包含上面5份资料的新处理版本，不能将两批相加声称收集了13份独立资料。
 
-- [Beta核验清单](../../../../docs/assignment-03/alpha/beta-policy-verification-matrix.md)
-- [Beta资料交接](../../../../docs/assignment-03/alpha/beta-policy-handoff.md)
-- [Beta待确认项](../../../../docs/assignment-03/alpha/beta-policy-gaps.md)
+- [Beta核验清单](../../../../docs/assignment-03/beta/beta-policy-verification-matrix.md)
+- [Beta资料交接](../../../../docs/assignment-03/beta/beta-policy-handoff.md)
+- [Beta待确认项](../../../../docs/assignment-03/beta/beta-policy-gaps.md)
 
 生成命令为`python -m knowledge_base.processing.build_beta_policy_review`，不会覆盖顶层Alpha包，也不会写approved。两批manifest分别加载；正式问答加载器不应读取待审核目录。

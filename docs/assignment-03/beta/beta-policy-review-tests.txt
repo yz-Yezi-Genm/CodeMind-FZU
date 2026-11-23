@@ -1,17 +1,36 @@
 beta-candidates
 $ python -m unittest knowledge_base.processing.test_beta_policy_review -v
+test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids) ... ok
+test_blocked_real_metadata_lookup_returns_none_after_successful_indexing (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_metadata_lookup_returns_none_after_successful_indexing) ... ok
 test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_business_codes_preserve_original_dictionary) ... ok
+test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits) ... ok
+test_checker_rejects_qinghe_s1_mapping_even_when_blocked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_qinghe_s1_mapping_even_when_blocked) ... ok
 test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
 test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
 test_mapping_tamper_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_tamper_is_rejected) ... ok
 test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_44_records_preserved_as_import_snapshots) ... ok
 test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_tamper_fails_closed) ... ok
 test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_cells_and_contact_fields_survive_markdown) ... ok
+test_qinghe_mapping_filters_s1_independently_of_blocked_gate (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_mapping_filters_s1_independently_of_blocked_gate) ... ok
 test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_real_packages_hashes_intervals_and_four_domain_isolation) ... ok
 test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_rebuild_does_not_change_approved_or_alpha_candidates) ... ok
 
 ----------------------------------------------------------------------
-Ran 9 tests in 1.065s
+Ran 14 tests in 1.927s
+
+OK
+
+
+qinghe-conversion
+$ review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v
+test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_changed_headers_fail) ... ok
+test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_complete_workbook_merges_and_empty_sheets) ... ok
+test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_formulas_require_review_instead_of_inferred_value) ... ok
+test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_hidden_extra_content_is_not_silently_omitted) ... ok
+test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_field_explicitly_marked) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.335s
 
 OK
 
@@ -33,7 +52,7 @@ test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.pro
 test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 1.916s
+Ran 13 tests in 1.481s
 
 OK
 
@@ -51,18 +70,4 @@ $ python -m pytest tests -q
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 1 warning, 136 subtests passed in 35.08s
-
-
-qinghe-conversion
-$ review-python -m unittest knowledge_base.processing.test_qinghe_conversion -v
-test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_changed_headers_fail) ... ok
-test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_complete_workbook_merges_and_empty_sheets) ... ok
-test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_formulas_require_review_instead_of_inferred_value) ... ok
-test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_hidden_extra_content_is_not_silently_omitted) ... ok
-test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_field_explicitly_marked) ... ok
-
-----------------------------------------------------------------------
-Ran 5 tests in 0.404s
-
-OK
+357 passed, 28 skipped, 1 warning, 136 subtests passed in 39.19s
