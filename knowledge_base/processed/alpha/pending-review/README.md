@@ -1,5 +1,7 @@
 # 政策复核候选资料
 
+最新青禾S4 A4交接按B8使用[qinghe-b8-2026-11-23/](qinghe-b8-2026-11-23/)：R3/R4两包，各24片段，共48，仍全部blocked，待组长最终审核。[交接说明](../../../../docs/assignment-03/beta/qinghe-b8-handoff.md)。旧青禾混合包保留为原批次核验基线，不与新两包同时正式加载。
+
 本目录顶层由 `python -m knowledge_base.processing.build_policy_review` 生成 Alpha 阶段5份公共 `DocumentPackage`。读取入口为 [manifest.json](manifest.json)；`texts/` 保存被切片的提取/整理稿。
 
 这里不是已人工审核通过的正式语料。当前3份 `review_only`、2份 `blocked`，没有 enabled；重新生成不会扩大检索权限。

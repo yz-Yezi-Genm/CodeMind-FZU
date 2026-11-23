@@ -1,5 +1,7 @@
 # Beta 四领域候选资料
 
+青禾S4当前按[B8两包](../qinghe-b8-2026-11-23/README.md)交接，R3/R4各24片段，共48。此目录旧青禾35片段混合包只保留为核验基线，不能与新两包同时正式加载；其他7份资料不变。
+
 入口：[manifest.json](manifest.json)。8份资料、501片段；全部`blocked`、`human_approved=false`。待组长最终人工审核，不是正式开放语料。
 
 - [四领域核验清单](../../../../../docs/assignment-03/beta/beta-policy-verification-matrix.md)

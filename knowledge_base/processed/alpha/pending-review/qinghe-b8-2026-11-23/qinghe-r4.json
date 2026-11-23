@@ -1,0 +1,372 @@
+{
+  "metadata": {
+    "title": "2026—2027学年青禾计划·研究方向与公开介绍",
+    "document_type": "历史公开资源介绍",
+    "category_name": "研究方向与公开介绍",
+    "business_direction_codes": [
+      "COLLEGE_RESOURCES"
+    ],
+    "record_code": "计算机学院-2026-青禾计划-R4",
+    "version_no": "beta-b8-2026-11-23-1",
+    "publisher": "福州大学计算机与大数据学院（软件学院）",
+    "responsible_department": "学生工作/本科生培养",
+    "document_number": null,
+    "source_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+    "source_page_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+    "published_on": "2026-10-16",
+    "issued_on": null,
+    "effective_on": null,
+    "deadline_on": null,
+    "document_written_on": null,
+    "applicability_raw": {
+      "适用年级": "全体本科生；具体实验室另有接收条件",
+      "适用专业": null,
+      "适用对象": "计算机与大数据学院（软件学院）本科生；具体实验室按原行条件",
+      "学院": "福州大学计算机与大数据学院（软件学院）",
+      "适用届别": null
+    },
+    "policy_status": "2026-10发布的历史公开介绍；不证明当前方向或招募状态",
+    "source_verification_status": "verified",
+    "timeliness_verification_status": "historical",
+    "extraction_status": "extracted",
+    "v1_inclusion_status": "included",
+    "retrieval_status": "blocked",
+    "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
+    "verification_note": "B8按原序号拆分；本包仅研究方向与公开介绍。原文‘无’按缺失处理；未提供专业/届别不推断。待组长最终人工核验。",
+    "import_snapshot": {
+      "记录编号": "计算机学院-2026-青禾计划",
+      "标题": "关于2026-2027学年“青禾计划”本科生进实验室报名的通知",
+      "发布单位": "福州大学计算机与大数据学院（软件学院）",
+      "负责部门": "学生工作/本科生培养",
+      "文号": "",
+      "资料类型": "年度通知",
+      "发布日期": "2026-10-16",
+      "生效日期": "2026-10-16",
+      "适用年级": "全体本科生",
+      "适用专业": "计算机与大数据学院/软件学院",
+      "适用对象": "本科生",
+      "状态": "截止日前有效",
+      "来源网址": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "原始文件": "原始资料/学院/计算机学院_2026_2027_青禾计划_进实验室报名通知.html",
+      "附件路径": "原始资料/学院/计算机学院_2026_2027_青禾计划_实验室需求一览表.xlsx；原始资料/学院/计算机学院_2026_2027_青禾计划_报名表.docx",
+      "最后核验日期": "2026-10-18",
+      "内容哈希": "F1FFC1F59940800F1A432EF3601324EBC74AF4B3D5331E5C529D186E01BB2C7B",
+      "截止日期": "",
+      "文件成文日期": "",
+      "核验状态": "本地文件与来源登记已核查；政策时效待逐条联网复核",
+      "核验说明": "",
+      "检索用途": "默认候选，使用前须按状态和适用范围筛选",
+      "附件来源": "",
+      "来源页面": "",
+      "来源页面发布日期": "",
+      "整理文件": "整理资料/学院/计算机学院_2026_2027_青禾计划_进实验室报名通知.md",
+      "正文文件": "正文资料/学院/计算机学院_2026_2027_青禾计划_进实验室报名通知.md",
+      "正文提取状态": "已提取正文，待人工语义复核",
+      "附件处理状态": "网页有2个附件入口；附件完整性需逐项核对；DOCX段落及表格已提取；合并单元格、脚注及版式待复核；Excel/旧版DOC/压缩包等附件已保存，内容未结构化提取",
+      "本地核查日期": "2026-10-21",
+      "初次核查整理稿状态": "摘要或简要说明",
+      "关联资料": "",
+      "印发日期": "",
+      "主题分类": "科研实践与实验室",
+      "原登记内容哈希": "",
+      "哈希更正说明": "",
+      "附件哈希": "{\"原始资料/学院/计算机学院_2026_2027_青禾计划_实验室需求一览表.xlsx\": \"233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed\", \"原始资料/学院/计算机学院_2026_2027_青禾计划_报名表.docx\": \"1b13c52218225fd2398101b97da56a1214f03abcab42d92773d48fddb26aed85\"}"
+    },
+    "temporal_notes": {
+      "human_approved": false,
+      "checked_on": "2026-11-23",
+      "beta_domains": [
+        "S4"
+      ],
+      "resource_category": "R4",
+      "source_academic_year": "2026—2027学年",
+      "source_record_code": "计算机学院-2026-青禾计划",
+      "source_version_no": "beta-review-2026-11-23-1",
+      "source_package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/qinghe.json",
+      "split_contract": "B8: R3/R4 two independent packages, 24 chunks each; preserve row IDs",
+      "scope_notes": "适用专业/届别原文未明确，不推断不限；全体本科生只指本院，仍看每行接收条件。",
+      "deadline_meaning": "本包不承担报名流程/资格判断；不得继承招募时效为现行介绍",
+      "missing_value_policy": "空白或仅‘无’标为未提供；原始值及坐标保留在原件/审计映射中"
+    }
+  },
+  "files": [
+    {
+      "file_role": "curated",
+      "storage_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_name": "qinghe-r4.md",
+      "media_type": "text/markdown",
+      "sha256": "e7ec791d3b1696a8cd9048bef4e0f853506598d1dd93e2562b1342c6a8fb0a4b",
+      "source_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "processing_status": "extracted"
+    },
+    {
+      "file_role": "attachment",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_name": "计算机与大数据学院（软件学院）本科生进实验室需求一览表.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+      "source_url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18557344",
+      "processing_status": "saved"
+    },
+    {
+      "file_role": "attachment",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-registration.docx",
+      "original_name": "计算机与大数据学院（软件学院）本科生进实验室报名表 .docx",
+      "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "1b13c52218225fd2398101b97da56a1214f03abcab42d92773d48fddb26aed85",
+      "source_url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18557343",
+      "processing_status": "saved"
+    },
+    {
+      "file_role": "original",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_name": "qinghe.html",
+      "media_type": "text/html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "source_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "processing_status": "saved"
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_no": 1,
+      "content": "## R4·实验室序号01·福州大学超算团队\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A3）：\n1\n\n实验室名称（B3）：\n福州大学超算团队\n\n实验室简介（100字左右）（C3）：\n福州大学超级计算团队旨在培养面向未来的超级计算拔尖创新人才。秉承“师生共建、产学协同”理论，近几年以来，屡创佳绩：\n（1）连续六年闯入世界大学生超算竞赛（ASC）全球总决赛，并获得一等奖；（2）2018年，全国并行应用大赛（PAC）银奖和国家工程实验室特别奖；（3）2019年首届数字中国创新大赛总决赛一等奖和最佳商业价值奖；（4）2021年获ACM中国国际并行计算挑战赛（IPCC）三等奖。实验室每年遴选组队参加全国并行应用大赛PAC和世界大学生超算ASC竞赛、IPCC挑战赛。\n\n科研成果与学生典型事迹 （可附上网页链接）（I3）：\n福州大学超算团队的媒体宣传与报道\n1、 学习强国（视频）https://article.xuexi.cn/articles/index.html?share_to=wx_single&study_style_id=video_default&source=share&art_id=2408458832829729620&item_id=2408458832829729620&cdn=https%3A%2F%2Fregion-fujian-resource\n2、 新福建（视频）https://share.fjdaily.com/displayTemplate/news/newsDetail/3370/3478783.html?isShare=true&advColumnId=0\n3、 福建省人民政府转载网页：2025-05-25\nhttps://www.fujian.gov.cn/xwdt/mszx/202505/t20250525_6917805.htm\n4、 福建日报网页：2025-05-25\nhttps://fjrb.fjdaily.com/pc/con/202505/25/content_452666.html\n5、 学习强国福建学习平台转载网页：2025-05-25\nhttps://www.xuexi.cn/local/normalTemplate.html?itemId=1606547488427475680\n6、 福州晚报网页：2025-05-16\nhttps://mag.fznews.com.cn/fzwb/2025/20250516/20250516_A02/20250516_A02_2.htm\n\n原单元格链接（I3；未访问或验证）：https://article.xuexi.cn/articles/index.html?share_to=wx_single&study_style_id=video_default&source=share&art_id=2408458832829729620&item_id=2408458832829729620&cdn=https%3A%2F%2Fregion-fujian-resource\n\n原单元格链接（I3；未访问或验证）：https://share.fjdaily.com/displayTemplate/news/newsDetail/3370/3478783.html?isShare=true&advColumnId=0\n\n原单元格链接（I3；未访问或验证）：https://www.fujian.gov.cn/xwdt/mszx/202505/t20250525_6917805.htm\n\n原单元格链接（I3；未访问或验证）：https://fjrb.fjdaily.com/pc/con/202505/25/content_452666.html\n\n原单元格链接（I3；未访问或验证）：https://www.xuexi.cn/local/normalTemplate.html?itemId=1606547488427475680\n\n原单元格链接（I3；未访问或验证）：https://mag.fznews.com.cn/fzwb/2025/20250516/20250516_A02/20250516_A02_2.htm",
+      "locator": "L1-L38 | R4·实验室序号01·福州大学超算团队",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 1, \"line_end\": 38, \"char_start\": 0, \"char_end\": 1836, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号01·福州大学超算团队\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A3:I3",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 2,
+      "content": "## R4·实验室序号02·网络流量分析与异常检测课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A4）：\n2\n\n实验室名称（B4）：\n网络流量分析与异常检测课题组\n\n实验室简介（100字左右）（C4）：\n课题组研究领域涉及网络流量异常检测、安全大数据分析、机器学习算法、智能计算、优化算法设计等。近期主要研究内容涉及基于图表示的恶意流量检测、加密流量多模态分类、基于联邦学习与域泛化分布式入侵检测、多维特征融合的集成学习网络异常流量检测、半监督异常流量检测、SDN环境下DDoS检测等工作。\n\n科研成果与学生典型事迹 （可附上网页链接）（I4）：\n详见指导教师主页https://ccds.fzu.edu.cn/info/1203/5012.htm\n\n原单元格链接（I4；未访问或验证）：https://ccds.fzu.edu.cn/info/1203/5012.htm",
+      "locator": "L40-L56 | R4·实验室序号02·网络流量分析与异常检测课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 40, \"line_end\": 56, \"char_start\": 1838, \"char_end\": 2287, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号02·网络流量分析与异常检测课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A4:I4",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 3,
+      "content": "## R4·实验室序号03·人工智能自主创新实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A5）：\n3\n\n实验室名称（B5）：\n人工智能自主创新实验室\n\n实验室简介（100字左右）（C5）：\n福州大学网络信息安全与计算机技术国家级实验教学中心旨在培养具有创新实验和国产化自主研发能力的人工智能创新人才。实验室涉及：华为昇腾AI，信创研发、人工智能创新竞赛、人工智能算法实践等研究内容。\n\n科研成果与学生典型事迹 （可附上网页链接）（I5）：\n详见指导教师主页：\nhttps://ccds.fzu.edu.cn/info/1202/10637.htm\nhttps://csip.fzu.edu.cn/?page_id=787\nhttps://ccds.fzu.edu.cn/info/1210/7096.htm \nhttps://ccds.fzu.edu.cn/info/1210/11962.htm\nhttps://ccds.fzu.edu.cn/info/1205/11963.htm\nhttps://ccds.fzu.edu.cn/info/1205/7115.htm\nhttps://ccds.fzu.edu.cn/info/1205/7116.htm\nhttps://ccds.fzu.edu.cn/info/1205/7113.htm\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1202/10637.htm\n\n原单元格链接（I5；未访问或验证）：https://csip.fzu.edu.cn/?page_id=787\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1210/7096.htm\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1210/11962.htm\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1205/11963.htm\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1205/7115.htm\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1205/7116.htm\n\n原单元格链接（I5；未访问或验证）：https://ccds.fzu.edu.cn/info/1205/7113.htm",
+      "locator": "L58-L96 | R4·实验室序号03·人工智能自主创新实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 58, \"line_end\": 96, \"char_start\": 2289, \"char_end\": 3417, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号03·人工智能自主创新实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A5:I5",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 4,
+      "content": "## R4·实验室序号04·福州大学图机器学习课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A6）：\n4\n\n实验室名称（B6）：\n福州大学图机器学习课题组 \n\n实验室简介（100字左右）（C6）：\n研究方向为数据挖掘和智能信息处理、机器学习、灰色方法和算法设计与分析、医工交叉研究。\n\n科研成果与学生典型事迹 （可附上网页链接）（I6）：\n详见教师主页：https://ccds.fzu.edu.cn/szdw/szxx.htm\n\n原单元格链接（I6；未访问或验证）：https://ccds.fzu.edu.cn/szdw/szxx.htm",
+      "locator": "L98-L114 | R4·实验室序号04·福州大学图机器学习课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 98, \"line_end\": 114, \"char_start\": 3419, \"char_end\": 3753, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号04·福州大学图机器学习课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A6:I6",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 5,
+      "content": "## R4·实验室序号05·福州大学认知系统与信息处理实验室EIC小组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A7）：\n5\n\n实验室名称（B7）：\n福州大学认知系统与信息处理实验室EIC小组\n\n实验室简介（100字左右）（C7）：\n主要研究多模态深度学习、多智能体系统开发\n\n科研成果与学生典型事迹 （可附上网页链接）（I7）：\n见教师主页：https://ccds.fzu.edu.cn/info/1207/8330.htm\n\n原单元格链接（I7；未访问或验证）：https://ccds.fzu.edu.cn/info/1207/8330.htm",
+      "locator": "L116-L132 | R4·实验室序号05·福州大学认知系统与信息处理实验室EIC小组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 116, \"line_end\": 132, \"char_start\": 3755, \"char_end\": 4093, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号05·福州大学认知系统与信息处理实验室EIC小组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A7:I7",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 6,
+      "content": "## R4·实验室序号06·IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A8）：\n6\n\n实验室名称（B8）：\nIDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)\n\n实验室简介（100字左右）（C8）：\nIDEA实验室主要研究方向包括智慧医疗、数据挖掘、人工智能、大语言模型、多模态融合、推荐系统及其相关领域。实验室氛围积极上进，致力于发表高水平学术论文。\n\n科研成果与学生典型事迹 （可附上网页链接）（I8）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/8959.htm\n\n原单元格链接（I8；未访问或验证）：https://ccds.fzu.edu.cn/info/1207/8959.htm",
+      "locator": "L134-L150 | R4·实验室序号06·IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 134, \"line_end\": 150, \"char_start\": 4095, \"char_end\": 4576, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号06·IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A8:I8",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 7,
+      "content": "## R4·实验室序号07·福州大学数据挖掘课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A9）：\n7\n\n实验室名称（B9）：\n福州大学数据挖掘课题组\n\n实验室简介（100字左右）（C9）：\n主要研究时空数据挖掘、图神经网络、视觉语言模型、强化学习等在遥感、建筑、城市计算、海洋大气中的科学应用\n\n科研成果与学生典型事迹 （可附上网页链接）（I9）：\n见教师主页：https://ccds.fzu.edu.cn/info/1203/11293.htm",
+      "locator": "L152-L166 | R4·实验室序号07·福州大学数据挖掘课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 152, \"line_end\": 166, \"char_start\": 4578, \"char_end\": 4866, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号07·福州大学数据挖掘课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A9:I9",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 8,
+      "content": "## R4·实验室序号08·空间数据挖掘与信息共享教育部重点实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A10）：\n8\n\n实验室名称（B10）：\n空间数据挖掘与信息共享教育部重点实验室\n\n实验室简介（100字左右）（C10）：\n空间数据挖掘与信息共享教育部重点实验室主要围绕环境与自然资源遥感、地理信息建模与分析技术、网络地理信息共享服务技术、时空数据挖掘与决策理论方法等四个研究方向。本组主要研究方向为城市/矿区遥感生态评价、人类活动/人类健康与生态关系、灾害风险（极端气候、地质灾害、火灾、景观）评估分析、数值模拟与预测等。\n\n科研成果与学生典型事迹 （可附上网页链接）（I10）：\n林梦婧，女，数字中国研究院（福建）副教授，硕士生导师，2024年获得中国科学院大学博士学位。曾前往剑桥大学、加州大学伯克利分校、香港中文大学、台湾东吴大学、厦门大学等多所国内外知名高校交流学习，获包括宝钢教育奖等国内外奖项三十余项。主要从事韧性城市、人地关系等研究。近5年主持课题/省部级子课题5项，参与课题与工作项目近30项，多次在国内外大型会议担任分会场召集人、进行口头汇报及海报展示，发表期刊论文20余篇，发明专利三项",
+      "locator": "L168-L182 | R4·实验室序号08·空间数据挖掘与信息共享教育部重点实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 168, \"line_end\": 182, \"char_start\": 4868, \"char_end\": 5438, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号08·空间数据挖掘与信息共享教育部重点实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A10:I10",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 9,
+      "content": "## R4·实验室序号09·数据智能与交叉信息课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A11）：\n9\n\n实验室名称（B11）：\n数据智能与交叉信息课题组\n\n实验室简介（100字左右）（C11）：\n聚焦数据挖掘、时空智能、交叉信息研究，导师为 2025 年国家海外引才专项引进的丹麦奥尔堡大学博士，深耕科研一线，提供系统科研训练与一对一指导，凭海外经历在外语学习、留学申请上给予指导。欢迎自驱力极强、有志深造的本科生加入。\n\n科研成果与学生典型事迹 （可附上网页链接）（I11）：\n课题组负责人主页： https://www.zhichenlai.com/。曾指导浙江大学、悉尼科技大学和电子科技大学研究生在NeurIPS、IJCAI、CIKM和PR等期刊会议发表论文。\n\n原单元格链接（I11；未访问或验证）：https://www.zhichenlai.com/",
+      "locator": "L184-L200 | R4·实验室序号09·数据智能与交叉信息课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 184, \"line_end\": 200, \"char_start\": 5440, \"char_end\": 5888, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号09·数据智能与交叉信息课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A11:I11",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 10,
+      "content": "## R4·实验室序号10·福州大学-数字媒体实验室（Digital Media Lab，DML)\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A12）：\n10\n\n实验室名称（B12）：\n福州大学-数字媒体实验室（Digital Media Lab，DML)\n\n实验室简介（100字左右）（C12）：\nDML数字媒体实验室聚焦数字图像视频处理基本机理研究，长期致力于数字图像智能处理、视频分析与理解、语义分割处理、多模态信息处理等数字媒体处理领域的算法与机理研究。\n\n科研成果与学生典型事迹 （可附上网页链接）（I12）：\nhttps://richeng-web.github.io/\n\n原单元格链接（I12；未访问或验证）：https://richeng-web.github.io/",
+      "locator": "L202-L218 | R4·实验室序号10·福州大学-数字媒体实验室（Digital Media Lab，DML)",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 202, \"line_end\": 218, \"char_start\": 5890, \"char_end\": 6293, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号10·福州大学-数字媒体实验室（Digital Media Lab，DML)\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A12:I12",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 11,
+      "content": "## R4·实验室序号11·复杂网络大数据分析实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A13）：\n11\n\n实验室名称（B13）：\n复杂网络大数据分析实验室\n\n实验室简介（100字左右）（C13）：\n实验室主要研究方向包括复杂网络分析，隐私保护图学习、分布式图计算、医疗数据分析等。实验室配有由教授、副教授、博士生和硕士生组成的科研梯队，以及高性能CPU服务器集群和GPU服务器，能够为网络大数据分析挖掘的科研提供良好的学术指导和实验环境。实验室实行2+2的实习规划，即两个学期的专业知识补强+两个学期的论文、项目或竞赛实践。实习期间，将针对具体课题组建由研究生和本科生组成的研究小组，定期展开讨论。\n\n科研成果与学生典型事迹 （可附上网页链接）（I13）：\n近年来，在科研方面，在TBD、TCSS、TNSE、计算机学报、软件学报、通信学报、IJCAI、ICNP、ChineseCSCW等国内外知名学术期刊和会议上发表多篇论文，多次获得Best Paper Award和Best Student Award等奖励。在产学合作方面，与亿力科技、实达迪美等企业合作进行大数据技术在电力、保险、能源等行业的应用研究，研究成果投入企业实际应用，获得国家发明专利10余项，软件著作权6项。其中，“基于云架构的能源监测与分析平台的研制及产业化”获得CCF科技进步杰出奖。在学科竞赛方面，组织指导学生参加多届CCF大数据与计算智能大赛（CCF BDCI），多次获得全国二等奖和优胜奖。\n参与实验室实习的本科同学能够在大四前参与发表学术论文（如：https://ccds.fzu.edu.cn/info/1120/9428.htm）、获得竞赛奖励（如：https://ccds.fzu.edu.cn/info/1120/1866.htm），或在产学合作项目（如：https://ccds.fzu.edu.cn/info/1120/8396.htm）中得到锻炼，丰富个人履历。2025、2026届本科毕业生中有多位在实验室实习（https://ccds.fzu.edu.cn/info/1161/10750.htm）。",
+      "locator": "L220-L235 | R4·实验室序号11·复杂网络大数据分析实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 220, \"line_end\": 235, \"char_start\": 6295, \"char_end\": 7260, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号11·复杂网络大数据分析实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A13:I13",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 12,
+      "content": "## R4·实验室序号12·“AI+复杂工业系统”创新实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A14）：\n12\n\n实验室名称（B14）：\n“AI+复杂工业系统”创新实验室\n\n实验室简介（100字左右）（C14）：\n围绕航空发动机高空环境模拟系统、大型能源动力系统等复杂工业系统，开展信号处理、主动抗扰与智能控制、多智能体协同控制、故障诊断与容错控制、系统安全性与韧性、计算流体力学与深度学习建模、工业大模型应用与AI辅助决策等方向的研究，涵盖理论与算法研究、软硬件系统开发及产品研制等。实验室拥有航空发动机环境模拟试验数字孪生与硬件在环融合测试平台，可支持科研训练、工程应用研究及课程实验等活动。\n\n科研成果与学生典型事迹 （可附上网页链接）（I14）：\n所带学生获2024中国国际大学生创新大赛金奖、第十八届“挑战杯”全国大学生课外学术科技作品竞赛二等奖、美国大学生数学建模竞赛、全国大学生电子设计竞赛等赛事奖项。\n多名学生毕业后，通过推免或统招升入北京大学、厦门大学、福州大学等国内外知名高校继续深造，或在中国移动福建省分公司等知名企业就业。\n主页：https://ccds.fzu.edu.cn/info/1206/9081.htm\nhttps://ccds.fzu.edu.cn/info/1203/11303.htm\n\n原单元格链接（I14；未访问或验证）：https://ccds.fzu.edu.cn/info/1206/9081.htm\n\n原单元格链接（I14；未访问或验证）：https://ccds.fzu.edu.cn/info/1203/11303.htm",
+      "locator": "L237-L258 | R4·实验室序号12·“AI+复杂工业系统”创新实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 237, \"line_end\": 258, \"char_start\": 7262, \"char_end\": 8018, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号12·“AI+复杂工业系统”创新实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A14:I14",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 13,
+      "content": "## R4·实验室序号13·多模态智能感知计算研究课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A15）：\n13\n\n实验室名称（B15）：\n多模态智能感知计算研究课题组\n\n实验室简介（100字左右）（C15）：\n1、智能影像分析及其在遥感和医学领域的应用；2、语音增强分析及应用；3、智能文档分析及应用。小组与省立医院、厦门亿联公司等均有良好的合作关系，可支持学生结合具体应用场景开展理论学习、关键技术研究\n\n科研成果与学生典型事迹 （可附上网页链接）（I15）：\n所带学生多次获人工智能竞赛省级奖项，指导2022,2023级本科生以第一作者在CCF-C类会议发表论文，或联合申请专利\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/5194.htm\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/5195.htm\n\n原单元格链接（I15；未访问或验证）：https://ccds.fzu.edu.cn/info/1207/5194.htm\n\n原单元格链接（I15；未访问或验证）：https://ccds.fzu.edu.cn/info/1207/5195.htm",
+      "locator": "L260-L280 | R4·实验室序号13·多模态智能感知计算研究课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 260, \"line_end\": 280, \"char_start\": 8020, \"char_end\": 8601, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号13·多模态智能感知计算研究课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A15:I15",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 14,
+      "content": "## R4·实验室序号14·EDA创新实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A16）：\n14\n\n实验室名称（B16）：\nEDA创新实验室\n\n实验室简介（100字左右）（C16）：\nEDA创新实验室主要从事集成电路物理设计、印刷电路板(PCB)的自动化设计(EDA)算法和工具研究开发，与上海立芯、华为等企业积极开展产学研合作。相关基础知识主要涉及：离散数学、数据结构与算法。\n\n\n科研成果与学生典型事迹 （可附上网页链接）（I16）：\n实验室多次在国际计算机辅助设计会议（ICCAD）CAD竞赛、EDA精英挑战赛等获奖。\n详见教师主页： https://ccds.fzu.edu.cn/info/1203/11959.htm\n\n原单元格链接（I16；未访问或验证）：https://ccds.fzu.edu.cn/info/1203/11959.htm",
+      "locator": "L282-L300 | R4·实验室序号14·EDA创新实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 282, \"line_end\": 300, \"char_start\": 8603, \"char_end\": 9046, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号14·EDA创新实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A16:I16",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 15,
+      "content": "## R4·实验室序号15·EDA创新实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A17）：\n15\n\n实验室名称（B17）：\nEDA创新实验室\n\n实验室简介（100字左右）（C17）：\n实验室面向集成电路电子设计自动化（EDA）前沿技术，重点开展芯片物理设计、智能优化算法及人工智能赋能EDA等方向研究。实验室注重科研创新与人才培养相结合，积极推进产学研协同，在高水平论文、发明专利及国内外EDA设计竞赛等方面取得了系列成果，致力于培养具有创新能力的集成电路EDA人才。\n\n科研成果与学生典型事迹 （可附上网页链接）（I17）：\n详见教师主页： https://ccds.fzu.edu.cn/info/1202/9820.htm https://ccds.fzu.edu.cn/info/1204/11596.htm\n\n原单元格链接（I17；未访问或验证）：https://ccds.fzu.edu.cn/info/1202/9820.htm\n\n原单元格链接（I17；未访问或验证）：https://ccds.fzu.edu.cn/info/1204/11596.htm",
+      "locator": "L302-L320 | R4·实验室序号15·EDA创新实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 302, \"line_end\": 320, \"char_start\": 9048, \"char_end\": 9598, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号15·EDA创新实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A17:I17",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 16,
+      "content": "## R4·实验室序号16·高效学习与智能计算实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A18）：\n16\n\n实验室名称（B18）：\n高效学习与智能计算实验室\n\n实验室简介（100字左右）（C18）：\n实验室面向大模型时代人工智能高效学习的前沿技术与应用需求，聚焦有限数据与计算资源条件下的模型学习与适配，重点开展大模型领域适配与高效微调、视觉与多模态高效学习、智能优化算法及其应用等方向研究。实验室注重科研创新与人才培养相结合，推动基础理论、关键技术与应用实践协同发展，积极推进产学研合作，致力于提升智能系统的学习效率、泛化能力与领域适应性，培养具有扎实理论基础、科研创新能力和工程实践能力的人工智能人才。\n\n科研成果与学生典型事迹 （可附上网页链接）（I18）：\n详见教师主页： https://ccds.fzu.edu.cn/info/1202/8884.htm\n\n原单元格链接（I18；未访问或验证）：https://ccds.fzu.edu.cn/info/1202/8884.htm",
+      "locator": "L322-L338 | R4·实验室序号16·高效学习与智能计算实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 322, \"line_end\": 338, \"char_start\": 9600, \"char_end\": 10111, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号16·高效学习与智能计算实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A18:I18",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 17,
+      "content": "## R4·实验室序号17·知识推理课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A19）：\n17\n\n实验室名称（B19）：\n知识推理课题组\n\n实验室简介（100字左右）（C19）：\n聚焦人工智能与大数据智能计算领域，主要研究知识图谱、大语言模型、数据挖掘及智能信息处理等。围绕知识获取、知识推理和智能应用等问题，面向医疗、智能服务等实际需求，开展基础理论、核心算法及应用研究\n\n科研成果与学生典型事迹 （可附上网页链接）（I19）：\n详见教师主页： https://ccds.fzu.edu.cn/info/1202/8884.htm\n\n原单元格链接（I19；未访问或验证）：https://ccds.fzu.edu.cn/info/1202/8884.htm",
+      "locator": "L340-L356 | R4·实验室序号17·知识推理课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 340, \"line_end\": 356, \"char_start\": 10113, \"char_end\": 10507, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号17·知识推理课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A19:I19",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 18,
+      "content": "## R4·实验室序号18·空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A20）：\n18\n\n实验室名称（B20）：\n空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）\n\n实验室简介（100字左右）（C20）：\n课题组面向“AI+地理空间智能”开展研究，就是让AI更好地理解“在哪里、发生了什么、为什么发生、接下来会怎样”。我们从旅游出行、城市运行、港口航运等真实场景出发，结合地图、新闻、社交媒体和交通数据，开展时空数据挖掘、知识图谱、大模型应用与社会现象模拟等研究。\n\n科研成果与学生典型事迹 （可附上网页链接）（I20）：\n课题组学生团队参加第四届“数智港航”数据创新应用大赛，获得一等奖、二等奖、三等奖各1项；已有同学参与论文撰写、国家发明专利申请和原型系统开发。欢迎希望提升保研竞争力、竞赛能力和实践能力的本科生加入。详见教师主页：http://adcfj.cn/sirc/door/team/TeacherList/Detail?personId=1273\n\n原单元格链接（I20；未访问或验证）：http://adcfj.cn/sirc/door/team/TeacherList/Detail?personId=1273",
+      "locator": "L358-L374 | R4·实验室序号18·空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 358, \"line_end\": 374, \"char_start\": 10509, \"char_end\": 11116, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号18·空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A20:I20",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 19,
+      "content": "## R4·实验室序号19·工业智能课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A21）：\n19\n\n实验室名称（B21）：\n工业智能课题组\n\n实验室简介（100字左右）（C21）：\n聚焦工业互联网应用领域的技术攻关，重点围绕工业数据中台构建、工业智能体研发、代码审计与脆弱性分析关键方向，推动工业智能技术与生产、研发、销售、服务全流程的深度融合。项目与材料制造、文创设计、跨境电商领域龙头企业深度合作，成果落地。\n\n科研成果与学生典型事迹 （可附上网页链接）（I21）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1206/8258.htm\n\n原单元格链接（I21；未访问或验证）：https://ccds.fzu.edu.cn/info/1206/8258.htm",
+      "locator": "L376-L392 | R4·实验室序号19·工业智能课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 376, \"line_end\": 392, \"char_start\": 11118, \"char_end\": 11530, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号19·工业智能课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A21:I21",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 20,
+      "content": "## R4·实验室序号20·网络空间安全实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A22）：\n20\n\n实验室名称（B22）：\n网络空间安全实验室\n\n实验室简介（100字左右）（C22）：\n网络空间安全实验室聚焦人工智能安全、大模型与智能体安全、攻防对抗、数据与系统安全等前沿方向，面向网络空间领域的现实安全威胁开展基础研究与应用技术攻关。实验室以理论研究、原型开发、实证验证为核心，围绕大模型越狱对抗、Agent 智能体安全、对抗样本、投毒攻击、隐私保护、漏洞挖掘等关键科学问题开展研究。\n\n科研成果与学生典型事迹 （可附上网页链接）（I22）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1202/8451.htm\n\n原单元格链接（I22；未访问或验证）：https://ccds.fzu.edu.cn/info/1202/8451.htm",
+      "locator": "L394-L410 | R4·实验室序号20·网络空间安全实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 394, \"line_end\": 410, \"char_start\": 11532, \"char_end\": 11983, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号20·网络空间安全实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A22:I22",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 21,
+      "content": "## R4·实验室序号21·大模型轻量化与自动机器学习课题组\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A23）：\n21\n\n实验室名称（B23）：\n大模型轻量化与自动机器学习课题组\n\n实验室简介（100字左右）（C23）：\n课题组目前主要围绕自动机器学习、大模型轻量化开展以下几个方向研究：(1)自动机器学习：自动机器学习主要分为搜索空间设计、黑盒优化以及精度估计，研究自动化机器学习的算法以及在不同领域的应用。(2)深度学习模型设计以及模型轻量化：探索新的深度学习算法和网络结构，利用神经网络结构搜索、剪枝、量化、蒸馏技术实现模型轻量化部署。(3)大模型与自动机器学习结合：研究利用神经网络结构搜索的相关技术对大模型结构进行探索，以及大模型驱动的高自主化神经网络结构搜索的研究。\n\n科研成果与学生典型事迹 （可附上网页链接）（I23）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/11299.htm",
+      "locator": "L412-L426 | R4·实验室序号21·大模型轻量化与自动机器学习课题组",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 412, \"line_end\": 426, \"char_start\": 11985, \"char_end\": 12466, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号21·大模型轻量化与自动机器学习课题组\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A23:I23",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 22,
+      "content": "## R4·实验室序号22·ROIS 团队\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A24）：\n22\n\n实验室名称（B24）：\nROIS 团队\n\n实验室简介（100字左右）（C24）：\nROIS，全称为Researcher Of Information Security，是福州大学数学与计算机科学学院信息安全专业学生于2013年9月发起组建、依托网络系统信息安全福建省高校重点实验室的兴趣团队。实验室以安全领域为核心，主要研究网络与系统安全、信息安全攻防、漏洞挖掘与利用、数据安全与隐私保护、安全智能等方向，注重“以研促学、以赛促练”，定期开展技术分享、安全竞赛训练与项目实践，并积极以团队名义参与世界各地的信息安全类赛事，致力于培养具有扎实安全基础、创新实践能力和团队协作精神的信息安全人才。\n\n科研成果与学生典型事迹 （可附上网页链接）（I24）：\n详见战队官网：https://www.rois.team/\n\n原单元格链接（I24；未访问或验证）：https://www.rois.team/",
+      "locator": "L428-L444 | R4·实验室序号22·ROIS 团队",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 428, \"line_end\": 444, \"char_start\": 12468, \"char_end\": 12980, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号22·ROIS 团队\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A24:I24",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 23,
+      "content": "## R4·实验室序号23·医学影像人工智能实验室\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A25）：\n23\n\n实验室名称（B25）：\n医学影像人工智能实验室\n\n实验室简介（100字左右）（C25）：\n实验室依托福州大学医工交叉研究院，聚焦医学影像人工智能、肿瘤精准放疗及新型医学成像，开展图像重建、自动分割、影像合成与智能诊疗研究。与福建省肿瘤医院、福建省立医院等建立合作，具备多中心临床数据和高性能计算条件，为学生提供算法研究与临床应用相结合的科研训练。\n\n科研成果与学生典型事迹 （可附上网页链接）（I25）：\n团队围绕鼻咽癌靶区自动分割、磁共振影像合成、放疗并发症风险预测及磁粒子成像重建等方向开展研究，形成了算法开发、软件集成与临床验证相结合的研究基础。研发的鼻咽癌MR自动分割算法已集成至软件，并在福建省肿瘤医院放疗科供医生试用；围绕多中心鼻咽癌MRI三维靶区分割及转移淋巴结标注差异处理，已申请两项发明专利。团队联合培养来自福州大学、福建医科大学及天津大学福州学院的博士、硕士研究生、本科生，依托真实临床问题开展多学科协作，培养学生在医学数据处理、深度学习建模、实验分析与软件开发等方面的综合能力。",
+      "locator": "L446-L460 | R4·实验室序号23·医学影像人工智能实验室",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 446, \"line_end\": 460, \"char_start\": 12982, \"char_end\": 13550, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号23·医学影像人工智能实验室\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A25:I25",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 24,
+      "content": "## R4·实验室序号24·EDA\n\n以下为2026年10月官方附件中的历史公开介绍，仅供了解当时研究内容和成果；不证明目前招募、资格、名额或联系方式。成果/去向是原表介绍，不保证个人结果。\n\n序号（A26）：\n24\n\n实验室名称（B26）：\nEDA\n\n实验室简介（100字左右）（C26）：\nEDA研究方向，发表SCI、EI论文多篇。学生获openDACS 开源 EDA 与芯片大赛开源新秀奖、中国研究生创“芯”大赛 · EDA 精英挑战赛一等奖、海峡两岸信息服务创新大赛暨福建省计算机软件设计大赛最佳创新奖、一等奖、二等奖，本科生srtp验收优秀等。\n\n科研成果与学生典型事迹 （可附上网页链接）（I26）：\nhttps://ccds.fzu.edu.cn/info/1203/5006.htm\n\n原单元格链接（I26；未访问或验证）：https://ccds.fzu.edu.cn/info/1203/5006.htm",
+      "locator": "L462-L478 | R4·实验室序号24·EDA",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 462, \"line_end\": 478, \"char_start\": 13552, \"char_end\": 13964, \"heading_path\": [{\"level\": 2, \"title\": \"R4·实验室序号24·EDA\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A26:I26",
+      "index_status": "pending"
+    }
+  ]
+}
