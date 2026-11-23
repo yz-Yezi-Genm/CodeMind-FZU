@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 800" width="1600" height="800">
+<rect width="1600" height="800" fill="#ffffff"/>
+<text x="800.0" y="35" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="18" font-weight="bold" fill="#333333">Qwen 受约束生成与证据校验流程图（Beta 新增）</text>
+<line x1="800" y1="106" x2="800" y2="132" stroke="#9c27b0" stroke-width="2"/>
+<polygon points="800.0,132.0 795.9,122.9 804.1,122.9" fill="#9c27b0"/>
+<line x1="800" y1="194" x2="800" y2="218" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="800.0,218.0 795.9,208.9 804.1,208.9" fill="#f9ab00"/>
+<line x1="800" y1="274" x2="800" y2="296" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="800.0,296.0 795.9,286.9 804.1,286.9" fill="#f9ab00"/>
+<line x1="800" y1="358" x2="800" y2="380" stroke="#f9ab00" stroke-width="2"/>
+<polygon points="800.0,380.0 795.9,370.9 804.1,370.9" fill="#f9ab00"/>
+<line x1="800" y1="450" x2="800" y2="476" stroke="#9c27b0" stroke-width="2"/>
+<polygon points="800.0,476.0 795.9,466.9 804.1,466.9" fill="#9c27b0"/>
+<text x="800.0" y="463.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">通过</text>
+<line x1="980" y1="415" x2="1150" y2="465" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<polygon points="1150.0,465.0 1140.1,466.3 1142.4,458.5" fill="#9e9e9e"/>
+<text x="1065.0" y="440.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">失败</text>
+<line x1="800" y1="538" x2="800" y2="560" stroke="#34a853" stroke-width="2"/>
+<polygon points="800.0,560.0 795.9,550.9 804.1,550.9" fill="#34a853"/>
+<rect x="560" y="56" width="480" height="50" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2"/>
+<text x="800.0" y="85.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#333333">证据门禁通过的合格片段集合（RetrievedChunk）</text>
+<rect x="560" y="132" width="480" height="62" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="800.0" y="158.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Agent 分配临时 evidence_id（E1、E2…）</text>
+<text x="800.0" y="176.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">保存 evidence_id → 真实 RetrievedChunk 映射；映射仅本次请求有效</text>
+<rect x="560" y="218" width="480" height="56" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="800.0" y="241.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">组装 LLMGenerateRequest</text>
+<text x="800.0" y="259.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">用户问题 + 带 evidence_id 的证据；未通过门禁资料不得进入模型上下文</text>
+<rect x="560" y="296" width="480" height="62" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="800.0" y="322.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Qwen 生成自然语言答案，返回严格 JSON（无代码围栏）</text>
+<text x="800.0" y="340.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">{"answer": "...", "used_evidence_ids": ["E1", "E2"]}</text>
+<rect x="560" y="380" width="480" height="70" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2"/>
+<text x="800.0" y="401.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Agent 校验</text>
+<text x="800.0" y="419.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">JSON 可解析 · answer 非空 · used_evidence_ids 非空</text>
+<text x="800.0" y="437.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">ID 存在且属于本次通过门禁的证据集合</text>
+<rect x="560" y="476" width="480" height="62" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="502.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">校验通过：ID 映射回真实 RetrievedChunk</text>
+<text x="800.0" y="520.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Agent 构造 Citation；模型不填来源 URL、文件名或发布日期</text>
+<rect x="560" y="560" width="480" height="46" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="587.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">AgentResult → AskResponse 返回前端</text>
+<rect x="1150" y="380" width="330" height="170" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="1315.0" y="433.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">安全回退 insufficient_evidence</text>
+<text x="1315.0" y="451.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">非法 JSON / 空答案 / 未知 ID</text>
+<text x="1315.0" y="469.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">跨请求 ID / 无可用证据 ID</text>
+<text x="1315.0" y="487.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">answer_mode=insufficient_data，citations 为空</text>
+<text x="1315.0" y="505.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">无法核验时不返回模型生成内容</text>
+<rect x="120" y="650" width="1360" height="120" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="672" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" font-weight="bold" fill="#757575">边界说明</text>
+<rect x="140" y="690" width="1320" height="64" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2"/>
+<text x="800.0" y="717.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">evidence_id 是 Agent 与 Qwen 之间的内部协议，不是数据库方向代码，也不是新增的学生端 HTTP 字段；不改变 LLMGenerateRequest、LLMResult 与 AskResponse 结构。</text>
+<text x="800.0" y="735.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">ID 校验只证明引用指向真实片段，不单独证明回答中每项事实受原文支持；答案与原文一致性仍须测试核验。模型常识补充或无来源推断不得作为正式政策结论。</text>
+<text x="800.0" y="782" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-23 | evidence_id 请求内有效；Citation 由 Agent 根据真实检索片段构造</text>
+</svg>

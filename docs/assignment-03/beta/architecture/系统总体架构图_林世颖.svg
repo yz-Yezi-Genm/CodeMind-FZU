@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1084" width="1600" height="1084">
+<rect width="1600" height="1084" fill="#ffffff"/>
+<text x="800.0" y="35" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="18" font-weight="bold" fill="#333333">CodeMind-FZU Beta 系统总体架构图（基于 main 分支代码与 V2.1-Final 规范）</text>
+<line x1="450" y1="162" x2="480" y2="188" stroke="#34a853" stroke-width="2"/>
+<polygon points="480.0,188.0 470.4,185.1 475.8,178.9" fill="#34a853"/>
+<line x1="1150" y1="162" x2="1120" y2="188" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<polygon points="1120.0,188.0 1124.2,178.9 1129.6,185.1" fill="#9e9e9e"/>
+<text x="1135.0" y="175.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">管理 API 未实现，Mock 兜底</text>
+<line x1="800" y1="222" x2="800" y2="336" stroke="#1976d2" stroke-width="2"/>
+<polygon points="800.0,336.0 795.9,326.9 804.1,326.9" fill="#1976d2"/>
+<line x1="800" y1="416" x2="800" y2="434" stroke="#1976d2" stroke-width="2"/>
+<polygon points="800.0,434.0 795.9,424.9 804.1,424.9" fill="#1976d2"/>
+<line x1="760" y1="290" x2="760" y2="468" stroke="#34a853" stroke-width="2"/>
+<polygon points="760.0,468.0 755.9,458.9 764.1,458.9" fill="#34a853"/>
+<line x1="335" y1="552" x2="335" y2="572" stroke="#9c27b0" stroke-width="2"/>
+<polygon points="335.0,572.0 330.9,562.9 339.1,562.9" fill="#9c27b0"/>
+<line x1="800" y1="552" x2="800" y2="572" stroke="#9c27b0" stroke-width="2"/>
+<polygon points="800.0,572.0 795.9,562.9 804.1,562.9" fill="#9c27b0"/>
+<line x1="1265" y1="552" x2="1265" y2="572" stroke="#9c27b0" stroke-width="2"/>
+<polygon points="1265.0,572.0 1260.9,562.9 1269.1,562.9" fill="#9c27b0"/>
+<line x1="800" y1="648" x2="800" y2="668" stroke="#1976d2" stroke-width="2"/>
+<polygon points="800.0,668.0 795.9,658.9 804.1,658.9" fill="#1976d2"/>
+<line x1="800" y1="764" x2="800" y2="792" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<polygon points="800.0,792.0 795.9,782.9 804.1,782.9" fill="#9e9e9e"/>
+<rect x="120" y="52" width="220" height="26" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="230.0" y="69.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">已实现（main 代码落地）</text>
+<rect x="400" y="52" width="240" height="26" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
+<text x="520.0" y="69.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">Beta 开发中（本轮待补齐）</text>
+<rect x="720" y="52" width="240" height="26" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="840.0" y="69.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#757575">规划 / 本轮不要求</text>
+<rect x="1040" y="52" width="200" height="26" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+<text x="1140.0" y="69.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">公共契约层</text>
+<rect x="120" y="96" width="660" height="66" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="450.0" y="124.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">学生端前端（已实现）</text>
+<text x="450.0" y="142.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">问答提交 · 三状态/引用/追问渲染 · 演示登录入口</text>
+<rect x="820" y="96" width="660" height="66" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1150.0" y="124.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">管理端前端（已实现原型）</text>
+<text x="1150.0" y="142.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">列表/筛选/详情/编辑/上传/重索引交互；真实 API 失败时降级前端模拟数据</text>
+<rect x="320" y="188" width="960" height="34" rx="8" fill="#34a853" stroke="#1b5e20" stroke-width="2"/>
+<text x="800.0" y="209.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">FastAPI 后端（已实现）</text>
+<rect x="120" y="234" width="430" height="56" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="335.0" y="257.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">main:app 基础契约入口</text>
+<text x="335.0" y="275.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">/api/v1/health · /api/v1/ask；CORS/请求 ID/错误信封；Agent 未注入返回 503</text>
+<rect x="585" y="234" width="430" height="56" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="257.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">alpha:app 真实运行入口</text>
+<text x="800.0" y="275.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">lifespan 装配 AlphaRuntime 并注入真实 Agent/LLM；不可用降级兜底</text>
+<rect x="1050" y="234" width="430" height="56" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1265.0" y="257.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">dev:app 开发演示入口</text>
+<text x="1265.0" y="275.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">create_app 注入 MockAgentService；无真实运行时 lifespan 装配，仅本地演示</text>
+<text x="800.0" y="318.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">职责：会话管理 · 请求追踪 · 请求校验 · 服务组装；证据不足走 HTTP 200 insufficient_evidence，不算服务器错误</text>
+<rect x="320" y="336" width="960" height="30" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+<text x="800.0" y="355.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#0d47a1">公共契约层（已落地）</text>
+<rect x="340" y="376" width="450" height="40" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="565.0" y="400.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">models.py 公共 DTO 与状态枚举</text>
+<rect x="810" y="376" width="450" height="40" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="1035.0" y="400.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="12" fill="#333333">protocols.py 六模块协议边界</text>
+<text x="800.0" y="450.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#6a1b9a">Agent 工作流与协作模块</text>
+<rect x="120" y="468" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="335.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentWorkflow（已实现，Beta 补齐）</text>
+<text x="335.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">场景识别 · 追问 · 检索编排 · 证据门禁 · Agent 构造 Citation</text>
+<text x="335.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Beta 补齐：历史政策处理 · S4 接入 · evidence_id 受约束生成校验</text>
+<rect x="585" y="468" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">业务规则（S1/S2/S3 已实现，S4 Beta 新增）</text>
+<text x="800.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">追问规则 · 证据适用性 · 历史政策判定</text>
+<text x="800.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">build_from_retriever 闭包绑定只读元数据/片段查询</text>
+<rect x="1050" y="468" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1265.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Retriever / LocalBM25Retriever（已实现）</text>
+<text x="1265.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">BM25 中文分词检索排序 · 内存索引</text>
+<text x="1265.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">三方法实现齐全；纳入公共 Protocol 为 Beta 补齐项</text>
+<rect x="120" y="572" width="430" height="76" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="335.0" y="596.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">QwenClient（适配已实现，受约束生成 Beta 补齐）</text>
+<text x="335.0" y="614.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">HTTP 适配 · 超时/重试/限流/错误映射；API Key 仅环境变量</text>
+<text x="335.0" y="632.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Beta 改为临时 evidence_id + used_evidence_ids 内部 JSON 约定</text>
+<rect x="585" y="572" width="430" height="76" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="596.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">会话管理（已实现）</text>
+<text x="800.0" y="614.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">InMemoryConversationStore 按 conversation_id 隔离</text>
+<text x="800.0" y="632.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">12 条 / 6000 字符 / 1000 会话 / 空闲 3600 秒；不跨进程持久化</text>
+<rect x="1050" y="572" width="430" height="76" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="1265.0" y="596.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">DocumentParser / KnowledgeIndexer</text>
+<text x="1265.0" y="614.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">解析器已实现 Markdown/TXT 解析切片；索引协议已定义</text>
+<text x="1265.0" y="632.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">持久化入库与索引结果回写链路属规划项</text>
+<rect x="100" y="668" width="1400" height="96" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+<text x="800.0" y="690" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#0d47a1">知识库资料阶段门禁</text>
+<rect x="130" y="708" width="430" height="44" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="345.0" y="725.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">processing/ 待整理、待核验</text>
+<text x="345.0" y="743.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">不允许进入正式问答</text>
+<rect x="585" y="708" width="430" height="44" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="800.0" y="725.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">processed/ 已技术处理、仍需审核</text>
+<text x="800.0" y="743.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">不允许进入正式问答</text>
+<rect x="1040" y="708" width="430" height="44" rx="8" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+<text x="1255.0" y="725.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">approved/ 核验 + 项目负责人最终人工审核</text>
+<text x="1255.0" y="743.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">当前仅 README；正式资料待签核后开放</text>
+<rect x="100" y="792" width="1400" height="196" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="814" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="bold" fill="#757575">规划 / 本轮不要求（架构图中不得标注为已实现）</text>
+<rect x="130" y="836" width="430" height="46" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="345.0" y="854.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">Embedding / Chroma / RRF 混合检索</text>
+<text x="345.0" y="872.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">BM25 为 Beta 正式验收基线</text>
+<rect x="585" y="836" width="430" height="46" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="854.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">PostgreSQL / ORM 持久化</text>
+<text x="800.0" y="872.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">会话与资料在线落库；当前为内存索引与内存会话</text>
+<rect x="1040" y="836" width="430" height="46" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="1255.0" y="854.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">完整管理端后端 HTTP API 与 RBAC</text>
+<text x="1255.0" y="872.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">管理 API 鉴权完成前仅限本地或受控环境</text>
+<rect x="130" y="894" width="430" height="46" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="345.0" y="912.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">Tavily 联网检索</text>
+<text x="345.0" y="930.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">PPT 候选方案，不列入 Beta 必做范围</text>
+<rect x="585" y="894" width="430" height="46" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="800.0" y="912.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">通用 XLSX / PDF / DOCX / OCR 解析</text>
+<text x="800.0" y="930.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">XLSX 本轮人工提取后转 Markdown/TXT，不新增通用解析接口</text>
+<rect x="1040" y="894" width="430" height="46" rx="8" fill="#fafafa" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="1255.0" y="912.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">个人成长档案与长期规划 · ESP32 终端</text>
+<text x="1255.0" y="930.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">后续迭代与可选拓展，不纳入 Beta</text>
+<rect x="100" y="1024" width="1400" height="30" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
+<text x="800.0" y="1043.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" font-weight="bold" fill="#333333">tests/ 覆盖运行时、契约、Agent 工作流、业务规则、本地检索、已审核资料加载、Qwen 适配、文档解析与 E2E；Beta 新增场景、历史政策与受约束生成用例待补齐</text>
+<text x="800.0" y="1066" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-23 | 基线：main a789f53；绿色为已实现，橙色为 Beta 开发中，灰色虚线为规划/本轮不要求</text>
+</svg>
