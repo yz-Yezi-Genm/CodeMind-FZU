@@ -2,7 +2,7 @@
 
 日期：2026-11-23
 分支：`feat/beta-runtime-stability`
-基线：`origin/main` `a789f53`
+基线：`origin/main` `306c15d`
 
 ## 1. 交付范围
 
@@ -60,16 +60,22 @@
 全量：
 
 ```text
-367 passed, 28 skipped, 145 subtests passed
+Python 3.14.4:
+378 passed, 28 skipped, 154 subtests passed
+
+Python 3.10.11:
+378 passed, 28 skipped, 154 subtests passed
 ```
 
 定向 Runtime、Qwen 和 Agent-Qwen：
 
 ```text
-72 passed, 26 skipped, 42 subtests passed
+81 passed, 26 skipped, 51 subtests passed
 ```
 
-原始记录见 [runtime-tests.txt](evidence/runtime-tests.txt)。
+原始记录见 [runtime-tests.txt](evidence/runtime-tests.txt)，完整标准输出见
+[Python 3.14](evidence/runtime-pytest-py314.txt) 和
+[Python 3.10.11](evidence/runtime-pytest-py310.txt)。
 
 覆盖：
 
@@ -79,6 +85,9 @@
 - JSON 内容完整传输且不在适配器内解析；
 - 自有 HTTP client 复用与关闭；
 - 外部 HTTP client 生命周期由调用方控制；
+- 直接构造 Settings 时拒绝非有限/布尔超时和非法重试次数；
+- Qwen 重试预算超过 AgentWorkflow 阶段超时时失败关闭；
+- `check_qwen_live.py`、`check_qwen_runtime_live.py`、`run_alpha_agent.py` 在成功和异常路径均关闭客户端；
 - 多轮历史、隔离、并发串行、数量与空闲清理；
 - 未审核、部分索引和知识库缺失失败关闭。
 

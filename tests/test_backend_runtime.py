@@ -27,7 +27,11 @@ from backend.services.alpha_runtime import (
     InMemoryConversationStore,
     build_alpha_runtime,
 )
-from backend.services.errors import KnowledgeBaseUnavailableError, ServiceError
+from backend.services.errors import (
+    KnowledgeBaseUnavailableError,
+    LLMConfigurationError,
+    ServiceError,
+)
 
 
 class CapturingAgentService:
@@ -591,6 +595,28 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 clarification_rule=lambda _request: None,
                 evidence_check=lambda _request, _chunk: True,
             )
+
+    async def test_runtime_rejects_qwen_retry_budget_above_workflow_timeout(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_approved",
+        )
+        with patch.dict(
+            os.environ,
+            {
+                "QWEN_API_KEY": "offline-budget-fixture",
+                "QWEN_TIMEOUT_SECONDS": "20",
+                "QWEN_MAX_RETRIES": "1",
+            },
+            clear=False,
+        ):
+            with self.assertRaises(LLMConfigurationError) as raised:
+                await build_alpha_runtime(
+                    settings,
+                    file_root=PROJECT_ROOT,
+                )
+
+        self.assertEqual(raised.exception.code, "SERVICE_NOT_CONFIGURED")
+        self.assertIn("预算超过", raised.exception.message)
 
 
 @unittest.skipUnless(
