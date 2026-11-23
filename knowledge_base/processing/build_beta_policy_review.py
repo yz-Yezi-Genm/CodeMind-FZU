@@ -234,6 +234,8 @@ async def check():
             raise ValueError("Qinghe candidates must be scoped to S4 / COLLEGE_RESOURCES only")
         if package.metadata.business_direction_codes != business_directions_for(row["key"], preview):
             raise ValueError(f"Business direction mapping differs from original preview: {row['key']}")
+        if package.metadata != metadata_for(row["key"], preview):
+            raise ValueError(f"Candidate metadata differs from reviewed batch: {row['key']}")
         for file in package.files:
             if digest(Path(file.storage_key)) != file.sha256:
                 raise ValueError("Package file hash mismatch")
@@ -242,6 +244,14 @@ async def check():
         expected_text, intervals = render_source_units(package.metadata, units)
         if text != expected_text:
             raise ValueError("Conversion text differs from retained source units")
+        # A valid subset of slices is not a complete package. Re-parse the
+        # retained text so deleting a chunk plus its manifest/mapping entry,
+        # duplicating a slice, or shortening a valid slice cannot pass.
+        expected_chunks = TextDocumentParser(
+            ROOT, max_chunk_chars=2400, file_role="curated" if row["key"] == "recommendation" else "extracted"
+        ).parse_document(Path(md_key), package.metadata).chunks
+        if len(package.chunks) != len(expected_chunks):
+            raise ValueError("Candidate chunk sequence differs from full Markdown parse")
         for chunk in package.chunks:
             evidence = lookup.get((Path(row["package"]).name, chunk.chunk_no))
             if evidence is None:
@@ -271,6 +281,12 @@ async def check():
                 or (evidence["original_file_key"], evidence["original_locator"], evidence["original_sha256"])
                 != (chunk.original_file_key, chunk.original_locator, sources["inputs"].get(chunk.original_file_key))):
                 raise ValueError("Original mapping mismatch")
+        for expected in expected_chunks:
+            offset = json.loads(expected.locator_note)["char_start"]
+            unit = next(unit for start, end, _, unit in intervals if start <= offset < end)
+            expected.original_file_key, expected.original_locator = unit["original_file_key"], unit["locator"]
+        if package.chunks != expected_chunks:
+            raise ValueError("Candidate chunk sequence differs from full Markdown parse")
         indexed = await retriever.index_document(package)
         if (indexed.status.value != "indexed" or indexed.warnings
             or indexed.chunk_count != len(package.chunks)

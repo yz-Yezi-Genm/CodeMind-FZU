@@ -5,6 +5,7 @@ test_blocked_real_metadata_lookup_returns_none_after_successful_indexing (knowle
 test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_business_codes_preserve_original_dictionary) ... ok
 test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits) ... ok
 test_checker_rejects_qinghe_s1_mapping_even_when_blocked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_qinghe_s1_mapping_even_when_blocked) ... ok
+test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected) ... ok
 test_each_package_exactly_matches_original_44_record_direction_mapping (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_each_package_exactly_matches_original_44_record_direction_mapping) ... ok
 test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
 test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
@@ -18,15 +19,17 @@ test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check (kno
 test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check) ... ok
 test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_44_records_preserved_as_import_snapshots) ... ok
 test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_tamper_fails_closed) ... ok
+test_policy_metadata_cannot_drift_from_reviewed_batch (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_policy_metadata_cannot_drift_from_reviewed_batch) ... ok
 test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_cells_and_contact_fields_survive_markdown) ... ok
 test_qinghe_mapping_filters_s1_independently_of_blocked_gate (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_mapping_filters_s1_independently_of_blocked_gate) ... ok
 test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_real_packages_hashes_intervals_and_four_domain_isolation) ... ok
 test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_rebuild_does_not_change_approved_or_alpha_candidates) ... ok
+test_shortened_valid_slice_with_matching_offsets_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_shortened_valid_slice_with_matching_offsets_is_rejected) ... ok
 test_source_unit_original_file_and_locator_must_match_chunk (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_source_unit_original_file_and_locator_must_match_chunk) ... ok
 test_valid_dictionary_code_in_wrong_package_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_valid_dictionary_code_in_wrong_package_is_rejected) ... ok
 
 ----------------------------------------------------------------------
-Ran 24 tests in 4.583s
+Ran 27 tests in 6.402s
 
 OK
 
@@ -43,7 +46,7 @@ test_missing_title_merge_fails (knowledge_base.processing.test_qinghe_conversion
 test_replaced_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_replaced_title_merge_fails) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.530s
+Ran 8 tests in 0.563s
 
 OK
 
@@ -59,7 +62,7 @@ test_xlsx_full_cells_and_rich_links_match_retained_audit (knowledge_base.process
 test_xlsx_original_change_with_updated_hash_still_fails_content_comparison (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_xlsx_original_change_with_updated_hash_still_fails_content_comparison) ... ok
 
 ----------------------------------------------------------------------
-Ran 7 tests in 11.488s
+Ran 7 tests in 11.575s
 
 OK
 
@@ -81,7 +84,7 @@ test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.pro
 test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 0.680s
+Ran 13 tests in 0.668s
 
 OK
 
@@ -99,4 +102,4 @@ $ python -m pytest tests -q
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 1 warning, 136 subtests passed in 33.51s
+357 passed, 28 skipped, 1 warning, 136 subtests passed in 33.35s

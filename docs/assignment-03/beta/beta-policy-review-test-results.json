@@ -4,44 +4,44 @@
       "suite": "beta-candidates",
       "command": "python -m unittest knowledge_base.processing.test_beta_policy_review -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T08:20:16.422332+00:00",
-      "tests_run": 24
+      "checked_at_utc": "2026-11-23T08:26:13.516568+00:00",
+      "tests_run": 27
     },
     {
       "suite": "qinghe-conversion",
       "command": "python -m unittest knowledge_base.processing.test_qinghe_conversion -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T08:20:17.657348+00:00",
+      "checked_at_utc": "2026-11-23T08:26:14.779190+00:00",
       "tests_run": 8
     },
     {
       "suite": "raw-reextraction",
       "command": "python -m unittest knowledge_base.processing.test_beta_reextraction -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T08:20:29.885547+00:00",
+      "checked_at_utc": "2026-11-23T08:26:27.212545+00:00",
       "tests_run": 7
     },
     {
       "suite": "alpha-review-regression",
       "command": "python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T08:20:31.258310+00:00",
+      "checked_at_utc": "2026-11-23T08:26:28.598219+00:00",
       "tests_run": 13
     },
     {
       "suite": "backend-regression",
       "command": "python -m pytest tests -q",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T08:21:06.202819+00:00",
+      "checked_at_utc": "2026-11-23T08:27:03.321960+00:00",
       "passed": 357,
       "skipped": 28,
       "subtests_passed": 136
     }
   ],
-  "scope": "Offline raw originals re-extraction + exact retained unit comparison; candidate integrity/index/lookup isolation; no human approval, Qwen or browser E2E",
+  "scope": "Offline raw originals re-extraction; complete ordered slice/metadata comparison; candidate index and blocked isolation; no human approval, Qwen or browser E2E",
   "python": "3.12.14",
   "summary": {
-    "beta_tests_passed": 39,
+    "beta_tests_passed": 42,
     "alpha_review_tests_passed": 13,
     "backend_pytest_passed": 357,
     "backend_skipped": 28,
@@ -51,5 +51,5 @@
     "formal_approved_packages_at_start": 0
   },
   "skips_note": "后端既有可选上游快照/业务规则集成/真实模型在线测试未满足运行条件，跳过项不计为通过。未运行真实Qwen。",
-  "revision_scope": "PR #41复审修订：原件到source-units离线可复现（含PDF坐标表格和青禾全量单元格/链接）；业务方向逐份精确映射；暂不合入main。"
+  "revision_scope": "PR #41自查修订：完整有序切片对照阻止联合删片段或缩短区间；已核验元数据全量对照；仍不合入main。"
 }

@@ -169,6 +169,50 @@ class BetaCandidateTests(unittest.TestCase):
                     lambda data: data["metadata"].__setitem__("business_direction_codes", ["GROWTH_PLANNING"]),
                     "Business direction mapping differs from original preview")
 
+    def test_policy_metadata_cannot_drift_from_reviewed_batch(self):
+        cases = [("source_url", "https://example.invalid/wrong-policy"),
+                 ("source_page_url", "https://example.invalid/wrong-page"),
+                 ("publisher", "wrong publisher"), ("published_on", "2025-03-06"),
+                 ("deadline_on", "2027-12-31"),
+                 ("applicability_raw", {"适用对象": "wrong audience"})]
+        for field, value in cases:
+            with self.subTest(field=field):
+                self.assert_tampered_read_fails(build.OUTPUT / "competition.json",
+                    lambda data: data["metadata"].__setitem__(field, value),
+                    "Candidate metadata differs from reviewed batch")
+
+    def test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected(self):
+        real_read = build.read
+        def altered_read(path):
+            data = real_read(path)
+            if path == build.OUTPUT / "competition.json":
+                data["chunks"].pop()
+            elif path == build.OUTPUT / "manifest.json":
+                data["packages"][0]["chunk_count"] -= 1
+            elif path == build.REVIEW / "chunk-source-map.json":
+                data[:] = [row for row in data if not (row["package"] == "competition.json" and row["chunk_no"] == 224)]
+            return data
+        with patch.object(build, "read", side_effect=altered_read):
+            with self.assertRaisesRegex(ValueError, "chunk sequence differs from full Markdown parse"):
+                asyncio.run(build.check())
+
+    def test_shortened_valid_slice_with_matching_offsets_is_rejected(self):
+        real_read = build.read
+        def altered_read(path):
+            data = real_read(path)
+            if path == build.OUTPUT / "competition.json":
+                chunk = data["chunks"][0]
+                chunk["content"] = chunk["content"][:-1]
+                note = json.loads(chunk["locator_note"])
+                note["char_end"] -= 1
+                chunk["locator_note"] = json.dumps(note, ensure_ascii=False)
+            elif path == build.REVIEW / "chunk-source-map.json":
+                data[0]["locator_note"]["char_end"] -= 1
+            return data
+        with patch.object(build, "read", side_effect=altered_read):
+            with self.assertRaisesRegex(ValueError, "chunk sequence differs from full Markdown parse"):
+                asyncio.run(build.check())
+
     def test_qinghe_mapping_filters_s1_independently_of_blocked_gate(self):
         # Only the candidate's routing codes are copied. The enabled in-memory
         # fixture has no policy text, origin files, real identity or approval.
