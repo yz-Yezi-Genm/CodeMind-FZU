@@ -18,7 +18,10 @@ _TOPICS = tuple(map(re.compile, (
     r"转专业|辅修|选课|重修|学位|毕业|学生证|学籍|课程|英语",
 )))
 _FOLLOW_UP = re.compile(r"^(?:那|那么|这个|这项|它|该|上述|上面|同一|还有|还需要|再问|改成|改问|更正|补充)|呢[？?。]*$")
-_MISSING_TOPIC = re.compile(r"^(?:请问|所以)?(?:怎么办|怎么(?:申请|办理|报名)|要什么条件|需要什么材料|截止时间|什么时候截止|多少钱|哪些条件)")
+_MISSING_TOPIC = re.compile(
+    r"^(?:(?:请问|所以)[，,]?\s*)?(?:怎么办|怎么(?:申请|办理|报名)|要什么条件|需要什么材料|"
+    r"截止时间|什么时候截止|多少钱|哪些条件|还(?:能|可以)(?:申请|报名|办理|提交))"
+)
 _NEW_TOPIC = re.compile(r"换[个一]?(?:话题|问题)|改问|另一个|另外想问|不问.+了")
 _PERIOD = re.compile(
     r"(?<!\d)(20\d{2})(?:\s*[-—–－至/]\s*(20\d{2}))?\s*(学年|学期|年(?!级)|届|版)(?!度?级)"
@@ -28,7 +31,7 @@ _RELATIVE_PERIOD = re.compile(r"去年|前年|明年|下一届|下届|下一轮|
 _HISTORY = re.compile(r"往年|历年|历史(?:政策|通知|资料|规定|版本)|旧版|原政策|以前|曾经|当时|过去的")
 _CURRENT = re.compile(r"现在|目前|现行|当前|最新|仍有效|还有效")
 _WINDOW = re.compile(
-    r"还能|现在还|目前还|是否还|仍在招募|仍在报名|办理窗口|"
+    r"还能|还可以(?:申请|报名|办理|提交)|现在还|目前还|是否还|仍在招募|仍在报名|办理窗口|"
     r"(?:现在|目前|今年|当前).{0,12}(?:申请|报名|招募|招人|招收|提交|办理)|"
     r"(?:申请|报名|招募)(?:开始了|开放了吗|结束了吗|截止了吗)|(?:现在|还有|有没有).{0,12}(?:招募|报名|招生)?名额"
 )
@@ -54,16 +57,17 @@ def _topics(text: str) -> set[int]:
 
 def contextual_request(request: AgentRequest) -> AgentRequest:
     """Keep one recent user topic and the latest values of recognized slots."""
-    current_topics = _topics(request.query)
+    query = request.query.strip()
+    current_topics = _topics(query)
     history = []
-    filled = {slot for slot in _SLOTS if slot.search(request.query)}
-    follow_up = _FOLLOW_UP.search(request.query)
+    filled = {slot for slot in _SLOTS if slot.search(query)}
+    follow_up = _FOLLOW_UP.search(query)
     # A self-contained new question starts afresh even within the same domain.
-    named_works = set(_NAMED_WORK.findall(request.query))
-    named_labs = {name.casefold() for name in _NAMED_LAB.findall(request.query)}
-    if (_NEW_TOPIC.search(request.query)
+    named_works = set(_NAMED_WORK.findall(query))
+    named_labs = {name.casefold() for name in _NAMED_LAB.findall(query)}
+    if (_NEW_TOPIC.search(query)
             or (current_topics and not (named_works or follow_up))
-            or (not current_topics and not (filled or follow_up or _MISSING_TOPIC.search(request.query)))):
+            or (not current_topics and not (filled or follow_up or _MISSING_TOPIC.search(query)))):
         return request.model_copy(update={"history": history})
 
     for turn in reversed(request.history):

@@ -122,7 +122,11 @@ def verify_answer(
     partial = body == PARTIAL_ANSWER
     if body and not partial:
         raise ValueError("Answer contains unsupported extra text")
-    covered = sum(any(fact.search(item.chunk.content) for item in selected) for fact in facts)
-    if facts and (covered == 0 or (covered < len(facts) and not partial)):
+    # Check each requested fact against the cited fragments. A fragment can
+    # support multiple facts, and repeating the same fact cannot fill a gap.
+    missing_facts = [
+        fact for fact in facts if not any(fact.search(item.chunk.content) for item in selected)
+    ]
+    if missing_facts and (len(missing_facts) == len(facts) or not partial):
         raise ValueError("Selected evidence does not cover the requested facts")
     return answer, selected, partial

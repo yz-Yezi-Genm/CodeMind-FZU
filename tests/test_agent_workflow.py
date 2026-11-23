@@ -389,6 +389,38 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.status, "answered")
         self.assertEqual(result.answer_mode, "procedure_reference")
 
+    async def test_short_availability_followups_keep_the_active_topic(self):
+        for topic, query in (
+            ("2026年院级奖学金怎么申请？", "还能申请吗？"),
+            ("2026年EDA实验室怎么报名？", "还能报名吗"),
+            ("2026年EDA实验室怎么报名？", "请问还可以报名吗？"),
+        ):
+            with self.subTest(query=query):
+                service = self.annual_fixture(year="2026年", status="current", deadline=date(2026, 12, 3))
+                self.chunk = self.chunk.model_copy(update={"content": "提交申请表，截止日期为2026年12月3日。"})
+                self.retriever.retrieve.return_value = [self.chunk]
+                history = [ConversationTurn(role="user", content=topic)]
+                result = await service.run(self.request(query, history))
+                self.assertEqual(result.answer_mode, "procedure_reference")
+                retrieval_query = self.retriever.retrieve.call_args.args[0].query
+                self.assertEqual(retrieval_query, f"{topic}\n{query}")
+
+    async def test_short_availability_followup_cannot_use_an_expired_notice(self):
+        workflow = self.annual_fixture()
+        result = await workflow.run(self.request("还能申请吗？", [
+            ConversationTurn(role="user", content="2025年院级奖学金有哪些条件？"),
+        ]))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.retriever.retrieve.assert_awaited_once()
+        self.llm.generate.assert_not_awaited()
+
+    async def test_short_availability_question_with_no_topic_clarifies(self):
+        result = await self.service.run(self.request("还能报名吗？"))
+        self.assertEqual(result.status, "needs_clarification")
+        self.retriever.retrieve.assert_not_awaited()
+        self.llm.generate.assert_not_awaited()
+
     async def test_academic_year_range_is_resolved_from_metadata(self):
         service = self.annual_fixture(year="2025—2026学年")
         for query_range in ("2025-2026学年", "2025—2026学年", "2025 至 2026 学年"):
@@ -634,6 +666,34 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.warnings[-1].code, "PARTIAL_EVIDENCE")
         self.assertIn("金额是3000元", result.answer)
         self.assertEqual(result.citations[0].excerpt, self.chunk.content)
+
+    async def test_one_fragment_can_cover_both_requested_facts(self):
+        workflow = self.annual_fixture()
+        result = await workflow.run(self.request("2025年奖学金的金额和截止日期是什么？"))
+        self.assertEqual(result.status, "answered")
+        self.assertIn("3000元", result.answer)
+        self.assertIn("2025年10月3日", result.answer)
+        self.assertEqual([item.chunk_id for item in result.citations], [self.chunk.chunk_id])
+
+    async def test_multiple_amount_fragments_do_not_cover_a_missing_deadline(self):
+        workflow = self.annual_fixture()
+        amount = self.chunk.model_copy(update={"content": "奖学金金额为3000元。"})
+        repeated = self.chunk.model_copy(update={"chunk_id": uuid4(), "content": "每名获奖学生发放3000元。"})
+        deadline = self.chunk.model_copy(update={"chunk_id": uuid4(), "content": "申请截止日期为2025年10月3日。"})
+        self.retriever.retrieve.return_value = [amount, repeated, deadline]
+
+        async def answer(prompt):
+            first, second, _ = self.evidence_for(prompt)
+            return self.selection(
+                f'{first["content"]}\n{second["content"]}',
+                [first["evidence_id"], second["evidence_id"]],
+            )
+
+        self.llm.generate.side_effect = answer
+        result = await workflow.run(self.request("2025年奖学金的金额和截止日期是什么？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.warnings[0].code, "UNSUPPORTED_GENERATION")
+        self.assertEqual(result.citations, [])
 
     async def test_requested_amount_without_support_stops_before_generation(self):
         result = await self.service.run(self.request("2026年校级奖学金金额是多少？"))
