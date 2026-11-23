@@ -190,9 +190,15 @@
 
 | 状态 | 规范要求 | 当前实现现状 | 待补测试 |
 | --- | --- | --- | --- |
-| `answered` | 必须具有**非空** `answer_mode` | 现有 validator 仅校验 `answer` 非空，未强制 `answer_mode` 非空 | 补充 `answered` 且 `answer_mode=None` 应拒绝 |
-| `needs_clarification` | `citations` 必须为空 | 现有 validator 校验 `answer` 为 null、`clarifying_question` 非空，但未显式校验 `citations` 为空 | 补充 `needs_clarification` 携带非空 `citations` 应拒绝 |
-| `insufficient_evidence` | 必须说明证据不足原因，且 `citations` 为空 | 现有 validator 校验 `answer_mode=insufficient_data`，但未强制 `warnings` 说明原因、未强制 `citations` 为空 | 补充 `insufficient_evidence` 无原因说明或携带 `citations` 应拒绝 |
+| `answered` | 必须具有**非空** `answer` 与**非空** `answer_mode` | 现有 validator 仅校验 `answer` 非空，未强制 `answer_mode` 非空 | 补充 `answered` 且 `answer_mode=None` 应拒绝 |
+| `needs_clarification` | `answer` 为 null、`answer_mode` 为 null、`clarifying_question` 非空、`citations` 为空 | 现有 validator 校验 `answer` 为 null、`clarifying_question` 非空，但未显式校验 `answer_mode` 为 null、`citations` 为空 | 补充 `needs_clarification` 携带非空 `answer_mode` 或非空 `citations` 应拒绝 |
+| `insufficient_evidence` | 必须说明证据不足原因，且 `citations` 为空 | 现有 validator 校验 `answer_mode=insufficient_data`，但未强制说明原因、未强制 `citations` 为空 | 补充 `insufficient_evidence` 无原因说明或携带 `citations` 应拒绝 |
+
+> **关于「说明证据不足原因」的规范边界**：V2.1 §5.3 只要求
+> 「`insufficient_evidence` 必须说明证据不足原因」，**不要求**必须通过
+> `warnings` 字段单独表达——原因说明可通过 `answer` 字段或 `warnings` 表达，
+> 测试计划不应过度限定实现方式。后续补测试时以「是否说明了原因」为判据，
+> 不限定具体字段。
 
 > **处理方式**：以上为公共契约缺口，不擅自修改 `backend/contracts/models.py`，
 > 已反馈给组长协调公共接口负责人；确认后再补充对应契约测试。

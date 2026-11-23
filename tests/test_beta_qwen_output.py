@@ -140,41 +140,54 @@ class QwenEvidenceIdSafetyTests(unittest.TestCase):
 
     AVAILABLE = {"E1", "E2"}
 
-    def test_unknown_evidence_id_rejected(self):
-        # Q-6：引用一个完全不存在于本次可用集合的 ID
-        ok, reason = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["E99"]}',
-            available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-        self.assertIn("E99", reason)
+    def test_id_not_in_current_set_rejected(self):
+        # Q-6/Q-7（合并）：引用一个不在本次可用集合中的 ID，无论该 ID 是
+        # 「完全不存在」还是「看起来像证据 ID但不属于本次集合」，都应拒绝。
+        # 底层规则一致：evidence_id 必须属于本次通过门禁的证据集合。
+        for bad_id in ("E99", "E3"):
+            with self.subTest(bad_id=bad_id):
+                ok, reason = _validate_qwen_output(
+                    f'{{"answer": "x", "used_evidence_ids": ["{bad_id}"]}}',
+                    available_ids=self.AVAILABLE,
+                )
+                self.assertFalse(ok)
+                self.assertIn(bad_id, reason)
 
-    def test_id_not_in_current_request_set_rejected(self):
-        # Q-7：同一次请求内，引用一个「不属于本次证据集合」的 ID
-        # （区别于 Q-8：这里只有单次请求语境，ID 就是不在本次集合里）
-        ok, reason = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["E3"]}',
-            available_ids=self.AVAILABLE,  # 本次集合只有 E1、E2
-        )
-        self.assertFalse(ok)
-        self.assertIn("E3", reason)
-
-    def test_cross_request_evidence_id_rejected(self):
-        # Q-8：两个不同请求各自持有独立证据集合，模型引用对方请求的 ID。
+    def test_cross_request_evidence_id_isolation(self):
+        # Q-8：两个不同请求各自持有独立证据集合，验证双向跨请求隔离。
         # 请求 A 的集合 = {E1, E2}，请求 B 的集合 = {F1, F2}。
-        # 处理请求 A 时，模型却返回了请求 B 的 F1，应被拒绝（跨请求隔离）。
         request_a_ids = {"E1", "E2"}
         request_b_ids = {"F1", "F2"}
-        # 模拟请求 A：available_ids 是 A 的集合，模型返回了 B 的 ID
+
+        # A 接受自己的 E1
+        ok, _ = _validate_qwen_output(
+            '{"answer": "x", "used_evidence_ids": ["E1"]}',
+            available_ids=request_a_ids,
+        )
+        self.assertTrue(ok)
+
+        # A 拒绝 B 的 F1
         ok, reason = _validate_qwen_output(
             '{"answer": "x", "used_evidence_ids": ["F1"]}',
             available_ids=request_a_ids,
         )
         self.assertFalse(ok)
         self.assertIn("F1", reason)
-        # 反向验证：F1 确实属于请求 B 的集合（证明这是「跨请求」而非「随机不存在」）
-        self.assertIn("F1", request_b_ids)
-        self.assertNotIn("F1", request_a_ids)
+
+        # B 接受自己的 F1
+        ok, _ = _validate_qwen_output(
+            '{"answer": "x", "used_evidence_ids": ["F1"]}',
+            available_ids=request_b_ids,
+        )
+        self.assertTrue(ok)
+
+        # B 拒绝 A 的 E1
+        ok, reason = _validate_qwen_output(
+            '{"answer": "x", "used_evidence_ids": ["E1"]}',
+            available_ids=request_b_ids,
+        )
+        self.assertFalse(ok)
+        self.assertIn("E1", reason)
 
     def test_model_generated_citation_field_rejected(self):
         # V2.1 §11.3：模型不得自行生成 Citation / 来源 URL

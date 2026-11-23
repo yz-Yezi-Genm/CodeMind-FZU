@@ -52,12 +52,13 @@ def _enabled_package(record_code: str = "BETA-TEST-1") -> DocumentPackage:
         source_url="https://example.invalid/beta-contract",
         published_on=date(2026, 1, 1),
         effective_on=date(2026, 1, 1),
+        deadline_on=date(2026, 12, 31),
         source_verification_status="verified",
         timeliness_verification_status="current",
         extraction_status="extracted",
         v1_inclusion_status="included",
         retrieval_status=RetrievalStatus.ENABLED,
-        temporal_notes={"human_approved": True},
+        temporal_notes={"human_approved": True, "备注": "仅测试用"},
         applicability_raw={"适用对象": "本科生", "适用年度": "2026年"},
     )
     return DocumentPackage(
@@ -75,6 +76,8 @@ def _enabled_package(record_code: str = "BETA-TEST-1") -> DocumentPackage:
                 content="优秀学生综合奖学金一等奖1500元/学期。",
                 source_file_key="policy.md",
                 locator="第七条",
+                locator_note="第三章 奖学金评定",
+                original_locator="第三章/第七条",
             ),
         ],
     )
@@ -185,20 +188,34 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(metadata.record_code, "BETA-TEST-1")
         self.assertEqual(metadata.retrieval_status, RetrievalStatus.ENABLED)
         self.assertEqual(metadata.source_verification_status, "verified")
+        # V2.1 §8.2：必须能读取 version_no / applicability_raw / deadline_on / temporal_notes
+        self.assertEqual(metadata.version_no, "v1")
+        self.assertEqual(metadata.applicability_raw, {"适用对象": "本科生", "适用年度": "2026年"})
+        self.assertEqual(metadata.deadline_on, date(2026, 12, 31))
+        self.assertEqual(metadata.temporal_notes, {"human_approved": True, "备注": "仅测试用"})
 
     def test_get_parsed_chunk_returns_correct_chunk(self):
         chunk = self.retriever.get_parsed_chunk(self.chunk_id)
         self.assertIsNotNone(chunk)
         self.assertEqual(chunk.content, "优秀学生综合奖学金一等奖1500元/学期。")
         self.assertEqual(chunk.locator, "第七条")
+        # V2.1 §8.3：必须能读取 locator_note / original_locator / source_file_key / chunk_no
+        self.assertEqual(chunk.locator_note, "第三章 奖学金评定")
+        self.assertEqual(chunk.original_locator, "第三章/第七条")
+        self.assertEqual(chunk.source_file_key, "policy.md")
+        self.assertEqual(chunk.chunk_no, 1)
 
     def test_get_document_metadata_returns_deep_copy(self):
         metadata = self.retriever.get_document_metadata(self.indexed.version_id)
         original_record = metadata.record_code
-        # 外部修改返回对象不应影响内部索引
+        # 外部修改返回对象（含嵌套字典）不应影响内部索引
         metadata.record_code = "MUTATED"
+        metadata.applicability_raw["适用对象"] = "已篡改"
+        metadata.temporal_notes["human_approved"] = False
         fresh = self.retriever.get_document_metadata(self.indexed.version_id)
         self.assertEqual(fresh.record_code, original_record)
+        self.assertEqual(fresh.applicability_raw, {"适用对象": "本科生", "适用年度": "2026年"})
+        self.assertEqual(fresh.temporal_notes["human_approved"], True)
 
     def test_get_parsed_chunk_returns_deep_copy(self):
         chunk = self.retriever.get_parsed_chunk(self.chunk_id)
@@ -221,6 +238,19 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(
             self.retriever.get_document_metadata(blocked_result.version_id)
         )
+
+    async def test_blocked_version_returns_none_for_chunk(self):
+        # V2.1 §8.3：未开放（blocked）资料的片段查询也应返回 None
+        blocked = _enabled_package(record_code="BETA-BLOCKED-2")
+        blocked.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await self.retriever.index_document(blocked)
+        # blocked 资料无法被检索到，其 chunk_id 需按 LocalBM25Retriever 的确定性
+        # 生成规则推算（与 index_document 内部一致的 UUID5 规则）
+        from backend.retrieval.local import _local_id, _document_and_version_ids
+        _document_id, version_id = _document_and_version_ids("BETA-BLOCKED-2", "v1")
+        file_id = _local_id("file", str(version_id), "policy.md")
+        chunk_id = _local_id("chunk", str(file_id), "1")
+        self.assertIsNone(self.retriever.get_parsed_chunk(chunk_id))
 
 
 class RetrievalStatusContractTests(unittest.TestCase):
