@@ -27,13 +27,20 @@
 
 ## 二、四大业务领域测试用例（S1-S4）
 
-每个场景至少覆盖 5 类断言：正常回答 / 缺信息追问 / 证据不足 / 正确引用 / 过期资料不冒充当前。
+每个场景统一采用**双测试设计**（与 S3 一致）：
+
+- **真实资料**（`retrieval_status` 非 enabled、未通过人工审核）→ 必须预期 `insufficient_evidence`，不绕过审核门禁。
+- **审核通过的合成 Fixture**（明确标注为测试 Fixture，不冒充真实政策资料）→ 验证正常 `answered + citation` 路径。
 
 ### S1 竞赛认定（创新学分、综测加分）
 
+> 现有官方资料：`knowledge_base/processed/alpha/competition-recognition-2026.json`
+> （`retrieval_status=blocked`、`source=partial`、`timeliness=pending`，**未审核未开放**）。
+
 | 用例 | 输入 | 预期 |
 | --- | --- | --- |
-| S1-1 | 「蓝桥杯是国家级竞赛吗？能认定创新学分吗？」 | answered + 引用竞赛级别认定目录 |
+| S1-1 | 「蓝桥杯是国家级竞赛吗？」（真实资料，未审核未开放） | insufficient_evidence（不绕过审核门禁） |
+| S1-1b | 「蓝桥杯是国家级竞赛吗？」（审核通过的测试 Fixture） | answered + 引用竞赛级别认定目录 |
 | S1-2 | 「竞赛认定」 | needs_clarification（追问具体竞赛/用途） |
 | S1-3 | 「XXX 竞赛是什么级别？」（库中无） | insufficient_evidence |
 | S1-4 | 正常问答的 citation 溯源 | chunk_id 映射真实 RetrievedChunk，原文逐字一致 |
@@ -41,9 +48,13 @@
 
 ### S2 奖学金申请
 
+> 现有官方资料：`knowledge_base/processed/alpha/scholarship-2026.json`
+> （`retrieval_status=blocked`、`source=pending`、`timeliness=pending`，**未审核未开放**）。
+
 | 用例 | 输入 | 预期 |
 | --- | --- | --- |
-| S2-1 | 「优秀学生综合奖学金申请需要什么材料？」 | answered + 引用奖学金办法 |
+| S2-1 | 「优秀学生综合奖学金申请需要什么材料？」（真实资料，未审核未开放） | insufficient_evidence（不绕过审核门禁） |
+| S2-1b | 「优秀学生综合奖学金申请需要什么材料？」（审核通过的测试 Fixture） | answered + 引用奖学金办法 |
 | S2-2 | 「奖学金怎么申请？」 | needs_clarification（追问校级/国家/院级） |
 | S2-3 | 「XX 奖学金」（库中无） | insufficient_evidence |
 | S2-4 | citation 溯源 | 引用原文逐字一致 |
@@ -65,19 +76,24 @@
 | S3-4 | citation 溯源 | 引用原文逐字一致 |
 | S3-5 | 已过申请期的往年推免方案 | historical + 标注届别 |
 
-> **S3 说明**：S3-1 与 S3-1b 必须区分——真实资料未审核未开放时应返回
-> `insufficient_evidence`（S3-1），只有经过审核并允许检索的 Fixture 才验证
-> `answered + citation`（S3-1b）。不得为让测试通过而绕过资料审核和检索门禁。
-
 ### S4 学院资源导航（Beta 新增）
+
+> 现有资料：2026—2027 学年青禾计划（XLSX 附件，尚未核验入库，当前无 approved 正式资料）。
+> 使用青禾计划资料时，必须明确其**年度（2026—2027 学年）与截止时间**，不得把
+> 历史招募信息描述为「当前仍在招募」。
 
 | 用例 | 输入 | 预期 |
 | --- | --- | --- |
-| S4-1 | 「计算机学院有哪些实验室？」 | answered + 引用官方资源目录 |
+| S4-1 | 「计算机学院有哪些实验室？」（真实资料，未核验未开放） | insufficient_evidence（不绕过审核门禁） |
+| S4-1b | 「计算机学院有哪些实验室？」（审核通过的测试 Fixture） | answered + 引用官方资源目录 |
 | S4-2 | 「实验室」（无明确范围） | needs_clarification（追问资源类型/适用对象，仅当确实影响结果） |
 | S4-3 | 「某实验室报名」（库中无） | insufficient_evidence |
 | S4-4 | citation 溯源 | 引用官方来源 URL |
-| S4-5 | 往年实验室招募通知 | 不得描述为「当前仍在招募」 |
+| S4-5 | 往年实验室招募通知 | 不得描述为「当前仍在招募」，须标注年度与截止时间 |
+
+> **统一说明**：S1-1/S2-1/S3-1/S4-1 用真实资料（未审核未开放）验证
+> `insufficient_evidence`；S1-1b/S2-1b/S3-1b/S4-1b 用审核通过的合成 Fixture
+> 验证 `answered + citation`。不得为让正向测试通过而绕过资料审核门禁。
 
 ---
 
@@ -106,21 +122,27 @@
 
 | 用例 | 输入 | 预期 |
 | --- | --- | --- |
-| Q-1 | 正常 JSON | 通过，Agent 映射 ID → 构造 Citation |
+| Q-1 | 正常 JSON 输出 | 格式与 evidence_id 合法性校验通过（**仅验证格式/ID，不验证 ID→Citation 映射**） |
 | Q-2 | 非法 JSON | 拒绝 |
 | Q-3 | 缺 `answer` 字段 | 拒绝 |
 | Q-4 | `answer` 为空 | 拒绝 |
 | Q-5 | 缺 `used_evidence_ids` | 拒绝 |
-| Q-6 | 引用不存在 evidence_id | 拒绝 |
-| Q-7 | 引用不属于本次请求的 evidence_id | 拒绝 |
-| Q-8 | 引用其他请求的证据 ID | 拒绝 |
+| Q-6 | 引用不存在的 evidence_id | 拒绝 |
+| Q-7 | 引用 ID 不属于本次证据集合（同一次请求内） | 拒绝 |
+| Q-8 | 两个不同请求的证据集合，引用对方请求的 ID | 拒绝（真正验证跨请求 ID 隔离） |
 | Q-9 | 模型自行生成 Citation / 来源 URL | 拒绝 |
 | Q-10 | 回答含证据无法支持的确定性结论 | 拒绝/降级 insufficient_evidence |
 | Q-11 | 模型试图引用未审核/未开放资料 | 拒绝 |
 
 **核心原则**：Citation 必须由 Agent 根据真实 RetrievedChunk 构造，不直接信任 Qwen 返回的引用；证据 ID 合法 ≠ 答案正确，须检查答案与原文一致。
 
-> 当前进度：Q-1~Q-9 的格式/ID 校验规则已在 `tests/test_beta_qwen_output.py` 用参考校验函数固化（第一阶段，非生产实现）。Q-10（事实一致性）需在后续阶段接真实证据后补测。
+> **边界说明（重要）**：
+> - 当前 `tests/test_beta_qwen_output.py` 的参考校验函数只覆盖 **Q-1~Q-9 的「格式 +
+>   evidence_id 合法性」**，**不包含**「ID 映射到真实 RetrievedChunk → 构造 Citation」
+>   的完整过程（这需要 Agent 生产实现，属后续集成测试）。
+> - Q-7 与 Q-8 的区别：Q-7 是**同一次请求内**引用一个不属于本次可用集合的 ID；
+>   Q-8 是**两个不同请求**各自持有独立证据集合，用对方请求的 ID 验证跨请求隔离。
+> - Q-10（事实一致性）需接真实证据后补测，属于后续阶段。
 
 ---
 
@@ -161,7 +183,23 @@
 
 ---
 
-## 七、已完成 / 待办清单
+## 七、AgentResult 契约缺口（待公共接口负责人确认）
+
+对照 V2.1-Final §5.3 / §6.2，以下约束在**当前 `backend/contracts/models.py` 尚未完整落实**，
+本测试计划如实记录，不擅自修改公共接口（先反馈给组长协调公共接口负责人）：
+
+| 状态 | 规范要求 | 当前实现现状 | 待补测试 |
+| --- | --- | --- | --- |
+| `answered` | 必须具有**非空** `answer_mode` | 现有 validator 仅校验 `answer` 非空，未强制 `answer_mode` 非空 | 补充 `answered` 且 `answer_mode=None` 应拒绝 |
+| `needs_clarification` | `citations` 必须为空 | 现有 validator 校验 `answer` 为 null、`clarifying_question` 非空，但未显式校验 `citations` 为空 | 补充 `needs_clarification` 携带非空 `citations` 应拒绝 |
+| `insufficient_evidence` | 必须说明证据不足原因，且 `citations` 为空 | 现有 validator 校验 `answer_mode=insufficient_data`，但未强制 `warnings` 说明原因、未强制 `citations` 为空 | 补充 `insufficient_evidence` 无原因说明或携带 `citations` 应拒绝 |
+
+> **处理方式**：以上为公共契约缺口，不擅自修改 `backend/contracts/models.py`，
+> 已反馈给组长协调公共接口负责人；确认后再补充对应契约测试。
+
+---
+
+## 八、已完成 / 待办清单
 
 ### 已完成（第一阶段）
 
@@ -178,7 +216,7 @@
 
 ---
 
-## 八、协作对接清单
+## 九、协作对接清单
 
 | 成员 | 需确认 |
 | --- | --- |

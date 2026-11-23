@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import unittest
+from datetime import date
 from uuid import uuid4
 
 from pydantic import ValidationError
@@ -26,11 +27,57 @@ from backend.contracts.models import (
     AgentResult,
     AnswerMode,
     AnswerStatus,
+    DocumentMetadata,
+    DocumentPackage,
+    FileProcessingStatus,
+    ParsedChunk,
+    ParsedFile,
     RetrievalStatus,
     SourceVerificationStatus,
     TimelinessVerificationStatus,
 )
 from backend.retrieval.local import LocalBM25Retriever
+
+
+def _enabled_package(record_code: str = "BETA-TEST-1") -> DocumentPackage:
+    """构造一个 human_approved + enabled 的合成测试 DocumentPackage。"""
+    metadata = DocumentMetadata(
+        title="【测试替身】Beta 契约测试资料",
+        document_type="管理办法",
+        category_name="综评与奖学金",
+        business_direction_codes=["POLICY_AFFAIRS"],
+        record_code=record_code,
+        version_no="v1",
+        publisher="测试替身发布方",
+        source_url="https://example.invalid/beta-contract",
+        published_on=date(2026, 1, 1),
+        effective_on=date(2026, 1, 1),
+        source_verification_status="verified",
+        timeliness_verification_status="current",
+        extraction_status="extracted",
+        v1_inclusion_status="included",
+        retrieval_status=RetrievalStatus.ENABLED,
+        temporal_notes={"human_approved": True},
+        applicability_raw={"适用对象": "本科生", "适用年度": "2026年"},
+    )
+    return DocumentPackage(
+        metadata=metadata,
+        files=[
+            ParsedFile(
+                file_role="extracted", storage_key="policy.md",
+                original_name="policy.md",
+                processing_status=FileProcessingStatus.EXTRACTED,
+            ),
+        ],
+        chunks=[
+            ParsedChunk(
+                chunk_no=1,
+                content="优秀学生综合奖学金一等奖1500元/学期。",
+                source_file_key="policy.md",
+                locator="第七条",
+            ),
+        ],
+    )
 
 
 class AnswerModeContractTests(unittest.TestCase):
@@ -108,26 +155,72 @@ class TimelinessEnumContractTests(unittest.TestCase):
         )
 
 
-class LocalBM25RetrieverApiTests(unittest.TestCase):
+class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
     """V2.1 §8.1/8.2/8.3 LocalBM25Retriever 三方法实现检查。
 
-    注意：本测试只检查 LocalBM25Retriever 这个**实现类**是否提供三个方法，
-    不检查公共 Retriever Protocol（backend/contracts/protocols.py 目前只声明了
-    retrieve，另外两个方法待王智洋补齐）。公共 Protocol 的三方法契约测试，
-    待王智洋完成上游修改后补充，本文件不擅自修改他人负责的公共接口。
+    注意：本测试只检查 LocalBM25Retriever 这个**实现类**是否提供三个方法并
+    正确工作，不检查公共 Retriever Protocol（backend/contracts/protocols.py
+    目前只声明了 retrieve，另外两个方法待王智洋补齐）。公共 Protocol 的三方法
+    契约测试，待王智洋完成上游修改后补充，本文件不擅自修改他人负责的公共接口。
     """
 
+    async def asyncSetUp(self):
+        self.retriever = LocalBM25Retriever()
+        self.package = _enabled_package()
+        self.indexed = await self.retriever.index_document(self.package)
+        # chunk_id 通过 file_id + chunk_no 确定性生成，从 retrieve 结果拿到
+        from backend.contracts.models import RetrievalRequest
+        hits = await self.retriever.retrieve(RetrievalRequest(query="优秀学生综合奖学金"))
+        self.assertGreater(len(hits), 0)
+        self.chunk_id = hits[0].chunk_id
+
     def test_local_bm25_retriever_has_three_methods(self):
-        retriever = LocalBM25Retriever()
-        self.assertTrue(callable(getattr(retriever, "retrieve", None)))
-        self.assertTrue(callable(getattr(retriever, "get_document_metadata", None)))
-        self.assertTrue(callable(getattr(retriever, "get_parsed_chunk", None)))
+        self.assertTrue(callable(getattr(self.retriever, "retrieve", None)))
+        self.assertTrue(callable(getattr(self.retriever, "get_document_metadata", None)))
+        self.assertTrue(callable(getattr(self.retriever, "get_parsed_chunk", None)))
 
-    def test_get_document_metadata_returns_none_for_unknown_version(self):
-        self.assertIsNone(LocalBM25Retriever().get_document_metadata(uuid4()))
+    def test_get_document_metadata_returns_correct_metadata(self):
+        metadata = self.retriever.get_document_metadata(self.indexed.version_id)
+        self.assertIsNotNone(metadata)
+        self.assertEqual(metadata.record_code, "BETA-TEST-1")
+        self.assertEqual(metadata.retrieval_status, RetrievalStatus.ENABLED)
+        self.assertEqual(metadata.source_verification_status, "verified")
 
-    def test_get_parsed_chunk_returns_none_for_unknown_chunk(self):
-        self.assertIsNone(LocalBM25Retriever().get_parsed_chunk(uuid4()))
+    def test_get_parsed_chunk_returns_correct_chunk(self):
+        chunk = self.retriever.get_parsed_chunk(self.chunk_id)
+        self.assertIsNotNone(chunk)
+        self.assertEqual(chunk.content, "优秀学生综合奖学金一等奖1500元/学期。")
+        self.assertEqual(chunk.locator, "第七条")
+
+    def test_get_document_metadata_returns_deep_copy(self):
+        metadata = self.retriever.get_document_metadata(self.indexed.version_id)
+        original_record = metadata.record_code
+        # 外部修改返回对象不应影响内部索引
+        metadata.record_code = "MUTATED"
+        fresh = self.retriever.get_document_metadata(self.indexed.version_id)
+        self.assertEqual(fresh.record_code, original_record)
+
+    def test_get_parsed_chunk_returns_deep_copy(self):
+        chunk = self.retriever.get_parsed_chunk(self.chunk_id)
+        original_content = chunk.content
+        chunk.content = "已篡改"
+        fresh = self.retriever.get_parsed_chunk(self.chunk_id)
+        self.assertEqual(fresh.content, original_content)
+
+    def test_unknown_version_returns_none(self):
+        self.assertIsNone(self.retriever.get_document_metadata(uuid4()))
+
+    def test_unknown_chunk_returns_none(self):
+        self.assertIsNone(self.retriever.get_parsed_chunk(uuid4()))
+
+    async def test_blocked_version_returns_none_for_metadata(self):
+        # 未开放（blocked）资料即使已索引，元数据查询也应返回 None（V2.1 §8.2）
+        blocked = _enabled_package(record_code="BETA-BLOCKED-1")
+        blocked.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        blocked_result = await self.retriever.index_document(blocked)
+        self.assertIsNone(
+            self.retriever.get_document_metadata(blocked_result.version_id)
+        )
 
 
 class RetrievalStatusContractTests(unittest.TestCase):
