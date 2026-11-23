@@ -5,13 +5,14 @@ from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 from time import perf_counter
+from uuid import uuid4
 
-from backend.contracts.models import LLMGenerateRequest
+from backend.contracts.models import AnswerMode
 from backend.contracts.protocols import LLMClient
-from backend.services.agent_workflow import AgentWorkflow
+from backend.services.agent_generation import Evidence, generation_request, verify_answer
 from backend.services.errors import ServiceError
 from backend.services.qwen_client import create_qwen_client_from_env
-from examples.agent_workflow_demo import demo_chunk
+from examples.agent_workflow_demo import demo_chunk, demo_metadata, demo_parsed_chunk
 
 
 async def probe(client: LLMClient) -> dict:
@@ -21,11 +22,14 @@ async def probe(client: LLMClient) -> dict:
     A provider's raw response or exception text is never a probe artifact.
     """
     chunk = demo_chunk().model_copy(update={"content": "测试原文。"})
-    prompt = AgentWorkflow._generation_request("请选取给出的测试原文。", [chunk])
-    prompt = LLMGenerateRequest(messages=prompt.messages, temperature=0, max_tokens=128)
+    evidence = {f"E1-{uuid4().hex}": Evidence(
+        chunk, demo_metadata(chunk), AnswerMode.CURRENT_POLICY, None, demo_parsed_chunk(chunk),
+    )}
+    prompt = generation_request("请给出测试原文。", [], evidence).model_copy(update={"max_tokens": 128})
     started = perf_counter()
     generated = await asyncio.wait_for(client.generate(prompt), timeout=30)
-    citations = AgentWorkflow._verify_selection(generated.content, [chunk])
+    _, selected, _ = verify_answer(generated.content, evidence)
+    citations = [item.citation() for item in selected]
     return {
         "time_asia_shanghai": datetime.now(timezone(timedelta(hours=8))).isoformat(),
         "model": generated.model,

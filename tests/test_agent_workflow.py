@@ -7,12 +7,12 @@ from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 from backend.contracts.models import (
-    AgentRequest, AgentResult, AnswerStatus, ConversationTurn, LLMResult,
+    AgentRequest, AgentResult, AnswerStatus, ChunkIndexStatus, ConversationTurn, LLMResult,
     RetrievedChunk, RetrievalStatus, SourceVerificationStatus, TimelinessVerificationStatus,
 )
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError
-from examples.agent_workflow_demo import demo_chunk, demo_metadata
+from examples.agent_workflow_demo import demo_chunk, demo_metadata, demo_parsed_chunk
 
 
 class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
@@ -22,8 +22,10 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.retriever.retrieve.return_value = [self.chunk]
         self.retriever.get_document_metadata = Mock(side_effect=lambda version_id: demo_metadata(next(
             chunk for chunk in reversed(self.retriever.retrieve.return_value) if chunk.version_id == version_id)))
+        self.retriever.get_parsed_chunk = Mock(side_effect=lambda chunk_id: demo_parsed_chunk(next(
+            chunk for chunk in self.retriever.retrieve.return_value if chunk.chunk_id == chunk_id)))
         self.llm = AsyncMock()
-        self.llm.generate.return_value = self.selection(self.chunk)
+        self.llm.generate.side_effect = self.answer_from_prompt
         self.service = AgentWorkflow(
             self.retriever, self.llm, today=lambda: date(2026, 11, 17),
         )
@@ -34,15 +36,26 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
             history=history or [],
         )
 
-    def selection(self, *chunks):
+    @staticmethod
+    def evidence_for(prompt):
+        return json.loads(prompt.messages[-1].content)["evidence"]
+
+    @staticmethod
+    def selection(answer, ids):
         return LLMResult(model="TEST-FAKE-NOT-QWEN", content=json.dumps({
-            "evidence": [{"chunk_id": str(c.chunk_id), "quote": c.content} for c in chunks],
+            "answer": answer, "used_evidence_ids": ids,
         }, ensure_ascii=False))
+
+    async def answer_from_prompt(self, prompt):
+        first = self.evidence_for(prompt)[0]
+        return self.selection(first["content"], [first["evidence_id"]])
 
     async def test_missing_year_clarifies_without_dependencies(self):
         result = await self.service.run(self.request("奖学金怎么申请？"))
         self.assertEqual(result.status, AnswerStatus.NEEDS_CLARIFICATION)
         self.assertIsNone(result.answer)
+        self.assertIsNone(result.answer_mode)
+        self.assertEqual(result.citations, [])
         self.assertIn("学年", result.clarifying_question)
         self.retriever.retrieve.assert_not_awaited()
         self.llm.generate.assert_not_awaited()
@@ -121,7 +134,7 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
 
         async def generate(request):
             metadata.temporal_notes = {"human_approved": False}
-            return self.selection(self.chunk)
+            return await self.answer_from_prompt(request)
 
         self.llm.generate.side_effect = generate
         result = await self.service.run(self.request())
@@ -169,7 +182,8 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.status, "answered")
         prompt = self.llm.generate.call_args.args[0]
         data = json.loads(prompt.messages[-1].content)
-        self.assertEqual([x["chunk_id"] for x in data["evidence"]], [str(self.chunk.chunk_id)])
+        self.assertEqual([x["content"] for x in data["evidence"]], [self.chunk.content])
+        self.assertNotIn(str(self.chunk.chunk_id), prompt.messages[-1].content)
         self.assertEqual(prompt.messages[0].role, "system")
 
     async def test_duplicate_chunks_are_deduplicated(self):
@@ -191,28 +205,39 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.llm.generate.assert_not_awaited()
 
     async def test_citations_follow_selected_subset_and_order(self):
-        other = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4(), "content": "第二条测试原文。"})
+        other = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4(),
+                                             "version_id": uuid4(), "content": "第二条测试原文。"})
         self.retriever.retrieve.return_value = [self.chunk, other]
-        self.llm.generate.return_value = self.selection(other)
+        async def answer(prompt):
+            first, second = self.evidence_for(prompt)
+            return self.selection(f'根据已核验资料，{second["content"]}\n{first["content"]}',
+                                  [second["evidence_id"], first["evidence_id"]])
+        self.llm.generate.side_effect = answer
         result = await self.service.run(self.request())
-        self.assertEqual([c.chunk_id for c in result.citations], [other.chunk_id])
+        self.assertEqual([c.chunk_id for c in result.citations], [other.chunk_id, self.chunk.chunk_id])
 
     async def test_bad_or_fabricated_model_outputs_are_rejected(self):
-        chunk_id = str(self.chunk.chunk_id)
-        invalid = [
-            "这是一段没有引用的自由生成回答", "{", "[]", "null",
-            json.dumps({"evidence": []}),
-            json.dumps({"evidence": [{"chunk_id": str(uuid4()), "quote": self.chunk.content}]}),
-            json.dumps({"evidence": [{"chunk_id": chunk_id, "quote": "编造的政策"}]}),
-            json.dumps({"evidence": [{"chunk_id": chunk_id, "quote": "先阅读选课说明"}]}),
-            json.dumps({"evidence": [{"chunk_id": chunk_id, "quote": self.chunk.content, "url": "fake"}]}),
-            json.dumps({"evidence": "invalid"}),
-            json.dumps({"evidence": [{"chunk_id": [], "quote": self.chunk.content}]}),
-            json.dumps({"evidence": [{"chunk_id": chunk_id, "quote": self.chunk.content}], "answer": "编造"}),
-        ]
-        for text in invalid:
-            with self.subTest(output=text):
-                self.llm.generate.return_value = LLMResult(model="TEST-FAKE", content=text)
+        valid = lambda evidence_id: {"answer": self.chunk.content, "used_evidence_ids": [evidence_id]}
+        invalid = {
+            "free text": lambda _: "这是一段没有引用的自由生成回答",
+            "invalid JSON": lambda _: "{",
+            "array": lambda _: "[]",
+            "missing answer": lambda key: json.dumps({"used_evidence_ids": [key]}),
+            "empty answer": lambda key: json.dumps({**valid(key), "answer": " "}),
+            "no IDs": lambda key: json.dumps({**valid(key), "used_evidence_ids": []}),
+            "unknown ID": lambda _: json.dumps(valid("E99")),
+            "inactive ID": lambda key: json.dumps({**valid(key), "used_evidence_ids": [key, "E99"]}),
+            "wrong ID type": lambda key: json.dumps({**valid(key), "used_evidence_ids": [[]]}),
+            "duplicate key": lambda key: '{"answer":"fake",' + json.dumps(valid(key))[1:],
+            "source field": lambda key: json.dumps({**valid(key), "source_url": "https://example.invalid/fake"}),
+            "code fence": lambda key: '```json\n' + json.dumps(valid(key)) + '\n```',
+        }
+        for label, response in invalid.items():
+            with self.subTest(label=label):
+                async def answer(prompt):
+                    key = self.evidence_for(prompt)[0]["evidence_id"]
+                    return LLMResult(model="TEST-FAKE", content=response(key))
+                self.llm.generate.side_effect = answer
                 result = await self.service.run(self.request())
                 self.assertEqual(result.warnings[0].code, "UNSUPPORTED_GENERATION")
                 self.assertEqual(result.citations, [])
@@ -223,6 +248,7 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
             result = await self.service.run(self.request())
             self.assertEqual(result.warnings[0].code, "INVALID_RETRIEVAL_RESULT")
         self.retriever.retrieve.return_value = [self.chunk]
+        self.llm.generate.side_effect = None
         self.llm.generate.return_value = {"content": "fake"}
         result = await self.service.run(self.request())
         self.assertEqual(result.warnings[0].code, "UNSUPPORTED_GENERATION")
@@ -262,21 +288,22 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
             await self.service.run(self.request())
 
     async def test_model_cannot_select_filtered_or_previous_round_evidence(self):
-        rejected = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4()})
+        rejected = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4(), "version_id": uuid4()})
         self.retriever.retrieve.return_value = [self.chunk, rejected]
-        self.llm.generate.return_value = self.selection(rejected)
         service = AgentWorkflow(
             self.retriever, self.llm,
             evidence_check=lambda req, chunk: chunk.chunk_id != rejected.chunk_id,
         )
-        result = await service.run(self.request())
-        self.assertEqual(result.status, "insufficient_evidence")
-        self.assertEqual(result.citations, [])
-        self.retriever.retrieve.return_value = [rejected]
-        self.llm.generate.return_value = self.selection(self.chunk)
-        result = await self.service.run(self.request())
-        self.assertEqual(result.status, "insufficient_evidence")
-        self.assertEqual(result.citations, [])
+        request = self.request()
+        self.assertEqual((await service.run(request)).status, "answered")
+        entries = self.evidence_for(self.llm.generate.call_args.args[0])
+        self.assertEqual(len(entries), 1)
+        for key in (str(rejected.chunk_id), entries[0]["evidence_id"]):
+            self.llm.generate.side_effect = None
+            self.llm.generate.return_value = self.selection(self.chunk.content, [key])
+            result = await service.run(request)
+            self.assertEqual(result.status, "insufficient_evidence")
+            self.assertEqual(result.citations, [])
 
     async def test_4000_character_contract_query_is_not_silently_truncated(self):
         result = await self.service.run(self.request("选课" + "问" * 3998))
@@ -285,7 +312,7 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_history_overflow_is_not_silently_truncated(self):
         history = [ConversationTurn(role="user", content="选课" + "问" * 2000)]
-        result = await self.service.run(self.request(history=history))
+        result = await self.service.run(self.request("那具体怎么做？", history))
         self.assertEqual(result.warnings[0].code, "RETRIEVAL_QUERY_TOO_LONG")
 
     async def test_evidence_budget_is_enforced(self):
@@ -300,56 +327,134 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result.warnings[0].code, "APPLICABILITY_NOT_VERIFIED")
         self.retriever.retrieve.assert_not_awaited()
 
-    async def test_historical_requests_fail_closed(self):
-        for query in ["往年选课步骤是什么？", "2025年奖学金怎么申请？"]:
-            result = await self.service.run(self.request(query))
-            self.assertEqual(result.warnings[0].code, "UNSUPPORTED_POLICY_MODE")
+    def annual_fixture(self, *, year="2025年", status="expired", deadline=date(2025, 10, 3)):
+        self.chunk = self.chunk.model_copy(update={
+            "title": "合成院级奖学金评选通知",
+            "content": "全日制本科生可申请，金额为3000元，截止日期为2025年10月3日。",
+            "published_on": date(2025, 9, 1),
+            "timeliness_verification_status": TimelinessVerificationStatus(status),
+        })
+        self.retriever.retrieve.return_value = [self.chunk]
+        metadata = demo_metadata(self.chunk).model_copy(update={
+            "applicability_raw": {"适用年度": year, "适用对象": "全日制本科生"},
+            "deadline_on": deadline,
+        })
+        self.retriever.get_document_metadata = Mock(return_value=metadata)
+        return AgentWorkflow(self.retriever, self.llm, evidence_check=lambda *_: True,
+                             today=lambda: date(2026, 11, 17))
+
+    async def test_historical_notice_answers_only_the_matching_period(self):
+        for status in ("historical", "expired", "superseded", "current"):
+            with self.subTest(status=status):
+                service = self.annual_fixture(status=status)
+                result = await service.run(self.request("2025年院级奖学金申请条件、金额和截止日期？"))
+                self.assertEqual(result.answer_mode, "historical")
+                self.assertIn("2025年历史资料", result.answer)
+                self.assertIn("3000元", result.answer)
+                self.assertIn("2025年10月3日", result.answer)
+                self.assertEqual(result.citations[0].excerpt, self.chunk.content)
+                if status == "superseded":
+                    self.assertIn("已被替代", result.answer)
+
+    async def test_no_matching_historical_or_current_evidence_does_not_call_model(self):
+        service = self.annual_fixture()
+        for query in ("2024年奖学金申请条件？", "今年奖学金还能报名吗？", "2027年奖学金申请条件？",
+                      "2025年奖学金通知现在还能用吗？"):
+            with self.subTest(query=query):
+                result = await service.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
         self.llm.generate.assert_not_awaited()
 
-    async def test_ended_academic_year_ranges_are_unsupported(self):
-        for year_range in ["2025-2026", "2025—2026", "2025–2026", "2025 - 2026 "]:
-            with self.subTest(year_range=year_range):
-                result = await self.service.run(self.request(f"{year_range}学年奖学金怎么申请？"))
-                self.assertEqual(result.status, "insufficient_evidence")
-                self.assertEqual(result.answer_mode, "insufficient_data")
-                self.assertEqual(result.warnings[0].code, "UNSUPPORTED_POLICY_MODE")
-                self.assertEqual(result.citations, [])
+    async def test_ambiguous_history_clarifies_before_retrieval(self):
+        service = self.annual_fixture()
+        result = await service.run(self.request("往年院级奖学金有哪些条件？"))
+        self.assertEqual(result.status, "needs_clarification")
+        self.assertIn("学年", result.clarifying_question)
         self.retriever.retrieve.assert_not_awaited()
         self.llm.generate.assert_not_awaited()
 
-    async def test_current_academic_year_ranges_can_reach_generation(self):
-        for year_range in ["2026-2027", "2026—2027", "2026–2027", "2026 - 2027 "]:
-            with self.subTest(year_range=year_range):
-                self.retriever.retrieve.reset_mock()
-                self.llm.generate.reset_mock()
-                result = await self.service.run(self.request(f"{year_range}学年奖学金怎么申请？"))
-                self.assertEqual(result.status, "answered")
-                self.assertNotIn("UNSUPPORTED_POLICY_MODE", [item.code for item in result.warnings])
-                self.retriever.retrieve.assert_awaited_once()
-                self.llm.generate.assert_awaited_once()
+    async def test_bare_year_answers_the_pending_historical_question(self):
+        service = self.annual_fixture()
+        history = [ConversationTurn(role="user", content="往年院级奖学金截止日期是什么？")]
+        result = await service.run(self.request("2025", history))
+        self.assertEqual(result.answer_mode, "historical")
+        self.assertIn("2025年10月3日", result.answer)
 
-    async def test_academic_year_end_boundary(self):
-        # FZU's 2026-2027 calendar starts August 31 (PR #24 review baseline).
-        for current_date, expected_status in [
-            (date(2026, 8, 30), "answered"),
-            (date(2026, 8, 31), "insufficient_evidence"),
-            (date(2026, 9, 1), "insufficient_evidence"),
-        ]:
-            with self.subTest(current_date=current_date):
-                self.retriever.retrieve.reset_mock()
-                self.llm.generate.reset_mock()
-                service = AgentWorkflow(
-                    self.retriever, self.llm, today=lambda: current_date,
-                )
-                result = await service.run(self.request("2025-2026学年奖学金怎么申请？"))
-                self.assertEqual(result.status, expected_status)
-                if expected_status == "insufficient_evidence":
-                    self.assertEqual(result.warnings[0].code, "UNSUPPORTED_POLICY_MODE")
-                    self.retriever.retrieve.assert_not_awaited()
-                    self.llm.generate.assert_not_awaited()
-                else:
-                    self.retriever.retrieve.assert_awaited_once()
-                    self.llm.generate.assert_awaited_once()
+    async def test_current_annual_notice_is_a_procedure_reference(self):
+        service = self.annual_fixture(year="2026年", status="current", deadline=date(2026, 12, 3))
+        self.chunk = self.chunk.model_copy(update={"content": "本科生提交申请表，截止日期为2026年12月3日。"})
+        self.retriever.retrieve.return_value = [self.chunk]
+        result = await service.run(self.request("2026年院级奖学金申请流程是什么？"))
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(result.answer_mode, "procedure_reference")
+
+    async def test_academic_year_range_is_resolved_from_metadata(self):
+        service = self.annual_fixture(year="2025—2026学年")
+        for query_range in ("2025-2026学年", "2025—2026学年", "2025 至 2026 学年"):
+            with self.subTest(query_range=query_range):
+                result = await service.run(self.request(f"{query_range}奖学金申请条件？"))
+                self.assertEqual(result.answer_mode, "historical")
+                self.assertIn("2025—2026学年", result.answer)
+
+    async def test_missing_or_mismatched_parsed_chunk_blocks_before_model(self):
+        parsed = demo_parsed_chunk(self.chunk)
+        for value in (None, parsed.model_copy(update={"content": "伪造原文"}),
+                      parsed.model_copy(update={"locator": "另一个章节"}),
+                      parsed.model_copy(update={"index_status": ChunkIndexStatus.DISABLED})):
+            self.retriever.get_parsed_chunk = Mock(return_value=value)
+            result = await self.service.run(self.request())
+            self.assertEqual(result.status, "insufficient_evidence")
+            self.assertEqual(result.citations, [])
+        self.llm.generate.assert_not_awaited()
+
+    async def test_four_scenarios_use_the_same_injected_rules_and_full_retrieval(self):
+        queries = ("竞赛认定怎么查？", "校级奖学金条件是什么？", "推免资格是什么？",
+                   "学院实验室研究方向是什么？")
+        for query in queries:
+            with self.subTest(query=query):
+                clarification = Mock(return_value=None)
+                evidence = Mock(return_value=True)
+                self.chunk = self.chunk.model_copy(update={"content": f"合成测试资料：{query}"})
+                self.retriever.retrieve.return_value = [self.chunk]
+                workflow = AgentWorkflow(self.retriever, self.llm, clarification_rule=clarification,
+                                         evidence_check=evidence)
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "answered")
+                self.assertEqual(clarification.call_args.args[0].query, query)
+                self.assertEqual(evidence.call_args.args[0].query, query)
+                self.assertIsNone(self.retriever.retrieve.call_args.args[0].business_direction_code)
+
+    async def test_resource_request_does_not_use_past_recruitment_as_current(self):
+        service = self.annual_fixture()
+        for query in ("实验室现在还在招募吗？", "学院实验室研究方向是什么？"):
+            result = await service.run(self.request(query))
+            self.assertEqual(result.status, "insufficient_evidence")
+        self.llm.generate.assert_not_awaited()
+
+    async def test_explicit_current_period_and_grade_override_history(self):
+        history = [
+            ConversationTurn(role="user", content="我是2022级，想查2025年奖学金的条件。"),
+            ConversationTurn(role="assistant", content="凭空给出的政策金额 99999 元"),
+        ]
+        service = AgentWorkflow(self.retriever, self.llm, evidence_check=lambda *_: True)
+        await service.run(self.request("那我是2024级，查2026年呢？", history))
+        text = self.retriever.retrieve.call_args.args[0].query
+        self.assertIn("奖学金", text)
+        self.assertIn("2026年", text)
+        self.assertIn("2024级", text)
+        for stale in ("2022级", "2025年", "99999"):
+            self.assertNotIn(stale, text)
+        self.assertNotIn("99999", self.llm.generate.call_args.args[0].messages[-1].content)
+
+    async def test_topic_change_and_new_conversation_do_not_inherit_old_details(self):
+        history = [ConversationTurn(role="user", content="2025年奖学金申请条件？")]
+        await self.service.run(self.request("那学院实验室研究方向是什么？", history))
+        self.assertEqual(self.retriever.retrieve.call_args.args[0].query, "那学院实验室研究方向是什么？")
+        self.retriever.retrieve.reset_mock()
+        result = await self.service.run(self.request("2025年呢？"))
+        self.assertEqual(result.status, "needs_clarification")
+        self.retriever.retrieve.assert_not_awaited()
 
     async def test_business_verifier_can_only_tighten_evidence_gate(self):
         service = AgentWorkflow(self.retriever, self.llm, evidence_check=lambda req, chunk: False)
@@ -420,7 +525,7 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.citations[0].source_url, self.chunk.source_url)
         self.assertEqual(self.retriever.retrieve.call_args.args[0].query, request.query)
 
-    async def test_extended_chunk_metadata_reaches_rules_and_prompt_not_citation(self):
+    async def test_extended_chunk_metadata_reaches_rules_only(self):
         # Provisional test-only fields: this does not change the shared contract
         # or claim agreement with retrieval/business owners.
         class ExtendedChunk(RetrievedChunk):
@@ -442,10 +547,9 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         service = AgentWorkflow(self.retriever, self.llm, evidence_check=evidence)
         result = await service.run(self.request())
         self.assertEqual(result.status, "answered")
-        self.assertEqual(observed, [extended])
+        self.assertEqual(observed, [extended, extended])
         sent = json.loads(self.llm.generate.call_args.args[0].messages[-1].content)["evidence"][0]
-        self.assertEqual(sent["policy_year"], 2026)
-        self.assertEqual(sent["deadline_on"], "2026-12-31")
+        self.assertEqual(set(sent), {"content", "evidence_id", "answer_mode"})
         self.assertNotIn("policy_year", result.citations[0].model_dump())
         self.assertEqual(result.citations[0].excerpt, extended.content)
 
@@ -469,27 +573,73 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(result.citations, [])
         self.llm.generate.assert_not_awaited()
 
-    async def test_ambiguous_json_and_partially_forged_selections_are_rejected(self):
-        other = self.chunk.model_copy(update={"chunk_id": uuid4(), "document_id": uuid4()})
-        self.retriever.retrieve.return_value = [self.chunk, other]
-        valid = {"chunk_id": str(self.chunk.chunk_id), "quote": self.chunk.content}
-        encoded = json.dumps(valid)
-        outputs = [
-            '{"evidence":[],"evidence":[' + encoded + ']}',
-            '{"evidence":[{"chunk_id":"unknown",' + encoded[1:] + ']}',
-            json.dumps({"evidence": [valid, valid]}),
-            json.dumps({"evidence": [valid, {"chunk_id": str(other.chunk_id), "quote": "篡改"}]}),
-            json.dumps({"evidence": [{**valid, "quote": self.chunk.content + " "}]}),
-            json.dumps({"evidence": [{**valid, "quote": self.chunk.content.replace("。", ".")}]}),
-            json.dumps({"evidence": [{**valid, "quote": [self.chunk.content]}]}),
-        ]
-        for output in outputs:
-            with self.subTest(output=output):
-                self.llm.generate.return_value = LLMResult(model="TEST-FAKE", content=output)
-                result = await self.service.run(self.request())
+    async def test_valid_id_cannot_attach_fabricated_policy_claims(self):
+        service = self.annual_fixture()
+        for answer in (
+            self.chunk.content.replace("3000", "9000"),
+            self.chunk.content.replace("本科生", "研究生"),
+            self.chunk.content.replace("可申请", "无需条件，一律可申请"),
+            self.chunk.content.replace("10月3日", "10月30日"),
+            self.chunk.content + " 该政策目前仍有效。",
+            self.chunk.content + "\n来源：https://example.invalid/forged",
+        ):
+            with self.subTest(answer=answer):
+                async def respond(prompt):
+                    key = self.evidence_for(prompt)[0]["evidence_id"]
+                    return self.selection(answer, [key])
+                self.llm.generate.side_effect = respond
+                result = await service.run(self.request("2025年奖学金申请条件？"))
                 self.assertEqual(result.status, "insufficient_evidence")
                 self.assertEqual(result.citations, [])
-                self.assertNotIn(self.chunk.content, result.answer)
+
+    async def test_duplicate_ids_and_unused_citations_are_rejected(self):
+        other = self.chunk.model_copy(update={"chunk_id": uuid4(), "content": "第二条内容"})
+        self.retriever.retrieve.return_value = [self.chunk, other]
+        for repeated in (True, False):
+            async def answer(prompt):
+                first, second = self.evidence_for(prompt)
+                key = first["evidence_id"]
+                return self.selection(first["content"], [key, key if repeated else second["evidence_id"]])
+            self.llm.generate.side_effect = answer
+            result = await self.service.run(self.request())
+            self.assertEqual(result.status, "insufficient_evidence")
+
+    async def test_partial_answer_warns_and_cites_only_the_used_source(self):
+        async def answer(prompt):
+            first = self.evidence_for(prompt)[0]
+            return self.selection(first["content"] + "\n其余问题缺少可核验的资料，暂无法确认。",
+                                  [first["evidence_id"]])
+        self.llm.generate.side_effect = answer
+        result = await self.service.run(self.request("选课有哪些步骤，能查到手续费吗？"))
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(result.warnings[0].code, "PARTIAL_EVIDENCE")
+        self.assertEqual([citation.chunk_id for citation in result.citations], [self.chunk.chunk_id])
+
+    async def test_known_amount_without_a_deadline_only_supports_partial_answer(self):
+        service = self.annual_fixture(year="2025年")
+        self.chunk = self.chunk.model_copy(update={"content": "全日制本科生可申请，金额为3000元。"})
+        self.retriever.retrieve.return_value = [self.chunk]
+        request = self.request("2025年奖学金金额和截止时间是什么？")
+        result = await service.run(request)
+        self.assertEqual(result.status, "insufficient_evidence")
+
+        async def answer(prompt):
+            first = self.evidence_for(prompt)[0]
+            return self.selection("全日制本科生可以申请，金额是3000元。\n其余问题缺少可核验的资料，暂无法确认。",
+                                  [first["evidence_id"]])
+
+        self.llm.generate.side_effect = answer
+        result = await service.run(request)
+        self.assertEqual(result.status, "answered")
+        self.assertEqual(result.warnings[-1].code, "PARTIAL_EVIDENCE")
+        self.assertIn("金额是3000元", result.answer)
+        self.assertEqual(result.citations[0].excerpt, self.chunk.content)
+
+    async def test_requested_amount_without_support_stops_before_generation(self):
+        result = await self.service.run(self.request("2026年校级奖学金金额是多少？"))
+        self.assertEqual(result.warnings[0].code, "REQUESTED_FACT_NOT_FOUND")
+        self.assertEqual(result.citations, [])
+        self.llm.generate.assert_not_awaited()
 
     def test_invalid_configuration_is_rejected(self):
         for options in [{"top_k": 0}, {"top_k": 21}, {"timeout_seconds": 0},

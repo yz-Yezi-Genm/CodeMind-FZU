@@ -52,9 +52,7 @@ class AgentWorkflowQwenTests(unittest.TestCase):
             payload = json.loads(request.content)
             observed.append(payload)
             evidence = json.loads(payload["messages"][-1]["content"])["evidence"][0]
-            text = json.dumps({"evidence": [{
-                "chunk_id": evidence["chunk_id"], "quote": evidence["content"],
-            }]}, ensure_ascii=False)
+            text = json.dumps({"answer": evidence["content"], "used_evidence_ids": [evidence["evidence_id"]]}, ensure_ascii=False)
             return httpx.Response(200, json={
                 "model": "offline-qwen-response-fixture",
                 "choices": [{"message": {"content": text}}],
@@ -149,6 +147,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.package = DocumentPackage.model_validate(items[0])
         # Synthetic review input only; never promote a real policy fixture.
         self.package.metadata.temporal_notes = {"human_approved": True}
+        self.package.metadata.applicability_raw = {"适用对象": "合成资料中的测试学生"}
         for file in self.package.files:
             path = self.file_root / file.storage_key
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -168,9 +167,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         payload = json.loads(request.content)
         self.observed.append(payload)
         evidence = json.loads(payload["messages"][-1]["content"])["evidence"][0]
-        output = self.output if self.output is not None else {"evidence": [{
-            "chunk_id": evidence["chunk_id"], "quote": evidence["content"],
-        }]}
+        output = self.output(evidence) if self.output is not None else {"answer": evidence["content"], "used_evidence_ids": [evidence["evidence_id"]]}
         return httpx.Response(200, json={
             "model": "offline-qwen-response-fixture",
             "choices": [{"message": {"content": json.dumps(output, ensure_ascii=False)}}],
@@ -248,8 +245,8 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金条件"))
         for output in [
-            {"evidence": [{"chunk_id": str(uuid4()), "quote": hits[0].content}]},
-            {"evidence": [{"chunk_id": str(hits[0].chunk_id), "quote": "申请可获得99999元"}]},
+            lambda item: {"answer": item["content"], "used_evidence_ids": [str(hits[0].chunk_id)]},
+            lambda item: {"answer": "申请可获得99999元", "used_evidence_ids": [item["evidence_id"]]},
         ]:
             with self.subTest(output=output):
                 self.output = output
@@ -291,7 +288,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(self.package.model_dump(), original)
         self.assertEqual(self.observed, [])
 
-    async def test_legacy_package_snapshot_is_read_only_and_metadata_is_detached(self):
+    async def test_legacy_retriever_without_read_only_lookups_cannot_supply_evidence(self):
         class LegacyRetriever:
             def __init__(self, **kwargs):
                 self.store = LocalBM25Retriever(**kwargs)
@@ -305,10 +302,10 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         with patch("backend.retrieval.local.LocalBM25Retriever", LegacyRetriever):
             workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金"))
-        metadata = workflow.retriever.get_document_metadata(hits[0].version_id)
-        metadata.temporal_notes["human_approved"] = False
-        self.assertIs(workflow.retriever.get_document_metadata(hits[0].version_id).temporal_notes["human_approved"], True)
-        self.assertFalse(hasattr(workflow.retriever, "index_document"))
+        self.assertTrue(hits)
+        response = await self.ask(workflow, "星桥奖学金条件")
+        self.assertEqual(response.json()["status"], "insufficient_evidence")
+        self.assertEqual(self.observed, [])
 
     async def test_real_three_policy_packages_stay_blocked_and_skip_qwen(self):
         packages = [DocumentPackage.model_validate_json(
@@ -534,9 +531,7 @@ class QwenLiveProbeOfflineTests(unittest.IsolatedAsyncioTestCase):
             seen.append(data)
             evidence = json.loads(data["messages"][-1]["content"])["evidence"][0]
             return httpx.Response(200, json={"model": "qwen-flash", "usage": {"total_tokens": 103},
-                "choices": [{"message": {"content": json.dumps({"evidence": [{
-                    "chunk_id": evidence["chunk_id"], "quote": evidence["content"],
-                }]})}}]})
+                "choices": [{"message": {"content": json.dumps({"answer": evidence["content"], "used_evidence_ids": [evidence["evidence_id"]]})}}]})
 
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as upstream:
             report = await probe(QwenLLMClient(QwenSettings(
@@ -551,8 +546,14 @@ class QwenLiveProbeOfflineTests(unittest.IsolatedAsyncioTestCase):
         from backend.contracts.models import LLMResult
         from scripts.check_qwen_live import probe
         client = AsyncMock()
-        client.generate.return_value = LLMResult(model="offline", content=json.dumps({
-            "evidence": [{"chunk_id": str(demo_chunk().chunk_id), "quote": "篡改原文"}]}))
+
+        async def fabricate(prompt):
+            first = json.loads(prompt.messages[-1].content)["evidence"][0]
+            return LLMResult(model="offline", content=json.dumps({
+                "answer": "篡改原文", "used_evidence_ids": [first["evidence_id"]],
+            }))
+
+        client.generate.side_effect = fabricate
         with self.assertRaises(ValueError):
             await probe(client)
 
@@ -617,7 +618,8 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             evidence = json.loads(json.loads(request.content)["messages"][-1]["content"])["evidence"]
             self.observed.append(evidence)
             return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({
-                "evidence": [{"chunk_id": evidence[0]["chunk_id"], "quote": evidence[0]["content"]}],
+                "answer": evidence[0]["content"],
+                "used_evidence_ids": [evidence[0]["evidence_id"]],
             }, ensure_ascii=False)}}]})
 
         self.upstream = httpx.AsyncClient(transport=httpx.MockTransport(handler))
@@ -741,14 +743,14 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertNotIn("private-chapter-query-detail", result.model_dump_json())
         self.assertEqual(self.observed, [])
 
-    async def test_non_sensitive_document_can_answer_without_chapter_metadata(self):
+    async def test_missing_indexed_chunk_blocks_even_when_the_rule_needs_no_section(self):
         workflow = await self.workflow()
         with patch.object(workflow.retriever, "get_parsed_chunk", return_value=None):
             workflow.evidence_check = self.rules.build_from_retriever(workflow.retriever)
             result = await workflow.run(self.request())
-        self.assertEqual(result.status, "answered")
-        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
-        self.assertEqual(len(self.observed), 1)
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
 
     async def test_clarification_exception_has_strict_agent_refusal_contract(self):
         workflow = await self.workflow()
@@ -900,7 +902,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.status, "answered")
         self.assertEqual(len(self.observed), 1)
 
-    async def test_historical_rule_applicability_cannot_relax_agent_current_gate(self):
+    async def test_expired_scholarship_notice_with_real_rules_answers_its_own_year(self):
         self.package.metadata.record_code = "SYNTH-2026-星火奖学金"
         self.package.metadata.title = "合成测试：2026年星火奖教奖学金评选通知"
         self.package.metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
@@ -911,15 +913,84 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星火奖学金"))
         self.assertTrue(hits)
-        historical = self.request("星火奖学金去年截止到什么时候？")
+        historical = self.request("2026年星火奖学金当时截止到什么时候？")
         current = self.request("星火奖学金现在还能申请吗，有什么资格要求？")
         self.assertIs(workflow.evidence_check(historical, hits[0]), True)
         self.assertIs(workflow.evidence_check(current, hits[0]), False)
-        for request in (historical, current):
-            result = await workflow.run(request)
-            self.assertEqual(result.status, "insufficient_evidence")
-            self.assertEqual(result.citations, [])
-        self.assertEqual(self.observed, [])
+        result = await workflow.run(historical)
+        self.assertEqual(result.answer_mode, "historical")
+        self.assertIn("2026年历史资料", result.answer)
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+        result = await workflow.run(current)
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_rules_with_bm25_and_qwen_adapter(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-LAB-INTRO"
+        metadata.title = "合成测试：计算机学院实验室研究方向简介"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "学院资源"
+        metadata.business_direction_codes = [direction]
+        metadata.applicability_raw = {"适用对象": "本科生"}
+        self.package.chunks[0].content = "EDA实验室研究方向为集成电路设计自动化。"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("EDA实验室研究什么？"))
+        self.assertEqual(result.answer_mode, "current_policy")
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+        result = await workflow.run(self.request("EDA实验室现在还招人吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_expired_recruitment_with_bm25_and_qwen_adapter(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-LAB-RECRUITMENT-2026"
+        metadata.title = "合成测试：2026年EDA实验室报名通知"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "实验室"
+        metadata.business_direction_codes = [direction]
+        metadata.applicability_raw = {"适用年度": "2026年", "适用对象": "全体本科生"}
+        metadata.deadline_on = date(2026, 10, 31)
+        metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
+        self.package.chunks[0].content = "EDA实验室报名须提交报名表，报名截止2026-10-31。"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("2026年EDA实验室当时报名流程和截止时间是什么？"))
+        self.assertEqual(result.answer_mode, "historical")
+        self.assertIn("2026年历史资料", result.answer)
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+        result = await workflow.run(self.request("现在还可以报名EDA实验室吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_current_recruitment_respects_applicability(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-ACTIVE-LAB-RECRUITMENT-2026"
+        metadata.title = "合成测试：2026年EDA实验室报名通知"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "实验室"
+        metadata.business_direction_codes = [direction]
+        metadata.applicability_raw = {"适用年度": "2026年", "适用年级": "大二", "适用对象": "本科生"}
+        metadata.deadline_on = date(2026, 12, 1)
+        self.package.chunks[0].content = "EDA实验室面向大二本科生，报名须提交报名表，报名截止2026-12-01。"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("我大二能报名EDA实验室吗？"))
+        self.assertEqual(result.answer_mode, "procedure_reference")
+        self.assertIn("大二本科生", result.answer)
+        result = await workflow.run(self.request("我大一能报名EDA实验室吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
 
     async def test_clarification_and_evidence_share_injected_clock(self):
         workflow = await self.workflow()
