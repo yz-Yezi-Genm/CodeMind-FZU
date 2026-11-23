@@ -251,29 +251,34 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_blocked_version_returns_none_for_chunk(self):
         # V2.1 §8.3：未开放（blocked）资料的片段查询也应返回 None。
-        # 做法：先用 enabled 资料通过公开 retrieve 接口拿到 chunk_id，
+        # 做法：先用 enabled 资料索引，通过公开 retrieve 接口拿到 chunk_id，
         # 再把同一资料重新索引为 blocked，最后验证 get_parsed_chunk 返回 None。
-        # 不依赖 LocalBM25Retriever 的私有 ID 生成函数。
+        # 用 version_id 精确定位目标片段，不依赖 title（asyncSetUp 已索引同标题资料）。
         from backend.contracts.models import RetrievalRequest
 
-        # 1. 先用 enabled 资料索引，通过公开 retrieve 接口拿到 chunk_id
+        # 1. 先用 enabled 资料索引，保存 version_id
         enabled = _enabled_package(record_code="BETA-BLOCKED-2")
-        await self.retriever.index_document(enabled)
+        enabled_result = await self.retriever.index_document(enabled)
+        self.assertEqual(enabled_result.status, IndexingStatus.INDEXED)
+        enabled_version_id = enabled_result.version_id
+
+        # 2. 通过公开 retrieve 接口，按 version_id 精确定位目标 chunk
         hits = await self.retriever.retrieve(RetrievalRequest(query="优秀学生综合奖学金"))
-        # 找到对应 BETA-BLOCKED-2 的 chunk
-        target = next((h for h in hits if h.title == "【测试替身】Beta 契约测试资料"), None)
+        target = next((h for h in hits if h.version_id == enabled_version_id), None)
         self.assertIsNotNone(target, "enabled 资料应能被检索到")
         chunk_id = target.chunk_id
         # 确认 enabled 状态下 get_parsed_chunk 能返回数据（对照）
         self.assertIsNotNone(self.retriever.get_parsed_chunk(chunk_id))
 
-        # 2. 把同一资料（同 record_code + version_no）重新索引为 blocked
+        # 3. 把同一资料（同 record_code + version_no）重新索引为 blocked
         blocked = _enabled_package(record_code="BETA-BLOCKED-2")
         blocked.metadata.retrieval_status = RetrievalStatus.BLOCKED
         blocked_result = await self.retriever.index_document(blocked)
         self.assertEqual(blocked_result.status, IndexingStatus.INDEXED)
+        # version_id 是确定性 UUID5（由 record_code + version_no 生成），前后应一致
+        self.assertEqual(blocked_result.version_id, enabled_version_id)
 
-        # 3. blocked 后 get_parsed_chunk 应返回 None（chunk_id 不变，因为是确定性 UUID5）
+        # 4. blocked 后 get_parsed_chunk 应返回 None（chunk_id 不变，因为是确定性 UUID5）
         self.assertIsNone(self.retriever.get_parsed_chunk(chunk_id))
 
 
