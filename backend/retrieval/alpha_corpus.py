@@ -129,13 +129,15 @@ def _discover_entries(
     candidates: list[tuple[str, Path]] = []
     skipped: list[tuple[str, str]] = []
 
+    if _is_link(manifest_path):
+        raise ValueError("manifest.json 不能是符号链接")
     if manifest_path.is_file():
-        if _is_link(manifest_path):
-            raise ValueError("manifest.json 不能是符号链接")
         resolved_manifest = manifest_path.resolve(strict=True)
         if not resolved_manifest.is_relative_to(resolved_corpus):
             raise ValueError("manifest.json 必须位于 approved 目录内")
-        manifest: dict[str, Any] = json.loads(resolved_manifest.read_bytes())
+        manifest: Any = json.loads(resolved_manifest.read_bytes())
+        if not isinstance(manifest, dict):
+            raise ValueError("manifest.json 顶层必须是 JSON 对象")
         entries = manifest.get("packages")
         if not isinstance(entries, list):
             raise ValueError("manifest.json 缺少有效的 packages 列表")

@@ -250,6 +250,11 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                 await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
             (approved_dir / "dup.json").unlink()
 
+            # Non-object JSON manifest must raise ValueError cleanly.
+            (approved_dir / "manifest.json").write_text("[]", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "JSON 对象"):
+                await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
+
             # Manifest pointing outside approved/ must be rejected.
             bad_manifest = {"packages": [{"package": "pending-review/leak.json", "human_approved": True}]}
             (approved_dir / "manifest.json").write_text(json.dumps(bad_manifest), encoding="utf-8")

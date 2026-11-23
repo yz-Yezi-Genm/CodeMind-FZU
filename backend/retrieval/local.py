@@ -204,6 +204,7 @@ class LocalBM25Retriever:
         skipped_sources: Counter[str] = Counter()
         skipped_disabled = False
         skipped_tokenless = 0
+        title_terms = _terms(metadata.title)
         for chunk in snapshot.chunks:
             file_id, processing_status = source_files[chunk.source_file_key]
             if processing_status not in _INDEXABLE_FILE_STATUSES:
@@ -212,10 +213,11 @@ class LocalBM25Retriever:
             if chunk.index_status == ChunkIndexStatus.DISABLED:
                 skipped_disabled = True
                 continue
-            terms = _terms(chunk.content)
-            if not terms:
+            content_terms = _terms(chunk.content)
+            if not content_terms:
                 skipped_tokenless += 1
                 continue
+            combined_terms = [*title_terms, *content_terms]
             referenced_files.add(chunk.source_file_key)
             if chunk.original_file_key:
                 referenced_files.add(chunk.original_file_key)
@@ -223,8 +225,8 @@ class LocalBM25Retriever:
                 parsed=chunk,
                 file_id=file_id,
                 chunk_id=_local_id("chunk", str(file_id), str(chunk.chunk_no)),
-                term_counts=Counter(terms),
-                length=len(terms),
+                term_counts=Counter(combined_terms),
+                length=len(combined_terms),
             ))
 
         # Only unready sources with no retained citation can skip integrity

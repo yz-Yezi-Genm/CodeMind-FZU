@@ -1,0 +1,152 @@
+"""Beta S1-S4 four-domain BM25 retrieval & formal-loading verification tests."""
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from backend.contracts import IndexingStatus, RetrievalRequest, RetrievalStatus
+from backend.retrieval import load_approved_alpha_retriever
+from scripts.eval_beta_retrieval import (
+    materialize_synthetic_corpus,
+    run_corpus_probe,
+    run_evaluation,
+)
+
+
+class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
+    async def test_s1_to_s4_evaluation_metrics_and_filtering(self):
+        summary = await run_evaluation()
+
+        self.assertEqual(len(summary["loaded_packages"]), 4)
+        self.assertEqual(len(summary["skipped_packages"]), 2)
+        self.assertEqual(summary["total_indexed_chunks"], 8)
+
+        # Synthetic baseline must achieve clean Hit@1 / Hit@3 / MRR.
+        self.assertEqual(summary["metrics"]["hit_at_1"], 1.0)
+        self.assertEqual(summary["metrics"]["hit_at_3"], 1.0)
+        self.assertEqual(summary["metrics"]["mrr"], 1.0)
+
+        # Unrelated query and blocked/unapproved decoys must return empty lists.
+        self.assertEqual(summary["negative_checks"]["no_match_count"], 0)
+        self.assertEqual(summary["negative_checks"]["decoy_blocked_count"], 0)
+        self.assertEqual(summary["negative_checks"]["decoy_unapproved_count"], 0)
+
+    async def test_multi_direction_full_corpus_query_avoids_cross_domain_omission(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            approved_dir = materialize_synthetic_corpus(root)
+            retriever, report = await load_approved_alpha_retriever(
+                corpus_dir=approved_dir, file_root=root, allow_missing=False
+            )
+            self.assertTrue(report.corpus_dir.is_dir())
+            self.assertTrue(
+                all(r.status == IndexingStatus.INDEXED and not r.warnings for r in report.index_results)
+            )
+
+            # Without business_direction_code, a cross-domain query retrieves both S1 and S2.
+            hits = await retriever.retrieve(
+                RetrievalRequest(query="竞赛获奖 综测加分 奖学金申请表", top_k=4)
+            )
+            record_codes = {
+                retriever.get_document_metadata(hit.version_id).record_code
+                for hit in hits
+            }
+            self.assertIn("BETA-SYN-S1-2026", record_codes)
+            self.assertIn("BETA-SYN-S2-2026", record_codes)
+
+    async def test_metadata_and_parsed_chunk_fields_match_beta_v21_requirements(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            approved_dir = materialize_synthetic_corpus(root)
+            retriever, _ = await load_approved_alpha_retriever(
+                corpus_dir=approved_dir, file_root=root, allow_missing=False
+            )
+
+            hits = await retriever.retrieve(
+                RetrievalRequest(
+                    query="ACM-ICPC 创新创业学分",
+                    business_direction_code="COMPETITION_RESEARCH",
+                    top_k=1,
+                )
+            )
+            self.assertEqual(len(hits), 1)
+            hit = hits[0]
+
+            meta = retriever.get_document_metadata(hit.version_id)
+            parsed = retriever.get_parsed_chunk(hit.chunk_id)
+            self.assertIsNotNone(meta)
+            self.assertIsNotNone(parsed)
+
+            # Verify all V2.1-Final required metadata fields are readable.
+            self.assertEqual(meta.record_code, "BETA-SYN-S1-2026")
+            self.assertEqual(meta.version_no, "beta-syn-v1")
+            self.assertEqual(
+                meta.applicability_raw,
+                {"college": "计算机与大数据学院", "degree": "本科生"},
+            )
+            self.assertIsNotNone(meta.deadline_on)
+            self.assertIs(meta.temporal_notes["human_approved"], True)
+            self.assertEqual(meta.source_verification_status.value, "verified")
+            self.assertEqual(meta.timeliness_verification_status.value, "current")
+            self.assertEqual(meta.retrieval_status, RetrievalStatus.ENABLED)
+
+            # Verify all V2.1-Final required ParsedChunk fields are readable & aligned.
+            self.assertEqual(parsed.content, hit.content)
+            self.assertEqual(parsed.locator, hit.locator)
+            self.assertIn("ACM-ICPC", parsed.locator_note)
+            self.assertEqual(parsed.original_locator, hit.original_locator)
+            self.assertEqual(parsed.source_file_key, "texts/s1-competition-synthetic.md")
+            self.assertEqual(parsed.chunk_no, 1)
+
+            # Verify traceability back to the physical source text file on disk.
+            source_file = root / parsed.source_file_key
+            self.assertTrue(source_file.is_file())
+            self.assertIn(parsed.content, source_file.read_text(encoding="utf-8"))
+
+    async def test_english_case_insensitive_top_k_direction_filter_and_probe_mode(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            approved_dir = materialize_synthetic_corpus(root)
+            retriever, _ = await load_approved_alpha_retriever(
+                corpus_dir=approved_dir, file_root=root, allow_missing=False
+            )
+
+            # Pure English & case-insensitive queries across S1 / S3 / S4.
+            for query, expected_code in (
+                ("acm-icpc", "BETA-SYN-S1-2026"),
+                ("cet-6", "BETA-SYN-S3-2027"),
+                ("gpu", "BETA-SYN-S4-2026"),
+            ):
+                hits = await retriever.retrieve(RetrievalRequest(query=query, top_k=2))
+                self.assertTrue(hits, msg=f"expected hit for {query!r}")
+                top_meta = retriever.get_document_metadata(hits[0].version_id)
+                self.assertEqual(top_meta.record_code, expected_code)
+
+            # Wrong business_direction_code filters out S4; omitting it succeeds.
+            self.assertEqual(
+                await retriever.retrieve(
+                    RetrievalRequest(query="gpu", business_direction_code="POLICY_AFFAIRS")
+                ),
+                [],
+            )
+
+            # Top-K truncation and descending score order.
+            top1 = await retriever.retrieve(RetrievalRequest(query="奖学金 申请", top_k=1))
+            top3 = await retriever.retrieve(RetrievalRequest(query="奖学金 申请", top_k=3))
+            self.assertEqual(len(top1), 1)
+            self.assertGreaterEqual(len(top3), 2)
+            self.assertEqual(top1[0].chunk_id, top3[0].chunk_id)
+            scores = [hit.score for hit in top3]
+            self.assertEqual(scores, sorted(scores, reverse=True))
+
+            # Corpus probe mode (used for formal approved/ verification) runs cleanly.
+            probe = await run_corpus_probe(approved_dir, file_root=root)
+            self.assertEqual(probe["corpus_type"], "approved_directory_probe")
+            self.assertEqual(len(probe["loaded_packages"]), 4)
+            self.assertEqual(len(probe["skipped_packages"]), 2)
+            self.assertEqual(probe["total_indexed_chunks"], 8)
+
+
+if __name__ == "__main__":
+    unittest.main()
