@@ -127,15 +127,41 @@ def render_source_units(metadata, units):
     return text, intervals
 
 
-def build():
-    sources = read(REVIEW / "source-units.json")
-    verify_inputs(sources)
-    preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
+def file_source_context():
     fetches = {r["storage_key"]: r for path in [REVIEW / "source-fetch.json", OLD / "attachment-fetch.json"]
                for r in read(path) if r.get("storage_key")}
     labels = {a["storage_key"]: a["label"].removeprefix("附件1：").removeprefix("附件2：").removeprefix("附件3：")
               for document in read(REVIEW / "verification-evidence.json")["documents"].values()
               for a in document["linked_attachments"] if a["label"] != "embedded PDF"}
+    return fetches, labels
+
+
+def expected_original_files(key, units, context):
+    """Include landing pages and non-chunk attachments, not just cited files."""
+    fetches, labels = context
+    originals = {u["original_file_key"] for u in units} | {(REVIEW / f"{key}.html").as_posix()}
+    if key in {"college-scholarship", "xinghuo"}:
+        originals.add((OLD / ("college-attachments.zip" if key == "college-scholarship" else "xinghuo-forms.rar")).as_posix())
+    if key == "qinghe":
+        originals.add((REVIEW / "qinghe-registration.docx").as_posix())
+    files = []
+    for file_key in sorted(originals):
+        item = fetches[file_key]
+        files.append(ParsedFile(file_role="original" if file_key.endswith(".html") else "attachment",
+            storage_key=file_key, original_name=item.get("original_name", labels.get(file_key, Path(file_key).name)),
+            media_type=mimetypes.guess_type(file_key)[0] or "application/octet-stream", sha256=digest(Path(file_key)),
+            source_url=item["url"], processing_status="saved"))
+    return files
+
+
+def build():
+    sources = read(REVIEW / "source-units.json")
+    verify_inputs(sources)
+    # Preflight before creating directories, rendering Markdown or overwriting
+    # any package/manifest/mapping. Failed source review must preserve outputs.
+    verify_reextraction(ROOT, sources)
+    preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
+    context = file_source_context()
     mappings, summaries = [], []
     for key, units in sources["documents"].items():
         metadata = metadata_for(key, preview)
@@ -144,17 +170,7 @@ def build():
         (ROOT / md_key).parent.mkdir(parents=True, exist_ok=True)
         (ROOT / md_key).write_text(text, encoding="utf-8", newline="\n")
         package = TextDocumentParser(ROOT, max_chunk_chars=2400, file_role="curated" if key == "recommendation" else "extracted").parse_document(md_key, metadata)
-        originals = {u["original_file_key"] for u in units} | {(REVIEW / f"{key}.html").as_posix()}
-        if key in {"college-scholarship", "xinghuo"}:
-            originals.add((OLD / ("college-attachments.zip" if key == "college-scholarship" else "xinghuo-forms.rar")).as_posix())
-        if key == "qinghe":
-            originals.add((REVIEW / "qinghe-registration.docx").as_posix())
-        for file_key in sorted(originals):
-            item = fetches[file_key]
-            package.files.append(ParsedFile(file_role="original" if file_key.endswith(".html") else "attachment",
-                 storage_key=file_key, original_name=item.get("original_name", labels.get(file_key, Path(file_key).name)),
-                 media_type=mimetypes.guess_type(file_key)[0] or "application/octet-stream", sha256=digest(Path(file_key)),
-                 source_url=item["url"], processing_status="saved"))
+        package.files.extend(expected_original_files(key, units, context))
         for chunk in package.chunks:
             note = json.loads(chunk.locator_note)
             start, end, number, unit = next(i for i in intervals if i[0] <= note["char_start"] < i[1])
@@ -183,6 +199,7 @@ async def check():
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
     preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
+    context = file_source_context()
     manifest = read(OUTPUT / "manifest.json")
     if manifest.get("stage") != "pending-review":
         raise ValueError("Manifest stage must be pending-review")
@@ -236,10 +253,13 @@ async def check():
             raise ValueError(f"Business direction mapping differs from original preview: {row['key']}")
         if package.metadata != metadata_for(row["key"], preview):
             raise ValueError(f"Candidate metadata differs from reviewed batch: {row['key']}")
+        md_key = (OUTPUT / "texts" / f"{row['key']}.md").as_posix()
+        originals = expected_original_files(row["key"], units, context)
+        if {file.storage_key for file in package.files} != {md_key, *(file.storage_key for file in originals)}:
+            raise ValueError(f"Package file inventory mismatch: {row['key']}")
         for file in package.files:
             if digest(Path(file.storage_key)) != file.sha256:
                 raise ValueError("Package file hash mismatch")
-        md_key = (OUTPUT / "texts" / f"{row['key']}.md").as_posix()
         text = (ROOT / md_key).read_text(encoding="utf-8")
         expected_text, intervals = render_source_units(package.metadata, units)
         if text != expected_text:
@@ -247,9 +267,14 @@ async def check():
         # A valid subset of slices is not a complete package. Re-parse the
         # retained text so deleting a chunk plus its manifest/mapping entry,
         # duplicating a slice, or shortening a valid slice cannot pass.
-        expected_chunks = TextDocumentParser(
+        parsed = TextDocumentParser(
             ROOT, max_chunk_chars=2400, file_role="curated" if row["key"] == "recommendation" else "extracted"
-        ).parse_document(Path(md_key), package.metadata).chunks
+        ).parse_document(Path(md_key), package.metadata)
+        expected_files = {file.storage_key: file for file in [*parsed.files, *originals]}
+        for file in package.files:
+            if file != expected_files[file.storage_key]:
+                raise ValueError(f"Package file metadata mismatch: {row['key']} / {file.storage_key}")
+        expected_chunks = parsed.chunks
         if len(package.chunks) != len(expected_chunks):
             raise ValueError("Candidate chunk sequence differs from full Markdown parse")
         for chunk in package.chunks:

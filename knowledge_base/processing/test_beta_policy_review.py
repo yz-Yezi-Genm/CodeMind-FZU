@@ -90,7 +90,7 @@ class BetaCandidateTests(unittest.TestCase):
             with self.subTest(field=field):
                 self.assert_tampered_read_fails(build.REVIEW / "source-units.json",
                     lambda data: data["documents"]["competition"][0].__setitem__(field, value),
-                    "Original mapping mismatch")
+                    "Package file inventory mismatch|Original mapping mismatch")
 
     def test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check(self):
         real_read = build.read
@@ -180,6 +180,47 @@ class BetaCandidateTests(unittest.TestCase):
                 self.assert_tampered_read_fails(build.OUTPUT / "competition.json",
                     lambda data: data["metadata"].__setitem__(field, value),
                     "Candidate metadata differs from reviewed batch")
+
+    def test_uncited_original_and_attachment_entries_cannot_be_deleted(self):
+        for key, name in [("recommendation", "recommendation.html"), ("retest", "retest.html"),
+                          ("qinghe", "qinghe-registration.docx"), ("college-scholarship", "college-attachments.zip"),
+                          ("xinghuo", "xinghuo-forms.rar")]:
+            def remove_file(data):
+                data["files"] = [f for f in data["files"] if Path(f["storage_key"]).name != name]
+            with self.subTest(package=key, filename=name):
+                self.assert_tampered_read_fails(build.OUTPUT / f"{key}.json", remove_file,
+                                               "Package file inventory mismatch")
+
+    def test_extra_existing_original_entry_is_rejected(self):
+        extra = build.read(build.OUTPUT / "scholarship.json")["files"][-1]
+        self.assert_tampered_read_fails(build.OUTPUT / "qinghe.json",
+            lambda data: data["files"].append(extra), "Package file inventory mismatch")
+
+    def test_all_parsed_file_metadata_fields_are_checked(self):
+        # Both converted text and every kind of original must retain its
+        # identity/source/role/readiness, even when SHA and chunk references match.
+        cases = [("source_url", "https://example.invalid/wrong-file"), ("source_url", None),
+                 ("file_role", "curated"), ("original_name", "wrong-original-name"),
+                 ("media_type", "application/x-wrong"), ("processing_status", "reviewed")]
+        for number in range(4):  # Qinghe Markdown, XLSX, registration DOCX, HTML
+            for field, value in cases:
+                with self.subTest(file=number, field=field, value=value):
+                    self.assert_tampered_read_fails(build.OUTPUT / "qinghe.json",
+                        lambda data: data["files"][number].__setitem__(field, value), "Package file metadata mismatch")
+
+    def test_missing_sha_is_rejected_even_when_file_exists(self):
+        self.assert_tampered_read_fails(build.OUTPUT / "qinghe.json",
+            lambda data: data["files"][1].__setitem__("sha256", None), "Package file hash mismatch")
+
+    def test_correct_complete_file_inventory_can_be_reordered(self):
+        real_read = build.read
+        def reordered(path):
+            data = real_read(path)
+            if path == build.OUTPUT / "qinghe.json":
+                data["files"].reverse()
+            return data
+        with patch.object(build, "read", side_effect=reordered):
+            self.assertEqual(asyncio.run(build.check())["chunks"], 501)
 
     def test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected(self):
         real_read = build.read

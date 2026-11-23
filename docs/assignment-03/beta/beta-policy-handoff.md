@@ -110,7 +110,14 @@ python -m pytest tests -q
 - 单独核对每个字符区间并不能证明片段完整。现在从保留Markdown重新执行同一切片规则，连同原件定位核对完整有序片段列表。删除片段后同步删映射/改数量，或缩短片段后同步改字符区间，均会失败。
 - 来源URL、来源页、发布单位、发布日期、截止日期、适用范围及其他元数据，均与本批已核验生成配置完整对照。不能仅保持blocked和manifest摘要一致，就让改错的政策元数据通过。元数据正式调整须按新核验证据更新本批配置，不靠修改JSON绕过。
 
-实际测试：本批专项42项通过（候选包27项、XLSX转换8项、原件重提取7项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引、blocked查询及原件重提取结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
+本轮复审补充构建和文件清单保护：
+
+- `build()`先完成原件SHA和完整离线重提取对照，再创建输出目录、写Markdown/JSON/manifest/映射。篡改source-units而原件不变时，直接构建与CLI构建均失败，已有文件（包括校验报告）逐文件SHA及清单保持不变；空输出目录也不会被创建。这一保证针对原件重提取预检失败，不宣称所有后续I/O异常均具备多文件事务回滚。
+- `check()`对照每份包的完整预期文件清单：转换稿、原始页面、正文附件，以及未被片段直接引用的院级ZIP、星火RAR、推免PDF落地页和青禾空白报名表。缺少或多出文件均失败。
+- 全部`ParsedFile`字段逐项核对：`storage_key`、`file_role`、`original_name`、`media_type`、`sha256`、`source_url`、`processing_status`。实际文件字节的SHA也必须匹配；清单顺序可以调整，文件身份和元数据不能漂移。已有公共模型、接口及候选资料内容保持原样。
+- 测试覆盖删除未直接引用的原件/附件、加入无关原件、修改Markdown/XLSX/DOCX/HTML的来源链接或角色/原名/类型/处理状态、清空SHA，以及错误来源导致构建失败时旧成果不变。
+
+实际测试：本批专项49项通过（候选包32项、XLSX转换8项、原件重提取9项），原Alpha资料/隐私审计13项通过，后端回归结果以[JSON记录](beta-policy-review-test-results.json)和[日志](beta-policy-review-tests.txt)为准；跳过项不计为通过。[资料完整性/隔离报告](beta-policy-validation-report.json)记录逐包技术索引、blocked查询及原件重提取结果。这些是解析、证据与门禁测试，**没有运行真实Qwen、前端E2E或已审核语料的正向召回验收**。
 
 本轮按组长要求继续更新PR #41。合并顺序为#44→#41→#45；只有确认#44已经合并后，才将最新`origin/main`合入`feat/beta-policy-review`并推送。同步情况以PR及本轮最终交接为准，不将尚未合并的#44记作已同步。
 

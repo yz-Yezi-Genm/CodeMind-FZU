@@ -90,11 +90,57 @@ class RawReextractionTests(unittest.TestCase):
             sources = deepcopy(self.sources)
             sources["documents"]["qinghe"][11]["content"] += "\nFORGED EXTRA ADMISSION CONDITION"
             (root / build.REVIEW / "source-units.json").write_text(json.dumps(sources, ensure_ascii=False), encoding="utf-8")
-            # Markdown, DTO, hashes and mappings are now all mutually consistent.
+            # Simulate legacy/corrupt artifacts by bypassing ONLY build's new
+            # preflight inside this temporary root. The real check must still
+            # independently reject their mutually consistent forged content.
             with patch.object(build, "ROOT", root):
-                build.build()
+                with patch.object(build, "verify_reextraction"):
+                    build.build()
                 with self.assertRaisesRegex(ValueError, "Raw re-extraction mismatch: qinghe"):
                     asyncio.run(build.check())
+
+    def test_failed_build_and_cli_preserve_all_existing_artifact_hashes(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for area in [build.REVIEW, build.OLD, build.OUTPUT, build.DOCS]:
+                shutil.copytree(build.ROOT / area, root / area, dirs_exist_ok=True)
+            preview = Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json")
+            (root / preview).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(build.ROOT / preview, root / preview)
+            def snapshot():
+                return {path.relative_to(root).as_posix(): sha256(path.read_bytes()).hexdigest()
+                        for path in root.rglob("*") if path.is_file()}
+            for key in ["competition", "qinghe"]:
+                changed = deepcopy(self.sources)
+                changed["documents"][key][0]["content"] += "FORGED SOURCE UNIT"
+                (root / build.REVIEW / "source-units.json").write_text(json.dumps(changed, ensure_ascii=False), encoding="utf-8")
+                before = snapshot()
+                # includes Markdown, 8 DTOs, manifest, mappings, raw originals,
+                # docs and validation reports; also catches newly created files.
+                self.assertIn((build.OUTPUT / "manifest.json").as_posix(), before)
+                for entrypoint in ["build", "cli"]:
+                    with self.subTest(document=key, entrypoint=entrypoint), \
+                         patch.object(build, "ROOT", root), patch("sys.argv", ["build_beta_policy_review"]):
+                        with self.assertRaisesRegex(ValueError, f"Raw re-extraction mismatch: {key}"):
+                            build.build() if entrypoint == "build" else build.main()
+                        self.assertEqual(snapshot(), before)
+
+    def test_failed_preflight_does_not_create_output_directory(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copytree(build.ROOT / build.REVIEW, root / build.REVIEW)
+            sources = deepcopy(self.sources)
+            sources["documents"]["qinghe"][0]["content"] += "FORGED SOURCE UNIT"
+            def read_candidate(path):
+                if path == build.REVIEW / "source-units.json":
+                    return deepcopy(sources)
+                raise AssertionError("Build read configuration after a failed source preflight")
+            with patch.object(build, "ROOT", root), patch.object(build, "read", side_effect=read_candidate), \
+                 patch.object(build, "verify_inputs"):
+                with self.assertRaisesRegex(ValueError, "Raw re-extraction mismatch: qinghe"):
+                    build.build()
+                self.assertFalse((root / build.OUTPUT).exists())
+                self.assertFalse((root / build.DOCS).exists())
 
     def test_standalone_qinghe_units_or_cell_audit_tampering_fails(self):
         documents, units, audit = raw.reextract_documents(build.ROOT)
