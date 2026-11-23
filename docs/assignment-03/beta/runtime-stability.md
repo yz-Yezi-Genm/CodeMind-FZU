@@ -82,24 +82,11 @@
 - 多轮历史、隔离、并发串行、数量与空闲清理；
 - 未审核、部分索引和知识库缺失失败关闭。
 
-## 6. 真实 Qwen 验证
+## 6. 真实 Qwen 验证拆分
 
-使用本地 `backend/.env` 和真实 `qwen-flash` 完成：
+按管理要求，本 PR 只承担第一阶段运行代码和离线契约测试，不包含真实模型调用证据。
 
-1. 直接受约束 JSON 调用成功，模型返回：
-
-```json
-{"answer":"奖学金申请需要提交申请表和成绩单。","used_evidence_ids":["E1"]}
-```
-
-2. 当前 Beta 分支的 FastAPI 进程健康检查为 200；使用明确标记的合成人工审核资料，`/api/v1/ask` 经真实 Qwen 返回 HTTP 200、`answered` 和非空 Citation。
-
-两次记录分别见：
-
-- [qwen-constrained-live.txt](evidence/qwen-constrained-live.txt)
-- [runtime-http-smoke.txt](evidence/runtime-http-smoke.txt)
-
-当前 `main` 的 AgentWorkflow 仍使用 Alpha 证据选择协议；V2.1 的受约束自然语言生成和 `used_evidence_ids` 校验由吴诗莹的 Beta Agent 分支负责。不能将本轮直接 Qwen 验证写成 Agent 受约束生成已合并。
+真实 Qwen 受约束 JSON、Agent 联调和 HTTP 验收放在独立第二阶段分支，只有吴诗莹的 Beta Agent 集成验证完成后才具备合并条件。第一阶段使用 `httpx.MockTransport` 验证请求、响应和异常适配，不宣称真实模型已经验收。
 
 ## 7. 启动方式
 
@@ -127,6 +114,6 @@ V2.1 错误表写 `INVALID_REQUEST` 为 400，当前 Alpha 兼容实现返回 42
 
 ## 9. 待集成事项
 
-- 吴诗莹 Beta Agent 合并后，使用真实 Qwen 复跑 `answer + used_evidence_ids` 的完整 `/api/v1/ask` 链路。
+- 第二阶段在吴诗莹 Beta Agent 合并后，使用真实 Qwen 复跑 `answer + used_evidence_ids` 的完整 `/api/v1/ask` 链路。
 - 正式 `approved/` 仍无人工签核资料包，四领域正式政策正向验收等待资料放行。
 - Windows 干净环境与文档由薛锦荣同步验证。

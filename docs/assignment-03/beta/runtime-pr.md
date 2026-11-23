@@ -11,7 +11,6 @@
 - `backend/services/qwen_client.py`
 - `tests/test_backend_runtime.py`
 - `tests/test_qwen_client.py`
-- `scripts/check_beta_qwen_generation.py`
 - `docs/assignment-03/beta/runtime-stability.md`
 - `docs/assignment-03/beta/evidence/`
 
@@ -53,12 +52,9 @@
 
 结果：`72 passed, 26 skipped, 42 subtests passed`。
 
-## 真实模型记录
+## 阶段拆分
 
-- 直接 Qwen 受约束 JSON：`docs/assignment-03/beta/evidence/qwen-constrained-live.txt`
-- FastAPI + 真实 Qwen HTTP：`docs/assignment-03/beta/evidence/runtime-http-smoke.txt`
-
-两次均使用真实 `qwen-flash`。HTTP 验收资料是明确标记的合成人工审核夹具，不是正式政策资料。
+本 PR 为第一阶段，只包含 FastAPI、Runtime、QwenClient、异常处理和离线契约测试。真实 Qwen 调用及 Agent 受约束生成联调放在第二阶段 PR，合并条件为吴诗莹完成集成验证。
 
 ## 已知问题
 
