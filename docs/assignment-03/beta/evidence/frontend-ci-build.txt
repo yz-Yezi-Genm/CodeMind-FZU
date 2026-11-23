@@ -1,9 +1,9 @@
 # 前端干净环境安装与构建记录
-时间: 2026-11-23 11:22:17　代码版本: 90df0f9
+时间: 2026-11-23 17:50:03　代码基线: origin/main @ a789f53
 node: v24.18.0 / npm: 11.16.0
 
 ## npm ci（干净 clone，无 node_modules）
-added 12 packages in 2s
+added 12 packages in 3s
 3 packages are looking for funding
   run `npm fund` for details
 npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
@@ -11,35 +11,43 @@ npm warn allow-scripts   esbuild@0.21.5 (postinstall: node install.js)
 npm warn allow-scripts
 npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
 
-## npm run build
+## npm run build（tsc --noEmit && vite build）
 > codemind-fzu-frontend@0.1.0 build
 > tsc --noEmit && vite build
 vite v5.4.21 building for production...
 transforming...
-✓ 17 modules transformed.
+✓ 21 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/admin/index.html               0.64 kB │ gzip:  0.40 kB
-dist/index.html                     7.63 kB │ gzip:  2.45 kB
+dist/admin/index.html               0.71 kB │ gzip:  0.42 kB
+dist/index.html                    17.47 kB │ gzip:  3.72 kB
 dist/assets/fzu-AItLrWvQ.png      145.30 kB
-dist/assets/dom-wLHvWk9j.css        1.86 kB │ gzip:  0.76 kB
-dist/assets/student-Cwpqny-u.css    6.94 kB │ gzip:  2.05 kB
+dist/assets/api-wLHvWk9j.css        1.86 kB │ gzip:  0.76 kB
+dist/assets/main-Cwpqny-u.css       6.94 kB │ gzip:  2.05 kB
+dist/assets/student-fQKILJHW.css   12.11 kB │ gzip:  3.67 kB
 dist/assets/admin-QNwx0xXU.css     13.38 kB │ gzip:  3.10 kB
-dist/assets/student-CtbiCW46.js     3.89 kB │ gzip:  2.27 kB │ map: 12.09 kB
-dist/assets/dom-D5uWvpx8.js         3.95 kB │ gzip:  1.95 kB │ map: 11.02 kB
-dist/assets/admin-DerHJd2G.js      73.67 kB │ gzip: 21.15 kB │ map: 93.12 kB
-✓ built in 285ms
+dist/assets/dom-B0E7C_w3.js         1.01 kB │ gzip:  0.59 kB │ map:  0.93 kB
+dist/assets/api-hmuPG_II.js         2.99 kB │ gzip:  1.50 kB │ map: 10.22 kB
+dist/assets/main-CTQJkasH.js        3.92 kB │ gzip:  2.29 kB │ map: 12.09 kB
+dist/assets/student-BN3XmOCb.js     7.05 kB │ gzip:  3.43 kB │ map: 19.56 kB
+dist/assets/admin-A371PQN9.js      73.70 kB │ gzip: 21.17 kB │ map: 93.12 kB
+✓ built in 452ms
 
 ## dist 产物
-frontend\dist\index.html    8287 bytes
-frontend\dist\admin\index.html    672 bytes
-frontend\dist\assets\admin-DerHJd2G.js    89880 bytes
-frontend\dist\assets\admin-DerHJd2G.js.map    99475 bytes
+frontend\dist\index.html    18427 bytes
+frontend\dist\admin\index.html    746 bytes
+frontend\dist\assets\admin-A371PQN9.js    89911 bytes
+frontend\dist\assets\admin-A371PQN9.js.map    99475 bytes
 frontend\dist\assets\admin-QNwx0xXU.css    13379 bytes
-frontend\dist\assets\dom-D5uWvpx8.js    4282 bytes
-frontend\dist\assets\dom-D5uWvpx8.js.map    11742 bytes
-frontend\dist\assets\dom-wLHvWk9j.css    1855 bytes
+frontend\dist\assets\api-hmuPG_II.js    3302 bytes
+frontend\dist\assets\api-hmuPG_II.js.map    10919 bytes
+frontend\dist\assets\api-wLHvWk9j.css    1855 bytes
+frontend\dist\assets\dom-B0E7C_w3.js    1030 bytes
+frontend\dist\assets\dom-B0E7C_w3.js.map    947 bytes
 frontend\dist\assets\fzu-AItLrWvQ.png    145302 bytes
-frontend\dist\assets\student-CtbiCW46.js    4313 bytes
-frontend\dist\assets\student-CtbiCW46.js.map    12514 bytes
-frontend\dist\assets\student-Cwpqny-u.css    6939 bytes
+frontend\dist\assets\main-CTQJkasH.js    4341 bytes
+frontend\dist\assets\main-CTQJkasH.js.map    12511 bytes
+frontend\dist\assets\main-Cwpqny-u.css    6939 bytes
+frontend\dist\assets\student-BN3XmOCb.js    7179 bytes
+frontend\dist\assets\student-BN3XmOCb.js.map    19684 bytes
+frontend\dist\assets\student-fQKILJHW.css    12108 bytes

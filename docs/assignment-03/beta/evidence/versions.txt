@@ -1,16 +1,17 @@
 # Beta 干净环境版本记录
 
-生成时间: 2026-11-23 11:21:11 +08:00
-代码版本: 90df0f9f676d2800f60292cea3111e742bdf38e7 (main 分支基线, 本地分支 docs/beta-windows-runtime)
+生成时间: 2026-11-23 17:49:48 +08:00
+代码基线: origin/main @ a789f53（本分支合并提交 27f7c45）
+检出方式: git clone -> git switch -c verify-main origin/main（无 .venv、无 node_modules、无 .env）
 
 ## 操作系统
-Windows: Microsoft Windows 11 家庭版 中文版 / 10.0.26200 / 64-bit
+Windows: Microsoft Windows 11 Home China / 10.0.26200 / 64-bit
 
 ## Python
 py -3.10: Python 3.10.11
-干净 clone 虚拟环境: Python 3.10.11
+干净虚拟环境: Python 3.10.11
 
-## pip freeze（干净 clone）
+## pip freeze（干净虚拟环境）
 annotated-doc==0.0.6
 annotated-types==0.8.0
 anyio==4.16.0
@@ -49,4 +50,3 @@ websockets==16.1.1
 ## Node.js / npm
 node: v24.18.0
 npm: 11.16.0
-
