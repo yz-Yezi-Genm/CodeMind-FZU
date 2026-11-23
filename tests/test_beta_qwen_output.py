@@ -153,8 +153,10 @@ class QwenEvidenceIdSafetyTests(unittest.TestCase):
                 self.assertFalse(ok)
                 self.assertIn(bad_id, reason)
 
-    def test_cross_request_evidence_id_isolation(self):
-        # Q-8：两个不同请求各自持有独立证据集合，验证双向跨请求隔离。
+    def test_evidence_id_set_membership_bidirectional(self):
+        # Q-8：证据集合成员校验（双向）。这里手动构造两个证据集合验证 ID 成员关系，
+        # **不是**真正调用 Agent 验证请求生命周期隔离——那需要 Agent 生产实现，
+        # 属于后续集成测试（真正的跨请求隔离留到 Agent 集成后补测）。
         # 请求 A 的集合 = {E1, E2}，请求 B 的集合 = {F1, F2}。
         request_a_ids = {"E1", "E2"}
         request_b_ids = {"F1", "F2"}

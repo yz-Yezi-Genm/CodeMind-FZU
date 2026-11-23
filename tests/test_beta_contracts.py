@@ -30,6 +30,7 @@ from backend.contracts.models import (
     DocumentMetadata,
     DocumentPackage,
     FileProcessingStatus,
+    IndexingStatus,
     ParsedChunk,
     ParsedFile,
     RetrievalStatus,
@@ -239,6 +240,10 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
         blocked = _enabled_package(record_code="BETA-BLOCKED-1")
         blocked.metadata.retrieval_status = RetrievalStatus.BLOCKED
         blocked_result = await self.retriever.index_document(blocked)
+        # 先确认资料确实成功索引（避免索引失败导致假阳性）
+        self.assertEqual(blocked_result.status, IndexingStatus.INDEXED)
+        self.assertEqual(blocked_result.indexed_count, 1)
+        # 索引成功但 blocked 状态，元数据查询应返回 None
         self.assertIsNone(
             self.retriever.get_document_metadata(blocked_result.version_id)
         )
@@ -247,7 +252,10 @@ class LocalBM25RetrieverApiTests(unittest.IsolatedAsyncioTestCase):
         # V2.1 §8.3：未开放（blocked）资料的片段查询也应返回 None
         blocked = _enabled_package(record_code="BETA-BLOCKED-2")
         blocked.metadata.retrieval_status = RetrievalStatus.BLOCKED
-        await self.retriever.index_document(blocked)
+        blocked_result = await self.retriever.index_document(blocked)
+        # 先确认资料确实成功索引、片段进入内部索引（避免假阳性）
+        self.assertEqual(blocked_result.status, IndexingStatus.INDEXED)
+        self.assertEqual(blocked_result.indexed_count, 1)
         # blocked 资料无法被检索到，其 chunk_id 需按 LocalBM25Retriever 的确定性
         # 生成规则推算（与 index_document 内部一致的 UUID5 规则）
         from backend.retrieval.local import _local_id, _document_and_version_ids

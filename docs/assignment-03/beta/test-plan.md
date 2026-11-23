@@ -149,19 +149,25 @@
 
 ## 五、检索与证据门禁测试
 
-| 用例 | 检查点 |
-| --- | --- |
-| R-1 | BM25 正常召回 |
-| R-2 | 无匹配返回空列表 |
-| R-3 | `get_document_metadata` 元数据查询正确 |
-| R-4 | `get_parsed_chunk` 章节查询正确 |
-| R-5 | 未审核资料（human_approved≠true）不能进入正式回答 |
-| R-6 | `retrieval_status` 非 enabled 不能进入正式回答 |
-| R-7 | 来源核验失败（source≠verified）不能使用 |
-| R-8 | 资料适用范围不符不能作为证据 |
-| R-9 | 多业务方向问题不因错误单一分类漏掉资料 |
+按三个层次区分（BM25 检索 / 业务证据门禁 / Agent 工作流），并标注已有测试文件：
 
-> 当前：R-1~R-9 的底层检索能力在 Alpha 已实现（`test_local_retrieval.py`）。
+| 用例 | 检查点 | 层次 | 已有测试 |
+| --- | --- | --- | --- |
+| R-1 | BM25 正常召回 | BM25 检索 | `test_local_retrieval.py::test_rank_and_trace_matching_chunks` |
+| R-2 | 无匹配返回空列表 | BM25 检索 | `test_local_retrieval.py::test_request_filters_and_no_match` |
+| R-3 | `get_document_metadata` 元数据查询正确 | BM25 检索 | `test_local_retrieval.py::test_metadata_and_chunk_lookups_expose_enabled_snapshots_only` + `test_beta_contracts.py` |
+| R-4 | `get_parsed_chunk` 章节查询正确 | BM25 检索 | `test_local_retrieval.py::test_metadata_and_chunk_lookups_expose_enabled_snapshots_only` + `test_beta_contracts.py` |
+| R-5 | 未审核资料（human_approved≠true）不能进入正式回答 | 业务证据门禁 | `test_alpha_business_rules.py` |
+| R-6 | `retrieval_status` 非 enabled 不能进入正式回答 | 业务证据门禁 | `test_alpha_business_rules.py` |
+| R-7 | 来源核验失败（source≠verified）不能使用 | 业务证据门禁 | `test_alpha_business_rules.py` |
+| R-8 | 资料适用范围不符不能作为证据 | 业务证据门禁 | `test_alpha_business_rules.py` |
+| R-9 | 多业务方向问题不因错误单一分类漏掉资料 | Agent 工作流 | `test_agent_workflow.py` / `test_agent_workflow_qwen.py` |
+
+> **分层说明**：
+> - **BM25 检索**（R-1~R-4）：验证 `LocalBM25Retriever` 的召回、空结果、元数据/章节查询。
+> - **业务证据门禁**（R-5~R-8）：验证 `alpha_evidence_check` 对审核/开放/来源/适用范围的门禁。
+> - **Agent 工作流**（R-9）：验证 AgentWorkflow 在多业务方向问题上的检索范围决策。
+>
 > 注意：公共 `Retriever Protocol`（`backend/contracts/protocols.py`）目前只声明了
 > `retrieve`，`get_document_metadata` / `get_parsed_chunk` 两方法待王智洋补齐后，
 > 再补充公共 Protocol 的三方法契约测试（V2.1 §8.4）。本测试计划当前只检查
