@@ -1,6 +1,6 @@
 # Beta AgentWorkflow 联调记录
 
-2026 年 11 月 23 日，吴诗莹。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) 的开发分支为 `feat/beta-agent-history`。本轮验证基于分支提交 `bf5b34e` 和本 PR 的修订，`main` 基线为 `a789f53`。隔离联调使用 [PR #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) 的业务规则快照 `265de18` 和 [PR #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51) 的 Retriever 契约快照 `eeefacc`。
+2026 年 11 月 23 日，吴诗莹。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) 的开发分支为 `feat/beta-agent-history`。本轮验证使用分支同步提交 `d7e3a6d`、`main` 基线 `306c15d`。该基线已包含 [PR #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51) 的 Retriever 契约。S4 联调继续使用 [PR #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) 的规则快照 `265de18`。
 
 ## 工作流
 
@@ -17,6 +17,15 @@
 王智洋已在 #51 声明 `retrieve(request)`、`get_document_metadata(version_id)` 和 `get_parsed_chunk(chunk_id)`。后两个方法在 `LocalBM25Retriever` 中返回深拷贝，遇到未知、未开放或已撤回资料时返回 `None`。#46 在现有方法上接入，`DemoRetriever` 已提供两种只读查询，旧的 `_PackageSnapshotRetriever` 已移除。工作流测试补验 BM25 中的资料在模型生成期间撤回到 `review_only` 或 `blocked` 时，两种查询均返回 `None`，HTTP 问答返回 `insufficient_evidence / insufficient_data` 和空引用。
 
 ## 验证记录
+
+| 同步 `main` 后的测试 | 结果 |
+| --- | --- |
+| 仓库根目录完整 pytest，直接使用已合入的 #51 | 410 通过，35 跳过，1 条警告，另有 146 个子测试通过。[原始输出](evidence/agent-workflow-pytest-d7e3a6d.txt) |
+| 已合入的 #51 与 #45 规则快照组合回归 | 441 通过，3 跳过，1 未选中，1 条警告，另有 201 个子测试通过。[原始输出](evidence/agent-workflow-main51-pr45-d7e3a6d.txt) |
+
+两个命令均从仓库根目录运行，退出码为 `0`。完整回归运行 `.venv/Scripts/python.exe -m pytest -q -rs --tb=short`。组合回归启用 `ALPHA_UPSTREAM_SNAPSHOT`，使用 `306c15d` 的 Retriever、`265de18` 的业务规则，并传入 `-k 'not merged_business_rules_match_snapshot'`。
+
+### 同步前的测试记录（`a789f53`）
 
 | 范围 | 实际验证 | 结果 |
 | --- | --- | --- |
@@ -48,6 +57,5 @@ $env:ALPHA_UPSTREAM_SNAPSHOT = '<临时快照目录>'
 ## 正式验收待办
 
 - [PR #41](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/41) 的青禾候选包在 `1e9693c` 中仍是 `blocked`、`human_approved=false`，`category_name` 为 `科研实践与实验室`。要用正式资料完成 A4 验收，需由资料负责人对齐 #45 的 R3 类别 `实验室与科研团队`，并经组长审核放行。
-- 王智洋的 #51 已提交审核。合入 `main` 后同步分支，用合并后的源码再跑完整 pytest 和 Retriever 联调。
 - S4 规则目前在上游 Beta 分支。合入 `main` 后需通过正式 `/api/v1/ask` 入口复跑联调。涉及历年报名的资料需明确适用年度和对象。若业务规则拒绝仅写年份的已替代政策查询，请与规则负责人核对历史意图条件。
 - 本地正式 `approved/` 暂无已审核资料包，且本地执行环境未配置 `QWEN_API_KEY`。真实政策和真实 Qwen 的四领域验收仍待具备这些输入后执行。
