@@ -18,6 +18,7 @@ class Evidence:
     mode: AnswerMode
     period: str | None
     parsed: ParsedChunk
+    recruitment_closed: bool = False
 
     def citation(self) -> Citation:
         return Citation(

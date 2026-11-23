@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date
+from urllib.parse import urlsplit
 
 from backend.contracts.models import AgentRequest, AnswerMode, DocumentMetadata, LLMRole
 from backend.contracts.models import TimelinessVerificationStatus as Timeliness
@@ -49,6 +50,38 @@ _SLOTS = (
 )
 _YEAR_KEYS = ("适用年度", "适用届别", "适用学年", "适用年份", "目标届别", "年度")
 _ARCHIVED = {Timeliness.HISTORICAL, Timeliness.SUPERSEDED, Timeliness.EXPIRED}
+_COLLEGE_RESOURCES = "COLLEGE_RESOURCES"
+_R3_CATEGORY = "实验室与科研团队"
+_R4_CATEGORY = "研究方向与公开介绍"
+_R6_CATEGORY = "学院公开信息与联系方式"
+_PUBLIC_INTRO = re.compile(r"研究(?:方向|什么|内容|哪些)|做什么|成果|简介")
+_PUBLIC_CONTACT = re.compile(r"(?:学院|办公室|办公).*(?:电话|办公地点|地址|邮箱|联系方式)")
+_PERSONAL_RESOURCE = re.compile(r"能不能|能否|可否|是否适用|是否符合|资格|我.{0,16}(?:能|可以|适用|符合)|报名|招募|名额|办理条件")
+_LAB = r"[\w\-· ]{1,40}?(?:实验室|课题组|科研团队)"
+_LAB_SUBJECT = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9_-]*\s*(?:实验室|课题组|科研团队)")
+_STILL = r"(?:(?:现在|目前|当前)\s*)?"
+_RECRUITING = r"(?:还(?:在)?招(?:人|募|收)?|还(?:能|可以)报名)"
+_QUOTA = r"(?:还剩(?:几个|多少)(?:名额)?|还招(?:几个|几人|多少人?))"
+_RECRUITMENT_SUFFIX = rf"{_STILL}(?:{_RECRUITING}|{_QUOTA})(?:吗|么)?[？?。]*"
+_RECRUITMENT_FOLLOW_UP = re.compile(rf"(?:请问[，,]?\s*|那\s*)?(?P<question>{_RECRUITMENT_SUFFIX})")
+_QINGHE = "青禾计划"
+_QINGHE_LABS = "青禾计划实验室"
+_QINGHE_STATUS = re.compile(rf"(?:请问[，,]?\s*)?{_QINGHE}\s*(?P<question>{_RECRUITMENT_SUFFIX})")
+_LAB_STATUS = re.compile(
+    rf"(?:请问[，,]?\s*)?(?:(?P<lab>{_LAB})\s*{_STILL}{_RECRUITING}"
+    rf"|{_STILL}还(?:能|可以)报名\s*(?P<after>{_LAB}))(?:吗|么)?[？?。]*"
+)
+
+
+def _is_college_resource(metadata: DocumentMetadata, category: str) -> bool:
+    return metadata.category_name.strip() == category and _COLLEGE_RESOURCES in metadata.business_direction_codes
+
+
+def _is_college_contact_page(url: str) -> bool:
+    parts = urlsplit(url)
+    return (parts.scheme == "https" and parts.hostname == "ccds.fzu.edu.cn"
+            and parts.username is None and parts.password is None
+            and parts.port in (None, 443) and not parts.netloc.endswith(":"))
 
 
 def _topics(text: str) -> set[int]:
@@ -58,16 +91,21 @@ def _topics(text: str) -> set[int]:
 def contextual_request(request: AgentRequest) -> AgentRequest:
     """Keep one recent user topic and the latest values of recognized slots."""
     query = request.query.strip()
+    qinghe = _QINGHE_STATUS.fullmatch(query)
+    if qinghe:
+        # Give the S4 rules an explicit lab subject for the program shorthand.
+        return request.model_copy(update={"query": _QINGHE_LABS + qinghe["question"], "history": []})
     current_topics = _topics(query)
     history = []
     filled = {slot for slot in _SLOTS if slot.search(query)}
     follow_up = _FOLLOW_UP.search(query)
+    recruitment_follow_up = _RECRUITMENT_FOLLOW_UP.fullmatch(query)
     # A self-contained new question starts afresh even within the same domain.
     named_works = set(_NAMED_WORK.findall(query))
     named_labs = {name.casefold() for name in _NAMED_LAB.findall(query)}
     if (_NEW_TOPIC.search(query)
             or (current_topics and not (named_works or follow_up))
-            or (not current_topics and not (filled or follow_up or _MISSING_TOPIC.search(query)))):
+            or (not current_topics and not (filled or follow_up or recruitment_follow_up or _MISSING_TOPIC.search(query)))):
         return request.model_copy(update={"history": history})
 
     for turn in reversed(request.history):
@@ -98,7 +136,16 @@ def contextual_request(request: AgentRequest) -> AgentRequest:
             break
     if history and not any(_topics(turn.content) for turn in history):
         history.clear()
-    return request.model_copy(update={"history": list(reversed(history))})
+    resolved_query = request.query
+    if recruitment_follow_up and history:
+        topic = history[-1].content
+        if _topics(topic) == {3}:
+            labs = set(_LAB_SUBJECT.findall(topic))
+            if len(labs) == 1 and "报名" not in recruitment_follow_up["question"]:
+                resolved_query = next(iter(labs)) + recruitment_follow_up["question"]
+            elif not labs and _QINGHE in topic:
+                resolved_query = _QINGHE_LABS + recruitment_follow_up["question"]
+    return request.model_copy(update={"query": resolved_query, "history": list(reversed(history))})
 
 
 @dataclass(frozen=True)
@@ -170,13 +217,49 @@ class PolicyScope:
         return cls(
             today, frozenset(periods),
             bool(_HISTORY.search(text) or re.search(r"当年|上学期", text) or any(p.ended(today) for p in periods)),
-            current, bool(_WINDOW.search(fact_question)), bool(_DEADLINE.search(fact_question)), fact_question,
+            current, bool(_WINDOW.search(fact_question) or _LAB_STATUS.fullmatch(fact_question.strip())),
+            bool(_DEADLINE.search(fact_question)), fact_question,
         )
 
     def evidence_mode(self, metadata: DocumentMetadata) -> tuple[AnswerMode, str | None] | None:
-        applicability = metadata.applicability_raw or {}
-        if not any(value and str(value).strip() for value in applicability.values()):
+        return self._evidence_mode(metadata, closing_recruitment=False)
+
+    def closed_recruitment_period(self, metadata: DocumentMetadata, content: str) -> str | None:
+        """Allow a dated closure statement for a named lab's status inquiry."""
+        match = _LAB_STATUS.fullmatch(self.fact_question.strip())
+        if (not match or not _is_college_resource(metadata, _R3_CATEGORY)
+                or metadata.timeliness_verification_status not in {Timeliness.HISTORICAL, Timeliness.EXPIRED}
+                or not metadata.deadline_on or metadata.deadline_on >= self.today):
             return None
+        lab = re.sub(r"\s+", "", match["lab"] or match["after"]).casefold()
+        normalized_content = re.sub(r"\s+", "", content).casefold()
+        if lab == _QINGHE_LABS:
+            if _QINGHE not in metadata.title or _QINGHE not in normalized_content:
+                return None
+        elif not re.search(rf"(?<![a-z0-9_]){re.escape(lab)}", normalized_content):
+            return None
+        result = self._evidence_mode(metadata, closing_recruitment=True)
+        return result[1] if result and result[0] == AnswerMode.HISTORICAL else None
+
+    def _allows_public_resource_without_applicability(self, metadata: DocumentMetadata) -> bool:
+        if self.needs_window:
+            return False
+        if _is_college_resource(metadata, _R4_CATEGORY):
+            return bool(_PUBLIC_INTRO.search(self.fact_question))
+        return (_is_college_resource(metadata, _R6_CATEGORY)
+                and bool(_PUBLIC_CONTACT.search(self.fact_question))
+                and _is_college_contact_page(metadata.source_url))
+
+    def _evidence_mode(
+        self, metadata: DocumentMetadata, *, closing_recruitment: bool,
+    ) -> tuple[AnswerMode, str | None] | None:
+        applicability = metadata.applicability_raw or {}
+        if (_PERSONAL_RESOURCE.search(self.fact_question)
+                and (_is_college_resource(metadata, _R4_CATEGORY) or _is_college_resource(metadata, _R6_CATEGORY))):
+            return None
+        if not any(value and str(value).strip() for value in applicability.values()):
+            if metadata.applicability_raw is not None or not self._allows_public_resource_without_applicability(metadata):
+                return None
         if any("歧义" in key and str(value).strip().lower() not in {"", "无", "否", "none", "-", "false"}
                for key, value in applicability.items()):
             return None
@@ -203,7 +286,7 @@ class PolicyScope:
         if status in _ARCHIVED or ended:
             # An explicit historical question or matching year is required, even
             # when an elapsed deadline has yet to be reflected in the status.
-            if self.current or self.needs_window or not (self.historical or self.periods):
+            if not closing_recruitment and (self.current or self.needs_window or not (self.historical or self.periods)):
                 return None
             if not period or (self.asks_deadline and not deadline):
                 return None

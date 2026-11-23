@@ -141,6 +141,7 @@ class AgentWorkflow:
             if not isinstance(raw_chunks, list):
                 raise ValueError("Retriever must return list[RetrievedChunk]")
             evidence: list[Evidence] = []
+            closed_notices: list[Evidence] = []
             seen: dict[UUID, RetrievedChunk] = {}
             versions: dict[UUID, UUID] = {}
             version_documents: dict[UUID, UUID] = {}
@@ -168,6 +169,10 @@ class AgentWorkflow:
                 eligible = self._eligible(request, chunk, scope)
                 if eligible is None:
                     continue
+                if eligible.recruitment_closed:
+                    if len(chunk.content) <= self.max_evidence_chars:
+                        closed_notices.append(eligible)
+                    continue
                 record_code = eligible.metadata.record_code
                 if (documents.get(chunk.document_id, record_code) != record_code
                         or records.get(record_code, chunk.document_id) != chunk.document_id
@@ -188,6 +193,8 @@ class AgentWorkflow:
             return _insufficient("INVALID_RETRIEVAL_RESULT", "检索结果不符合公共契约或存在片段冲突，本次不生成政策答案。")
 
         if not evidence:
+            if closed_notices:
+                return self._answer_closed_recruitment(request, closed_notices)
             return _insufficient("NO_ELIGIBLE_EVIDENCE", "未找到通过审核且符合本次问题适用范围和时间的资料，无法给出确定结论。")
         facts = requested_facts(scope.fact_question)
         if facts and not any(fact.search(item.chunk.content) for fact in facts for item in evidence):
@@ -222,12 +229,7 @@ class AgentWorkflow:
 
         # Recheck the same index and rule after the await. A review can be
         # withdrawn or a notice can close while the model is running.
-        fresh_scope = PolicyScope.from_request(request, self.today())
-        try:
-            unchanged = all(self._eligible(request, item.chunk, fresh_scope) == item for item in selected)
-        except Exception:
-            unchanged = False
-        if not unchanged:
+        if not self._evidence_unchanged(request, selected):
             return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
 
         mode = AnswerMode.CURRENT_POLICY
@@ -253,6 +255,29 @@ class AgentWorkflow:
             answer_mode=mode,
             citations=citations,
             warnings=warnings,
+        )
+
+    def _evidence_unchanged(self, request: AgentRequest, selected: list[Evidence]) -> bool:
+        fresh_scope = PolicyScope.from_request(request, self.today())
+        try:
+            return all(self._eligible(request, item.chunk, fresh_scope) == item for item in selected)
+        except Exception:
+            return False
+
+    def _answer_closed_recruitment(self, request: AgentRequest, notices: list[Evidence]) -> AgentResult:
+        notice = max(notices, key=lambda item: item.metadata.deadline_on or date.min)
+        if not self._evidence_unchanged(request, [notice]):
+            return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
+        deadline = notice.metadata.deadline_on
+        if deadline is None:
+            return _insufficient("NO_ELIGIBLE_EVIDENCE", "无法核验该年度招募的截止日期。")
+        message = "目前是否有新一轮招募，暂无法确认。"
+        return AgentResult(
+            status=AnswerStatus.ANSWERED,
+            answer=f"{notice.period}度报名已于{deadline.year}年{deadline.month}月{deadline.day}日截止。{message}",
+            answer_mode=AnswerMode.HISTORICAL,
+            citations=[notice.citation()],
+            warnings=[WarningItem(code="HISTORICAL_POLICY", message=message)],
         )
 
     def _eligible(self, request: AgentRequest, chunk: RetrievedChunk, scope: PolicyScope) -> Evidence | None:
@@ -289,9 +314,14 @@ class AgentWorkflow:
                     or not parsed.source_file_key.strip()):
                 return None
             scope_result = scope.evidence_mode(metadata)
+            closed_period = None
+            if scope_result is None and self.evidence_check is not None:
+                closed_period = scope.closed_recruitment_period(metadata, chunk.content)
+                if closed_period:
+                    scope_result = AnswerMode.HISTORICAL, closed_period
         except Exception:
             return None
-        if scope_result is None:
+        if scope_result is None or (metadata.applicability_raw is None and self.evidence_check is None):
             return None
         if self.evidence_check is not None:
             applicable = self.evidence_check(request.model_copy(deep=True), chunk.model_copy(deep=True))
@@ -299,7 +329,7 @@ class AgentWorkflow:
                 raise ValueError("Evidence rule must return bool")
             if not applicable:
                 return None
-        return Evidence(chunk, metadata, *scope_result, parsed=parsed)
+        return Evidence(chunk, metadata, *scope_result, parsed=parsed, recruitment_closed=bool(closed_period))
 
 
 async def create_alpha_workflow(

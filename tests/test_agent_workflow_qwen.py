@@ -20,7 +20,7 @@ from fastapi.testclient import TestClient
 from backend.app.main import create_app
 from backend.app.config import AppSettings
 from backend.contracts.models import (
-    AgentRequest, DocumentPackage, FileProcessingStatus, RetrievalRequest,
+    AgentRequest, DocumentPackage, FileProcessingStatus, RetrievalRequest, RetrievalStatus,
     TimelinessVerificationStatus,
 )
 from backend.retrieval.local import LocalBM25Retriever
@@ -218,6 +218,37 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(response.json()["status"], "insufficient_evidence")
                 self.assertEqual(response.json()["citations"], [])
         self.assertEqual(self.observed, [])
+
+    async def test_live_bm25_withdrawal_during_generation_discards_citations(self):
+        query = "星桥奖学金申请需要什么？"
+        for status in (RetrievalStatus.REVIEW_ONLY, RetrievalStatus.BLOCKED):
+            with self.subTest(status=status):
+                workflow = await self.workflow()
+                hit = (await workflow.retriever.retrieve(RetrievalRequest(query=query)))[0]
+                self.assertIsNotNone(workflow.retriever.get_document_metadata(hit.version_id))
+                self.assertIsNotNone(workflow.retriever.get_parsed_chunk(hit.chunk_id))
+
+                async def withdraw_before_returning_model_response(request):
+                    response = self.handler(request)
+                    withdrawn = self.package.model_copy(deep=True)
+                    withdrawn.metadata.retrieval_status = status
+                    await workflow.retriever.index_document(withdrawn)
+                    return response
+
+                async with httpx.AsyncClient(transport=httpx.MockTransport(withdraw_before_returning_model_response)) as upstream:
+                    workflow.llm_client = QwenLLMClient(
+                        QwenSettings(api_key="offline-fixture-not-a-real-key", max_retries=0),
+                        http_client=upstream,
+                    )
+                    body = (await self.ask(workflow, query)).json()
+
+                self.assertIsNone(workflow.retriever.get_document_metadata(hit.version_id))
+                self.assertIsNone(workflow.retriever.get_parsed_chunk(hit.chunk_id))
+                self.assertEqual(body["status"], "insufficient_evidence")
+                self.assertEqual(body["answer_mode"], "insufficient_data")
+                self.assertEqual(body["warnings"][0]["code"], "EVIDENCE_APPROVAL_CHANGED")
+                self.assertEqual(body["citations"], [])
+        self.assertEqual(len(self.observed), 2)
 
     async def test_rule_rejection_occurs_after_real_retrieval_before_qwen(self):
         observed = []
@@ -934,18 +965,82 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         metadata.record_code = "SYNTH-LAB-INTRO"
         metadata.title = "合成测试：计算机学院实验室研究方向简介"
         metadata.document_type = "学院资源"
-        metadata.category_name = "学院资源"
+        metadata.category_name = "研究方向与公开介绍"
         metadata.business_direction_codes = [direction]
-        metadata.applicability_raw = {"适用对象": "本科生"}
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-intro.htm"
+        metadata.applicability_raw = None
         self.package.chunks[0].content = "EDA实验室研究方向为集成电路设计自动化。"
         workflow = await self.workflow()
-        result = await workflow.run(self.request("EDA实验室研究什么？"))
+        result = await workflow.run(self.request("EDA 实验室主要研究什么？"))
         self.assertEqual(result.answer_mode, "current_policy")
         self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
-        result = await workflow.run(self.request("EDA实验室现在还招人吗？"))
+        for query in ("EDA实验室现在还招人吗？", "我大二能进 EDA 实验室吗？"):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        metadata.source_url = "https://ccds.fzu.edu.cn.example.invalid/lab-intro.htm"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("EDA 实验室主要研究什么？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_public_contact_without_applicability_requires_direct_college_page(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-PUBLIC-CONTACT"
+        metadata.title = "合成测试：学院办公室公开联系方式"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "学院公开信息与联系方式"
+        metadata.business_direction_codes = [direction]
+        metadata.applicability_raw = None
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/contact.htm"
+        self.package.chunks[0].content = "合成测试：学院办公室电话为示例号码，办公地点为示例楼。"
+        query = self.request("学院办公室电话和办公地点是什么？")
+        workflow = await self.workflow()
+        result = await workflow.run(query)
+        self.assertEqual(result.answer_mode, "current_policy")
+        self.assertEqual(result.citations[0].source_url, metadata.source_url)
+
+        result = await workflow.run(self.request("我大二能联系学院办公室办理吗？"))
         self.assertEqual(result.status, "insufficient_evidence")
         self.assertEqual(result.citations, [])
+        for url in ("https://news.fzu.edu.cn/test/contact.htm", "https://ccds.fzu.edu.cn.example.invalid/contact.htm",
+                    "http://ccds.fzu.edu.cn/test/contact.htm", "https://fake@ccds.fzu.edu.cn/test/contact.htm"):
+            with self.subTest(url=url):
+                metadata.source_url = url
+                result = await (await self.workflow()).run(query)
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
         self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_applicability_is_still_required_for_other_categories(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.title = "合成测试：学院资源资料"
+        metadata.document_type = "学院资源"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/resource.htm"
+        metadata.applicability_raw = None
+        for category, query in (
+            ("通知与办事渠道", "学院通知在哪里看？"),
+            ("培养方案与课程", "计算机专业培养方案有哪些课程？"),
+            ("实验室与科研团队", "我大二能进 EDA 实验室吗？"),
+            ("科研实践与竞赛", "学院有哪些科研项目？"),
+        ):
+            with self.subTest(category=category):
+                metadata.category_name = category
+                self.package.chunks[0].content = f"合成测试：{query} 附合成资料。"
+                workflow = await self.workflow()
+                self.assertTrue(await workflow.retriever.retrieve(RetrievalRequest(query=query)))
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
 
     async def test_beta_s4_expired_recruitment_with_bm25_and_qwen_adapter(self):
         direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
@@ -955,8 +1050,9 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         metadata.record_code = "SYNTH-LAB-RECRUITMENT-2026"
         metadata.title = "合成测试：2026年EDA实验室报名通知"
         metadata.document_type = "学院资源"
-        metadata.category_name = "实验室"
+        metadata.category_name = "实验室与科研团队"
         metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-recruitment.htm"
         metadata.applicability_raw = {"适用年度": "2026年", "适用对象": "全体本科生"}
         metadata.deadline_on = date(2026, 10, 31)
         metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
@@ -966,9 +1062,61 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.answer_mode, "historical")
         self.assertIn("2026年历史资料", result.answer)
         self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
-        result = await workflow.run(self.request("现在还可以报名EDA实验室吗？"))
-        self.assertEqual(result.status, "insufficient_evidence")
-        self.assertEqual(len(self.observed), 1)
+        for query, history in (
+            ("EDA 实验室现在还招吗？", None),
+            ("现在还可以报名 EDA 实验室吗？", None),
+            ("现在还招吗？", ["EDA 实验室主要研究什么？"]),
+        ):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query, history))
+                self.assertEqual(result.status, "answered")
+                self.assertEqual(result.answer_mode, "historical")
+                self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+                self.assertIn("2026年度报名已于2026年10月31日截止", result.answer)
+                self.assertIn("目前是否有新一轮招募，暂无法确认", result.answer)
+        for query in ("EDA 实验室现在还剩几个名额？", "EDA 实验室现在还招几个？",
+                      "AI 实验室现在还招吗？", "EDA 实验室现在还招吗，想知道剩余名额"):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.answer_mode, "insufficient_data")
+                self.assertEqual(result.citations, [])
+        query = self.request("EDA 实验室现在还招吗？")
+
+        active = self.package.model_copy(deep=True)
+        active.metadata.version_no = "v2"
+        active.metadata.timeliness_verification_status = TimelinessVerificationStatus.CURRENT
+        active.metadata.deadline_on = date(2026, 12, 1)
+        active.chunks[0].content = "EDA实验室正在接收报名，请于2026年12月1日前提交报名表。"
+        await workflow.retriever.index_document(active)
+        result = await workflow.run(query)
+        self.assertEqual(result.answer_mode, "procedure_reference")
+        self.assertEqual(result.citations[0].excerpt, active.chunks[0].content)
+        self.assertEqual(len(self.observed[-1]), 1)
+
+        workflow = await self.workflow()
+        original_check = workflow.evidence_check
+
+        def withdrawn_after_first_check(request, chunk):
+            return check.call_count == 1 and original_check(request, chunk)
+
+        with patch.object(workflow, "evidence_check", side_effect=withdrawn_after_first_check) as check:
+            result = await workflow.run(query)
+        self.assertEqual(check.call_count, 2)
+        self.assertEqual(result.warnings[0].code, "EVIDENCE_APPROVAL_CHANGED")
+        self.assertEqual(result.citations, [])
+
+        for title, applicability, deadline in (
+            (metadata.title, metadata.applicability_raw, None),
+            ("合成测试：EDA实验室报名通知", {"适用对象": "全体本科生"}, metadata.deadline_on),
+        ):
+            with self.subTest(title=title, deadline=deadline):
+                metadata.title, metadata.applicability_raw, metadata.deadline_on = title, applicability, deadline
+                workflow = await self.workflow()
+                result = await workflow.run(query)
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 2)
 
     async def test_beta_s4_current_recruitment_respects_applicability(self):
         direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
@@ -978,8 +1126,9 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         metadata.record_code = "SYNTH-ACTIVE-LAB-RECRUITMENT-2026"
         metadata.title = "合成测试：2026年EDA实验室报名通知"
         metadata.document_type = "学院资源"
-        metadata.category_name = "实验室"
+        metadata.category_name = "实验室与科研团队"
         metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-recruitment.htm"
         metadata.applicability_raw = {"适用年度": "2026年", "适用年级": "大二", "适用对象": "本科生"}
         metadata.deadline_on = date(2026, 12, 1)
         self.package.chunks[0].content = "EDA实验室面向大二本科生，报名须提交报名表，报名截止2026-12-01。"
@@ -991,6 +1140,86 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.status, "insufficient_evidence")
         self.assertEqual(result.citations, [])
         self.assertEqual(len(self.observed), 1)
+
+        metadata.title = "合成测试：EDA实验室长期接收条件"
+        metadata.applicability_raw.pop("适用年度")
+        metadata.deadline_on = None
+        self.package.chunks[0].content = "EDA实验室面向大二本科生，需提交学习经历和项目材料。"
+        result = await (await self.workflow()).run(self.request("我大二能进 EDA 实验室吗？"))
+        self.assertEqual(result.answer_mode, "current_policy")
+        self.assertEqual(result.answer, self.package.chunks[0].content)
+
+    async def test_beta_s4_closure_and_quota_use_the_existing_ask_endpoint(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.title = "合成测试：2026年EDA实验室报名通知"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-recruitment.htm"
+        metadata.applicability_raw = {"适用年度": "2026年", "适用对象": "全体本科生"}
+        metadata.deadline_on = date(2026, 10, 31)
+        metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
+        self.package.chunks[0].content = "合成测试：EDA实验室报名截止2026-10-31。"
+        workflow = await self.workflow()
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            closure = await client.post("/api/v1/ask", json={"query": "EDA 实验室现在还招吗？"})
+            quota = await client.post("/api/v1/ask", json={"query": "EDA 实验室现在还剩几个名额？"})
+        self.assertEqual(closure.status_code, 200)
+        self.assertEqual(closure.json()["status"], "answered")
+        self.assertEqual(closure.json()["answer_mode"], "historical")
+        self.assertEqual(closure.json()["citations"][0]["excerpt"], self.package.chunks[0].content)
+        self.assertEqual(quota.status_code, 200)
+        self.assertEqual(quota.json()["status"], "insufficient_evidence")
+        self.assertEqual(quota.json()["answer_mode"], "insufficient_data")
+        self.assertEqual(quota.json()["citations"], [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_qinghe_status_uses_r3_notice_and_preserves_personal_scope(self):
+        direction = getattr(self.rules, "RESOURCE_DIRECTION_CODE", None)
+        if direction is None:
+            self.skipTest("Requires the S4 rules implementation")
+        metadata = self.package.metadata
+        metadata.title = "合成测试：2026-2027学年青禾计划本科生进实验室报名通知"
+        metadata.document_type = "年度通知"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/qinghe.htm"
+        metadata.applicability_raw = {"对象": "计算机与大数据学院全体本科生", "批次": "2026—2027学年青禾计划"}
+        metadata.deadline_on = date(2026, 10, 31)
+        self.package.chunks[0].content = "合成测试：青禾计划本科生进实验室报名截止日期为2026年10月31日。"
+        for status in (TimelinessVerificationStatus.HISTORICAL, TimelinessVerificationStatus.EXPIRED):
+            metadata.timeliness_verification_status = status
+            workflow = await self.workflow()
+            for query, history in (
+                ("青禾计划现在还招吗？", None),
+                ("现在还招吗？", ["我想了解青禾计划的实验室。"]),
+            ):
+                with self.subTest(status=status, query=query):
+                    result = await workflow.run(self.request(query, history))
+                    self.assertEqual(result.answer_mode, "historical")
+                    self.assertIn("2026年10月31日截止", result.answer)
+                    self.assertIn("目前是否有新一轮招募，暂无法确认", result.answer)
+                    self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+            for query, history in (
+                ("青禾计划现在还剩几个名额？", None),
+                ("现在还剩几个名额？", ["我想了解青禾计划的实验室。"]),
+            ):
+                with self.subTest(status=status, query=query):
+                    result = await workflow.run(self.request(query, history))
+                    self.assertEqual(result.status, "insufficient_evidence")
+                    self.assertEqual(result.citations, [])
+
+        # The pending-review package's old category must still fail the R3 gate.
+        metadata.category_name = "科研实践与实验室"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("青禾计划现在还招吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
 
     async def test_clarification_and_evidence_share_injected_clock(self):
         workflow = await self.workflow()
