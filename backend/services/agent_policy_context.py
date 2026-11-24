@@ -40,7 +40,8 @@ _DEADLINE = re.compile(r"截止|截至哪|最晚何时|最晚什么时候")
 _NAMED_WORK = re.compile(r"《([^》]+)》")
 _NAMED_LAB = re.compile(r"\b([A-Za-z][\w-]*?)\s*(?:实验室|课题组|那个)")
 _SLOTS = (
-    re.compile(rf"{_PERIOD.pattern}|{_BARE_PERIOD.pattern}|{_RELATIVE_PERIOD.pattern}|{_HISTORY.pattern}|{_CURRENT.pattern}"),
+    re.compile(rf"{_PERIOD.pattern}|{_BARE_PERIOD.pattern}|{_RELATIVE_PERIOD.pattern}"),
+    re.compile(rf"{_HISTORY.pattern}|{_CURRENT.pattern}"),
     re.compile(r"20\d{2}\s*级|大[一二三四五]|[一二三四五]年级"),
     re.compile(r"排名(?:第)?\s*\d+|第\s*\d+\s*名|前\s*\d+\s*%"),
     re.compile(r"本科生|研究生|学术型|专业型|直博|全日制|非全日制"),
@@ -59,6 +60,13 @@ _PUBLIC_CONTACT = re.compile(r"(?:学院|办公室|办公).*(?:电话|办公地�
 _PERSONAL_RESOURCE = re.compile(r"能不能|能否|可否|是否适用|是否符合|资格|我.{0,16}(?:能|可以|适用|符合)|报名|招募|名额|办理条件")
 _LAB = r"[\w\-· ]{1,40}?(?:实验室|课题组|科研团队)"
 _LAB_SUBJECT = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9_-]*\s*(?:实验室|课题组|科研团队)")
+_LAB_TOPIC = re.compile(r"实验室|课题组|科研团队|青禾计划")
+_LIVE_LAB_QUOTA = re.compile(
+    r"实时.{0,16}(?:名额|人数)|(?:剩余|还剩|还有|剩下).{0,10}(?:名额|几个|多少|几人)"
+    r"|名额.{0,10}(?:剩余|还剩|剩下)|(?:现在|目前|当前).{0,16}(?:还招|还接收).{0,6}(?:几个|几人|多少)"
+    r"|还招(?:几个|几人|多少)"
+)
+_CURRENT_LAB_QUOTA = re.compile(r"(?:目前|当前|现在).{0,16}名额")
 _STILL = r"(?:(?:现在|目前|当前)\s*)?"
 _RECRUITING = r"(?:还(?:在)?招(?:人|募|收)?|还(?:能|可以)报名)"
 _QUOTA = r"(?:还剩(?:几个|多少)(?:名额)?|还招(?:几个|几人|多少人?))"
@@ -86,6 +94,23 @@ def _is_college_contact_page(url: str) -> bool:
 
 def _topics(text: str) -> set[int]:
     return {index for index, cue in enumerate(_TOPICS) if cue.search(text)}
+
+
+def asks_live_lab_quota(request: AgentRequest) -> bool:
+    query = request.query
+    if not (_LIVE_LAB_QUOTA.search(query) or (_CURRENT_LAB_QUOTA.search(query) and "计划" not in query)):
+        return False
+    return bool(_LAB_TOPIC.search(query) or (
+        not _topics(query) and any(_LAB_TOPIC.search(turn.content) for turn in request.history)
+    ))
+
+
+def _year_reply(text: str) -> str | None:
+    reply = text.strip().rstrip("呢。.!？?")
+    bare = _BARE_PERIOD.fullmatch(reply)
+    if bare:
+        return reply + ("学年" if bare[2] else "年")
+    return reply if _PERIOD.fullmatch(reply) else None
 
 
 def contextual_request(request: AgentRequest) -> AgentRequest:
@@ -137,11 +162,17 @@ def contextual_request(request: AgentRequest) -> AgentRequest:
     if history and not any(_topics(turn.content) for turn in history):
         history.clear()
     resolved_query = request.query
-    if recruitment_follow_up and history:
+    if history:
         topic = history[-1].content
-        if _topics(topic) == {3}:
+        year = _year_reply(query)
+        if year and _HISTORY.search(topic):
+            # The rules prioritize the current turn for year and time intent.
+            # Pass both the inherited historical subject and the new year together.
+            subject = history.pop().content.strip().rstrip("？?。！!")
+            resolved_query = f"{year}的{subject}？"
+        elif recruitment_follow_up and _topics(topic) == {3}:
             labs = set(_LAB_SUBJECT.findall(topic))
-            if len(labs) == 1 and "报名" not in recruitment_follow_up["question"]:
+            if len(labs) == 1:
                 resolved_query = next(iter(labs)) + recruitment_follow_up["question"]
             elif not labs and _QINGHE in topic:
                 resolved_query = _QINGHE_LABS + recruitment_follow_up["question"]

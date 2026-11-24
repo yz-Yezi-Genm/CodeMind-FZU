@@ -1,6 +1,6 @@
 # Beta AgentWorkflow 联调记录
 
-2026 年 11 月 23 日，吴诗莹。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) 的开发分支为 `feat/beta-agent-history`。本轮验证使用分支同步提交 `d7e3a6d`、`main` 基线 `306c15d`。该基线已包含 [PR #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51) 的 Retriever 契约。S4 联调继续使用 [PR #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) 的规则快照 `265de18`。
+2026 年 11 月 24 日，吴诗莹。开发分支为 `feat/beta-agent-history`，已通过合并提交 `f91cc08` 同步 `main` 的 `5973eef`。本轮测试覆盖该基线及 #46 的复审修订，直接运行仓库中已合入的业务规则和 Retriever 契约。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51)
 
 ## 工作流
 
@@ -16,43 +16,26 @@
 
 王智洋已在 #51 声明 `retrieve(request)`、`get_document_metadata(version_id)` 和 `get_parsed_chunk(chunk_id)`。后两个方法在 `LocalBM25Retriever` 中返回深拷贝，遇到未知、未开放或已撤回资料时返回 `None`。#46 在现有方法上接入，`DemoRetriever` 已提供两种只读查询，旧的 `_PackageSnapshotRetriever` 已移除。工作流测试补验 BM25 中的资料在模型生成期间撤回到 `review_only` 或 `blocked` 时，两种查询均返回 `None`，HTTP 问答返回 `insufficient_evidence / insufficient_data` 和空引用。
 
+## 本轮复审修改
+
+- S4 招募期与年度计划人数仍使用通过证据门禁的年度通知。当前剩余名额需要经核验的实时数据。当前接入只有政策资料，因此实时名额问句在模型调用前返回 `insufficient_evidence / insufficient_data`，引用为空。
+- 会话中的年份和历史意图分别处理。补充「2024 年呢」会把新年份和上一轮的旧版培养方案主题一起传给业务规则。当前培养方案问句仍会拒绝已被替代的版本。
+- 「还可以报名吗」可沿用上一轮的具名实验室。若只召回已审核且年度和截止日期明确的过期通知，Agent 引用该通知说明对应年度报名已截止，并提示新一轮招募状态暂无法确认。
+- 联调测试直接导入检出的业务规则、资料加载器和 BM25。常规 pytest 会收集这些用例，涵盖 `POST /api/v1/ask` 及其会话存储。测试使用合成资料和模拟的 Qwen HTTP 响应。
+
 ## 验证记录
 
-| 同步 `main` 后的测试 | 结果 |
+| 验证 | 结果 |
 | --- | --- |
-| 仓库根目录完整 pytest，直接使用已合入的 #51 | 410 通过，35 跳过，1 条警告，另有 146 个子测试通过。[原始输出](evidence/agent-workflow-pytest-d7e3a6d.txt) |
-| 已合入的 #51 与 #45 规则快照组合回归 | 441 通过，3 跳过，1 未选中，1 条警告，另有 201 个子测试通过。[原始输出](evidence/agent-workflow-main51-pr45-d7e3a6d.txt) |
+| 仓库根目录完整 pytest | 513 通过，3 跳过，1 条警告，204 个子测试通过。[原始输出](evidence/agent-workflow-pytest-main5973eef.txt) |
+| 已合入 #45 的规则、Retriever 和 Agent 联调 | 33 通过，1 条警告，58 个子测试通过。[原始输出](evidence/agent-workflow-merged-rules-main5973eef.txt) |
 
-两个命令均从仓库根目录运行，退出码为 `0`。完整回归运行 `.venv/Scripts/python.exe -m pytest -q -rs --tb=short`。组合回归启用 `ALPHA_UPSTREAM_SNAPSHOT`，使用 `306c15d` 的 Retriever、`265de18` 的业务规则，并传入 `-k 'not merged_business_rules_match_snapshot'`。
-
-### 同步前的测试记录（`a789f53`）
-
-| 范围 | 实际验证 | 结果 |
-| --- | --- | --- |
-| 仓库根目录完整 pytest | 包含数据库设计与后端测试。新增真实 BM25 与 Qwen HTTP 适配器的撤回回归，模型响应使用测试替身。 | 408 通过，35 跳过，1 条警告，另有 146 个子测试通过 |
-| `#45` 实际规则快照 | 使用 `265de18` 的规则、`a789f53` 的 BM25 与资料加载器、Qwen HTTP 适配器及合成资料。覆盖 R4/R6 缺适用范围的正反向、R1/R2/R3/R5 缺适用范围、个人资格、青禾招募两种历史状态、短句追问、实时名额拒答和 `/api/v1/ask` 响应。 | 31 通过，1 个要求规则快照与当前检出源码相同的用例未选中，1 条警告，另有 55 个子测试通过 |
-| `#45` 与 `#51` 组合回归 | 在临时副本加载 #51 的公共 Protocol 与检索测试，并启用 #45 的规则快照。覆盖签名、元数据与片段查询、资料撤回、Agent 和 S4 联调。 | 441 通过，3 跳过，1 未选中，1 条警告，另有 201 个子测试通过 |
-
-从仓库根目录运行并直接保存标准输出与标准错误，退出码为 `0`。本轮新增了四个需 #45 快照的用例，默认完整回归中随快照组跳过，专项联调中均通过。[本轮完整 pytest 原始输出](evidence/agent-workflow-pytest-s4-review.txt) · [第一轮复审 `860b630` 的 pytest 原始输出](evidence/agent-workflow-pytest-860b630.txt)
+两个命令均从仓库根目录运行，退出码为 `0`。完整回归跳过了两个需正式资料与真实 Qwen 的用例和一个当前 Windows 账户无法创建符号链接的用例。警告来自 Starlette 测试客户端的依赖弃用提示。
 
 ```powershell
 .venv/Scripts/python.exe -m pytest -q -rs --tb=short
+.venv/Scripts/python.exe -m pytest -q -rs --tb=short tests/test_agent_workflow_qwen.py::MergedRulesRetrieverIntegrationTests
 ```
-
-专项联调使用临时规则快照。可用 `git fetch origin refs/pull/45/head` 取得上游提交，再用 `git show <ref>:<path>` 将下表源码保存到临时目录，并将 `ALPHA_UPSTREAM_SNAPSHOT` 指向该目录。[专项联调原始输出](evidence/agent-workflow-s4-pr45-265de18.txt)
-
-| 仓库路径 | 快照相对路径 | 版本 |
-| --- | --- | --- |
-| `backend/retrieval/local.py` | `retrieval/local.py` | `a789f53` |
-| `backend/retrieval/alpha_corpus.py` | `retrieval/alpha_corpus.py` | `a789f53` |
-| `backend/services/alpha_business_rules.py` | `alpha_business_rules.py` | `265de18` |
-
-```powershell
-$env:ALPHA_UPSTREAM_SNAPSHOT = '<临时快照目录>'
-.venv/Scripts/python.exe -m pytest -q tests/test_agent_workflow_qwen.py::UpstreamRulesRetrieverIntegrationTests -k 'not merged_business_rules_match_snapshot' --tb=short
-```
-
-组合回归在当前检出的临时副本上执行。取 `eeefacc` 中的 `backend/contracts/protocols.py`、`tests/test_interface_contracts.py` 和 `tests/test_local_retrieval.py` 覆盖副本中的同名文件，沿用上表的 `ALPHA_UPSTREAM_SNAPSHOT`，再从副本根目录运行 `python -m pytest -q -rs --tb=short -k 'not merged_business_rules_match_snapshot'`。该筛选排除了要求规则快照与本地 `main` 源码一致的用例。[组合回归原始输出](evidence/agent-workflow-pr45-pr51-combined.txt)
 
 ## 正式验收待办
 

@@ -1,20 +1,18 @@
-"""Run PR #35/#36 implementations against this checkout without merging them."""
+"""Verify the business rules and Retriever in the current checkout."""
 from datetime import datetime, timedelta, timezone
-from contextlib import contextmanager
 from hashlib import sha256
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
-from tempfile import TemporaryDirectory
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/assignment-03/alpha/evidence/agent-integration"
 SOURCES = (
-    ("origin/feat/alpha-business-rules-runtime", "backend/services/alpha_business_rules.py", "alpha_business_rules.py"),
-    ("origin/feat/alpha-retrieval-loader", "backend/retrieval/local.py", "retrieval/local.py"),
-    ("origin/feat/alpha-retrieval-loader", "backend/retrieval/alpha_corpus.py", "retrieval/alpha_corpus.py"),
+    "backend/services/alpha_business_rules.py",
+    "backend/retrieval/local.py",
+    "backend/retrieval/alpha_corpus.py",
 )
 
 
@@ -49,34 +47,23 @@ def agent_source_state():
             "record_scope": "Tested source contents; base_commit is not a claim that uncommitted edits are already committed"}
 
 
-@contextmanager
-def upstream_snapshot():
-    """Yield immutable Git source snapshots and their provenance."""
-    records = []
-    commits = {}
-    with TemporaryDirectory(prefix="alpha-upstream-") as temporary:
-        snapshot = Path(temporary)
-        for ref, source, target in SOURCES:
-            if ref not in commits:
-                commits[ref] = subprocess.check_output(["git", "rev-parse", ref], cwd=ROOT, text=True).strip()
-            commit = commits[ref]
-            content = subprocess.check_output(["git", "show", f"{commit}:{source}"], cwd=ROOT)
-            destination = snapshot / target
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(content)
-            records.append({"ref": ref, "commit": commit, "source": source,
-                            "sha256": sha256(content).hexdigest()})
-        yield temporary, records
-
+def integration_sources():
+    """Record the module bytes tested from the checkout."""
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    return [
+        {"ref": commit, "commit": commit, "source": source,
+         "sha256": sha256((ROOT / source).read_bytes().replace(b"\r\n", b"\n")).hexdigest()}
+        for source in SOURCES
+    ]
 
 def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     agent = agent_source_state()
-    with upstream_snapshot() as (temporary, records):
-        command = [sys.executable, "-X", "utf8", "-m", "unittest",
-                   "tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests", "-v"]
-        process = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-            env=dict(os.environ, ALPHA_UPSTREAM_SNAPSHOT=temporary, PYTHONIOENCODING="utf-8"))
+    records = integration_sources()
+    command = [sys.executable, "-X", "utf8", "-m", "unittest",
+               "tests.test_agent_workflow_qwen.MergedRulesRetrieverIntegrationTests", "-v"]
+    process = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
     if agent["source_sha256_lf"] != agent_source_state()["source_sha256_lf"]:
         raise RuntimeError("Agent sources changed during tests")
     output = process.stdout + process.stderr

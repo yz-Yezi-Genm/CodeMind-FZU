@@ -21,7 +21,7 @@ from backend.contracts.models import (
 )
 from backend.contracts.protocols import LLMClient, Retriever
 from backend.services.agent_generation import Evidence, generation_request, requested_facts, verify_answer
-from backend.services.agent_policy_context import PolicyScope, contextual_request
+from backend.services.agent_policy_context import PolicyScope, asks_live_lab_quota, contextual_request
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 
 logger = logging.getLogger(__name__)
@@ -103,6 +103,8 @@ class AgentWorkflow:
 
     async def run(self, request: AgentRequest) -> AgentResult:
         request = contextual_request(request)
+        if asks_live_lab_quota(request):
+            return _insufficient("LIVE_LAB_QUOTA_UNVERIFIED", "暂无经过核验的实时剩余名额，请以实验室或学院当前通知为准。")
         try:
             question = self.clarification_rule(request.model_copy(deep=True))
             if question is not None and (not isinstance(question, str) or not question.strip()):

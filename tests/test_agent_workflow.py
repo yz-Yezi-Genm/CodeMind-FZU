@@ -390,10 +390,10 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.answer_mode, "procedure_reference")
 
     async def test_short_availability_followups_keep_the_active_topic(self):
-        for topic, query in (
-            ("2026年院级奖学金怎么申请？", "还能申请吗？"),
-            ("2026年EDA实验室怎么报名？", "还能报名吗"),
-            ("2026年EDA实验室怎么报名？", "请问还可以报名吗？"),
+        for topic, query, resolved in (
+            ("2026年院级奖学金怎么申请？", "还能申请吗？", "还能申请吗？"),
+            ("2026年EDA实验室怎么报名？", "还能报名吗", "EDA实验室还能报名吗"),
+            ("2026年EDA实验室怎么报名？", "请问还可以报名吗？", "EDA实验室还可以报名吗？"),
         ):
             with self.subTest(query=query):
                 service = self.annual_fixture(year="2026年", status="current", deadline=date(2026, 12, 3))
@@ -403,7 +403,7 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
                 result = await service.run(self.request(query, history))
                 self.assertEqual(result.answer_mode, "procedure_reference")
                 retrieval_query = self.retriever.retrieve.call_args.args[0].query
-                self.assertEqual(retrieval_query, f"{topic}\n{query}")
+                self.assertEqual(retrieval_query, f"{topic}\n{resolved}")
 
     async def test_short_availability_followup_cannot_use_an_expired_notice(self):
         workflow = self.annual_fixture()
