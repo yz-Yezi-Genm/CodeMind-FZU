@@ -2,9 +2,11 @@
 
 本次按组长要求和林彦翔确认的B8结论，交付**R3、R4两个独立DocumentPackage，每包24片段，共48片段**。资料为2026—2027学年青禾计划原件的分类派生，不是新增48份官方资料。两包全部`blocked`、`temporal_notes.human_approved=false`，未写approved，不代表A4正式验收已通过。
 
-B8依据：[PR #45 中的S4对接确认及业务规则](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45/files)，核对版本`265de18`，确认单第9节B8及六类分类：R3/R4按`category_name`双向隔离；原表序号作唯一标识、保留行号，同名不合并，“无”按缺失处理。本次仅使用该确认结论，不合入其他成员未合并代码或修改公共接口。
+B8依据：[已合并PR #45 的S4对接确认及业务规则](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45/files)，最新核对main@a3ffdd0（含#45/#51/#49），确认单第9节B8及六类分类：R3/R4按`category_name`双向隔离；原表序号作唯一标识、保留行号，同名不合并，“无”按缺失处理。本次仅使用该确认结论，已同步已合并main，不引入未合并分支或修改公共接口。
 
-## 1. 本轮唯一接收入口
+**2026-11-24：本页是青禾两包子集说明。全四领域9包514片段及逐包签核入口见[统一人工审核清单](beta-policy-approval-checklist.md)，S4-01/02/03与真实资料时效差异见该表第4节。#41先完成候选技术交付合并，后续另PR正式放行。**
+
+## 1. 青禾子集接收入口
 
 [待审核manifest](../../../knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/manifest.json)
 

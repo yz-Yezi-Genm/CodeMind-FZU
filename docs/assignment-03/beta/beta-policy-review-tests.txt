@@ -1,115 +1,487 @@
-beta-candidates
-$ python -m unittest knowledge_base.processing.test_beta_policy_review -v
-test_all_parsed_file_metadata_fields_are_checked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_all_parsed_file_metadata_fields_are_checked) ... ok
-test_attachment_parent_and_final_url_must_remain_official (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_attachment_parent_and_final_url_must_remain_official) ... ok
-test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids) ... ok
-test_blocked_real_metadata_lookup_returns_none_after_successful_indexing (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_metadata_lookup_returns_none_after_successful_indexing) ... ok
-test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_business_codes_preserve_original_dictionary) ... ok
-test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits) ... ok
-test_checker_rejects_qinghe_s1_mapping_even_when_blocked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_qinghe_s1_mapping_even_when_blocked) ... ok
-test_correct_complete_file_inventory_can_be_reordered (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_correct_complete_file_inventory_can_be_reordered) ... ok
-test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected) ... ok
-test_each_package_exactly_matches_original_44_record_direction_mapping (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_each_package_exactly_matches_original_44_record_direction_mapping) ... ok
-test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
-test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
-test_extra_existing_original_entry_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_extra_existing_original_entry_is_rejected) ... ok
-test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha) ... ok
-test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page) ... ok
-test_manifest_cannot_omit_duplicate_or_redirect_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_cannot_omit_duplicate_or_redirect_candidates) ... ok
-test_manifest_entry_approval_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_entry_approval_tampering_is_rejected) ... ok
-test_manifest_fields_must_match_package_metadata_and_counts (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_fields_must_match_package_metadata_and_counts) ... ok
-test_manifest_header_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_header_tampering_is_rejected) ... ok
-test_mapping_source_file_locator_note_and_transformation_tampering (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_source_file_locator_note_and_transformation_tampering) ... ok
-test_mapping_tamper_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_tamper_is_rejected) ... ok
-test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check) ... ok
-test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check) ... ok
-test_missing_sha_is_rejected_even_when_file_exists (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_missing_sha_is_rejected_even_when_file_exists) ... ok
-test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_44_records_preserved_as_import_snapshots) ... ok
-test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_tamper_fails_closed) ... ok
-test_policy_metadata_cannot_drift_from_reviewed_batch (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_policy_metadata_cannot_drift_from_reviewed_batch) ... ok
-test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_cells_and_contact_fields_survive_markdown) ... ok
-test_qinghe_mapping_filters_s1_independently_of_blocked_gate (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_mapping_filters_s1_independently_of_blocked_gate) ... ok
-test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_real_packages_hashes_intervals_and_four_domain_isolation) ... ok
-test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_rebuild_does_not_change_approved_or_alpha_candidates) ... ok
-test_shortened_valid_slice_with_matching_offsets_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_shortened_valid_slice_with_matching_offsets_is_rejected) ... ok
-test_source_unit_original_file_and_locator_must_match_chunk (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_source_unit_original_file_and_locator_must_match_chunk) ... ok
-test_uncited_original_and_attachment_entries_cannot_be_deleted (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_uncited_original_and_attachment_entries_cannot_be_deleted) ... ok
-test_valid_dictionary_code_in_wrong_package_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_valid_dictionary_code_in_wrong_package_is_rejected) ... ok
+Python 3.10.11 | main a3ffdd046c10fb7af647651c8358eee8d8dde948 | includes #45/#51/#49
+Pending-review technical delivery: 9 packages / 514 chunks. All blocked and human_approved=false.
+
+$ python -m knowledge_base.processing.build_qinghe_b8
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}
+
+
+$ python -m knowledge_base.processing.build_qinghe_b8 --check
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}
+
+
+$ python -m unittest knowledge_base.processing.test_qinghe_b8 -v
+test_all_24_row_ids_duplicates_and_cell_column_routing (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_changed_category_deadline_or_s1_mapping_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_deleted_original_file_or_changed_role_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_distinct_record_identities_exact_categories_and_only_s4 (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_failed_original_preflight_does_not_write_output (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_premature_human_approval_or_manifest_release_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_r3_deadline_five_keys_and_r4_historical_intro_limits (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_r3_process_and_r4_intro_come_from_original_notice_and_cells (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_raw_wu_is_explicit_missing_and_not_a_confirmed_negative (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_rebuild_preserves_legacy_baseline_raw_files_and_approved (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_row_mapping_or_dropped_lab_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_two_packages_24_chunks_each_real_index_and_blocked_gates (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
 
 ----------------------------------------------------------------------
-Ran 35 tests in 10.855s
+Ran 12 tests in 10.076s
 
 OK
 
 
-qinghe-conversion
-$ python -m unittest knowledge_base.processing.test_qinghe_conversion -v
-test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_changed_headers_fail) ... ok
-test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_complete_workbook_merges_and_empty_sheets) ... ok
-test_extra_merged_region_fails_before_cells_can_be_lost (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_extra_merged_region_fails_before_cells_can_be_lost) ... ok
-test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_formulas_require_review_instead_of_inferred_value) ... ok
-test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_hidden_extra_content_is_not_silently_omitted) ... ok
-test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_field_explicitly_marked) ... ok
-test_missing_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_title_merge_fails) ... ok
-test_replaced_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_replaced_title_merge_fails) ... ok
+$ python -m knowledge_base.processing.build_beta_policy_review --check
+{
+  "packages": 8,
+  "chunks": 501,
+  "original_mappings": 501,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "formal_hits_for_blocked_candidates": {
+    "COMPETITION_RESEARCH": 0,
+    "POLICY_AFFAIRS": 0,
+    "EDUCATION_CAREER": 0,
+    "COLLEGE_RESOURCES": 0
+  },
+  "index_results": [
+    {
+      "key": "competition",
+      "status": "indexed",
+      "chunk_count": 224,
+      "indexed_count": 224,
+      "actual_stored_chunk_count": 224,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 224
+    },
+    {
+      "key": "scholarship",
+      "status": "indexed",
+      "chunk_count": 59,
+      "indexed_count": 59,
+      "actual_stored_chunk_count": 59,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 59
+    },
+    {
+      "key": "college-scholarship",
+      "status": "indexed",
+      "chunk_count": 33,
+      "indexed_count": 33,
+      "actual_stored_chunk_count": 33,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 33
+    },
+    {
+      "key": "xinghuo",
+      "status": "indexed",
+      "chunk_count": 35,
+      "indexed_count": 35,
+      "actual_stored_chunk_count": 35,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 35
+    },
+    {
+      "key": "recommendation",
+      "status": "indexed",
+      "chunk_count": 20,
+      "indexed_count": 20,
+      "actual_stored_chunk_count": 20,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 20
+    },
+    {
+      "key": "innovation",
+      "status": "indexed",
+      "chunk_count": 86,
+      "indexed_count": 86,
+      "actual_stored_chunk_count": 86,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 86
+    },
+    {
+      "key": "retest",
+      "status": "indexed",
+      "chunk_count": 9,
+      "indexed_count": 9,
+      "actual_stored_chunk_count": 9,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 9
+    },
+    {
+      "key": "qinghe",
+      "status": "indexed",
+      "chunk_count": 35,
+      "indexed_count": 35,
+      "actual_stored_chunk_count": 35,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 35
+    }
+  ],
+  "indexed_chunks": 501,
+  "blocked_metadata_lookups_returning_none": 8,
+  "blocked_chunk_lookups_returning_none": 501,
+  "raw_reextraction": {
+    "documents": 8,
+    "source_units": 501,
+    "by_document": {
+      "competition": 224,
+      "scholarship": 59,
+      "college-scholarship": 33,
+      "xinghuo": 35,
+      "recommendation": 20,
+      "innovation": 86,
+      "retest": 9,
+      "qinghe": 35
+    },
+    "qinghe_lab_rows": 24,
+    "qinghe_nonempty_cells": 226,
+    "qinghe_wps_links": 40,
+    "recommendation_page4": "re-read spatial PDF characters; all non-footer text covered",
+    "method": "offline originals re-extracted in memory; exact unit/field comparison; no writes"
+  }
+}
+
+
+$ python -m knowledge_base.processing.reextract_beta_policy_review
+{
+  "documents": 8,
+  "source_units": 501,
+  "by_document": {
+    "competition": 224,
+    "scholarship": 59,
+    "college-scholarship": 33,
+    "xinghuo": 35,
+    "recommendation": 20,
+    "innovation": 86,
+    "retest": 9,
+    "qinghe": 35
+  },
+  "qinghe_lab_rows": 24,
+  "qinghe_nonempty_cells": 226,
+  "qinghe_wps_links": 40,
+  "recommendation_page4": "re-read spatial PDF characters; all non-footer text covered",
+  "method": "offline originals re-extracted in memory; exact unit/field comparison; no writes"
+}
+
+
+$ python -m unittest knowledge_base.processing.test_beta_policy_review knowledge_base.processing.test_qinghe_conversion knowledge_base.processing.test_beta_reextraction knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v
+test_all_parsed_file_metadata_fields_are_checked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_attachment_parent_and_final_url_must_remain_official (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_blocked_real_metadata_lookup_returns_none_after_successful_indexing (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_checker_rejects_qinghe_s1_mapping_even_when_blocked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_correct_complete_file_inventory_can_be_reordered (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_each_package_exactly_matches_original_44_record_direction_mapping (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_extra_existing_original_entry_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_manifest_cannot_omit_duplicate_or_redirect_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_manifest_entry_approval_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_manifest_fields_must_match_package_metadata_and_counts (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_manifest_header_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_mapping_source_file_locator_note_and_transformation_tampering (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_mapping_tamper_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_missing_sha_is_rejected_even_when_file_exists (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_policy_metadata_cannot_drift_from_reviewed_batch (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_qinghe_mapping_filters_s1_independently_of_blocked_gate (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_shortened_valid_slice_with_matching_offsets_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_source_unit_original_file_and_locator_must_match_chunk (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_uncited_original_and_attachment_entries_cannot_be_deleted (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_valid_dictionary_code_in_wrong_package_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests) ... ok
+test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_extra_merged_region_fails_before_cells_can_be_lost (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_missing_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_replaced_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests) ... ok
+test_each_retained_document_change_fails_against_raw_bytes (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_failed_build_and_cli_preserve_all_existing_artifact_hashes (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_failed_preflight_does_not_create_output_directory (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_pdf_table_cells_and_scores_are_reextracted_from_pdf (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_reextracts_all_originals_exactly_without_writes_or_network (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_standalone_qinghe_units_or_cell_audit_tampering_fails (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_xlsx_full_cells_and_rich_links_match_retained_audit (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_xlsx_original_change_with_updated_hash_still_fails_content_comparison (knowledge_base.processing.test_beta_reextraction.RawReextractionTests) ... ok
+test_ambiguous_annual_college_notice_is_blocked (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_cohort_deadline_and_import_history_preserved (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_competition_table_structure_and_page4_numeric_columns (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_real_packages_index_but_do_not_answer (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_review_checker_rejects_enabled_export (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_tampered_original_stops_export (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_teacher_and_student_conditions_keep_heading_context (knowledge_base.processing.test_policy_review.PolicyReviewTests) ... ok
+test_all_cells_hidden_rows_columns_and_sheets_are_scanned (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests) ... ok
+test_changed_or_extra_member_requires_new_review (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests) ... ok
+test_current_archives_match_full_reviewed_baseline (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests) ... ok
+test_doc_converter_includes_hidden_removed_text_and_rejects_warnings (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests) ... ok
+test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests) ... ok
+test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.535s
+Ran 65 tests in 87.242s
 
 OK
 
 
-raw-reextraction
-$ python -m unittest knowledge_base.processing.test_beta_reextraction -v
-test_each_retained_document_change_fails_against_raw_bytes (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_each_retained_document_change_fails_against_raw_bytes) ... ok
-test_failed_build_and_cli_preserve_all_existing_artifact_hashes (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_failed_build_and_cli_preserve_all_existing_artifact_hashes) ... ok
-test_failed_preflight_does_not_create_output_directory (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_failed_preflight_does_not_create_output_directory) ... ok
-test_pdf_table_cells_and_scores_are_reextracted_from_pdf (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_pdf_table_cells_and_scores_are_reextracted_from_pdf) ... ok
-test_reextracts_all_originals_exactly_without_writes_or_network (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_reextracts_all_originals_exactly_without_writes_or_network) ... ok
-test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original) ... ok
-test_standalone_qinghe_units_or_cell_audit_tampering_fails (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_standalone_qinghe_units_or_cell_audit_tampering_fails) ... ok
-test_xlsx_full_cells_and_rich_links_match_retained_audit (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_xlsx_full_cells_and_rich_links_match_retained_audit) ... ok
-test_xlsx_original_change_with_updated_hash_still_fails_content_comparison (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_xlsx_original_change_with_updated_hash_still_fails_content_comparison) ... ok
-
-----------------------------------------------------------------------
-Ran 9 tests in 12.567s
-
-OK
-
-
-alpha-review-regression
-$ python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v
-test_ambiguous_annual_college_notice_is_blocked (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_ambiguous_annual_college_notice_is_blocked) ... ok
-test_cohort_deadline_and_import_history_preserved (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_cohort_deadline_and_import_history_preserved) ... ok
-test_competition_table_structure_and_page4_numeric_columns (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_competition_table_structure_and_page4_numeric_columns) ... ok
-test_real_packages_index_but_do_not_answer (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_real_packages_index_but_do_not_answer) ... ok
-test_review_checker_rejects_enabled_export (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_review_checker_rejects_enabled_export) ... ok
-test_tampered_original_stops_export (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_tampered_original_stops_export) ... ok
-test_teacher_and_student_conditions_keep_heading_context (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_teacher_and_student_conditions_keep_heading_context) ... ok
-test_all_cells_hidden_rows_columns_and_sheets_are_scanned (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_all_cells_hidden_rows_columns_and_sheets_are_scanned) ... ok
-test_changed_or_extra_member_requires_new_review (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_changed_or_extra_member_requires_new_review) ... ok
-test_current_archives_match_full_reviewed_baseline (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_current_archives_match_full_reviewed_baseline) ... ok
-test_doc_converter_includes_hidden_removed_text_and_rejects_warnings (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_doc_converter_includes_hidden_removed_text_and_rejects_warnings) ... ok
-test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_report_never_contains_sensitive_cell_or_property_values) ... ok
-test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
-
-----------------------------------------------------------------------
-Ran 13 tests in 0.652s
-
-OK
-
-
-backend-regression
-$ python -m pytest tests -q
-...........................................................................sssssssssssssssssssssssss.s.... [ 27%]
-........................................................................ [ 46%]
-......................................................s................. [ 64%]
-.................................................s........ [ 80%]
-.............................................................................                                                        [100%]
+$ python -m pytest tests -q -ra
+...........................................................................sssssssssssssssssssssssss.s.... [ 22%]
+........................................................................ [ 37%]
+........................................................................ [ 52%]
+....................................................s................... [ 67%]
+........................................................s.... [ 80%]
+..............................................................................................                  [100%]
 ============================== warnings summary ===============================
-.venv\Lib\site-packages\fastapi\testclient.py:1
-  <repository>\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+..\..\..\..\.cache\codemind-beta-review-py310\lib\site-packages\fastapi\testclient.py:1
+  <user-home>\.cache\codemind-beta-review-py310\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 1 warning, 136 subtests passed in 23.36s
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_agent_workflow_qwen.py:925: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:754: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:883: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:974: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:819: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:959: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:779: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:904: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:794: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:848: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1001: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:936: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:668: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:988: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:745: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:771: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:654: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:645: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:662: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:859: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:787: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:713: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:695: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:677: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:686: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1045: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_alpha_e2e.py:504: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
+SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
+449 passed, 28 skipped, 1 warning, 154 subtests passed in 91.60s (0:01:31)
+
+
+$ python -m knowledge_base.processing.check_beta_policy_handoff
+{
+  "packages": 9,
+  "chunks": 514,
+  "domain_chunks": {
+    "S1": 310,
+    "S2": 127,
+    "S3": 29,
+    "S4": 48
+  },
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "approved_packages": 0,
+  "formal_hits": {
+    "COMPETITION_RESEARCH": 0,
+    "POLICY_AFFAIRS": 0,
+    "EDUCATION_CAREER": 0,
+    "COLLEGE_RESOURCES": 0
+  },
+  "loader_checks": [
+    {
+      "directory": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23",
+      "loaded_packages": 0,
+      "indexed_chunks": 0,
+      "skipped_packages": 8
+    },
+    {
+      "directory": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23",
+      "loaded_packages": 0,
+      "indexed_chunks": 0,
+      "skipped_packages": 2
+    },
+    {
+      "directory": "knowledge_base/processed/alpha/approved",
+      "loaded_packages": 0,
+      "indexed_chunks": 0,
+      "skipped_packages": 0
+    }
+  ],
+  "index_results": [
+    {
+      "key": "competition",
+      "domain": "S1",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/competition.json",
+      "version_id": "92e414c2-6b8c-5f69-b073-05921b0faa55",
+      "chunks": 224,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 224
+    },
+    {
+      "key": "innovation",
+      "domain": "S1",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/innovation.json",
+      "version_id": "e77bc47b-d65f-5056-aafd-56db7d294a10",
+      "chunks": 86,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 86
+    },
+    {
+      "key": "scholarship",
+      "domain": "S2",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/scholarship.json",
+      "version_id": "c8f6bae5-c663-5a69-a2f8-df8642b62e05",
+      "chunks": 59,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 59
+    },
+    {
+      "key": "college-scholarship",
+      "domain": "S2",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/college-scholarship.json",
+      "version_id": "d04c3928-f9e5-5c43-95d5-9e82958454b0",
+      "chunks": 33,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 33
+    },
+    {
+      "key": "xinghuo",
+      "domain": "S2",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/xinghuo.json",
+      "version_id": "908442f5-eaed-59bf-a613-c79f143994c4",
+      "chunks": 35,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 35
+    },
+    {
+      "key": "recommendation",
+      "domain": "S3",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/recommendation.json",
+      "version_id": "cfcfa918-e8f5-50a7-a1bb-fbff63862581",
+      "chunks": 20,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 20
+    },
+    {
+      "key": "retest",
+      "domain": "S3",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/retest.json",
+      "version_id": "22d8e751-93e5-5f81-88b2-8de460f9b009",
+      "chunks": 9,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 9
+    },
+    {
+      "key": "qinghe-r3",
+      "domain": "S4",
+      "package": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r3.json",
+      "version_id": "971a0297-6295-52d5-8efe-4cfd3e2f72db",
+      "chunks": 24,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 24
+    },
+    {
+      "key": "qinghe-r4",
+      "domain": "S4",
+      "package": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r4.json",
+      "version_id": "97e81dbb-1972-5798-90d6-fef650abd223",
+      "chunks": 24,
+      "timeliness": "historical",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 24
+    }
+  ],
+  "compatibility": {
+    "pr45_category_map": "matched",
+    "pr51_lookup_signatures": "matched"
+  }
+}

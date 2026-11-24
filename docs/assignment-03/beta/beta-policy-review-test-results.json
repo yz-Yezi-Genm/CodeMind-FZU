@@ -1,55 +1,85 @@
 {
+  "python": "3.10.11",
+  "main_baseline": "a3ffdd046c10fb7af647651c8358eee8d8dde948",
+  "merged_prs": [
+    45,
+    51,
+    49
+  ],
+  "environment_file": "beta-policy-review-environment.json",
   "runs": [
     {
-      "suite": "beta-candidates",
-      "command": "python -m unittest knowledge_base.processing.test_beta_policy_review -v",
+      "suite": "b8",
+      "command": "python -m knowledge_base.processing.build_qinghe_b8",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T11:02:54.629427+00:00",
-      "tests_run": 35
+      "tested_at_utc": "2026-11-24T03:26:45.352312+00:00"
     },
     {
-      "suite": "qinghe-conversion",
-      "command": "python -m unittest knowledge_base.processing.test_qinghe_conversion -v",
+      "suite": "b8",
+      "command": "python -m knowledge_base.processing.build_qinghe_b8 --check",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T11:02:55.885331+00:00",
-      "tests_run": 8
+      "tested_at_utc": "2026-11-24T03:26:48.390859+00:00"
     },
     {
-      "suite": "raw-reextraction",
-      "command": "python -m unittest knowledge_base.processing.test_beta_reextraction -v",
+      "suite": "b8",
+      "command": "python -m unittest knowledge_base.processing.test_qinghe_b8 -v",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T11:03:09.109299+00:00",
-      "tests_run": 9
+      "tested_at_utc": "2026-11-24T03:26:59.471804+00:00",
+      "tests_run": 12,
+      "passed": 12
     },
     {
-      "suite": "alpha-review-regression",
-      "command": "python -m unittest knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v",
+      "suite": "previous",
+      "command": "python -m knowledge_base.processing.build_beta_policy_review --check",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T11:03:10.425640+00:00",
-      "tests_run": 13
+      "tested_at_utc": "2026-11-24T03:27:03.228978+00:00"
     },
     {
-      "suite": "backend-regression",
-      "command": "python -m pytest tests -q",
+      "suite": "previous",
+      "command": "python -m knowledge_base.processing.reextract_beta_policy_review",
       "exit_code": 0,
-      "checked_at_utc": "2026-11-23T11:03:35.073756+00:00",
-      "passed": 357,
+      "tested_at_utc": "2026-11-24T03:27:06.111606+00:00"
+    },
+    {
+      "suite": "previous",
+      "command": "python -m unittest knowledge_base.processing.test_beta_policy_review knowledge_base.processing.test_qinghe_conversion knowledge_base.processing.test_beta_reextraction knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v",
+      "exit_code": 0,
+      "tested_at_utc": "2026-11-24T03:28:35.222168+00:00",
+      "tests_run": 65,
+      "passed": 65
+    },
+    {
+      "suite": "backend",
+      "command": "python -m pytest tests -q -ra",
+      "exit_code": 0,
+      "tested_at_utc": "2026-11-24T03:28:04.852146+00:00",
+      "passed": 449,
       "skipped": 28,
-      "subtests_passed": 136
+      "subtests_passed": 154,
+      "warnings": 1
+    },
+    {
+      "suite": "handoff",
+      "command": "python -m knowledge_base.processing.check_beta_policy_handoff",
+      "exit_code": 0,
+      "tested_at_utc": "2026-11-24T03:28:39.447053+00:00"
     }
   ],
-  "scope": "Raw preflight; complete ParsedFile and official landing-page binding; exact original units and complete chunks; no human approval, Qwen or browser E2E",
-  "python": "3.12.14",
   "summary": {
-    "beta_tests_passed": 52,
-    "alpha_review_tests_passed": 13,
-    "backend_pytest_passed": 357,
+    "b8_tests_passed": 12,
+    "previous_policy_tests_passed": 65,
+    "backend_passed": 449,
     "backend_skipped": 28,
-    "backend_subtests_passed": 136,
-    "failures": 0,
+    "backend_subtests_passed": 154,
+    "backend_warnings": 1,
+    "failed": 0,
+    "handoff_packages": 9,
+    "handoff_chunks": 514,
     "enabled_packages": 0,
-    "formal_approved_packages_at_start": 0
+    "human_approved_packages": 0,
+    "approved_packages": 0,
+    "formal_hits": 0
   },
-  "skips_note": "后端既有可选上游快照/业务规则集成/真实模型在线测试未满足运行条件，跳过项不计为通过。未运行真实Qwen。",
-  "revision_scope": "PR #41自查：下载记录/输入/实际字节SHA绑定；固定原件清单；附件URL和原名绑定保留官方页面，阻止联合篡改。未合入main。"
+  "skips_note": "28项跳过不计通过：既有上游快照集成测试未在全量pytest启用、真实Qwen需显式启用及正式审核语料、当前账户不允许创建符号链接。逐项原因见完整日志。",
+  "scope": "Candidate technical delivery only: original 8/501 baseline checked, handoff 7+2=9/514 excludes old Qinghe35; no human approval, formal release, live Qwen or A4 positive acceptance."
 }

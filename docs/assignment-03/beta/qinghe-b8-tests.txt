@@ -1,109 +1,71 @@
-b8
+Python 3.10.11 | main a3ffdd046c10fb7af647651c8358eee8d8dde948 | includes #45/#51/#49
+Pending-review technical delivery: 9 packages / 514 chunks. All blocked and human_approved=false.
+
+$ python -m knowledge_base.processing.build_qinghe_b8
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}
+
+
+$ python -m knowledge_base.processing.build_qinghe_b8 --check
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}
+
+
 $ python -m unittest knowledge_base.processing.test_qinghe_b8 -v
-test_all_24_row_ids_duplicates_and_cell_column_routing (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_all_24_row_ids_duplicates_and_cell_column_routing) ... ok
-test_changed_category_deadline_or_s1_mapping_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_changed_category_deadline_or_s1_mapping_is_rejected) ... ok
-test_deleted_original_file_or_changed_role_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_deleted_original_file_or_changed_role_is_rejected) ... ok
-test_distinct_record_identities_exact_categories_and_only_s4 (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_distinct_record_identities_exact_categories_and_only_s4) ... ok
-test_failed_original_preflight_does_not_write_output (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_failed_original_preflight_does_not_write_output) ... ok
-test_premature_human_approval_or_manifest_release_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_premature_human_approval_or_manifest_release_is_rejected) ... ok
-test_r3_deadline_five_keys_and_r4_historical_intro_limits (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_r3_deadline_five_keys_and_r4_historical_intro_limits) ... ok
-test_r3_process_and_r4_intro_come_from_original_notice_and_cells (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_r3_process_and_r4_intro_come_from_original_notice_and_cells) ... ok
-test_raw_wu_is_explicit_missing_and_not_a_confirmed_negative (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_raw_wu_is_explicit_missing_and_not_a_confirmed_negative) ... ok
-test_rebuild_preserves_legacy_baseline_raw_files_and_approved (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_rebuild_preserves_legacy_baseline_raw_files_and_approved) ... ok
-test_row_mapping_or_dropped_lab_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_row_mapping_or_dropped_lab_is_rejected) ... ok
-test_two_packages_24_chunks_each_real_index_and_blocked_gates (knowledge_base.processing.test_qinghe_b8.QingheB8Tests.test_two_packages_24_chunks_each_real_index_and_blocked_gates) ... ok
+test_all_24_row_ids_duplicates_and_cell_column_routing (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_changed_category_deadline_or_s1_mapping_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_deleted_original_file_or_changed_role_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_distinct_record_identities_exact_categories_and_only_s4 (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_failed_original_preflight_does_not_write_output (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_premature_human_approval_or_manifest_release_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_r3_deadline_five_keys_and_r4_historical_intro_limits (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_r3_process_and_r4_intro_come_from_original_notice_and_cells (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_raw_wu_is_explicit_missing_and_not_a_confirmed_negative (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_rebuild_preserves_legacy_baseline_raw_files_and_approved (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_row_mapping_or_dropped_lab_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_two_packages_24_chunks_each_real_index_and_blocked_gates (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
 
 ----------------------------------------------------------------------
-Ran 12 tests in 2.843s
+Ran 12 tests in 10.076s
 
 OK
-
-
-previous-policy-regression
-$ python -m unittest knowledge_base.processing.test_beta_policy_review knowledge_base.processing.test_qinghe_conversion knowledge_base.processing.test_beta_reextraction knowledge_base.processing.test_policy_review knowledge_base.processing.test_policy_forms_privacy -v
-test_all_parsed_file_metadata_fields_are_checked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_all_parsed_file_metadata_fields_are_checked) ... ok
-test_attachment_parent_and_final_url_must_remain_official (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_attachment_parent_and_final_url_must_remain_official) ... ok
-test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_chunk_lookup_returns_none_for_all_stored_ids) ... ok
-test_blocked_real_metadata_lookup_returns_none_after_successful_indexing (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_blocked_real_metadata_lookup_returns_none_after_successful_indexing) ... ok
-test_business_codes_preserve_original_dictionary (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_business_codes_preserve_original_dictionary) ... ok
-test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_failed_partial_or_zero_index_even_with_no_hits) ... ok
-test_checker_rejects_qinghe_s1_mapping_even_when_blocked (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_checker_rejects_qinghe_s1_mapping_even_when_blocked) ... ok
-test_correct_complete_file_inventory_can_be_reordered (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_correct_complete_file_inventory_can_be_reordered) ... ok
-test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_deleted_chunk_with_matching_manifest_and_mapping_is_rejected) ... ok
-test_each_package_exactly_matches_original_44_record_direction_mapping (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_each_package_exactly_matches_original_44_record_direction_mapping) ... ok
-test_enabled_candidate_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_enabled_candidate_is_rejected) ... ok
-test_expired_cohorts_and_conflict_not_marked_current (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_expired_cohorts_and_conflict_not_marked_current) ... ok
-test_extra_existing_original_entry_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_extra_existing_original_entry_is_rejected) ... ok
-test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_fetch_records_and_source_inputs_must_have_matching_inventory_and_sha) ... ok
-test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_joint_fetch_and_package_url_or_name_tampering_fails_against_official_page) ... ok
-test_manifest_cannot_omit_duplicate_or_redirect_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_cannot_omit_duplicate_or_redirect_candidates) ... ok
-test_manifest_entry_approval_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_entry_approval_tampering_is_rejected) ... ok
-test_manifest_fields_must_match_package_metadata_and_counts (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_fields_must_match_package_metadata_and_counts) ... ok
-test_manifest_header_tampering_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_manifest_header_tampering_is_rejected) ... ok
-test_mapping_source_file_locator_note_and_transformation_tampering (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_source_file_locator_note_and_transformation_tampering) ... ok
-test_mapping_tamper_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_mapping_tamper_is_rejected) ... ok
-test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_locator_still_fail_source_unit_check) ... ok
-test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_matching_forged_chunk_and_mapping_offsets_still_fail_text_check) ... ok
-test_missing_sha_is_rejected_even_when_file_exists (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_missing_sha_is_rejected_even_when_file_exists) ... ok
-test_original_44_records_preserved_as_import_snapshots (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_44_records_preserved_as_import_snapshots) ... ok
-test_original_tamper_fails_closed (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_original_tamper_fails_closed) ... ok
-test_policy_metadata_cannot_drift_from_reviewed_batch (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_policy_metadata_cannot_drift_from_reviewed_batch) ... ok
-test_qinghe_cells_and_contact_fields_survive_markdown (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_cells_and_contact_fields_survive_markdown) ... ok
-test_qinghe_mapping_filters_s1_independently_of_blocked_gate (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_qinghe_mapping_filters_s1_independently_of_blocked_gate) ... ok
-test_real_packages_hashes_intervals_and_four_domain_isolation (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_real_packages_hashes_intervals_and_four_domain_isolation) ... ok
-test_rebuild_does_not_change_approved_or_alpha_candidates (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_rebuild_does_not_change_approved_or_alpha_candidates) ... ok
-test_shortened_valid_slice_with_matching_offsets_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_shortened_valid_slice_with_matching_offsets_is_rejected) ... ok
-test_source_unit_original_file_and_locator_must_match_chunk (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_source_unit_original_file_and_locator_must_match_chunk) ... ok
-test_uncited_original_and_attachment_entries_cannot_be_deleted (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_uncited_original_and_attachment_entries_cannot_be_deleted) ... ok
-test_valid_dictionary_code_in_wrong_package_is_rejected (knowledge_base.processing.test_beta_policy_review.BetaCandidateTests.test_valid_dictionary_code_in_wrong_package_is_rejected) ... ok
-test_changed_headers_fail (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_changed_headers_fail) ... ok
-test_complete_workbook_merges_and_empty_sheets (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_complete_workbook_merges_and_empty_sheets) ... ok
-test_extra_merged_region_fails_before_cells_can_be_lost (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_extra_merged_region_fails_before_cells_can_be_lost) ... ok
-test_formulas_require_review_instead_of_inferred_value (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_formulas_require_review_instead_of_inferred_value) ... ok
-test_hidden_extra_content_is_not_silently_omitted (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_hidden_extra_content_is_not_silently_omitted) ... ok
-test_missing_field_explicitly_marked (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_field_explicitly_marked) ... ok
-test_missing_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_missing_title_merge_fails) ... ok
-test_replaced_title_merge_fails (knowledge_base.processing.test_qinghe_conversion.QingheWorkbookTests.test_replaced_title_merge_fails) ... ok
-test_each_retained_document_change_fails_against_raw_bytes (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_each_retained_document_change_fails_against_raw_bytes) ... ok
-test_failed_build_and_cli_preserve_all_existing_artifact_hashes (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_failed_build_and_cli_preserve_all_existing_artifact_hashes) ... ok
-test_failed_preflight_does_not_create_output_directory (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_failed_preflight_does_not_create_output_directory) ... ok
-test_pdf_table_cells_and_scores_are_reextracted_from_pdf (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_pdf_table_cells_and_scores_are_reextracted_from_pdf) ... ok
-test_reextracts_all_originals_exactly_without_writes_or_network (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_reextracts_all_originals_exactly_without_writes_or_network) ... ok
-test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original) ... ok
-test_standalone_qinghe_units_or_cell_audit_tampering_fails (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_standalone_qinghe_units_or_cell_audit_tampering_fails) ... ok
-test_xlsx_full_cells_and_rich_links_match_retained_audit (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_xlsx_full_cells_and_rich_links_match_retained_audit) ... ok
-test_xlsx_original_change_with_updated_hash_still_fails_content_comparison (knowledge_base.processing.test_beta_reextraction.RawReextractionTests.test_xlsx_original_change_with_updated_hash_still_fails_content_comparison) ... ok
-test_ambiguous_annual_college_notice_is_blocked (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_ambiguous_annual_college_notice_is_blocked) ... ok
-test_cohort_deadline_and_import_history_preserved (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_cohort_deadline_and_import_history_preserved) ... ok
-test_competition_table_structure_and_page4_numeric_columns (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_competition_table_structure_and_page4_numeric_columns) ... ok
-test_real_packages_index_but_do_not_answer (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_real_packages_index_but_do_not_answer) ... ok
-test_review_checker_rejects_enabled_export (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_review_checker_rejects_enabled_export) ... ok
-test_tampered_original_stops_export (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_tampered_original_stops_export) ... ok
-test_teacher_and_student_conditions_keep_heading_context (knowledge_base.processing.test_policy_review.PolicyReviewTests.test_teacher_and_student_conditions_keep_heading_context) ... ok
-test_all_cells_hidden_rows_columns_and_sheets_are_scanned (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_all_cells_hidden_rows_columns_and_sheets_are_scanned) ... ok
-test_changed_or_extra_member_requires_new_review (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_changed_or_extra_member_requires_new_review) ... ok
-test_current_archives_match_full_reviewed_baseline (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_current_archives_match_full_reviewed_baseline) ... ok
-test_doc_converter_includes_hidden_removed_text_and_rejects_warnings (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_doc_converter_includes_hidden_removed_text_and_rejects_warnings) ... ok
-test_report_never_contains_sensitive_cell_or_property_values (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_report_never_contains_sensitive_cell_or_property_values) ... ok
-test_unused_strings_comments_properties_and_binaries_are_not_ignored (knowledge_base.processing.test_policy_forms_privacy.FormPrivacyTests.test_unused_strings_comments_properties_and_binaries_are_not_ignored) ... ok
-
-----------------------------------------------------------------------
-Ran 65 tests in 24.778s
-
-OK
-
-
-backend-regression
-$ python -m pytest tests -q
-...........................................................................sssssssssssssssssssssssss.s.... [ 27%]
-........................................................................ [ 46%]
-......................................................s................. [ 64%]
-.................................................s........ [ 80%]
-.............................................................................                                                        [100%]
-============================== warnings summary ===============================
-.venv\Lib\site-packages\fastapi\testclient.py:1
-  <repository>\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
-    from starlette.testclient import TestClient as TestClient  # noqa
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-357 passed, 28 skipped, 1 warning, 136 subtests passed in 15.23s
