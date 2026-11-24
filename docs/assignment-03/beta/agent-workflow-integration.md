@@ -1,6 +1,8 @@
 # Beta AgentWorkflow 联调记录
 
-2026 年 11 月 24 日，吴诗莹。开发分支为 `feat/beta-agent-history`，通过 `f91cc08` 同步 `main` 的 `5973eef`。本轮验证基于 `6e763b8` 及后续混合事项修订，直接运行已合入的 #45 业务规则和 #51 Retriever 契约。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51)
+2026 年 11 月 24 日，吴诗莹。开发分支为 `feat/beta-agent-history`，通过 `f91cc08` 同步 `main` 的 `5973eef`。本轮联调直接运行已合入的 #45 业务规则和 #51 Retriever 契约。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51)
+
+本轮验收代码提交为 `f4002459acf2d465ccbe229628c3f1d847ebefd9`。
 
 ## 工作流
 
@@ -18,6 +20,8 @@
 
 ## 本轮复审修改
 
+- 实时名额门禁按问句中的事项关联主题。明确的奖学金主题会结束实验室主题的继承，「EDA 实验室研究什么？另外，奖学金还有几个名额？」会完整进入原有工作流，由实际业务规则询问奖学金类别。只有确认为实验室实时名额的子问句才会被拦截。
+- 新增跨领域 HTTP 回归，覆盖明确的奖学金名额、省略主语但刚切换到奖学金的名额、已明确奖学金类别后保留完整检索问句，以及两类名额同问时只拦截实验室名额。原有实验室名额单问、实验室研究方向单问和同主题混合问句在同一套件中复跑。
 - S4 招募期与年度计划人数使用通过证据门禁的年度通知。单独询问实时剩余名额时，当前接入缺少经核验的实时数据，Agent 在模型调用前返回 `insufficient_evidence / insufficient_data`，引用为空。
 - 按业务规则 §2.4 处理混合事项。问「EDA 实验室研究什么，还有几个名额？」时，Agent 将研究方向交给原有工作流，并单独说明实时名额无法确认。通过门禁的 R4 介绍可以形成 `answered / current_policy` 并提供引用，`warnings` 记录 `LIVE_LAB_QUOTA_UNVERIFIED`。只有 R3 年度计划时整问返回证据不足。只问研究方向时按原流程返回。
 - 新增 `/api/v1/ask` 联调覆盖名额单问、研究单问、正反顺序的混合问句及缺少 R4 资料的场景。BM25 同时召回 R3 年度计划和 R4 公开介绍，真实业务规则只让 R4 进入 Mock Qwen 的证据及最终引用。
@@ -29,8 +33,8 @@
 
 | 验证 | 结果 |
 | --- | --- |
-| 仓库根目录完整 pytest | 514 通过，3 跳过，1 条警告，207 个子测试通过。[原始输出](evidence/agent-workflow-full-mixed-quota-py31011.txt) |
-| 已合入 #45 的规则、Retriever 和 Agent 联调 | 34 通过，1 条警告，61 个子测试通过。[原始输出](evidence/agent-workflow-integration-mixed-quota-py31011.txt) |
+| 仓库根目录完整 pytest | 515 通过，3 跳过，1 条警告，209 个子测试通过。[原始输出](evidence/agent-workflow-full-cross-domain-quota-py31011.txt) |
+| 已合入 #45 的规则、Retriever 和 Agent 联调 | 35 通过，1 条警告，63 个子测试通过。[原始输出](evidence/agent-workflow-integration-cross-domain-quota-py31011.txt) |
 
 两个命令均从仓库根目录使用 Python 3.10.11（Windows AMD64）运行，退出码为 `0`。日志首行保留了 `python -VV`。完整回归跳过了两个正式资料与真实 Qwen 用例和一个当前 Windows 账户无法创建符号链接的用例。警告来自 Starlette 测试客户端的依赖弃用提示。
 
