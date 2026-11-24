@@ -4,6 +4,7 @@ import { requireElement } from '../shared/dom';
 
 const gate = requireElement<HTMLElement>('#demo-entry');
 const workspace = requireElement<HTMLElement>('#demo-workspace');
+const startup = requireElement<HTMLElement>('#student-startup');
 const form = requireElement<HTMLFormElement>('#demo-form');
 const account = requireElement<HTMLInputElement>('#demo-account');
 const password = requireElement<HTMLInputElement>('#demo-password');
@@ -12,6 +13,11 @@ const submit = requireElement<HTMLButtonElement>('#demo-submit');
 const submitLabel = requireElement<HTMLElement>('#demo-submit-label');
 const feedback = requireElement<HTMLElement>('#demo-feedback');
 const sessionKey = 'codemind-fzu:demo-entry';
+
+function showLogin(): void {
+  startup.hidden = true;
+  gate.hidden = false;
+}
 
 async function enterWorkspace(): Promise<void> {
   submit.disabled = true;
@@ -25,12 +31,14 @@ async function enterWorkspace(): Promise<void> {
     account.readOnly = password.readOnly = false;
     submitLabel.textContent = '登录';
     feedback.textContent = '工作台加载失败，请刷新页面后重试。';
+    showLogin();
     return;
   }
 
   account.value = password.value = '';
   password.type = 'password';
   gate.hidden = true;
+  startup.hidden = true;
   workspace.hidden = false;
   document.title = 'CodeMind-FZU · 学生端';
   requireElement<HTMLTextAreaElement>('#ask-input').focus();
@@ -98,10 +106,16 @@ showPassword.addEventListener('click', () => {
 
 submit.disabled = false;
 
-try {
-  if (!new URLSearchParams(location.search).has('preview') && sessionStorage.getItem(sessionKey) === '1') {
-    void enterWorkspace();
+function startStudentEntry(): void {
+  try {
+    if (!new URLSearchParams(location.search).has('preview') && sessionStorage.getItem(sessionKey) === '1') {
+      void enterWorkspace();
+      return;
+    }
+  } catch {
+    // Visitors can still enter from the form when storage is blocked.
   }
-} catch {
-  // Visitors can still enter from the form when storage is blocked.
+  showLogin();
 }
+
+startStudentEntry();

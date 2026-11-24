@@ -1,8 +1,8 @@
 import type {
   AdminDocumentMetadataPatch,
-  ApiErrorResponse,
   AskRequest,
   AskResponse,
+  Citation,
   DocumentListResponse,
   DocumentSummary,
   DocumentUploadResponse,
@@ -11,6 +11,20 @@ import type {
 } from './types';
 
 const API_BASE = '/api/v1';
+const HEALTH_TIMEOUT_MS = 5_000;
+// Leave room for the backend's own model and workflow timeout responses.
+const ASK_TIMEOUT_MS = 45_000;
+const UUID = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+
+// The local Alpha Mock predates Beta's requirement for a non-null answer mode.
+type AlphaMockAnswer = Omit<Extract<AskResponse, { status: 'answered' }>,
+  'answer_mode' | 'clarifying_question' | 'citations'> & {
+  answer_mode: null;
+  clarifying_question: null;
+  citations: [];
+};
+
+export type StudentAskResponse = AskResponse | AlphaMockAnswer;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -26,62 +40,107 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  let response: Response;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isText(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isUuid(value: unknown): boolean {
+  return typeof value === 'string' && UUID.test(value);
+}
+
+async function request<T>(path: string, init?: RequestInit, timeoutMs?: number): Promise<T> {
+  const controller = timeoutMs === undefined ? undefined : new AbortController();
+  const timer = controller && setTimeout(() => controller.abort(), timeoutMs);
   try {
-    response = await fetch(`${API_BASE}${path}`, init);
-  } catch {
+    const response = await fetch(`${API_BASE}${path}`, controller ? { ...init, signal: controller.signal } : init);
+    const data: unknown = await response.json().catch(() => null);
+    controller?.signal.throwIfAborted();
+    if (!response.ok) {
+      const detail = isRecord(data) && isRecord(data.error) ? data.error : undefined;
+      const code = isText(detail?.code) ? detail.code : `HTTP_${response.status}`;
+      const fallback = response.status >= 500 ? '后端暂不可用，请确认服务已启动。' : '请求失败，请检查后重试。';
+      throw new ApiError(response.status, code, isText(detail?.message) ? detail.message : fallback, detail?.retryable === true);
+    }
+    if (!isRecord(data)) {
+      throw new ApiError(response.status, 'INVALID_RESPONSE', '后端返回了无效数据，请稍后重试。');
+    }
+    return data as T;
+  } catch (error) {
+    if (controller?.signal.aborted) {
+      throw new ApiError(0, 'REQUEST_TIMEOUT', '请求等待超时，请稍后重试。', true);
+    }
+    if (error instanceof ApiError) throw error;
     throw new ApiError(0, 'NETWORK_ERROR', '无法连接后端，请检查网络或服务是否已启动。', true);
+  } finally {
+    clearTimeout(timer);
   }
-
-  if (!response.ok) {
-    let detail: ApiErrorResponse | null = null;
-    try {
-      detail = (await response.json()) as ApiErrorResponse;
-    } catch {
-      detail = null;
-    }
-    const code = detail?.error?.code ?? `HTTP_${response.status}`;
-    const message = detail?.error?.message
-      ?? (response.status >= 500 ? '后端暂不可用，请确认服务已启动。' : '请求失败，请检查后重试。');
-    throw new ApiError(response.status, code, message, detail?.error?.retryable ?? false);
-  }
-
-  try {
-    const data: unknown = await response.json();
-    if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
-      return data as T;
-    }
-  } catch {
-    // An empty or non-JSON success response also violates the API contract.
-  }
-  throw new ApiError(response.status, 'INVALID_RESPONSE', '后端返回了无效数据，请稍后重试。');
 }
 
 export async function fetchHealth(): Promise<HealthResponse> {
-  const health = await request<HealthResponse>('/health');
-  if (health.status !== 'ok' || !health.service || !health.version) {
+  const health = await request<HealthResponse>('/health', undefined, HEALTH_TIMEOUT_MS);
+  if (health.status !== 'ok' || !isText(health.service) || !isText(health.version)
+    || !isText(health.timestamp) || !Number.isFinite(Date.parse(health.timestamp))) {
     throw new ApiError(200, 'INVALID_RESPONSE', '无法识别后端健康检查结果。');
   }
   return health;
 }
 
-export async function ask(payload: AskRequest): Promise<AskResponse> {
-  const response = await request<AskResponse>('/ask', {
+function parseCitation(value: unknown): Citation | null {
+  if (!isRecord(value) || !isUuid(value.document_id) || !isUuid(value.version_id) || !isUuid(value.chunk_id)
+    || !isText(value.title) || !isText(value.excerpt)
+    || !['pending', 'partial', 'verified', 'failed'].some(status => status === value.source_verification_status)
+    || !['pending', 'current', 'historical', 'superseded', 'expired', 'uncertain'].some(status => status === value.timeliness_verification_status)
+    || !['blocked', 'review_only', 'enabled'].some(status => status === value.retrieval_status)) {
+    return null;
+  }
+  const textFields = ['publisher', 'published_on', 'effective_on', 'locator', 'original_locator', 'source_url'];
+  if (textFields.some(key => value[key] != null && typeof value[key] !== 'string')) return null;
+  // A missing link can be shown as citation text without generating a destination.
+  return { ...value, source_url: value.source_url ?? '' } as unknown as Citation;
+}
+
+function parseAskResponse(response: Record<string, unknown>): StudentAskResponse {
+  const invalid = new ApiError(200, 'INVALID_RESPONSE', '问答接口返回了无效或空数据，请稍后重试。');
+  if (!isUuid(response.conversation_id)) {
+    throw new ApiError(200, 'INVALID_RESPONSE', '问答接口没有返回有效的会话编号，请稍后重试。');
+  }
+  if (!isUuid(response.request_id) || !isText(response.created_at) || !Number.isFinite(Date.parse(response.created_at))
+    || !Array.isArray(response.citations) || !Array.isArray(response.warnings)
+    || !response.warnings.every(item => isRecord(item) && isText(item.code) && isText(item.message))
+    || (response.answer !== null && typeof response.answer !== 'string')
+    || (response.clarifying_question !== null && typeof response.clarifying_question !== 'string')) {
+    throw invalid;
+  }
+
+  const citations = response.citations.map(parseCitation);
+  const isAlphaMock = response.answer_mode === null && response.clarifying_question === null
+    && citations.length === 0 && response.warnings.some(item => item.code === 'MOCK_AGENT');
+  const validStatus = (
+    (response.status === 'answered' && isText(response.answer)
+      && (isAlphaMock || ['current_policy', 'historical', 'procedure_reference'].some(mode => mode === response.answer_mode)))
+    || (response.status === 'needs_clarification' && response.answer === null && response.answer_mode === null
+      && isText(response.clarifying_question) && citations.length === 0)
+    || (response.status === 'insufficient_evidence' && response.answer_mode === 'insufficient_data'
+      && (isText(response.answer) || response.warnings.length > 0) && citations.length === 0)
+  );
+  if (!validStatus || !citations.every(citation => citation !== null)) throw invalid;
+  return { ...response, citations } as unknown as StudentAskResponse;
+}
+
+export async function ask({ query, conversation_id = null }: AskRequest): Promise<StudentAskResponse> {
+  if (conversation_id !== null && !isUuid(conversation_id)) {
+    throw new ApiError(0, 'INVALID_CONVERSATION', '当前会话标识无效，请点击「新建对话」后再发送。');
+  }
+  const response = await request<Record<string, unknown>>('/ask', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const validStatus =
-    (response.status === 'answered' && typeof response.answer === 'string' && !!response.answer.trim())
-    || (response.status === 'needs_clarification'
-      && typeof response.clarifying_question === 'string' && !!response.clarifying_question.trim())
-    || (response.status === 'insufficient_evidence' && response.answer_mode === 'insufficient_data');
-  if (!validStatus || !response.conversation_id || !Array.isArray(response.citations)
-    || !Array.isArray(response.warnings)) {
-    throw new ApiError(200, 'INVALID_RESPONSE', '问答接口返回了无效或空数据，请稍后重试。');
-  }
-  return response;
+    body: JSON.stringify({ query, conversation_id }),
+  }, ASK_TIMEOUT_MS);
+  return parseAskResponse(response);
 }
 
 /* ==========================================================================
