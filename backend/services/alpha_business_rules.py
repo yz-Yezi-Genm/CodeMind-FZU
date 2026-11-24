@@ -45,6 +45,7 @@ from backend.contracts.models import (
     SourceVerificationStatus,
     TimelinessVerificationStatus,
 )
+from backend.services.resource_team_names import r3_team_names
 
 MetadataLookup = Callable[[UUID], DocumentMetadata | None]
 ChunkLookup = Callable[[UUID], ParsedChunk | None]
@@ -191,6 +192,7 @@ _LAB_JOIN = re.compile(
 )
 _LAB_CONTACT = re.compile(r"联系方式|联系电话|电话|邮箱|联系人|地址|地点")
 _LAB_LIST = re.compile(r"有哪些实验室|实验室(?:名单|一览|列表|目录)|学院.*实验室|哪些实验室")
+_COMPETITION_REGISTRATION = re.compile(r"报名|参赛")
 _STUDY_QUESTION = re.compile(r"培养方案|课程|选课|辅修|通识|学位要求|修多少")
 _PLAN_MAJOR = re.compile(r"计算机专业|软件专业|计算机类|软件类|人工智能专业|大数据专业|信息安全专业")
 _CONTACT_QUESTION = re.compile(r"联系方式|电话|邮箱|办公地点|办公室|地址|官网|学院简介|系所简介")
@@ -465,7 +467,7 @@ def _detect(text: str) -> tuple[str | None, str | None]:
             return RECOMMENDATION, PURPOSE_EVALUATION
         return RECOMMENDATION, None
     # 只有资源类名词、没有正式办理/资格/加分意图时，归 S4。
-    if resource and not competition and not scholarship:
+    if not competition and not scholarship and (resource or r3_team_names(text)):
         return RESOURCES, None
     # 奖学金名称里也常带“学科竞赛类”等字样，只有明确问创新学分或综测加分
     # 才按竞赛认定处理，否则仍归奖学金场景。
@@ -722,7 +724,7 @@ def _resource_categories(text: str) -> set[str]:
         current = part.strip()
         if not current:
             continue
-        if _LAB_QUESTION.search(current):
+        if _LAB_QUESTION.search(current) or r3_team_names(current):
             join = bool(_LAB_JOIN.search(current))
             intro = bool(_LAB_INTRO.search(current))
             contact = bool(_LAB_CONTACT.search(current))
@@ -808,6 +810,10 @@ def _clarify_competition(text: str, subject: str | None = None) -> str | None:
         return None
     purpose = _purpose(current) or _purpose(text)
     if purpose is None:
+        if "团队" in current and _COMPETITION_REGISTRATION.search(current):
+            if not _competition_keys(text):
+                return QUESTION_COMPETITION_NAME
+            return QUESTION_LEVEL if _level_for(subject, text) is None else None
         return QUESTION_PURPOSE
     if purpose == PURPOSE_RECOMMENDATION:
         return None
@@ -1178,6 +1184,9 @@ def _check_resources(
         return False
     # 来源规则按资料自身类别执行，不因同一问题里还有别的资源类别而放松。
     doc_kind = next(iter(kinds))
+    teams = r3_team_names(request.query)
+    if teams and doc_kind in {RES_LAB, RES_INTRO} and not teams.intersection(r3_team_names(chunk.content)):
+        return False
     if not _official_resource_source(facts, doc_kind, text):
         return False
     requires_app = doc_kind in _RESOURCE_APPLICABILITY_REQUIRED

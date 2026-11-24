@@ -25,6 +25,7 @@ from backend.services.agent_policy_context import (
     PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
+from backend.services.resource_team_names import r3_team_names
 
 logger = logging.getLogger(__name__)
 ClarificationRule = Callable[[AgentRequest], str | None]
@@ -51,7 +52,7 @@ def _user_context(request: AgentRequest) -> str:
 def default_clarification_rule(request: AgentRequest) -> str | None:
     """Default for direct callers. The runtime injects the business rules."""
     context = _user_context(request)
-    if not _TOPIC.search(context):
+    if not (_TOPIC.search(context) or r3_team_names(context)):
         return "请问你具体咨询哪项学校政策或办理事项？"
     if re.search(r"奖学金|综评|综合素质", context) and not _YEAR.search(context):
         return "请问你咨询的是哪一学年的评定？"
@@ -219,7 +220,7 @@ class AgentWorkflow:
 
         if not evidence:
             if closed_notices:
-                return self._answer_closed_recruitment(request, closed_notices)
+                return self._answer_closed_recruitment(request, scope, closed_notices)
             return _insufficient("NO_ELIGIBLE_EVIDENCE", "未找到通过审核且符合本次问题适用范围和时间的资料，无法给出确定结论。")
         facts = requested_facts(scope.fact_question)
         if facts and not any(fact.search(item.chunk.content) for fact in facts for item in evidence):
@@ -267,6 +268,8 @@ class AgentWorkflow:
             replaced = any(item.metadata.timeliness_verification_status == TimelinessVerificationStatus.SUPERSEDED
                            for item in selected)
             note = "其中有政策版本已被替代。" if replaced else "相关通知已结束或仅保留历史效力。"
+            if all(scope.expired_team_registration_mode(item.metadata) for item in selected):
+                note = "所引通知对应年度的报名已截止。"
             message = f"以下为{periods}历史资料。{note}请勿用于当前办理。"
             answer = f"{message}\n\n{answer}"
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message=message))
@@ -289,17 +292,21 @@ class AgentWorkflow:
         except Exception:
             return False
 
-    def _answer_closed_recruitment(self, request: AgentRequest, notices: list[Evidence]) -> AgentResult:
+    def _answer_closed_recruitment(
+        self, request: AgentRequest, scope: PolicyScope, notices: list[Evidence],
+    ) -> AgentResult:
         notice = max(notices, key=lambda item: item.metadata.deadline_on or date.min)
         if not self._evidence_unchanged(request, [notice]):
             return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
-        deadline = notice.metadata.deadline_on
-        if deadline is None:
-            return _insufficient("NO_ELIGIBLE_EVIDENCE", "无法核验该年度招募的截止日期。")
+        deadline = scope.recruitment_deadline(notice.metadata, notice.chunk.content)
+        when = f"于{deadline}" if deadline else ""
+        period = notice.period or ""
+        if period.endswith("年") and not period.endswith("学年"):
+            period += "度"
         message = "目前是否有新一轮招募，暂无法确认。"
         return AgentResult(
             status=AnswerStatus.ANSWERED,
-            answer=f"{notice.period}度报名已于{deadline.year}年{deadline.month}月{deadline.day}日截止。{message}",
+            answer=f"{period}报名已{when}截止。{message}",
             answer_mode=AnswerMode.HISTORICAL,
             citations=[notice.citation()],
             warnings=[WarningItem(code="HISTORICAL_POLICY", message=message)],
@@ -344,6 +351,8 @@ class AgentWorkflow:
                 closed_period = scope.closed_recruitment_period(metadata, chunk.content)
                 if closed_period:
                     scope_result = AnswerMode.HISTORICAL, closed_period
+                else:
+                    scope_result = scope.expired_team_registration_mode(metadata)
         except Exception:
             return None
         if scope_result is None or (metadata.applicability_raw is None and self.evidence_check is None):

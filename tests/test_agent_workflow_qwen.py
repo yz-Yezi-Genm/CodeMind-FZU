@@ -1414,6 +1414,137 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(pending.citations, [])
         self.assertEqual(self.observed, [])
 
+    async def test_beta_s4_verified_team_registration_and_quota_over_http(self):
+        for lab in ("福州大学超算团队", "ROIS 团队"):
+            with self.subTest(lab=lab):
+                self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+                workflow = await self.workflow()
+                service = ConversationAgentService(workflow, InMemoryConversationStore())
+                calls = len(self.observed)
+                async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                             base_url="http://test") as client:
+                    first = (await client.post("/api/v1/ask", json={"query": f"{lab}怎么报名？"})).json()
+                    self.assertEqual((first["status"], first["answer_mode"]), ("answered", "historical"))
+                    self.assertIn("报名已截止", first["answer"])
+                    self.assertIn("请提交报名表", first["answer"])
+                    self.assertEqual(first["citations"][0]["excerpt"], self.package.chunks[0].content)
+                    for query, code in (("还可以报名吗？", "HISTORICAL_POLICY"),
+                                        ("现在还剩几个名额？", "LIVE_LAB_QUOTA_UNVERIFIED")):
+                        result = (await client.post("/api/v1/ask", json={
+                            "query": query, "conversation_id": first["conversation_id"],
+                        })).json()
+                        self.assertEqual(result["warnings"][0]["code"], code)
+                        if query.startswith("还可以"):
+                            self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
+                            self.assertIn("2026年10月31日截止", result["answer"])
+                            self.assertEqual(result["citations"], first["citations"])
+                        else:
+                            self.assertEqual((result["status"], result["answer_mode"]),
+                                             ("insufficient_evidence", "insufficient_data"))
+                            self.assertEqual(result["citations"], [])
+                self.assertEqual(len(self.observed), calls + 1)
+
+    async def test_beta_s4_verified_team_needs_matching_reviewed_recruitment_evidence(self):
+        lab = "ROIS 团队"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED,
+                                     "福州大学超算团队")
+        workflow = await self.workflow()
+        result = await workflow.run(self.request(f"{lab}怎么报名？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
+
+        candidate_path = (ROOT / "knowledge_base/processed/alpha/pending-review"
+                          / "qinghe-b8-2026-11-23/qinghe-r3.json")
+        candidate = DocumentPackage.model_validate_json(candidate_path.read_bytes())
+        self.assertEqual(candidate.metadata.retrieval_status, "blocked")
+        self.assertIs(candidate.metadata.temporal_notes["human_approved"], False)
+        # Even an accidental copy into an approved directory must stay excluded.
+        candidate_dir = self.root / "pending-fixture"
+        candidate_dir.mkdir()
+        (candidate_dir / candidate_path.name).write_bytes(candidate_path.read_bytes())
+        pending, report = await load_approved_alpha_retriever(
+            file_root=self.root, corpus_dir=candidate_dir, allow_missing=False,
+        )
+        self.assertEqual(report.loaded_packages, ())
+        self.assertEqual(await pending.retrieve(RetrievalRequest(query=lab)), [])
+        source_info = "合成测试：ROIS 团队需提交报名表。"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+        self.package.metadata.deadline_on = None
+        for content, expected_deadline in (
+            (source_info, None),
+            (source_info + "报名截止日期为2026年10月31日。", "2026年10月31日"),
+            (source_info + "请于10月31日前提交。", "10月31日"),
+        ):
+            with self.subTest(content=content):
+                self.package.chunks[0].content = content
+                workflow = await self.workflow()
+                result = await workflow.run(self.request("还可以报名吗？", [f"{lab}怎么报名？"]))
+                self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
+                self.assertIn("截止", result.answer)
+                self.assertEqual("月" in result.answer, expected_deadline is not None)
+                if expected_deadline:
+                    self.assertIn(expected_deadline, result.answer)
+                self.assertEqual(result.citations[0].excerpt, content)
+
+        self.package.metadata.temporal_notes["human_approved"] = False
+        await workflow.retriever.index_document(self.package)
+        result = await workflow.run(self.request(f"{lab}怎么报名？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_verified_team_purpose_intro_and_current_plan(self):
+        lab = "ROIS 团队"
+        self.lab_recruitment_fixture(date(2026, 12, 1), TimelinessVerificationStatus.CURRENT, lab)
+        workflow = await self.workflow()
+        intro = self.package.model_copy(deep=True)
+        intro.metadata.record_code = "SYNTH-ROIS-INTRO"
+        intro.metadata.title = "合成测试：ROIS 团队研究方向"
+        intro.metadata.category_name = "研究方向与公开介绍"
+        intro.metadata.applicability_raw = None
+        intro.metadata.deadline_on = None
+        intro.metadata.document_type = "研究方向与公开介绍"
+        intro.chunks[0].content = "合成测试：ROIS 团队研究方向为合成示例。"
+        await workflow.retriever.index_document(intro)
+        result = await workflow.run(self.request(lab))
+        self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_LAB_PURPOSE)
+        for query, history in ((f"{lab}研究什么？", []), ("研究什么？", [lab])):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query, history))
+                self.assertEqual(result.answer_mode, "current_policy")
+                self.assertEqual([citation.excerpt for citation in result.citations], [intro.chunks[0].content])
+                self.assertEqual([entry["content"] for entry in self.observed[-1]], [intro.chunks[0].content])
+        active = await workflow.run(self.request(f"{lab}怎么报名？"))
+        self.assertEqual(active.answer_mode, "procedure_reference")
+        self.assertEqual([citation.excerpt for citation in active.citations], [self.package.chunks[0].content])
+        for query, history in ((f"{lab}现在还剩几个名额？", []), ("现在还剩几个名额？", [f"{lab}怎么报名？"])):
+            result = await workflow.run(self.request(query, history))
+            self.assertEqual(result.warnings[0].code, "LIVE_LAB_QUOTA_UNVERIFIED")
+            self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 3)
+
+    async def test_beta_team_routing_keeps_unknown_and_competition_teams_out_of_s4(self):
+        workflow = await self.workflow()
+        with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+            for query in ("陌生团队怎么报名？", "NOTROIS 团队怎么报名？", "福州大学超算团队二队怎么报名？"):
+                with self.subTest(query=query):
+                    result = await workflow.run(self.request(query, ["ROIS 团队怎么报名？"]))
+                    self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_TOPIC)
+            for history, expected in (
+                ([], alpha_business_rules.QUESTION_COMPETITION_NAME),
+                (["蓝桥杯竞赛怎么报名？"], alpha_business_rules.QUESTION_LEVEL),
+                (["ROIS 团队怎么报名？"], alpha_business_rules.QUESTION_COMPETITION_NAME),
+            ):
+                result = await workflow.run(self.request("我们竞赛团队还能报名吗？", history))
+                self.assertEqual(result.clarifying_question, expected)
+            result = await workflow.run(self.request("ROIS 团队参加蓝桥杯竞赛怎么报名？"))
+            self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_LEVEL)
+            retrieve.assert_not_awaited()
+        self.assertEqual(self.observed, [])
+
     async def test_clarification_and_evidence_share_injected_clock(self):
         workflow = await self.workflow()
         query = self.request("2029年推免政策是什么？")

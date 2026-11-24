@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 
 from backend.contracts.models import AgentRequest, AnswerMode, DocumentMetadata, LLMRole
 from backend.contracts.models import TimelinessVerificationStatus as Timeliness
+from backend.services.resource_team_names import r3_team_names, without_r3_team_names
 
 
 # Topic cues only delimit history. The injected rules own scenario and applicability decisions.
@@ -95,6 +96,15 @@ _RECRUITING = r"(?:还(?:在)?招(?:人|募|收)?|还(?:能|可以)报名)"
 _QUOTA = r"(?:还剩(?:几个|多少)(?:名额)?|还招(?:几个|几人|多少人?))"
 _RECRUITMENT_SUFFIX = rf"{_STILL}(?:{_RECRUITING}|{_QUOTA})(?:吗|么)?[？?。]*"
 _RECRUITMENT_FOLLOW_UP = re.compile(rf"(?:请问[，,]?\s*|那\s*)?(?P<question>{_RECRUITMENT_SUFFIX})")
+_TEAM_PURPOSE_REPLY = re.compile(r"(?:报名|怎么报名|怎么进|加入|研究方向|研究什么)[？?。]*")
+_TEAM_REGISTRATION = re.compile(r"报名|怎么进|如何进|加入|招新")
+_COMPETITION_TEAM_FOLLOW_UP = re.compile(r"^(?:我们)?(?:的)?(?:竞赛|比赛)团队还(?:能|可以)报名吗[？?。]*$")
+_SOURCE_DEADLINE = re.compile(
+    r"截止(?:日期|时间)?[为是于：: ]*"
+    r"(?:(?P<year>20\d{2})[-/.年]\s*)?(?P<month>\d{1,2})[-/.月]\s*(?P<day>\d{1,2})日?"
+    r"|(?:(?P<before_year>20\d{2})年)?(?P<before_month>\d{1,2})月(?P<before_day>\d{1,2})日"
+    r"前(?:报名|提交|发送)"
+)
 _QINGHE = "青禾计划"
 _QINGHE_LABS = "青禾计划实验室"
 _QINGHE_STATUS = re.compile(rf"(?:请问[，,]?\s*)?{_QINGHE}\s*(?P<question>{_RECRUITMENT_SUFFIX})")
@@ -116,7 +126,10 @@ def _is_college_contact_page(url: str) -> bool:
 
 
 def _topics(text: str) -> set[int]:
-    return {index for index, cue in enumerate(_TOPICS) if cue.search(text)}
+    topics = {index for index, cue in enumerate(_TOPICS) if cue.search(text)}
+    if r3_team_names(text):
+        topics.add(3)
+    return topics
 
 
 def _lab_key(name: str) -> str:
@@ -170,10 +183,10 @@ def is_live_quota_question(text: str) -> bool:
 
 def _lab_quota_topic(text: str) -> bool | None:
     """Identify an explicit lab topic, a different topic, or an implicit subject."""
-    other_text = _LAB_TOPIC.sub("", text)
+    other_text = _LAB_TOPIC.sub("", without_r3_team_names(text))
     if _topics(other_text) or _OTHER_QUOTA_TOPIC.search(other_text):
         return False
-    return True if _LAB_TOPIC.search(text) else None
+    return True if _LAB_TOPIC.search(text) or r3_team_names(text) else None
 
 
 def separate_live_lab_quota(request: AgentRequest) -> str | None:
@@ -230,15 +243,17 @@ def contextual_request(request: AgentRequest) -> AgentRequest:
     current_topics = _topics(query)
     history = []
     filled = {slot for slot, matches in _slot_matches(query).items() if matches}
-    follow_up = _FOLLOW_UP.search(query)
+    follow_up = _FOLLOW_UP.search(query) or _COMPETITION_TEAM_FOLLOW_UP.fullmatch(query)
     recruitment_follow_up = _RECRUITMENT_FOLLOW_UP.fullmatch(query)
+    team_purpose_reply = _TEAM_PURPOSE_REPLY.fullmatch(query)
     # A self-contained new question starts afresh even within the same domain.
     named_works = set(_NAMED_WORK.findall(query))
     named_labs = _named_labs(query)
     references = tuple(match[1].casefold() for match in _LAB_REFERENCE.finditer(query))
     if (_NEW_TOPIC.search(query)
             or (current_topics and not (named_works or follow_up))
-            or (not current_topics and not (filled or follow_up or recruitment_follow_up or _MISSING_TOPIC.search(query)))):
+            or (not current_topics and not (filled or follow_up or recruitment_follow_up
+                                            or team_purpose_reply or _MISSING_TOPIC.search(query)))):
         return request.model_copy(update={"history": history})
 
     for turn in reversed(request.history):
@@ -284,12 +299,16 @@ def contextual_request(request: AgentRequest) -> AgentRequest:
             # Pass both the inherited historical subject and the new year together.
             subject = history.pop().content.strip().rstrip("？?。！!")
             resolved_query = f"{year}的{subject}？"
-        elif recruitment_follow_up and _topics(topic) == {3}:
+        elif (recruitment_follow_up or team_purpose_reply) and _topics(topic) == {3}:
             labs = {_lab_key(match["name"]): match["name"] for match in _LAB_SUBJECT.finditer(topic)}
-            if len(labs) == 1:
+            if len(labs) == 1 and recruitment_follow_up:
                 resolved_query = next(iter(labs.values())) + recruitment_follow_up["question"]
-            elif not labs and _QINGHE in topic:
+            elif len(labs) == 1 and team_purpose_reply and r3_team_names(next(iter(labs.values()))):
+                resolved_query = next(iter(labs.values())) + query
+            elif recruitment_follow_up and not labs and _QINGHE in topic:
                 resolved_query = _QINGHE_LABS + recruitment_follow_up["question"]
+        if team_purpose_reply and resolved_query == request.query and not _MISSING_TOPIC.search(query):
+            history.clear()
     return request.model_copy(update={"query": resolved_query, "history": list(reversed(history))})
 
 
@@ -369,24 +388,65 @@ class PolicyScope:
     def evidence_mode(self, metadata: DocumentMetadata) -> tuple[AnswerMode, str | None] | None:
         return self._evidence_mode(metadata, closing_recruitment=False)
 
+    def expired_team_registration_mode(self, metadata: DocumentMetadata) -> tuple[AnswerMode, str | None] | None:
+        """Permit a historical process answer for an explicitly named team."""
+        if (len(r3_team_names(self.fact_question)) != 1 or _topics(self.fact_question) != {3}
+                or not _TEAM_REGISTRATION.search(self.fact_question)
+                or self.needs_window or not _is_college_resource(metadata, _R3_CATEGORY)
+                or not self._recruitment_closed(metadata)):
+            return None
+        return self._evidence_mode(metadata, closing_recruitment=True)
+
+    def _recruitment_closed(self, metadata: DocumentMetadata) -> bool:
+        deadline = metadata.deadline_on
+        if deadline is not None and deadline >= self.today:
+            return False
+        return (metadata.timeliness_verification_status == Timeliness.EXPIRED
+                or (metadata.timeliness_verification_status == Timeliness.HISTORICAL and deadline is not None))
+
     def closed_recruitment_period(self, metadata: DocumentMetadata, content: str) -> str | None:
-        """Allow a dated closure statement for a named lab's status inquiry."""
+        """Allow a closure statement for a named lab or verified team's status inquiry."""
         match = _LAB_STATUS.fullmatch(self.fact_question.strip())
         if (not match or not _is_college_resource(metadata, _R3_CATEGORY)
-                or metadata.timeliness_verification_status not in {Timeliness.HISTORICAL, Timeliness.EXPIRED}
-                or not metadata.deadline_on or metadata.deadline_on >= self.today):
+                or not self._recruitment_closed(metadata)):
             return None
-        lab = _lab_key(match["lab"] or match["after"])
+        name = match["lab"] or match["after"]
+        teams = r3_team_names(name)
+        if teams:
+            if not teams.intersection(r3_team_names(content)):
+                return None
+        elif metadata.deadline_on is None or (name.endswith("团队") and not name.endswith("科研团队")):
+            return None
+        lab = _lab_key(name)
         normalized_content = re.sub(r"\s+", "", content).casefold()
         if lab == _QINGHE_LABS:
             if _QINGHE not in metadata.title or _QINGHE not in normalized_content:
                 return None
-        elif lab not in _named_labs(content):
+        elif not teams and lab not in _named_labs(content):
             # Keep the existing match for names like EDA embedded in Chinese prose.
             if not (_ASCII_LAB.fullmatch(lab) and re.search(rf"(?<![a-z0-9_]){re.escape(lab)}", normalized_content)):
                 return None
         result = self._evidence_mode(metadata, closing_recruitment=True)
         return result[1] if result and result[0] == AnswerMode.HISTORICAL else None
+
+    def recruitment_deadline(self, metadata: DocumentMetadata, content: str) -> str | None:
+        if metadata.deadline_on is not None:
+            deadline = metadata.deadline_on
+            return f"{deadline.year}年{deadline.month}月{deadline.day}日"
+        # An explicitly expired notice may give a month and day without a year.
+        deadlines = set()
+        for match in _SOURCE_DEADLINE.finditer(content):
+            year = match["year"] or match["before_year"]
+            try:
+                deadline = date(int(year or 2000), int(match["month"] or match["before_month"]),
+                                int(match["day"] or match["before_day"]))
+            except ValueError:
+                return None
+            if year and deadline >= self.today:
+                return None
+            month_day = f"{deadline.month}月{deadline.day}日"
+            deadlines.add(f"{year}年{month_day}" if year else month_day)
+        return next(iter(deadlines)) if len(deadlines) == 1 else None
 
     def _allows_public_resource_without_applicability(self, metadata: DocumentMetadata) -> bool:
         if self.needs_window:
