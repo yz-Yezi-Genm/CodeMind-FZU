@@ -47,7 +47,7 @@
 <text x="800.0" y="464.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">方向不确定时不传 business_direction_code，全库检索</text>
 <rect x="560" y="494" width="480" height="62" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2"/>
 <text x="800.0" y="520.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">来源 / 适用范围 / 审核状态 / 时效检查（证据门禁）</text>
-<text x="800.0" y="538.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">历史资料按问题时间范围选择并标注 historical，不得冒充现行政策</text>
+<text x="800.0" y="538.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">历史资料按问题时间范围选择并标注 historical；规则层已落地，工作流放行待 #46</text>
 <rect x="560" y="574" width="480" height="50" rx="8" fill="#fff8e1" stroke="#f9ab00" stroke-width="2"/>
 <text x="800.0" y="594.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">合格证据交给 Qwen（受约束生成）</text>
 <text x="800.0" y="612.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Agent 分配临时 evidence_id 并保存与真实片段的映射</text>
@@ -72,5 +72,5 @@
 <text x="1315.0" y="649.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">未知 ID 或跨请求 ID / 空答案</text>
 <text x="1315.0" y="667.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">answer_mode=insufficient_data，citations 为空</text>
 <text x="1315.0" y="685.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">不伪造政策答案与引用</text>
-<text x="800.0" y="922" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-23 | 追问阶段不调用检索与模型；证据不足按 HTTP 200 返回 insufficient_evidence</text>
+<text x="800.0" y="922" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-24 | 追问阶段不调用检索与模型；证据不足按 HTTP 200 返回 insufficient_evidence</text>
 </svg>

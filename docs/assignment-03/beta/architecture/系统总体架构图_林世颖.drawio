@@ -52,13 +52,13 @@
         <mxCell id="n14" value="Agent 工作流与协作模块" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontColor=#6a1b9a;fillColor=none;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="120" y="434" width="1360" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="n15" value="AgentWorkflow（已实现，Beta 补齐）&#10;场景识别 · 追问 · 检索编排 · 证据门禁 · Agent 构造 Citation&#10;Beta 补齐：历史政策处理 · S4 接入 · evidence_id 受约束生成校验" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+        <mxCell id="n15" value="AgentWorkflow（已实现，Beta 补齐）&#10;场景识别 · 追问 · 检索编排 · 证据门禁 · Agent 构造 Citation&#10;Beta 补齐：工作流历史政策放行 · evidence_id 受约束生成校验 · 四场景 E2E 集成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="120" y="468" width="430" height="84" as="geometry" />
         </mxCell>
-        <mxCell id="n16" value="业务规则（S1/S2/S3 已实现，S4 Beta 新增）&#10;追问规则 · 证据适用性 · 历史政策判定&#10;build_from_retriever 闭包绑定只读元数据/片段查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+        <mxCell id="n16" value="业务规则（S1—S4 规则层已落地）&#10;场景识别/追问/适用性 · S4 六类资源与官方来源核验 · 历史资料规则层判断&#10;工作流历史政策放行与受约束生成仍待集成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="585" y="468" width="430" height="84" as="geometry" />
         </mxCell>
-        <mxCell id="n17" value="Retriever / LocalBM25Retriever（已实现）&#10;BM25 中文分词检索排序 · 内存索引&#10;三方法实现齐全；纳入公共 Protocol 为 Beta 补齐项" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+        <mxCell id="n17" value="Retriever / LocalBM25Retriever（已实现）&#10;BM25 中文分词检索排序 · 内存索引&#10;三方法已纳入公共 Retriever Protocol（#51）；title+content 加权索引待二期（#53）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="1050" y="468" width="430" height="84" as="geometry" />
         </mxCell>
         <mxCell id="n18" value="QwenClient（适配已实现，受约束生成 Beta 补齐）&#10;HTTP 适配 · 超时/重试/限流/错误映射；API Key 仅环境变量&#10;Beta 改为临时 evidence_id + used_evidence_ids 内部 JSON 约定" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
@@ -166,7 +166,7 @@
             <mxPoint x="800" y="792" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-23 | 基线：main a789f53；绿色为已实现，橙色为 Beta 开发中，灰色虚线为规划/本轮不要求" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-24 | 基线：main 5973eef；绿色为已实现，橙色为 Beta 开发中，灰色虚线为规划/本轮不要求" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="300" y="1054" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>

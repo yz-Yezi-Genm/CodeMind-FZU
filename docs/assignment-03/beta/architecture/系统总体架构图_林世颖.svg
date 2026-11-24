@@ -58,15 +58,15 @@
 <rect x="120" y="468" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="335.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">AgentWorkflow（已实现，Beta 补齐）</text>
 <text x="335.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">场景识别 · 追问 · 检索编排 · 证据门禁 · Agent 构造 Citation</text>
-<text x="335.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Beta 补齐：历史政策处理 · S4 接入 · evidence_id 受约束生成校验</text>
+<text x="335.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Beta 补齐：工作流历史政策放行 · evidence_id 受约束生成校验 · 四场景 E2E 集成</text>
 <rect x="585" y="468" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
-<text x="800.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">业务规则（S1/S2/S3 已实现，S4 Beta 新增）</text>
-<text x="800.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">追问规则 · 证据适用性 · 历史政策判定</text>
-<text x="800.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">build_from_retriever 闭包绑定只读元数据/片段查询</text>
+<text x="800.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">业务规则（S1—S4 规则层已落地）</text>
+<text x="800.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">场景识别/追问/适用性 · S4 六类资源与官方来源核验 · 历史资料规则层判断</text>
+<text x="800.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">工作流历史政策放行与受约束生成仍待集成</text>
 <rect x="1050" y="468" width="430" height="84" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="1265.0" y="496.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">Retriever / LocalBM25Retriever（已实现）</text>
 <text x="1265.0" y="514.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">BM25 中文分词检索排序 · 内存索引</text>
-<text x="1265.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">三方法实现齐全；纳入公共 Protocol 为 Beta 补齐项</text>
+<text x="1265.0" y="532.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">三方法已纳入公共 Retriever Protocol（#51）；title+content 加权索引待二期（#53）</text>
 <rect x="120" y="572" width="430" height="76" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="335.0" y="596.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">QwenClient（适配已实现，受约束生成 Beta 补齐）</text>
 <text x="335.0" y="614.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">HTTP 适配 · 超时/重试/限流/错误映射；API Key 仅环境变量</text>
@@ -112,5 +112,5 @@
 <text x="1255.0" y="930.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#757575">后续迭代与可选拓展，不纳入 Beta</text>
 <rect x="100" y="1024" width="1400" height="30" rx="8" fill="#e8f5e9" stroke="#34a853" stroke-width="2"/>
 <text x="800.0" y="1043.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" font-weight="bold" fill="#333333">tests/ 覆盖运行时、契约、Agent 工作流、业务规则、本地检索、已审核资料加载、Qwen 适配、文档解析与 E2E；Beta 新增场景、历史政策与受约束生成用例待补齐</text>
-<text x="800.0" y="1066" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-23 | 基线：main a789f53；绿色为已实现，橙色为 Beta 开发中，灰色虚线为规划/本轮不要求</text>
+<text x="800.0" y="1066" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-24 | 基线：main 5973eef；绿色为已实现，橙色为 Beta 开发中，灰色虚线为规划/本轮不要求</text>
 </svg>

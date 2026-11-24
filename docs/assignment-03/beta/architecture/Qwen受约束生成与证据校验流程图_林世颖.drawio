@@ -79,7 +79,7 @@
             <mxPoint x="800" y="560" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-23 | evidence_id 请求内有效；Citation 由 Agent 根据真实检索片段构造" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-24 | evidence_id 请求内有效；Citation 由 Agent 根据真实检索片段构造" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="300" y="770" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>

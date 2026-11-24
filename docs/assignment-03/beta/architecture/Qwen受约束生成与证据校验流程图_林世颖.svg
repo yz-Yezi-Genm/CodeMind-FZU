@@ -48,5 +48,5 @@
 <rect x="140" y="690" width="1320" height="64" rx="8" fill="#ffffff" stroke="#9e9e9e" stroke-width="2"/>
 <text x="800.0" y="717.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">evidence_id 是 Agent 与 Qwen 之间的内部协议，不是数据库方向代码，也不是新增的学生端 HTTP 字段；不改变 LLMGenerateRequest、LLMResult 与 AskResponse 结构。</text>
 <text x="800.0" y="735.0" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#333333">ID 校验只证明引用指向真实片段，不单独证明回答中每项事实受原文支持；答案与原文一致性仍须测试核验。模型常识补充或无来源推断不得作为正式政策结论。</text>
-<text x="800.0" y="782" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-23 | evidence_id 请求内有效；Citation 由 Agent 根据真实检索片段构造</text>
+<text x="800.0" y="782" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="11" fill="#666666">编制：林世颖 | 日期：2026-11-24 | evidence_id 请求内有效；Citation 由 Agent 根据真实检索片段构造</text>
 </svg>

@@ -25,7 +25,7 @@
         <mxCell id="n5" value="Retriever.retrieve()：BM25 检索排序&#10;方向不确定时不传 business_direction_code，全库检索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="560" y="426" width="480" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="n6" value="来源 / 适用范围 / 审核状态 / 时效检查（证据门禁）&#10;历史资料按问题时间范围选择并标注 historical，不得冒充现行政策" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+        <mxCell id="n6" value="来源 / 适用范围 / 审核状态 / 时效检查（证据门禁）&#10;历史资料按问题时间范围选择并标注 historical；规则层已落地，工作流放行待 #46" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
           <mxGeometry x="560" y="494" width="480" height="62" as="geometry" />
         </mxCell>
         <mxCell id="n7" value="合格证据交给 Qwen（受约束生成）&#10;Agent 分配临时 evidence_id 并保存与真实片段的映射" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
@@ -133,7 +133,7 @@
             <mxPoint x="1040" y="873" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-23 | 追问阶段不调用检索与模型；证据不足按 HTTP 200 返回 insufficient_evidence" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-24 | 追问阶段不调用检索与模型；证据不足按 HTTP 200 返回 insufficient_evidence" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="300" y="910" width="1000" height="25" as="geometry" />
         </mxCell>
       </root>
