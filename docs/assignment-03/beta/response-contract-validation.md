@@ -45,3 +45,7 @@ git diff --check
 跳过：25 项需单独运行 scripts.verify_beta_upstream_integration 的上游联调测试，2 项真实 Qwen opt-in 测试，1 项 Windows 符号链接权限测试。警告：既有 StarletteDeprecationWarning（httpx TestClient）。以上跳过不计为通过。
 
 合并前仍需确认本地测试对应代码提交（本次文档提交不改变代码）、Python 3.10.11、工作区状态和 diff 格式；建议单独执行上游联调脚本。真实 Qwen 与正式政策验收不在本 PR 范围。保持 Draft，未合并。
+
+### 独立上游集成复测
+
+组长提供 `python -m scripts.verify_beta_upstream_integration` 本地终端实际输出：Ran 25 tests in 1.755s，OK（0 failures）。既有 StarletteDeprecationWarning 和预期的异常分支日志不代表失败。本次已补验 pytest 跳过的 25 项；仍未执行 2 项真实 Qwen opt-in 和 1 项 Windows 符号链接权限测试。脚本会重写既有 upstream-integration.txt/json；本 PR 不覆盖上游原始验收证据，另在本文件记录结果。本地 HEAD、Python 小版本及工作区状态仍待确认。未合并。
