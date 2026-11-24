@@ -1,254 +1,200 @@
-"""Beta Qwen 受约束输出格式校验测试（V2.1-Final §11.3）。
+"""生产 verify_answer() 的独立黑盒测试（V2.1 §11.3/11.4）。
 
-V2.1 规定 Qwen 内部输出必须为严格 JSON（无 Markdown 围栏）：
+直接针对 `backend/services/agent_generation.py` 的生产 `verify_answer()` 做黑盒测试，
+不再使用参考校验函数。验证 Agent 对 Qwen 受约束输出的校验逻辑：
 
     {"answer": "基于已提供证据形成的自然语言回答。", "used_evidence_ids": ["E1", "E2"]}
 
-本文件测试「输出格式与证据引用安全」的校验规则，覆盖任务书 §11.3/11.4 列出的
-非法输出场景。
+覆盖边界（V2.1 §11.3/11.4）：
+- 正常 JSON / 非法 JSON / 重复键
+- 缺 answer / answer 为空 / 缺 used_evidence_ids / 空 used_evidence_ids
+- 不存在 evidence_id / 重复 evidence_id / 跨请求（不属于本次 evidence 集合）evidence_id
+- 答案与所选证据不一致（改写原文）
+- 答案含证据无法支持的额外文本
+- 请求的金额/日期事实未被所选证据覆盖
 
-定位说明：AgentWorkflow 的受约束生成尚未实现（Beta 开发中），因此本文件用一个
-**参考校验函数** `_validate_qwen_output` 作为测试靶子，把 V2.1 的格式/ID 校验规则
-固化为可执行、可测试的用例。该函数**不是**生产实现，后续阶段应替换为吴诗莹
-交付的真实校验逻辑——届时本文件的测试用例直接作用于真实校验函数，验证结果不变。
-
-明确边界：
-- 本文件只校验「输出格式 + 证据 ID 合法性」，不校验「答案内容与原文一致」——
-  后者需要 Agent 接真实 RetrievedChunk 才能做，属于后续阶段的事实一致性测试。
-- 证据 ID 校验只能证明引用指向真实片段，不能单独证明答案正确（V2.1 §11.4）。
+定位说明：
+- 吴诗莹的 test_agent_workflow.py / test_agent_workflow_qwen.py 已通过 workflow 集成层
+  覆盖了历史政策、跨请求证据隔离、精确引用等，本文件**不重复**那些集成测试。
+- 本文件聚焦 verify_answer() 这个函数的**独立单元黑盒**边界（生产函数本身，
+  不经 workflow 编排），补充集成测试难以单独触达的边界分支。
 """
 from __future__ import annotations
 
 import json
+import re
 import unittest
+from datetime import date
+from uuid import UUID
+
+from backend.contracts.models import (
+    AnswerMode,
+    DocumentMetadata,
+    ParsedChunk,
+    RetrievedChunk,
+)
+from backend.services.agent_generation import PARTIAL_ANSWER, Evidence, verify_answer
 
 
-def _validate_qwen_output(
-    content: str,
-    *,
-    available_ids: set[str],
-) -> tuple[bool, str]:
-    """参考校验实现：解析并校验 Qwen 受约束输出。
-
-    返回 (是否通过, 拒绝原因)。这不是生产实现，仅用于固化 V2.1 校验规则。
-
-    规则（V2.1 §11.3）：
-    1. 必须是合法 JSON（严格，无 Markdown 代码围栏，无重复键）。
-    2. 顶层必须且只能有 answer / used_evidence_ids 两个字段。
-    3. answer 必须是非空字符串。
-    4. used_evidence_ids 必须是非空字符串列表，每个 ID 都在 available_ids 中，且无重复。
-    5. 不得出现 citation / source_url 等模型自造字段。
-    """
-    stripped = content.strip()
-
-    # 1. 拒绝 Markdown 代码围栏（V2.1 明确不允许）
-    if stripped.startswith("```"):
-        return False, "模型输出包含 Markdown 代码围栏"
-
-    # 2. 解析 JSON，同时检测重复键（json.loads 默认会静默取最后一个重复键）
-    def _reject_duplicate_keys(pairs):
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError(f"JSON 包含重复键：{key}")
-            result[key] = value
-        return result
-
-    try:
-        payload = json.loads(stripped, object_pairs_hook=_reject_duplicate_keys)
-    except (json.JSONDecodeError, TypeError):
-        return False, "模型输出不是合法 JSON"
-    except ValueError as exc:
-        # 重复键等语义错误，透传具体原因
-        msg = str(exc)
-        if "重复键" in msg:
-            return False, msg
-        return False, "模型输出不是合法 JSON"
-
-    if not isinstance(payload, dict):
-        return False, "模型输出顶层不是 JSON 对象"
-
-    # 3. 只允许 answer / used_evidence_ids 两个字段（禁止自造 citation/url）
-    allowed = {"answer", "used_evidence_ids"}
-    extra = set(payload.keys()) - allowed
-    if extra:
-        return False, f"模型输出包含非法字段：{sorted(extra)}"
-
-    # 4. answer 非空
-    answer = payload.get("answer")
-    if not isinstance(answer, str) or not answer.strip():
-        return False, "模型输出缺少或包含空的 answer"
-
-    # 5. used_evidence_ids 非空且元素为字符串
-    ids = payload.get("used_evidence_ids")
-    if not isinstance(ids, list) or not ids:
-        return False, "模型输出缺少或包含空的 used_evidence_ids"
-    if not all(isinstance(item, str) for item in ids):
-        return False, "used_evidence_ids 包含非字符串元素"
-
-    # 5b. 拒绝重复 evidence_id（同一 ID 重复引用）
-    if len(set(ids)) != len(ids):
-        return False, "used_evidence_ids 包含重复的 evidence_id"
-
-    # 6. 每个 ID 必须在本次请求的可用集合中
-    for eid in ids:
-        if eid not in available_ids:
-            return False, f"引用了不存在的 evidence_id：{eid}"
-
-    return True, ""
+def _chunk(chunk_id: int, content: str) -> RetrievedChunk:
+    """构造合成 RetrievedChunk（非真实政策资料）。"""
+    return RetrievedChunk(
+        chunk_id=UUID(int=chunk_id), document_id=UUID(int=1000 + chunk_id),
+        version_id=UUID(int=2000 + chunk_id), file_id=UUID(int=3000 + chunk_id),
+        title=f"【测试替身】契约黑盒测试片段 {chunk_id}",
+        content=content,
+        source_url="https://example.invalid/blackbox",
+        publisher="离线测试替身", score=0.01,
+        published_on=date(2026, 1, 1),
+        source_verification_status="verified",
+        timeliness_verification_status="current", retrieval_status="enabled",
+    )
 
 
-class QwenOutputFormatTests(unittest.TestCase):
-    """V2.1 §11.3 输出格式校验：正常与非法 JSON。"""
+def _evidence(chunk_id: int, content: str, *, mode: AnswerMode = AnswerMode.CURRENT_POLICY) -> Evidence:
+    chunk = _chunk(chunk_id, content)
+    metadata = DocumentMetadata(
+        title=chunk.title, document_type="合成测试", category_name="测试",
+        business_direction_codes=["POLICY_AFFAIRS"],
+        record_code=f"BB-{chunk_id}", version_no="v1", publisher=chunk.publisher,
+        source_url=chunk.source_url, published_on=chunk.published_on,
+        effective_on=chunk.published_on,
+        source_verification_status="verified", timeliness_verification_status="current",
+        extraction_status="extracted", v1_inclusion_status="included",
+        retrieval_status="enabled", temporal_notes={"human_approved": True},
+        applicability_raw={"适用对象": "离线测试"},
+    )
+    parsed = ParsedChunk(chunk_no=1, source_file_key="synthetic.md", content=chunk.content)
+    return Evidence(chunk=chunk, metadata=metadata, mode=mode, period=None, parsed=parsed)
 
-    AVAILABLE = {"E1", "E2"}
+
+E1_CONTENT = "校级奖学金需提交申请表和成绩单。"
+E2_CONTENT = "国家奖学金每人每年8000元。"
+
+
+def _evidence_map() -> dict[str, Evidence]:
+    return {"E1": _evidence(1, E1_CONTENT), "E2": _evidence(2, E2_CONTENT)}
+
+
+class VerifyAnswerFormatTests(unittest.TestCase):
+    """verify_answer() 的 JSON 格式与字段校验（V2.1 §11.3）。"""
 
     def test_valid_output_passes(self):
-        # Q-1：仅验证「JSON 格式 + evidence_id 合法性」通过。
-        # 注意：本测试**不**覆盖「ID 映射到真实 RetrievedChunk → 构造 Citation」
-        # 的完整过程（那是后续 Agent 集成测试，需生产实现）。
-        ok, reason = _validate_qwen_output(
-            '{"answer": "校级奖学金需提交申请表。", "used_evidence_ids": ["E1"]}',
-            available_ids=self.AVAILABLE,
-        )
-        self.assertTrue(ok, reason)
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["E1"]}, ensure_ascii=False)
+        answer, selected, partial = verify_answer(content, _evidence_map())
+        self.assertEqual(answer, E1_CONTENT)
+        self.assertEqual(len(selected), 1)
+        self.assertFalse(partial)
 
     def test_invalid_json_rejected(self):
         for bad in ["这不是 JSON", "{", "null", "[]", "42"]:
             with self.subTest(content=bad):
-                ok, _ = _validate_qwen_output(bad, available_ids=self.AVAILABLE)
-                self.assertFalse(ok)
-
-    def test_markdown_fence_rejected(self):
-        content = '```json\n{"answer":"x","used_evidence_ids":["E1"]}\n```'
-        ok, reason = _validate_qwen_output(content, available_ids=self.AVAILABLE)
-        self.assertFalse(ok)
-        self.assertIn("围栏", reason)
-
-    def test_missing_answer_rejected(self):
-        ok, reason = _validate_qwen_output(
-            '{"used_evidence_ids": ["E1"]}', available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-        self.assertIn("answer", reason)
-
-    def test_empty_answer_rejected(self):
-        ok, _ = _validate_qwen_output(
-            '{"answer": "   ", "used_evidence_ids": ["E1"]}',
-            available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-
-    def test_missing_used_evidence_ids_rejected(self):
-        ok, reason = _validate_qwen_output(
-            '{"answer": "校级奖学金需提交申请表。"}', available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-        self.assertIn("used_evidence_ids", reason)
-
-    def test_empty_used_evidence_ids_rejected(self):
-        ok, _ = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": []}', available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
+                with self.assertRaises((ValueError, json.JSONDecodeError)):
+                    verify_answer(bad, _evidence_map())
 
     def test_duplicate_json_key_rejected(self):
-        # json.loads 默认会静默采用最后一个重复键，这里必须显式拒绝
         content = '{"answer": "a", "answer": "b", "used_evidence_ids": ["E1"]}'
-        ok, reason = _validate_qwen_output(content, available_ids=self.AVAILABLE)
-        self.assertFalse(ok)
-        self.assertIn("重复键", reason)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+    def test_wrong_shape_rejected(self):
+        # 顶层多了非法字段
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["E1"], "citation": {}})
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+    def test_missing_answer_rejected(self):
+        content = json.dumps({"used_evidence_ids": ["E1"]})
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+    def test_blank_answer_rejected(self):
+        content = json.dumps({"answer": "   ", "used_evidence_ids": ["E1"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+    def test_missing_used_evidence_ids_rejected(self):
+        content = json.dumps({"answer": E1_CONTENT}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+    def test_empty_used_evidence_ids_rejected(self):
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": []}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+
+class VerifyAnswerEvidenceIdSafetyTests(unittest.TestCase):
+    """verify_answer() 的证据 ID 与引用安全（V2.1 §11.4）。"""
+
+    def test_unknown_evidence_id_rejected(self):
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["E99"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
 
     def test_duplicate_evidence_id_rejected(self):
-        # 同一 evidence_id 重复引用应拒绝
-        ok, reason = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["E1", "E1"]}',
-            available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-        self.assertIn("重复", reason)
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["E1", "E1"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
+
+    def test_cross_request_evidence_id_rejected(self):
+        # 另一请求的 evidence 集合是 {F1}，本请求的 evidence 集合是 {E1, E2}
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["F1"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())  # 本请求集合没有 F1
 
 
-class QwenEvidenceIdSafetyTests(unittest.TestCase):
-    """V2.1 §11.4 证据 ID 与引用安全。"""
+class VerifyAnswerContentFidelityTests(unittest.TestCase):
+    """verify_answer() 的答案与证据一致性校验（V2.1 §11.4）。"""
 
-    AVAILABLE = {"E1", "E2"}
+    def test_answer_rewritten_from_evidence_rejected(self):
+        # 模型改写原文（加了证据不支持的结论）
+        content = json.dumps({
+            "answer": "校级奖学金需提交申请表和成绩单，且必须本人到场。",
+            "used_evidence_ids": ["E1"],
+        }, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
 
-    def test_id_not_in_current_set_rejected(self):
-        # Q-6/Q-7（合并）：引用一个不在本次可用集合中的 ID，无论该 ID 是
-        # 「完全不存在」还是「看起来像证据 ID但不属于本次集合」，都应拒绝。
-        # 底层规则一致：evidence_id 必须属于本次通过门禁的证据集合。
-        for bad_id in ("E99", "E3"):
-            with self.subTest(bad_id=bad_id):
-                ok, reason = _validate_qwen_output(
-                    f'{{"answer": "x", "used_evidence_ids": ["{bad_id}"]}}',
-                    available_ids=self.AVAILABLE,
-                )
-                self.assertFalse(ok)
-                self.assertIn(bad_id, reason)
+    def test_answer_with_unsupported_extra_text_rejected(self):
+        content = json.dumps({
+            "answer": E1_CONTENT + "\n还可以申请额外补助。",
+            "used_evidence_ids": ["E1"],
+        }, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map())
 
-    def test_evidence_id_set_membership_bidirectional(self):
-        # Q-8：证据集合成员校验（双向）。这里手动构造两个证据集合验证 ID 成员关系，
-        # **不是**真正调用 Agent 验证请求生命周期隔离——那需要 Agent 生产实现，
-        # 属于后续集成测试（真正的跨请求隔离留到 Agent 集成后补测）。
-        # 请求 A 的集合 = {E1, E2}，请求 B 的集合 = {F1, F2}。
-        request_a_ids = {"E1", "E2"}
-        request_b_ids = {"F1", "F2"}
+    def test_multiple_evidence_joined_by_newline_passes(self):
+        content = json.dumps({
+            "answer": E1_CONTENT + "\n" + E2_CONTENT,
+            "used_evidence_ids": ["E1", "E2"],
+        }, ensure_ascii=False)
+        answer, selected, _ = verify_answer(content, _evidence_map())
+        self.assertEqual(len(selected), 2)
+        self.assertIn(E2_CONTENT, answer)
 
-        # A 接受自己的 E1
-        ok, _ = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["E1"]}',
-            available_ids=request_a_ids,
-        )
-        self.assertTrue(ok)
+    def test_partial_answer_allowed(self):
+        # 只回答了部分证据，最后带 PARTIAL_ANSWER 提示
+        content = json.dumps({
+            "answer": E1_CONTENT + "\n" + PARTIAL_ANSWER,
+            "used_evidence_ids": ["E1"],
+        }, ensure_ascii=False)
+        _, selected, partial = verify_answer(content, _evidence_map())
+        self.assertEqual(len(selected), 1)
+        self.assertTrue(partial)
 
-        # A 拒绝 B 的 F1
-        ok, reason = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["F1"]}',
-            available_ids=request_a_ids,
-        )
-        self.assertFalse(ok)
-        self.assertIn("F1", reason)
+    def test_requested_amount_must_be_covered_by_selected_evidence(self):
+        # 问题明确询问金额，但所选证据 E1 不含金额信息
+        facts = (re.compile(r"\d[\d,.]*\s*(?:万元|元)"),)
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["E1"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map(), facts=facts)
 
-        # B 接受自己的 F1
-        ok, _ = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["F1"]}',
-            available_ids=request_b_ids,
-        )
-        self.assertTrue(ok)
-
-        # B 拒绝 A 的 E1
-        ok, reason = _validate_qwen_output(
-            '{"answer": "x", "used_evidence_ids": ["E1"]}',
-            available_ids=request_b_ids,
-        )
-        self.assertFalse(ok)
-        self.assertIn("E1", reason)
-
-    def test_model_generated_citation_field_rejected(self):
-        # V2.1 §11.3：模型不得自行生成 Citation / 来源 URL
-        ok, reason = _validate_qwen_output(
-            json.dumps({
-                "answer": "x",
-                "used_evidence_ids": ["E1"],
-                "citation": {"source_url": "https://example.com"},
-            }),
-            available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-        self.assertIn("citation", reason)
-
-    def test_model_generated_url_field_rejected(self):
-        ok, reason = _validate_qwen_output(
-            json.dumps({
-                "answer": "x",
-                "used_evidence_ids": ["E1"],
-                "source_url": "https://example.com",
-            }),
-            available_ids=self.AVAILABLE,
-        )
-        self.assertFalse(ok)
-        self.assertIn("source_url", reason)
+    def test_requested_amount_covered_by_evidence_passes(self):
+        facts = (re.compile(r"\d[\d,.]*\s*(?:万元|元)"),)
+        content = json.dumps({"answer": E2_CONTENT, "used_evidence_ids": ["E2"]}, ensure_ascii=False)
+        _, selected, _ = verify_answer(content, _evidence_map(), facts=facts)
+        self.assertEqual(len(selected), 1)
 
 
 if __name__ == "__main__":
