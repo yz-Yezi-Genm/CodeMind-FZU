@@ -1,0 +1,831 @@
+{
+  "checked_on": "2026-11-23",
+  "documents": {
+    "competition": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/competition.html",
+      "official_url": "https://jwch.fzu.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=14534&wbtreeid=1039",
+      "page_title": "关于公布大学生学科竞赛级别认定结果的通知-福州大学教务处",
+      "published_on": "2026-03-06",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [
+        {
+          "file": "competition-attachment-1.docx",
+          "url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766605",
+          "label": "附件1：福州大学大学生学科竞赛级别认定（直接认定）一览表（2026年版）.docx",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/competition-attachment-1.docx"
+        },
+        {
+          "file": "competition-attachment-2.docx",
+          "url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766606",
+          "label": "附件2：福州大学大学生学科竞赛级别认定一览表（2026版）.docx",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/competition-attachment-2.docx"
+        },
+        {
+          "file": "competition-attachment-3.docx",
+          "url": "https://jwch.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1744984858&wbfileid=16766607",
+          "label": "附件3：福州大学大学生体育类竞赛级别认定一览表（2026版）.docx",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/competition-attachment-3.docx"
+        }
+      ],
+      "html_extraction": {
+        "body_visible_chars": 502,
+        "units": 10,
+        "uncovered_text_nodes": 0
+      },
+      "attachments": [
+        {
+          "file": "competition-attachment-1.docx",
+          "tables": [
+            {
+              "table": 1,
+              "rows_including_header": 78,
+              "gridSpan": 0,
+              "vMerge": 0
+            }
+          ],
+          "footnotes_and_endnotes": 0,
+          "units": 80
+        },
+        {
+          "file": "competition-attachment-2.docx",
+          "tables": [
+            {
+              "table": 1,
+              "rows_including_header": 109,
+              "gridSpan": 0,
+              "vMerge": 0
+            }
+          ],
+          "footnotes_and_endnotes": 0,
+          "units": 111
+        },
+        {
+          "file": "competition-attachment-3.docx",
+          "tables": [
+            {
+              "table": 1,
+              "rows_including_header": 21,
+              "gridSpan": 0,
+              "vMerge": 0
+            }
+          ],
+          "footnotes_and_endnotes": 0,
+          "units": 23
+        }
+      ],
+      "notice_check": "本次HTTP响应为真实通知正文，已核对校教〔2026〕9号和三附件入口；不使用登录页作证据。网络可达性可能因环境变化。",
+      "source_units": 224
+    },
+    "scholarship": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "official_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+      "page_title": "福州大学关于印发本科生奖学金评定管理办法的通知-福州大学学生工作部（处）",
+      "published_on": "2026-05-18",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [],
+      "html_extraction": {
+        "body_visible_chars": 2262,
+        "units": 59,
+        "uncovered_text_nodes": 0
+      },
+      "source_units": 59
+    },
+    "college-scholarship": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/college-scholarship.html",
+      "official_url": "https://ccds.fzu.edu.cn/info/1165/11707.htm",
+      "page_title": "关于做好福州大学计算机与大数据学院各类院级奖学金评选工作的通知-计算机与大数据学院/软件学院",
+      "published_on": "2026-04-13",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [
+        {
+          "file": "college-attachments.zip",
+          "url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18248426",
+          "label": "2026年计算机与大数据学院（软件学院）院级奖学金汇总表.zip",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-19/college-attachments.zip"
+        }
+      ],
+      "html_extraction": {
+        "body_visible_chars": 1877,
+        "units": 33,
+        "uncovered_text_nodes": 0
+      },
+      "source_units": 33
+    },
+    "xinghuo": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/xinghuo.html",
+      "official_url": "https://ccds.fzu.edu.cn/info/1119/11710.htm",
+      "page_title": "关于做好2026年福州大学“星火奖教奖学金”评选工作的通知-计算机与大数据学院/软件学院",
+      "published_on": "2026-04-20",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [
+        {
+          "file": "xinghuo-forms.rar",
+          "url": "https://ccds.fzu.edu.cn/2026nianxinghuojiangjiaojinshenqingbiao.rar",
+          "label": "附件：《“星火奖教奖学金”申请表》《“星火奖教奖学金”汇总表》",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-19/xinghuo-forms.rar"
+        }
+      ],
+      "html_extraction": {
+        "body_visible_chars": 1285,
+        "units": 35,
+        "uncovered_text_nodes": 0
+      },
+      "source_units": 35
+    },
+    "recommendation": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/recommendation.html",
+      "official_url": "https://ccds.fzu.edu.cn/info/1119/11932.htm",
+      "page_title": "福州大学计算机与大数据学院(软件学院)2027年推荐优秀应届本科毕业生免试攻读研究生工作方案-计算机与大数据学院/软件学院",
+      "published_on": "2026-09-08",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [
+        {
+          "file": "recommendation-pdf.pdf",
+          "url": "https://ccds.fzu.edu.cn/__local/2/65/3C/D04CE20168D8D7DDFDA27D48782_915BB2AE_383A0.pdf",
+          "label": "embedded PDF",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/recommendation-pdf.pdf"
+        }
+      ],
+      "method": "Alpha four-page/table extraction reused after fresh SHA-256 equality",
+      "prior_evidence": "knowledge_base/processing/policy-review/2026-11-19/source-units.json",
+      "pdf_pages": 4,
+      "page4_semantics": "既有逐行版式对照保留；未新增人工签核",
+      "source_units": 20
+    },
+    "innovation": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/innovation.html",
+      "official_url": "https://jwch.fzu.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbtreeid=1095&wbnewsid=12993",
+      "page_title": "福州大学本科生创新创业实践与素质拓展学分认定管理实施办法-福州大学教务处",
+      "published_on": "2024-05-30",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [],
+      "html_extraction": {
+        "body_visible_chars": 4400,
+        "units": 86,
+        "uncovered_text_nodes": 0
+      },
+      "source_units": 86
+    },
+    "retest": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/retest.html",
+      "official_url": "https://ccds.fzu.edu.cn/info/1138/11961.htm",
+      "page_title": "福州大学计算机与大数据学院/软件学院2027年招收直博生、硕士生推免复试方案及实施细则-计算机与大数据学院/软件学院",
+      "published_on": "2026-09-17",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [
+        {
+          "file": "retest.pdf",
+          "url": "https://ccds.fzu.edu.cn/__local/9/F5/B3/3C086BF8E9CE78EA45247803BC4_34362834_60F24.pdf",
+          "label": "embedded PDF",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/retest.pdf"
+        }
+      ],
+      "pdf_pages": 9,
+      "extracted_pages": 9,
+      "layout_review": "2026-11-23使用PDFium渲染并AI目视对照9页；第2页招生计划表6行、列顺序及页间续文可见；不等于人工审核",
+      "attachment_gap": "PDF第9页列出4项复试用表；网页ZIP未转换或纳入正文，不提供填写指导。",
+      "source_units": 9
+    },
+    "qinghe": {
+      "page": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "official_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "page_title": "关于2026-2027学年“青禾计划”本科生进实验室报名的通知-计算机与大数据学院/软件学院",
+      "published_on": "2026-10-16",
+      "date_verified_from_page": true,
+      "human_approved": false,
+      "linked_attachments": [
+        {
+          "file": "qinghe-labs.xlsx",
+          "url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18557344",
+          "label": "附件1：计算机与大数据学院（软件学院）本科生进实验室需求一览表.xlsx",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx"
+        },
+        {
+          "file": "qinghe-registration.docx",
+          "url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18557343",
+          "label": "附件2：计算机与大数据学院（软件学院）本科生进实验室报名表 .docx",
+          "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-registration.docx"
+        }
+      ],
+      "html_extraction": {
+        "body_visible_chars": 275,
+        "units": 10,
+        "uncovered_text_nodes": 0
+      },
+      "xlsx_audit": "knowledge_base/processing/policy-review/2026-11-23/qinghe-conversion-audit.json",
+      "xlsx_package_static": {
+        "kind": "xlsx",
+        "sheets": [
+          {
+            "sheet": "Sheet1",
+            "state": "visible",
+            "populated_rows": [
+              {
+                "row": 1,
+                "cells": [
+                  "A1"
+                ],
+                "content_sha256": "94d9eebfd5533d0cb38bed994564b6684c8825609e4ea50efc65c2f95fd89bfa"
+              },
+              {
+                "row": 2,
+                "cells": [
+                  "A2",
+                  "B2",
+                  "C2",
+                  "D2",
+                  "E2",
+                  "F2",
+                  "G2",
+                  "H2",
+                  "I2"
+                ],
+                "content_sha256": "851f10aa68cee63821549d23f44df9ffeaea1e4b97ee9471644e01c0c36254aa"
+              },
+              {
+                "row": 3,
+                "cells": [
+                  "A3",
+                  "B3",
+                  "C3",
+                  "D3",
+                  "E3",
+                  "F3",
+                  "G3",
+                  "H3",
+                  "I3"
+                ],
+                "content_sha256": "e93a0847127ac2653c04b6e7a289f4b5ee360dfa375d212e4e21a78a9c14a003"
+              },
+              {
+                "row": 4,
+                "cells": [
+                  "A4",
+                  "B4",
+                  "C4",
+                  "D4",
+                  "E4",
+                  "F4",
+                  "G4",
+                  "H4",
+                  "I4"
+                ],
+                "content_sha256": "65b1690ca03afc66c1ade74ef11a4dd97404ea3e85f38204c3ce935d39694058"
+              },
+              {
+                "row": 5,
+                "cells": [
+                  "A5",
+                  "B5",
+                  "C5",
+                  "D5",
+                  "E5",
+                  "F5",
+                  "G5",
+                  "H5",
+                  "I5"
+                ],
+                "content_sha256": "a83df3ec45cadbb7d5e8e9f0fdad4685d19b880ee64f6323d9e0ac5c3fbc663d"
+              },
+              {
+                "row": 6,
+                "cells": [
+                  "A6",
+                  "B6",
+                  "C6",
+                  "D6",
+                  "E6",
+                  "F6",
+                  "G6",
+                  "H6",
+                  "I6"
+                ],
+                "content_sha256": "2d7bd958d3d2cd09227f434911eecdb158a01f7843754fb7411261088abfb9d2"
+              },
+              {
+                "row": 7,
+                "cells": [
+                  "A7",
+                  "B7",
+                  "C7",
+                  "D7",
+                  "E7",
+                  "F7",
+                  "G7",
+                  "H7",
+                  "I7"
+                ],
+                "content_sha256": "5f98453b9aa53a8993b27bd71a9ba61455d22389f88da67af2a83812adf39ae0"
+              },
+              {
+                "row": 8,
+                "cells": [
+                  "A8",
+                  "B8",
+                  "C8",
+                  "D8",
+                  "E8",
+                  "F8",
+                  "G8",
+                  "H8",
+                  "I8"
+                ],
+                "content_sha256": "02cfef1536f4f3c832a3b69b59462f4b97597b4515985ea7fa2366d26a149610"
+              },
+              {
+                "row": 9,
+                "cells": [
+                  "A9",
+                  "B9",
+                  "C9",
+                  "D9",
+                  "E9",
+                  "F9",
+                  "G9",
+                  "H9",
+                  "I9"
+                ],
+                "content_sha256": "2c76f6f98a973dfae591f3f130eed2f5fb91d101b9264fafef017dac35d773d0"
+              },
+              {
+                "row": 10,
+                "cells": [
+                  "A10",
+                  "B10",
+                  "C10",
+                  "D10",
+                  "E10",
+                  "F10",
+                  "G10",
+                  "H10",
+                  "I10"
+                ],
+                "content_sha256": "13fec55e3a01cad64e730fd1b4f9e2d8400f5949d652fc275715ef75c3b0cb37"
+              },
+              {
+                "row": 11,
+                "cells": [
+                  "A11",
+                  "B11",
+                  "C11",
+                  "D11",
+                  "E11",
+                  "F11",
+                  "G11",
+                  "H11",
+                  "I11"
+                ],
+                "content_sha256": "5545a565c7a9012747309cec388aa56b9ee0057e0ec330eea91832bc8ce8bb6c"
+              },
+              {
+                "row": 12,
+                "cells": [
+                  "A12",
+                  "B12",
+                  "C12",
+                  "D12",
+                  "E12",
+                  "F12",
+                  "G12",
+                  "H12",
+                  "I12"
+                ],
+                "content_sha256": "b6784a11a1a62c25faca0b6b55680d9e463fdaef417e9847b4a44a057242f8a6"
+              },
+              {
+                "row": 13,
+                "cells": [
+                  "A13",
+                  "B13",
+                  "C13",
+                  "D13",
+                  "E13",
+                  "F13",
+                  "G13",
+                  "H13",
+                  "I13"
+                ],
+                "content_sha256": "661634bfe26017b989d9776ec66aef677cbf4ff140c3b72e018ef6cf65aad6b6"
+              },
+              {
+                "row": 14,
+                "cells": [
+                  "A14",
+                  "B14",
+                  "C14",
+                  "D14",
+                  "E14",
+                  "F14",
+                  "G14",
+                  "H14",
+                  "I14"
+                ],
+                "content_sha256": "cab54a6729e4e729b0f214b7cda5e5b3a81707392a976075ae1d6aafe3797690"
+              },
+              {
+                "row": 15,
+                "cells": [
+                  "A15",
+                  "B15",
+                  "C15",
+                  "D15",
+                  "E15",
+                  "F15",
+                  "G15",
+                  "H15",
+                  "I15"
+                ],
+                "content_sha256": "c52e4bde1f3f680a789b53d04e622acbd03bf07e105c18cb18adfe8ced378321"
+              },
+              {
+                "row": 16,
+                "cells": [
+                  "A16",
+                  "B16",
+                  "C16",
+                  "D16",
+                  "E16",
+                  "F16",
+                  "G16",
+                  "H16",
+                  "I16"
+                ],
+                "content_sha256": "7b442951515fe302348717bdd5a9280a68958f620287ef2ae83661a2d388fe92"
+              },
+              {
+                "row": 17,
+                "cells": [
+                  "A17",
+                  "B17",
+                  "C17",
+                  "D17",
+                  "E17",
+                  "F17",
+                  "G17",
+                  "H17",
+                  "I17"
+                ],
+                "content_sha256": "79627d3c76ddec649ad16f78966e3dd26ee2376e4caf4be8b7a7d247921da19d"
+              },
+              {
+                "row": 18,
+                "cells": [
+                  "A18",
+                  "B18",
+                  "C18",
+                  "D18",
+                  "E18",
+                  "F18",
+                  "G18",
+                  "H18",
+                  "I18"
+                ],
+                "content_sha256": "217f4d7a259e50a53c899c988d9344fa5253a9b66554bb224610b535801c5aa6"
+              },
+              {
+                "row": 19,
+                "cells": [
+                  "A19",
+                  "B19",
+                  "C19",
+                  "D19",
+                  "E19",
+                  "F19",
+                  "G19",
+                  "H19",
+                  "I19"
+                ],
+                "content_sha256": "e13d230672c4205f2df7234eb5e1719227ace5b6e6bfa03e80409e3d6148d545"
+              },
+              {
+                "row": 20,
+                "cells": [
+                  "A20",
+                  "B20",
+                  "C20",
+                  "D20",
+                  "E20",
+                  "F20",
+                  "G20",
+                  "H20",
+                  "I20"
+                ],
+                "content_sha256": "717e73dbacf98f283fc2d194c04f3939c9e8339015ba2f9bf1b619e85a12fc56"
+              },
+              {
+                "row": 21,
+                "cells": [
+                  "A21",
+                  "B21",
+                  "C21",
+                  "D21",
+                  "E21",
+                  "F21",
+                  "G21",
+                  "H21",
+                  "I21"
+                ],
+                "content_sha256": "ba80a592680633741a4b6bc0684c021579cfb7c0910f7994335e692725c7f9da"
+              },
+              {
+                "row": 22,
+                "cells": [
+                  "A22",
+                  "B22",
+                  "C22",
+                  "D22",
+                  "E22",
+                  "F22",
+                  "G22",
+                  "H22",
+                  "I22"
+                ],
+                "content_sha256": "576c119a35d4146485852832fb4c65b7d3ac127c3804c272bbe911a451efcc1c"
+              },
+              {
+                "row": 23,
+                "cells": [
+                  "A23",
+                  "B23",
+                  "C23",
+                  "D23",
+                  "E23",
+                  "F23",
+                  "G23",
+                  "H23",
+                  "I23"
+                ],
+                "content_sha256": "8a0058c9b690eebbb9efe57719957a1cdeb9c627986ae99e3023921064efef98"
+              },
+              {
+                "row": 24,
+                "cells": [
+                  "A24",
+                  "B24",
+                  "C24",
+                  "D24",
+                  "E24",
+                  "F24",
+                  "G24",
+                  "H24",
+                  "I24"
+                ],
+                "content_sha256": "622b76e55c10d41c473ac1057332f463144eaaed8235a04a0244acea6994b735"
+              },
+              {
+                "row": 25,
+                "cells": [
+                  "A25",
+                  "B25",
+                  "C25",
+                  "D25",
+                  "E25",
+                  "F25",
+                  "G25",
+                  "H25",
+                  "I25"
+                ],
+                "content_sha256": "3ad698bb25c9924f2ee448b15443ff90ba063dc22e75d5a4636ab607f557ed74"
+              },
+              {
+                "row": 26,
+                "cells": [
+                  "A26",
+                  "B26",
+                  "C26",
+                  "D26",
+                  "E26",
+                  "F26",
+                  "G26",
+                  "H26",
+                  "I26"
+                ],
+                "content_sha256": "fca8d551a750b879e5ce821651256583bd530949ee47e89b12d6c6bc460e9b80"
+              }
+            ],
+            "nonempty_cells": 226,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": [
+              "A1:I1"
+            ]
+          },
+          {
+            "sheet": "Sheet2",
+            "state": "visible",
+            "populated_rows": [],
+            "nonempty_cells": 0,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": []
+          },
+          {
+            "sheet": "Sheet3",
+            "state": "visible",
+            "populated_rows": [],
+            "nonempty_cells": 0,
+            "hidden_rows": [],
+            "hidden_column_ranges": [],
+            "formula_cells": 0,
+            "merged_ranges": []
+          }
+        ],
+        "xml_parts_scanned": 21,
+        "all_xml_text_and_attributes_sha256": "00594967e94c18fde966f266e8619b606a1dd8e6a386cbb1810bec2b2c6ed6c3",
+        "shared_string_entries": 176,
+        "unused_shared_strings": 0,
+        "comment_parts": 0,
+        "external_relationships": 16,
+        "binary_parts": [],
+        "office_properties_present": [
+          "docProps/app.xml",
+          "docProps/core.xml",
+          "docProps/custom.xml"
+        ]
+      },
+      "registration_template": {
+        "file": "qinghe-registration.docx",
+        "stats": {
+          "tables": [
+            {
+              "table": 1,
+              "rows_including_header": 7,
+              "gridSpan": 3,
+              "vMerge": 0
+            }
+          ],
+          "footnotes_and_endnotes": 0,
+          "units": 10
+        },
+        "static_inspection": {
+          "xml_parts_scanned": 11,
+          "all_xml_text_attributes_sha256": "4066692b329f7724838bd4f6aca12971919d6f5418aa2a5890d0e0dbb0b8fed3",
+          "deleted_text_nodes": 0,
+          "hidden_text_markers": 0,
+          "comments_or_embedded_binary": [],
+          "office_metadata": "存在原始创建者/最后编辑者及WPS自定义属性；不把编辑者当作申请人，不在摘要复述账号值；原件按官方公开文件保留。"
+        },
+        "content": [
+          "附件2",
+          "计算机与大数据学院本科生进实验室报名表",
+          "表头：姓名；；性别；\n本行：姓名；；性别；",
+          "表头：姓名；；性别；\n本行：学号；；年级专业；",
+          "表头：姓名；；性别；\n本行：电话；；邮箱；",
+          "表头：姓名；；性别；\n本行：专业排名；/ （专业排名/专业人数）；是否接受调剂；□接收 / □不接受",
+          "表头：姓名；；性别；\n本行：报名团队名称： 拟学习方向（选填）：\n原合并标记：[{\"tag\": \"gridSpan\", \"value\": \"4\"}]",
+          "表头：姓名；；性别；\n本行：申请 理由 及 学习 规划；（可附页）\n原合并标记：[{\"tag\": \"gridSpan\", \"value\": \"3\"}]",
+          "表头：姓名；；性别；\n本行：其它说明；\n原合并标记：[{\"tag\": \"gridSpan\", \"value\": \"3\"}]",
+          "备注：请认真如实填写以上信息，在2026年10月31日前将报名表电子版发送实验室联系邮箱。"
+        ],
+        "finding": "已提取全部段落及表格检查，为空白报名模板；未发现已填写的申请人记录。保留官方公开联系人；未采集申请数据。",
+        "human_review": "pending"
+      },
+      "source_units": 35
+    }
+  },
+  "bounded_version_search": [
+    {
+      "source_url": "https://ccds.fzu.edu.cn/xsgz/tzgg.htm",
+      "snapshot": "knowledge_base/processing/policy-review/2026-11-23/college-notices.html",
+      "sha256": "cbdf610fffbe27ea9a70a4cc8313b791ae7ecf88043d4fd21685d753a3282518",
+      "matching_links": [
+        {
+          "title": "创新创业",
+          "url": "https://ccds.fzu.edu.cn/xsgz/cxcy.htm"
+        },
+        {
+          "title": "创新创业",
+          "url": "https://ccds.fzu.edu.cn/xsgz/cxcy.htm"
+        },
+        {
+          "title": "福州大学计算机与大数据学院（软件学院）研究生国家奖学金评定细则",
+          "url": "https://ccds.fzu.edu.cn/info/1160/12064.htm"
+        },
+        {
+          "title": "关于2026-2027学年“青禾计划”本科生进实验室报名的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/12008.htm"
+        },
+        {
+          "title": "计算机与大数据学院关于开展2026-2027学年本科生进实验室前期需求申报工作的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/11988.htm"
+        },
+        {
+          "title": "关于成立福州大学计算机与大数据学院（软件学院）2024年本科生国家奖学金（第二批）评审委员会的决...",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10767.htm"
+        },
+        {
+          "title": "关于成立福州大学计算机与大数据学院（软件学院） 2024年研究生国家奖学金（第二批）评审委员会的决...",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10766.htm"
+        },
+        {
+          "title": "关于公布《福州大学计算机与大数据学院（软件学院）研究生国家奖学金（第二批）评定细则》的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10771.htm"
+        },
+        {
+          "title": "关于举行计算机与大数据学院（软件学院）2024年研究生国家奖学金答辩评审会的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10671.htm"
+        },
+        {
+          "title": "关于公布《福州大学计算机与大数据学院（软件学院）研究生国家奖学金评定细则》的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10663.htm"
+        },
+        {
+          "title": "关于成立福州大学计算机与大数据学院（软件学院）2024年本科生国家奖学金、国家励志奖学金评审委员...",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10662.htm"
+        },
+        {
+          "title": "关于成立福州大学计算机与大数据学院（软件学院） 2024年研究生国家奖学金评审委员会的决定",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10664.htm"
+        },
+        {
+          "title": "关于2024-2025学年“青禾计划”本科生进实验室报名的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10657.htm"
+        },
+        {
+          "title": "计算机与大数据学院关于开展2024-2025学年本科生进实验室前期需求申报工作的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/10632.htm"
+        },
+        {
+          "title": "关于2023-2024学年“青禾计划”本科生进实验室报名的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/9898.htm"
+        },
+        {
+          "title": "计算机与大数据学院关于开展2023-2024学年本科生进实验室前期需求申报工作的通知",
+          "url": "https://ccds.fzu.edu.cn/info/1160/9878.htm"
+        }
+      ],
+      "scope": "仅本次下载的列表页及8份已知正文/关联附件；未遍历分页或全站。未检出替代文件不构成现行有效证明。"
+    },
+    {
+      "source_url": "https://ccds.fzu.edu.cn/rcpy/jwgs.htm",
+      "snapshot": "knowledge_base/processing/policy-review/2026-11-23/college-teaching.html",
+      "sha256": "e499a3582bb965be2cbe8f14ac62f284b467c94637d8eaad1ca663ebfb043502",
+      "matching_links": [
+        {
+          "title": "创新创业",
+          "url": "https://ccds.fzu.edu.cn/xsgz/cxcy.htm"
+        },
+        {
+          "title": "计算机与大数据学院2027年待录取推免生政审和体检通知",
+          "url": "https://ccds.fzu.edu.cn/info/1138/11996.htm"
+        },
+        {
+          "title": "计算机与大数据学院2027年接收推免复试结果公示",
+          "url": "https://ccds.fzu.edu.cn/info/1138/11974.htm"
+        },
+        {
+          "title": "福州大学计算机与大数据学院/软件学院2027年招收直博生、硕士生推免复试方案及实施细则",
+          "url": "https://ccds.fzu.edu.cn/info/1138/11961.htm"
+        }
+      ],
+      "scope": "仅本次下载的列表页及8份已知正文/关联附件；未遍历分页或全站。未检出替代文件不构成现行有效证明。"
+    },
+    {
+      "source_url": "https://stuic.fzu.edu.cn/xsgl/gzzd.htm",
+      "snapshot": "knowledge_base/processing/policy-review/2026-11-23/student-regulations.html",
+      "sha256": "02da5c47aa862e40f4b827375b9d8bfe215ee2952d66e82c8f17703b05bd82f3",
+      "matching_links": [
+        {
+          "title": "创新创业",
+          "url": "https://stuic.fzu.edu.cn/jycy/cxcy.htm"
+        },
+        {
+          "title": "创新创业",
+          "url": "https://stuic.fzu.edu.cn/jycy/cxcy.htm"
+        },
+        {
+          "title": "18 2026.05 福州大学关于印发本科生奖学金评定管理办法的通知 福大学[2026] 23号各学院：修订后的《福州大学本科生奖学金评定管理办法》经校长办公会议（2026年第7次）审议通过，现印发给你们，请遵照执行。福 州 大 学2026年5月18日 福州大学本科生奖学金评定管理办法第一章 总 则第一条 为全面贯彻党的教育方针，落实立德树人根本任务，促进学生德、智、体、美、劳全面发展，努力培养更多让党放心、爱国奉献、担当民族复兴重任的时代新人。结合学校实际，特制定本办法。第二条 本办法适用...",
+          "url": "https://stuic.fzu.edu.cn/info/1032/6937.htm"
+        },
+        {
+          "title": "12 2026.05 关于公布《福州大学文化科技创新创业奖学金学科竞赛等级目录（2026年版）》的通知 校学〔2026〕4号各学院、各单位：根据《福州大学关于印发文化科技创新创业奖学金实施细则的通知》（福大学〔2025〕47号）文件精神，学校对《福州大学文化科技创新创业奖学金学科竞赛等级目录》进行动态调整，现将认定结果予以公布（详见附件）。附件：1.《福州大学文化科技创新创业奖学金学科竞赛等级目录（2026年版）》学生工作部（处）2026年5月12",
+          "url": "https://stuic.fzu.edu.cn/info/1032/6931.htm"
+        },
+        {
+          "title": "07 2025.07 福州大学关于印发文化科技创新创业奖学金实施细则的通知 福大学〔2025〕47号各学院，机关各部门，各单位：修订后的《福州大学学生文化科技创新创业奖学金实施细则》经校长办公会议（2025年第11次）审议通过，现印发给你们，请遵照执行。福 州 大 学 2025年7月7",
+          "url": "https://stuic.fzu.edu.cn/info/1032/6599.htm"
+        },
+        {
+          "title": "01 2024.07 福州大学关于印发本科生奖学金评定管理办法的通知 福大政〔2024〕37号各学院：修订后的《福州大学本科生奖学金管理办法》经学校校长办公会议（2024年第10次）审议通过，现印发给你们，请遵照执行。福 州 大 学2024年7月1",
+          "url": "https://stuic.fzu.edu.cn/info/1032/6598.htm"
+        },
+        {
+          "title": "14 2021.07 福州大学关于印发本科生奖学金管理办法的通知 福大学〔2021〕30号各学院：为全面贯彻党的教育方针，鼓励学生勤奋学习、积极进取、勇于创新，培养德、智、体、美、劳全面发展的社会主义建设者和接班人，我校对《福州大学本科生奖学金管理办法》进行了修订，经学校...",
+          "url": "https://stuic.fzu.edu.cn/info/1032/1746.htm"
+        }
+      ],
+      "scope": "仅本次下载的列表页及8份已知正文/关联附件；未遍历分页或全站。未检出替代文件不构成现行有效证明。"
+    }
+  ],
+  "final_human_review": "pending",
+  "approved_packages": 0
+}

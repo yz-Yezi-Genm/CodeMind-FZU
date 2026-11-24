@@ -1,0 +1,117 @@
+{
+  "packages": 8,
+  "chunks": 501,
+  "original_mappings": 501,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "formal_hits_for_blocked_candidates": {
+    "COMPETITION_RESEARCH": 0,
+    "POLICY_AFFAIRS": 0,
+    "EDUCATION_CAREER": 0,
+    "COLLEGE_RESOURCES": 0
+  },
+  "index_results": [
+    {
+      "key": "competition",
+      "status": "indexed",
+      "chunk_count": 224,
+      "indexed_count": 224,
+      "actual_stored_chunk_count": 224,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 224
+    },
+    {
+      "key": "scholarship",
+      "status": "indexed",
+      "chunk_count": 59,
+      "indexed_count": 59,
+      "actual_stored_chunk_count": 59,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 59
+    },
+    {
+      "key": "college-scholarship",
+      "status": "indexed",
+      "chunk_count": 33,
+      "indexed_count": 33,
+      "actual_stored_chunk_count": 33,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 33
+    },
+    {
+      "key": "xinghuo",
+      "status": "indexed",
+      "chunk_count": 35,
+      "indexed_count": 35,
+      "actual_stored_chunk_count": 35,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 35
+    },
+    {
+      "key": "recommendation",
+      "status": "indexed",
+      "chunk_count": 20,
+      "indexed_count": 20,
+      "actual_stored_chunk_count": 20,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 20
+    },
+    {
+      "key": "innovation",
+      "status": "indexed",
+      "chunk_count": 86,
+      "indexed_count": 86,
+      "actual_stored_chunk_count": 86,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 86
+    },
+    {
+      "key": "retest",
+      "status": "indexed",
+      "chunk_count": 9,
+      "indexed_count": 9,
+      "actual_stored_chunk_count": 9,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 9
+    },
+    {
+      "key": "qinghe",
+      "status": "indexed",
+      "chunk_count": 35,
+      "indexed_count": 35,
+      "actual_stored_chunk_count": 35,
+      "warnings": [],
+      "blocked_metadata_lookup": "None",
+      "blocked_chunk_lookups_returning_none": 35
+    }
+  ],
+  "indexed_chunks": 501,
+  "blocked_metadata_lookups_returning_none": 8,
+  "blocked_chunk_lookups_returning_none": 501,
+  "raw_reextraction": {
+    "documents": 8,
+    "source_units": 501,
+    "by_document": {
+      "competition": 224,
+      "scholarship": 59,
+      "college-scholarship": 33,
+      "xinghuo": 35,
+      "recommendation": 20,
+      "innovation": 86,
+      "retest": 9,
+      "qinghe": 35
+    },
+    "qinghe_lab_rows": 24,
+    "qinghe_nonempty_cells": 226,
+    "qinghe_wps_links": 40,
+    "recommendation_page4": "re-read spatial PDF characters; all non-footer text covered",
+    "method": "offline originals re-extracted in memory; exact unit/field comparison; no writes"
+  }
+}
