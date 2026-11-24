@@ -116,12 +116,8 @@ class EvidenceSelectingRuntimeLLM:
         return LLMResult(
             content=json.dumps(
                 {
-                    "evidence": [
-                        {
-                            "chunk_id": first["chunk_id"],
-                            "quote": first["content"],
-                        }
-                    ]
+                    "answer": first["content"],
+                    "used_evidence_ids": [first["evidence_id"]]
                 },
                 ensure_ascii=False,
             ),

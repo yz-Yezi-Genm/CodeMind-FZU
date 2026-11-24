@@ -1,0 +1,21 @@
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+................................................... [  9%]
+.................................................................................... [ 25%]
+...........................s.............. [ 32%]
+........................................................................ [ 46%]
+........................................................................ [ 59%]
+..........................................s............................. [ 73%]
+..............................................s........... [ 83%]
+............................................................ [ 94%]
+...........................                            [100%]
+============================== warnings summary ===============================
+..\python-3.10.11\tools\lib\site-packages\fastapi\testclient.py:1
+  D:\se_teamalpha\python-3.10.11\tools\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1448: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
+SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
+535 passed, 3 skipped, 1 warning, 227 subtests passed in 12.29s

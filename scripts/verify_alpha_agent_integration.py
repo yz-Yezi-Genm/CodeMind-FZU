@@ -17,7 +17,7 @@ from backend.contracts.models import AgentRequest, DocumentPackage, IndexingStat
 from backend.retrieval.local import LocalBM25Retriever
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.qwen_client import QwenLLMClient, QwenSettings
-from scripts.verify_alpha_upstream_integration import agent_source_state, upstream_snapshot
+from scripts.verify_alpha_upstream_integration import agent_source_state, integration_sources
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/assignment-03/alpha/evidence/agent-integration"
@@ -118,10 +118,9 @@ def main():
     command = [sys.executable, "-X", "utf8", "-m", "pytest", "-v", "-ra",
                "tests", "knowledge_base/processing/test_policy_review.py",
                "knowledge_base/processing/test_policy_forms_privacy.py"]
-    with upstream_snapshot() as (snapshot, upstream_sources):
-        process = subprocess.run(command, cwd=ROOT,
-            env=dict(os.environ, PYTHONIOENCODING="utf-8", ALPHA_UPSTREAM_SNAPSHOT=snapshot),
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
+    upstream_sources = integration_sources()
+    process = subprocess.run(command, cwd=ROOT, env=dict(os.environ, PYTHONIOENCODING="utf-8"),
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8")
     # Keep the established artifact path; environment.command identifies pytest.
     # Indent the transcript and trim line ends so pytest's ======= separators
     # are not mistaken for unresolved Git conflicts by git diff --check.
@@ -153,14 +152,14 @@ def main():
             "DeliveredBusinessRulesTests": "Direct import of the formally merged #36 business rules; no longer skipped for absent module",
             "test_alpha_business_rules.py": "All merged #36 pytest functions, including latest intent/scope/work-ranking regressions",
             "LiveAlphaAcceptanceTests": "Actual approved corpus, rules and paid Qwen; explicit opt-in required",
-            "UpstreamRulesRetrieverIntegrationTests": "Unmodified PR #35/#36 Git snapshots, actual rules/loader/BM25, synthetic corpus and mock Qwen HTTP",
+            "MergedRulesRetrieverIntegrationTests": "Merged rules/loader/BM25, synthetic corpus and mock Qwen HTTP",
             "QwenLiveProbeOfflineTests": "Live-probe opt-in guard, synthetic prompt and production citation verifier using mock transport only",
         },
         "upstream_sources": upstream_sources,
         "qwen_handoff_checks": [
             "Startup script reads explicit packages and injects the same workflow/model into FastAPI",
             "401/403, 408, 429 and 5xx preserve backend status, request ID and CORS headers",
-            "Malformed/empty provider envelope is HTTP 502; invalid evidence selection is a business refusal",
+            "Malformed/empty provider envelope is HTTP 503; invalid evidence selection is a business refusal",
             "Read timeout and connection failures map to 504/503 without provider detail leakage",
             "Outer workflow timeout cancels the real adapter request",
             "Mixed transport and HTTP failures share the adapter retry budget",

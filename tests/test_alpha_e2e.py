@@ -126,7 +126,7 @@ def _write_package_files(root: Path, package: DocumentPackage) -> None:
 class _MockQwen:
     """离线 Qwen 替身：从 workflow 发来的证据里选第一条逐字返回。
 
-    通过 `output` 可返回固定内容（用于伪造 chunk_id / 改写 quote 测试），
+    通过 `output` 可返回固定内容（用于伪造证据 ID / 改写答案 测试），
     通过 `fail` / `status` 模拟超时与上游错误。所有出站 HTTP client 由测试
     用例通过 `addCleanup` 统一 await 关闭。
     """
@@ -149,14 +149,14 @@ class _MockQwen:
                 return httpx.Response(self._status)
             evidence = json.loads(payload["messages"][-1]["content"])["evidence"]
             if self._output is not None:
-                content = json.dumps(self._output, ensure_ascii=False)
+                content = json.dumps(self._output(evidence), ensure_ascii=False)
             elif not evidence:
-                content = json.dumps({"evidence": []}, ensure_ascii=False)
+                content = json.dumps({"answer": "", "used_evidence_ids": []}, ensure_ascii=False)
             else:
-                content = json.dumps({"evidence": [{
-                    "chunk_id": evidence[0]["chunk_id"],
-                    "quote": evidence[0]["content"],
-                }]}, ensure_ascii=False)
+                content = json.dumps({
+                    "answer": evidence[0]["content"],
+                    "used_evidence_ids": [evidence[0]["evidence_id"]],
+                }, ensure_ascii=False)
             return httpx.Response(200, json={
                 "model": "offline-e2e-qwen-fixture",
                 "choices": [{"message": {"content": content}}],
@@ -367,21 +367,14 @@ class AlphaE2ETests(unittest.TestCase):
         self.assertEqual(body["error"]["code"], "MODEL_TIMEOUT")
         self.assertNotIn("status", body)
 
-    def test_T8_model_returns_unknown_chunk_id_is_rejected(self):
-        """T8 模型返回不存在的 chunk_id：拒绝该引用。"""
+    def test_T8_model_returns_unknown_evidence_id_is_rejected(self):
+        """T8 正确答案搭配未知证据 ID 时拒答。"""
         qwen = _MockQwen()
         qwen.build()
         _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
 
-        # 先正常回答一次，拿到真实 chunk_id
-        with TestClient(app) as client:
-            ok = client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
-            real_chunk_id = ok.json()["citations"][0]["chunk_id"]
-        self.assertTrue(real_chunk_id)
-
-        # 再让模型返回一个伪造的 chunk_id（quote 保持原文不变）
-        qwen._output = {"evidence": [{"chunk_id": str(uuid4()), "quote": _APPROVED_CONTENT}]}
+        qwen._output = lambda evidence: {"answer": _APPROVED_CONTENT, "used_evidence_ids": [str(uuid4())]}
         with TestClient(app) as client:
             response = client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
         body = response.json()
@@ -389,24 +382,17 @@ class AlphaE2ETests(unittest.TestCase):
         self.assertEqual(body["citations"], [])
         self.assertTrue(any(w["code"] == "UNSUPPORTED_GENERATION" for w in body["warnings"]))
 
-    def test_T9_model_rewrites_quote_is_rejected(self):
-        """T9 模型改写原文作引用：保持 chunk_id 不变，只改 quote，验证拦截改写。"""
+    def test_T9_model_answer_can_be_rejected_even_with_valid_evidence_id(self):
+        """T9 使用本次合法证据 ID，验证篡改的答案仍会被拦截。"""
         qwen = _MockQwen()
         qwen.build()
         _install_qwen_cleanup(self, qwen)
         app = self._app(qwen)
 
-        # 先正常回答一次，拿到真实 chunk_id
-        with TestClient(app) as client:
-            ok = client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
-            real_chunk_id = ok.json()["citations"][0]["chunk_id"]
-        self.assertTrue(real_chunk_id)
-
-        # 保持 chunk_id 不变，只改写 quote（模拟模型擅自改写原文）
-        qwen._output = {"evidence": [{
-            "chunk_id": real_chunk_id,
-            "quote": "改写后的政策结论（非原文）",
-        }]}
+        qwen._output = lambda evidence: {
+            "answer": "改写后的政策结论（非原文）",
+            "used_evidence_ids": [evidence[0]["evidence_id"]],
+        }
         with TestClient(app) as client:
             response = client.post("/api/v1/ask", json={"query": "优秀学生综合奖学金申请需要提交什么材料？"})
         body = response.json()
@@ -466,12 +452,15 @@ class AlphaE2EMultiTurnTests(unittest.TestCase):
                 "/api/v1/ask",
                 json={"query": "还需要成绩单吗？", "conversation_id": conversation_id},
             )
+            fresh = client.post("/api/v1/ask", json={"query": "还需要成绩单吗？"})
             history = app.state.alpha_runtime.session_store.history(
                 UUID(conversation_id)
             )
 
         self.assertEqual(first.status_code, 200)
         self.assertEqual(second.status_code, 200)
+        self.assertEqual(fresh.json()["status"], "needs_clarification")
+        self.assertNotEqual(fresh.json()["conversation_id"], conversation_id)
         # 第二轮正常完成问答：状态 answered 且带有效引用
         second_body = second.json()
         self.assertEqual(second_body["status"], "answered")
@@ -483,10 +472,10 @@ class AlphaE2EMultiTurnTests(unittest.TestCase):
         self.assertEqual(history[2].content, "还需要成绩单吗？")
 
         # 第二轮触发了第二次模型调用，且发给 Qwen 的用户上下文包含了第一轮问题
-        self.assertGreaterEqual(len(qwen.observed), 2)
+        self.assertEqual(len(qwen.observed), 2)
         second_payload = qwen.observed[-1]
         user_message = json.loads(second_payload["messages"][-1]["content"])
-        context = user_message["question_and_user_context"]
+        context = "\n".join([*user_message["user_context"], user_message["question"]])
         self.assertIn("优秀学生综合奖学金申请需要提交什么材料？", context)
         self.assertIn("还需要成绩单吗？", context)
 
