@@ -1,0 +1,90 @@
+# Beta 业务规则测试记录
+
+基线：main `306c15d`（含 #47 学生端登录页、#51 检索契约），PR #45 分支 `feat/beta-business-rules`
+环境：macOS，Python 3.10.11，独立 venv（pytest 9.2.0）
+时间：2026-11-23
+
+本轮按第三轮评审完成六项修改：多轮时间意图隔离、S4 R3 跨年度校验、S4 旧联系方式/旧培养方案/被替代资料的末段时间口径统一、公众号名称与账号 ID 同族校验、runtime 文档基线同步，以及 Python 3.10.11 下的真实回归。
+
+## 一、规则专项（Python 3.10.11）
+
+```text
+$ python -m pytest tests/test_alpha_business_rules.py -q
+........................................................................ [ 40%]
+........................................................................ [ 80%]
+....................................                                     [100%]
+180 passed in 0.42s
+```
+
+新增覆盖点：
+
+1. 多轮时间隔离：第一轮问 2025、第二轮问 2024 时拒绝 2025 资料；第二轮写“现在”时拒绝 2025 历史资料；第二轮完全不写时间时继承最近一轮的 2025。
+2. 多轮名额：历史“2026 年当时招几个”不再压住本轮“现在还剩几个名额”，当前名额仍拒绝；反过来本轮问历史人数，也不被上一轮“现在”拦住。
+3. S4 R3 年度：2026 年青禾招募通知回答 2026 年报名放行，回答 2025 年、2027 年报名或招人均拒绝。
+4. R4/R6 豁免：2025 年提问 EDA 研究方向、学院办公室电话时，不因年度不同被 R3 规则误杀。
+5. 公众号一致性：`福州大学计算机学院` 搭配 `ifzu1958`/`fzuzsks`/未登记 `gh_fake`，或 `ifzu1958` 搭配 `gh_college` 均拒绝；生产白名单未登记 `gh_college` 时，即使名称合法也拒绝。仅在该测试通过 `monkeypatch` 注入 `gh_college` 时，学院名称 + `gh_college` 才通过。
+6. S4 末尾时间隔离：旧联系方式（`HISTORICAL`/`EXPIRED`）在本轮问“现在”时拒绝；旧培养方案在本轮问“现在”时拒绝；`SUPERSEDED` 培养方案在本轮问“现在”时拒绝。明确问 2025/2024 旧资料时仍可历史回答。
+
+## 二、全量回归（Python 3.10.11，含跳过原因）
+
+```text
+$ TMPDIR=/private/tmp/codemind-test python -m pytest tests/ -q -rs
+...........................................................................sssssssssssssssssssssssss.s.... [ 23%]
+........................................................................ [ 39%]
+........................................................................ [ 54%]
+....................................................s................... [ 70%]
+.......................................................... [ 83%]
+............................................................ [ 96%]
+...............                                                          [100%]
+=============================== warnings summary ===============================
+../../../tmp/venv310/lib/python3.10/site-packages/fastapi/testclient.py:1
+  /tmp/venv310/lib/python3.10/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_agent_workflow_qwen.py:924: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:753: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:882: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:973: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:818: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:958: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:778: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:903: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:793: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:847: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:1000: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:935: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:667: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:987: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:744: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:770: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:653: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:644: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:661: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:858: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:786: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:712: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:694: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:676: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:685: Run scripts.verify_alpha_upstream_integration for PR #35/#36 integration
+SKIPPED [1] tests/test_agent_workflow_qwen.py:1044: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests/test_alpha_e2e.py:504: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
+428 passed, 27 skipped, 1 warning, 136 subtests passed in 4.12s
+```
+
+## 三、口径对照
+
+| 项目 | 本轮结果 |
+| --- | --- |
+| 规则专项 | 180 passed |
+| 全量 | 428 passed / 27 skipped / 136 subtests passed |
+| 分支 | feat/beta-business-rules |
+| PR | #45，保持 Draft |
+| 公共契约 | 未改 `backend/contracts/models.py`、HTTP API、DTO、业务方向 code、`agent_workflow.py`、Retriever |
+
+跳过说明：25 项为 `scripts.verify_alpha_upstream_integration` 的 PR #35/#36 上游联调用例，需要单独运行脚本；1 项为真实 Qwen 验收，1 项为 `test_alpha_e2e` 的真实 Qwen 集成，均需显式设置 `RUN_LIVE_QWEN_TESTS=1` 且资料已审核。
+
+## 四、集成边界
+
+工作流 `_eligible()` 当前仍只放行 `CURRENT` 资料，历史政策端到端回答依赖 #46 的 `AgentWorkflow` 放开。本 PR 只完成规则侧证据判断与单测，不宣称端到端历史能力已完成。

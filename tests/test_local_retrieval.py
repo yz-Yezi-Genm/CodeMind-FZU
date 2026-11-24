@@ -380,8 +380,41 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(self.store.get_parsed_chunk(removed_chunk_id))
         self.assertIsNotNone(self.store.get_parsed_chunk(hits[0].chunk_id))
 
-        # Withdrawal clears both version metadata and chunk lookup immediately.
-        package.metadata.retrieval_status = RetrievalStatus.BLOCKED
-        await self.indexer.index_document(package)
-        self.assertIsNone(self.store.get_document_metadata(indexed.version_id))
-        self.assertIsNone(self.store.get_parsed_chunk(hits[0].chunk_id))
+        # Separate retriever instances must not share metadata or chunk lookups.
+        other_store = LocalBM25Retriever()
+        self.assertIsNone(other_store.get_document_metadata(hits[0].version_id))
+        self.assertIsNone(other_store.get_parsed_chunk(hits[0].chunk_id))
+
+        # Withdrawal (review_only or blocked) clears both version metadata and chunk lookup immediately.
+        for status in (RetrievalStatus.REVIEW_ONLY, RetrievalStatus.BLOCKED):
+            package.metadata.retrieval_status = RetrievalStatus.ENABLED
+            await self.indexer.index_document(package)
+            self.assertIsNotNone(self.store.get_document_metadata(indexed.version_id))
+            self.assertIsNotNone(self.store.get_parsed_chunk(hits[0].chunk_id))
+            package.metadata.retrieval_status = status
+            await self.indexer.index_document(package)
+            self.assertIsNone(self.store.get_document_metadata(indexed.version_id))
+            self.assertIsNone(self.store.get_parsed_chunk(hits[0].chunk_id))
+
+    def test_local_retriever_conforms_to_retriever_protocol_signatures(self):
+        import inspect
+        from typing import get_type_hints
+
+        for name in ("retrieve", "get_document_metadata", "get_parsed_chunk"):
+            protocol_method = getattr(Retriever, name)
+            impl_method = getattr(LocalBM25Retriever, name)
+            self.assertEqual(
+                inspect.iscoroutinefunction(impl_method),
+                inspect.iscoroutinefunction(protocol_method),
+                msg=f"{name} async/sync mismatch",
+            )
+            self.assertEqual(
+                list(inspect.signature(impl_method).parameters),
+                list(inspect.signature(protocol_method).parameters),
+                msg=f"{name} parameter mismatch",
+            )
+            self.assertEqual(
+                get_type_hints(impl_method),
+                get_type_hints(protocol_method),
+                msg=f"{name} type hint mismatch",
+            )

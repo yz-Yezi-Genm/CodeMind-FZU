@@ -1,6 +1,7 @@
-"""Alpha 业务规则：主动追问与证据适用性判断。
+"""S1—S4 业务规则：主动追问与证据适用性判断。
 
-规则来源为 `docs/assignment-03/alpha/business-rules.md`（已在 PR #29 合并），
+规则来源为 `docs/assignment-03/beta/business-rules.md`，Beta 阶段按
+`Beta 接口规范 V2.1-Final` 扩充 S4 学院资源导航与历史政策判断。
 本模块只做规则的代码化落地，不新增状态值、不修改公共契约字段。
 
 两个注入点由 `AgentWorkflow` 调用：
@@ -31,6 +32,7 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
+from urllib.parse import urlsplit
 from uuid import UUID
 
 from backend.contracts.models import (
@@ -52,6 +54,74 @@ EvidenceCheck = Callable[[AgentRequest, RetrievedChunk], bool]
 COMPETITION = "competition"
 SCHOLARSHIP = "scholarship"
 RECOMMENDATION = "recommendation"
+RESOURCES = "resources"
+
+# S4 资源类别仅作为模块内部标签，不写入公共契约，也不等于数据库 category_name。
+RES_NOTICE = "resource_notice"        # R1 通知与办事渠道
+RES_STUDY = "resource_study"          # R2 培养方案、课程与学习资源
+RES_LAB = "resource_lab"              # R3 实验室与科研团队
+RES_INTRO = "resource_intro"          # R4 研究方向与公开介绍
+RES_PRACTICE = "resource_practice"    # R5 科研实践、竞赛及相关资源
+RES_CONTACT = "resource_contact"      # R6 学院公开信息与联系方式
+
+RESOURCE_DIRECTION_CODE = "COLLEGE_RESOURCES"
+
+# S4 资料的 category_name 必须使用这六个正式名称之一；不再用正文关键词给资料定类。
+RESOURCE_CATEGORY_MAP: dict[str, str] = {
+    "通知与办事渠道": RES_NOTICE,
+    "培养方案与课程": RES_STUDY,
+    "实验室与科研团队": RES_LAB,
+    "研究方向与公开介绍": RES_INTRO,
+    "科研实践与竞赛": RES_PRACTICE,
+    "学院公开信息与联系方式": RES_CONTACT,
+}
+
+# 已核实的官方来源域名。fzu.edu.cn 子域名不在表内时一律拒绝，不用后缀包含判断。
+OFFICIAL_RESOURCE_HOSTS = {
+    "fzu.edu.cn",
+    "ccds.fzu.edu.cn",
+    "news.fzu.edu.cn",
+    "zsks.fzu.edu.cn",
+    "xwgk.fzu.edu.cn",
+    "xcb.fzu.edu.cn",
+    # 以下两个来自林彦翔提供的 R1 已核验栏目，仅用于教务/学工通知渠道。
+    "jwch.fzu.edu.cn",
+    "stuic.fzu.edu.cn",
+}
+COLLEGE_RESOURCE_HOST = "ccds.fzu.edu.cn"
+WECHAT_ARTICLE_HOST = "mp.weixin.qq.com"
+COLLEGE_WECHAT_ACCOUNTS = {"福州大学计算机学院", "福大计算机青年"}
+SCHOOL_WECHAT_ACCOUNTS = {"ifzu1958", "fzuzsks"}
+# 账号 ID 只认资料侧已核实的官方号。两个学院号的真实 ID 尚未补齐，生产白名单
+# 暂为空；补齐前来自 mp.weixin.qq.com 的学院公众号文章不作为已核验来源。
+COLLEGE_WECHAT_IDS: set[str] = set()
+SCHOOL_WECHAT_IDS = {"ifzu1958"}
+ADMISSION_WECHAT_IDS = {"fzuzsks"}
+# 名称与账号 ID 必须属同一类主体；不能用合法学院昵称搭配学校号/招生号 ID。
+_WECHAT_COLLEGE_NAME_ALIASES = COLLEGE_WECHAT_ACCOUNTS
+_WECHAT_SCHOOL_NAME_ALIASES = {"ifzu1958", "福州大学"}
+_WECHAT_ADMISSION_NAME_ALIASES = {"fzuzsks", "福州大学招生考试中心"}
+
+
+def _wechat_family(value: str, *, is_id: bool) -> str | None:
+    if is_id:
+        if value in SCHOOL_WECHAT_IDS:
+            return "school"
+        if value in ADMISSION_WECHAT_IDS:
+            return "admission"
+        if value in COLLEGE_WECHAT_IDS:
+            return "college"
+        return None
+    if value in _WECHAT_COLLEGE_NAME_ALIASES:
+        return "college"
+    if value in _WECHAT_SCHOOL_NAME_ALIASES:
+        return "school"
+    if value in _WECHAT_ADMISSION_NAME_ALIASES:
+        return "admission"
+    return None
+_COLLEGE_CONTACT_QUESTION = re.compile(r"学院.*(?:办公电话|电话|邮箱|办公地点|办公室|地址)|办公电话")
+_ADMISSION_SCOPE = re.compile(r"招生|报考|录取|招生简章|招生办")
+
 
 PURPOSE_CREDIT = "innovation_credit"
 PURPOSE_EVALUATION = "comprehensive_evaluation"
@@ -81,6 +151,12 @@ QUESTION_RECOMMENDATION_OBJECT = "你想问的是校内推免资格怎么获得�
 QUESTION_PROFESSION = "你关注的是哪个专业？"
 QUESTION_DEGREE = "你关注的是学术型、专业型，还是直博？"
 QUESTION_GRADE = "你现在是大几？不同年级参考的年度通知不同。"
+QUESTION_RESOURCE_TYPE = (
+    "你想查的是培养方案与课程、实验室与科研团队、竞赛与科研实践，"
+    "还是学院通知与办事渠道？"
+)
+QUESTION_LAB_PURPOSE = "你是想了解这个实验室的研究方向，还是了解怎么报名进实验室？"
+QUESTION_PLAN_SCOPE = "你想查哪个专业、哪一级的培养方案？"
 
 _COMPETITION_TOPIC = re.compile(
     r"竞赛|比赛|大赛|挑战杯|数学建模|蓝桥杯|获奖|奖项|(?<!学)奖(?!学金)"
@@ -88,9 +164,55 @@ _COMPETITION_TOPIC = re.compile(
 )
 _RECOMMENDATION_TOPIC = re.compile(r"推免|保研|免试攻读|直博")
 _SCHOLARSHIP_TOPIC = re.compile(r"奖学金|助学金|奖助|单项奖|励志奖")
+_RESOURCE_TOPIC = re.compile(
+    r"资源|实验室|科研团队|课题组|进组|导师|培养方案|课程|选课|辅修|通识"
+    r"|学位要求|科研项目|大创|开放探索|青禾计划|办事|渠道|通知公告|通知在哪|在哪看"
+    r"|办公地点|办公室|联系方式|电话|邮箱|官网|学院简介|系所简介|教师主页"
+    r"|学院.*(?:竞赛|比赛).*(?:报名|目录|名单|有哪些)"
+)
+_RESOURCE_FORMAL = re.compile(
+    r"创新学分|学分认定|综测|加分|加多少分|能加几分|多少钱|金额|资格|排名"
+    r"|遴选|能不能|能否|可否|申请条件|申请资格|够不够|名额"
+)
+# “通知在哪看”“公告怎么查”问的是 R1 渠道，不是奖学金/推免政策本身。
+_NOTICE_CHANNEL_QUERY = re.compile(
+    r"(?:通知|公告|公示|消息|信息).{0,12}(?:在哪|哪里|哪儿|怎么查|如何查|查|看|找|渠道|入口)"
+    r"|(?:在哪|哪里|哪儿|怎么查|如何查).{0,12}(?:通知|公告|公示|消息)"
+)
+_BROAD_RESOURCE_QUESTION = re.compile(
+    r"学院(?:里|内)?(?:有|提供|能提供)?(?:哪些|什么|啥)资源|资源(?:怎么找|在哪找|都有哪些)"
+    r"|学院(?:里|内)?(?:有|提供)(?:哪些|什么|啥)(?:资源|渠道)"
+)
+_LAB_QUESTION = re.compile(r"实验室|科研团队|课题组|进组|青禾计划")
+_LAB_INTRO = re.compile(r"研究方向|研究什么|做什么|研究内容|简介|成果|教师主页|导师")
+_LAB_JOIN = re.compile(
+    r"报名|怎么进|如何进|进入|能进|能不能进|可以进|进实验室|招|接收|加入|申请|名额|条件"
+    r"|联系人|地点|地址|联系方式|电话|邮箱"
+)
+_LAB_CONTACT = re.compile(r"联系方式|联系电话|电话|邮箱|联系人|地址|地点")
+_LAB_LIST = re.compile(r"有哪些实验室|实验室(?:名单|一览|列表|目录)|学院.*实验室|哪些实验室")
+_STUDY_QUESTION = re.compile(r"培养方案|课程|选课|辅修|通识|学位要求|修多少")
+_PLAN_MAJOR = re.compile(r"计算机专业|软件专业|计算机类|软件类|人工智能专业|大数据专业|信息安全专业")
+_CONTACT_QUESTION = re.compile(r"联系方式|电话|邮箱|办公地点|办公室|地址|官网|学院简介|系所简介")
+_NOTICE_QUESTION = re.compile(r"通知|公告|办事|办理|渠道|在哪看|在哪办|材料|窗口|盖章")
+_PRACTICE_QUESTION = re.compile(r"科研项目|大创|开放探索|竞赛|比赛|报名|目录|名单")
+_CURRENT_INTENT = re.compile(r"现在|目前|当前|今年|最新|现行|本学期|这学期")
+_HISTORICAL_INTENT = re.compile(
+    r"去年|前年|往年|以前|原政策|旧版|旧[^，。]{0,4}(?:办法|政策|文件|通知|版本)"
+    r"|原(?:办法|文件|通知)|之前|以前年度|当时|上一年度|历史|原来"
+)
+# “招几个/接收几个”是年度计划人数，不等于当前剩余名额；只有现在、剩余、
+# 名额等当前口径才触发名额拒绝。
+_CURRENT_QUOTA = re.compile(
+    r"现在还?招(?:几个|几人|多少|多少名)|目前还?招(?:几个|几人|多少)"
+    r"|现在.*(?:几个|名额|剩下|还剩|剩余)|目前.*(?:几个|名额|剩下|还剩|剩余)"
+    r"|当前.*(?:几个|名额|剩下|还剩|剩余)|还有.*名额|剩余.*名额|名额.*剩|还剩"
+)
 
 _PURPOSE_CREDIT = re.compile(r"创新学分|学分认定|认定多少学分|原始分")
-_PURPOSE_EVALUATION = re.compile(r"综测|综合素质测评|综合素质评价|加几分|加分")
+_PURPOSE_EVALUATION = re.compile(
+    r"综测|综合素质测评|综合素质评价|能加多少分|加多少分|加几分|加分|折算多少分"
+)
 
 # 正文同时含教师与学生条款、必须按章节定位的资料；新增此类文件时在此登记。
 _SECTION_SENSITIVE = re.compile(
@@ -141,7 +263,7 @@ _SCHOLARSHIP_DIMENSION = re.compile(
 )
 
 _RECOMMENDATION_REVIEW = re.compile(r"复试|面试|机试|材料|招生|名额|招多少|录取|直博|专业")
-_RECOMMENDATION_QUALIFICATION = re.compile(r"资格|排名|遴选|推荐办法|加分|名额分配")
+_RECOMMENDATION_QUALIFICATION = re.compile(r"资格|排名|遴选|推荐办法|加分|加多少分|要求|条件|经历|名额分配")
 _PLAN_QUESTION = re.compile(r"招多少|招生计划|招几人|多少人|名额")
 _REVIEW_DETAIL = re.compile(
     r"招多少|招生计划|招几人|多少人|名额|分组|材料投递|投递|调剂|录取|复试名单"
@@ -188,6 +310,16 @@ class _DocumentFacts:
     applicability: dict[str, str] | None
     deadline: date | None
     has_metadata: bool
+    category_name: str = ""
+    business_direction_codes: tuple[str, ...] = ()
+    document_type: str = ""
+    source_url: str = ""
+    publisher: str | None = None
+    version_no: str = ""
+    policy_status: str = ""
+    temporal_notes: dict[str, object] | None = None
+    published_on: date | None = None
+    effective_on: date | None = None
 
 
 def bind_metadata_lookup(lookup: MetadataLookup | None) -> None:
@@ -256,6 +388,8 @@ def alpha_clarification_rule(
         return _clarify_competition(text, request.query)
     if scenario == SCHOLARSHIP:
         return _clarify_scholarship(text, request.query, today=today())
+    if scenario == RESOURCES:
+        return _clarify_resources(text, request.query)
     return _clarify_recommendation(text, request.query, today=today())
 
 
@@ -272,11 +406,67 @@ def _user_text(request: AgentRequest) -> str:
     return "\n".join([*previous, request.query]).strip()
 
 
+def _has_time_intent(text: str) -> bool:
+    """本轮是否明确写了年份、当前时点或历史时点。"""
+    return bool(
+        _CURRENT_INTENT.search(text)
+        or _HISTORICAL_INTENT.search(text)
+        or _CURRENT_QUOTA.search(text)
+        or _CURRENT_AVAILABILITY.search(text)
+        or _years(text)
+        or re.search(r"20\d{2}\s*[-—–]\s*20\d{2}\s*学年", text)
+        or "去年" in text
+        or "前年" in text
+    )
+
+
+def _temporal_text(request: AgentRequest, full_text: str) -> str:
+    """时间判断只看本轮明确口径；本轮没写时间时才回退到最近一条带时间的历史。
+
+    不能把全部历史与 query 拼在一起做年份或“当时/现在”判断，否则上一轮的
+    2025 会污染本轮的 2024，上一轮的“当时”会覆盖本轮的“现在”。
+    """
+    query = (request.query or "").strip()
+    if query and _has_time_intent(query):
+        return query
+    for turn in reversed(request.history):
+        if turn.role != LLMRole.USER:
+            continue
+        content = turn.content.strip()
+        if content and _has_time_intent(content):
+            return content
+    return query or full_text
+
+
 def _detect(text: str) -> tuple[str | None, str | None]:
     competition = _COMPETITION_TOPIC.search(text)
     recommendation = _RECOMMENDATION_TOPIC.search(text)
     scholarship = _SCHOLARSHIP_TOPIC.search(text)
+    resource = _RESOURCE_TOPIC.search(text)
     purpose = _purpose(text)
+    # “奖学金通知在哪看”“推免通知在哪看”问的是通知渠道，先按 S4 处理。
+    if (
+        resource
+        and _NOTICE_CHANNEL_QUERY.search(text)
+        and not _RESOURCE_FORMAL.search(text)
+    ):
+        return RESOURCES, None
+    # 推免语境优先：竞赛经历、竞赛获奖只是推免条件或计分材料，不能因为出现
+    # “竞赛”就整题判成竞赛认定。只有明确问创新学分或综测加分才回到 S1/S2。
+    if recommendation:
+        if _PURPOSE_CREDIT.search(text) and re.search(r"创新学分|学分认定", text):
+            return COMPETITION, PURPOSE_CREDIT
+        if _PURPOSE_EVALUATION.search(text) and re.search(
+            r"综测|综合素质测评|综合素质评价", text
+        ):
+            return COMPETITION, PURPOSE_EVALUATION
+        if _PURPOSE_EVALUATION.search(text):
+            # 推免计分仍归 S3，但保留“加分”意图供回答组织，不按综测定档。
+            return RECOMMENDATION, PURPOSE_EVALUATION
+        return RECOMMENDATION, None
+    # 只有资源类名词、没有正式办理/资格/加分意图时，归 S4。
+    if resource and not competition and not scholarship:
+        return RESOURCES, None
     # 奖学金名称里也常带“学科竞赛类”等字样，只有明确问创新学分或综测加分
     # 才按竞赛认定处理，否则仍归奖学金场景。
     if competition and scholarship:
@@ -285,11 +475,16 @@ def _detect(text: str) -> tuple[str | None, str | None]:
             purpose,
         )
     if competition:
+        # “学院有哪些竞赛可以报名”“竞赛通知在哪看”问的是资源入口，不是认定规则。
+        if resource and not _RESOURCE_FORMAL.search(text):
+            return RESOURCES, None
         return COMPETITION, purpose
     if scholarship:
+        if resource and _BROAD_RESOURCE_QUESTION.search(text):
+            return RESOURCES, None
         return SCHOLARSHIP, None
-    if recommendation:
-        return RECOMMENDATION, None
+    if resource:
+        return RESOURCES, None
     return None, None
 
 
@@ -515,6 +710,93 @@ def _recommendation_object(text: str) -> str | None:
 # --------------------------------------------------------------------------- 追问规则
 
 
+_PRACTICE_CATEGORY = re.compile(r"科研项目|大创|开放探索|竞赛|比赛|目录|名单")
+_NOTICE_CATEGORY = re.compile(r"通知|公告|公示|办事|办理|渠道|在哪看|在哪办|窗口|盖章")
+
+
+def _resource_categories(text: str) -> set[str]:
+    """返回问题涉及的资源类别；多类别问题按分句分别识别，不互相覆盖。"""
+    categories: set[str] = set()
+    parts = re.split(r"[，,；;、]|以及|还有|和|与|及", text)
+    for part in parts:
+        current = part.strip()
+        if not current:
+            continue
+        if _LAB_QUESTION.search(current):
+            join = bool(_LAB_JOIN.search(current))
+            intro = bool(_LAB_INTRO.search(current))
+            contact = bool(_LAB_CONTACT.search(current))
+            if join or contact:
+                categories.add(RES_LAB)
+            if intro:
+                categories.add(RES_INTRO)
+            if not (join or intro or contact):
+                # 只提“实验室怎么样”时，招募与方向两类资料都可用于比对。
+                categories.update({RES_LAB, RES_INTRO})
+            continue
+        if _STUDY_QUESTION.search(current):
+            # “培养方案在哪看”问的是方案本身；同一分句里的“在哪看”不能加成 R1。
+            categories.add(RES_STUDY)
+            continue
+        if _PRACTICE_CATEGORY.search(current):
+            categories.add(RES_PRACTICE)
+        if _NOTICE_CATEGORY.search(current):
+            categories.add(RES_NOTICE)
+        if _CONTACT_QUESTION.search(current):
+            categories.add(RES_CONTACT)
+    return categories
+
+
+def _resource_category(text: str) -> str | None:
+    """单个类别入口；多类别场景由 `_resource_categories()` 处理。"""
+    categories = _resource_categories(text)
+    for category in (
+        RES_LAB, RES_INTRO, RES_STUDY, RES_PRACTICE, RES_NOTICE, RES_CONTACT
+    ):
+        if category in categories:
+            return category
+    return None
+
+
+def _clarify_resources(
+    text: str, subject: str | None = None
+) -> str | None:
+    current = subject or text
+    categories = _resource_categories(current)
+    if not categories:
+        # 本轮省略主语时，从完整上下文补齐资源类别。
+        categories = _resource_categories(text)
+    if not categories and _BROAD_RESOURCE_QUESTION.search(text):
+        return QUESTION_RESOURCE_TYPE
+    if not categories:
+        # 本轮只给了一个实验室/资源名称或省略主语，先确认要办哪类事。
+        return QUESTION_RESOURCE_TYPE
+    if len(categories) > 1:
+        # 多类别问题分别判断，不因实验室或培养方案的追问卡住另一类。
+        if categories <= {RES_LAB, RES_INTRO}:
+            if (
+                _LAB_LIST.search(current)
+                or _LAB_JOIN.search(current)
+                or _LAB_INTRO.search(current)
+            ):
+                return None
+            return QUESTION_LAB_PURPOSE
+        return None
+    category = next(iter(categories))
+    if category == RES_LAB:
+        # 名录类问题直接答；问某个实验室但没说目的时才追问研究方向还是报名。
+        if _LAB_LIST.search(current) or _LAB_JOIN.search(current):
+            return None
+        if _LAB_INTRO.search(current):
+            return None
+        return QUESTION_LAB_PURPOSE
+    if category == RES_STUDY:
+        # 培养方案依赖专业与年级；只说“培养方案/课程”无法定位适用版本。
+        if not _PROFESSION.search(current) and not _PLAN_MAJOR.search(current) and not _GRADE.search(current):
+            return QUESTION_PLAN_SCOPE
+    return None
+
+
 def _clarify_competition(text: str, subject: str | None = None) -> str | None:
     """追问时本轮问题优先，历史只补本轮没说的槽位。
 
@@ -634,14 +916,29 @@ def _assess(
         facts = _document_facts(chunk, lookup)
         if not _basic_gates(chunk, today):
             return False
+        if not facts.has_metadata:
+            return False
+        # 人工审核、版本一致性与未来日期属于所有场景的公共门禁。
+        if not _human_approved(facts):
+            return False
+        if not _metadata_consistent(facts, chunk, today):
+            return False
         if _EXTERNAL_SCHOOL.search(text):
             return False
         scenario, purpose = _analyse(text, request.query)
+        # 未识别场景不能绕过元数据与适用范围检查直接放行。
         if scenario is None:
-            return True
-        # 三个场景都要确认文档类型与适用范围；缺元数据即视为无法确认。
-        if not facts.has_metadata:
             return False
+        temporal_text = _temporal_text(request, text)
+        if scenario != RESOURCES and _timeliness_conflict(
+            temporal_text, facts, today, chunk.timeliness_verification_status
+        ):
+            return False
+        if scenario == RESOURCES:
+            return _check_resources(
+                request, text, facts, chunk, chunk_lookup, today, temporal_text
+            )
+        # S1—S3 都要确认文档类型与适用范围；缺元数据即视为无法确认。
         if not facts.applicability:
             return False
         kind = _classify(facts)
@@ -649,10 +946,10 @@ def _assess(
             return False
         if not _section_applies(text, facts, chunk, chunk_lookup):
             return False
-        if _year_conflict(text, kind, facts, today):
+        if _year_conflict(temporal_text, kind, facts, today):
             return False
         if _deadline_conflict(
-            text, facts, today, chunk.timeliness_verification_status
+            temporal_text, facts, today, chunk.timeliness_verification_status
         ):
             return False
         if scenario == COMPETITION:
@@ -673,6 +970,7 @@ def _basic_gates(chunk: RetrievedChunk, today: date) -> bool:
     if chunk.timeliness_verification_status not in {
         TimelinessVerificationStatus.CURRENT,
         TimelinessVerificationStatus.HISTORICAL,
+        TimelinessVerificationStatus.SUPERSEDED,
         TimelinessVerificationStatus.EXPIRED,
     }:
         return False
@@ -736,6 +1034,188 @@ def _check_recommendation(
         # 推荐资格只认学院推荐资格方案；校级办法未入库，复试方案不能代替。
         return kind == _KIND_RECOMMENDATION_QUALIFICATION
     return kind == _KIND_RECOMMENDATION_QUALIFICATION
+
+
+# --------------------------------------------------------------------------- S4 学院资源导航
+
+_RESOURCE_APPLICABILITY_REQUIRED = {
+    RES_NOTICE, RES_STUDY, RES_LAB, RES_PRACTICE,
+}
+
+
+def _resource_document_kinds(facts: _DocumentFacts, chunk: RetrievedChunk | None = None) -> set[str]:
+    """S4 资料只按正式 category_name 定类，避免正文关键词把 R3/R4 混在一起。"""
+    name = (facts.category_name or "").strip()
+    kind = RESOURCE_CATEGORY_MAP.get(name)
+    return {kind} if kind else set()
+
+
+def _official_url_host(url: str) -> str | None:
+    """严格解析 URL：仅 HTTPS、无 userinfo、无非法端口、hostname 精确匹配白名单。"""
+    try:
+        parts = urlsplit(url)
+    except (ValueError, TypeError):
+        return None
+    if parts.scheme.lower() != "https":
+        return None
+    if parts.username is not None or parts.password is not None:
+        return None
+    try:
+        port = parts.port
+    except ValueError:
+        return None
+    if port not in (None, 443) or parts.netloc.endswith(":"):
+        return None
+    host = (parts.hostname or "").lower()
+    if not host or host not in OFFICIAL_RESOURCE_HOSTS:
+        return None
+    return host
+
+
+def _verified_wechat_identity(facts: _DocumentFacts) -> dict[str, str] | None:
+    """读取公众号身份核验记录；只有人工核验过的账号才能作为 S4 来源。"""
+    notes = facts.temporal_notes
+    if not isinstance(notes, dict):
+        return None
+    nested = notes.get("wechat_verification") or notes.get("official_account")
+    if isinstance(nested, dict):
+        verified = nested.get("verified") is True
+        name = str(nested.get("account_name") or "").strip()
+        account_id = str(nested.get("account_id") or "").strip()
+        basis = str(nested.get("basis") or "").strip()
+    else:
+        verified = notes.get("wechat_verified") is True
+        name = str(notes.get("wechat_account_name") or "").strip()
+        account_id = str(notes.get("wechat_account_id") or "").strip()
+        basis = str(notes.get("wechat_verification_basis") or "").strip()
+    if not verified or not name or not account_id or not basis:
+        return None
+    name_family = _wechat_family(name, is_id=False)
+    id_family = _wechat_family(account_id, is_id=True)
+    if name_family is None or id_family is None or name_family != id_family:
+        # 名称与 ID 必须同属学院、学校或招生主体，不能只靠昵称放行。
+        return None
+    return {"name": name, "account_id": account_id}
+
+
+def _official_resource_source(
+    facts: _DocumentFacts, category: str | None, text: str
+) -> bool:
+    """官方来源判定：学院信息要求 ccds 直接页面；公众号必须单独核验身份。"""
+    host = _official_url_host(facts.source_url or "")
+    if host is not None:
+        if category == RES_CONTACT and host != COLLEGE_RESOURCE_HOST:
+            # 学院公开信息与联系方式只采用计算机学院官网直接公开页面。
+            return False
+        if category == RES_NOTICE:
+            if host == "zsks.fzu.edu.cn" and not _ADMISSION_SCOPE.search(text):
+                return False
+            if host in {"news.fzu.edu.cn", "xcb.fzu.edu.cn"} and not re.search(
+                r"学校|全校|校园|新闻|宣传", text
+            ):
+                return False
+        return True
+    try:
+        parts = urlsplit(facts.source_url or "")
+    except (ValueError, TypeError):
+        return False
+    if parts.scheme.lower() != "https" or (parts.hostname or "").lower() != WECHAT_ARTICLE_HOST:
+        return False
+    if parts.username is not None or parts.password is not None:
+        return False
+    try:
+        port = parts.port
+    except ValueError:
+        return False
+    if port not in (None, 443) or parts.netloc.endswith(":"):
+        return False
+    identity = _verified_wechat_identity(facts)
+    if identity is None:
+        return False
+    if category == RES_CONTACT:
+        # 学院联系方式只认学院自己的两个公众号，学校号/招生号不能代替。
+        if identity["name"] not in COLLEGE_WECHAT_ACCOUNTS and identity["account_id"] not in COLLEGE_WECHAT_ACCOUNTS:
+            return False
+    if identity["account_id"] == "fzuzsks" or identity["name"] == "fzuzsks":
+        if not _ADMISSION_SCOPE.search(text):
+            return False
+    if identity["account_id"] == "ifzu1958" or identity["name"] == "ifzu1958":
+        if category == RES_CONTACT:
+            return False
+        if not re.search(r"学校|全校|校园|新闻|宣传", text):
+            return False
+    return True
+
+
+def _check_resources(
+    request: AgentRequest,
+    text: str,
+    facts: _DocumentFacts,
+    chunk: RetrievedChunk,
+    chunk_lookup: ChunkLookup | None,
+    today: date,
+    temporal_text: str,
+) -> bool:
+    # 准入先看正式业务方向代码；不能用标题里的“实验室”自行认作 S4 资料。
+    if RESOURCE_DIRECTION_CODE not in set(facts.business_direction_codes):
+        return False
+    named_college = _EXTERNAL_COLLEGE.search(text)
+    if named_college and "计算机" not in named_college.group() and "软件" not in named_college.group():
+        # 资料只服务本学院；R4/R6 即使不强制 applicability，也不能回答外院。
+        return False
+    if not facts.source_url.strip():
+        return False
+    categories = _resource_categories(request.query or text)
+    # 单轮省略主语的追问（“EDA 那个招几个”）回看历史后仍能定位类别。
+    if not categories:
+        categories = _resource_categories(text)
+    kinds = _resource_document_kinds(facts, chunk)
+    if not kinds:
+        return False
+    matched = categories & kinds if categories else kinds
+    if not matched:
+        # 问招募却拿历史介绍、问研究方向却拿报名通知，都属类别不匹配。
+        return False
+    # 来源规则按资料自身类别执行，不因同一问题里还有别的资源类别而放松。
+    doc_kind = next(iter(kinds))
+    if not _official_resource_source(facts, doc_kind, text):
+        return False
+    requires_app = doc_kind in _RESOURCE_APPLICABILITY_REQUIRED
+    if requires_app and not facts.applicability:
+        return False
+    if facts.applicability:
+        allowed = _applicability(text, facts, today, strict=requires_app)
+        if allowed is False:
+            return False
+    if doc_kind == RES_LAB:
+        # R3 招募通知是年度资料：明确写了年份时必须与资料适用年度一致。
+        doc_year = _document_year(facts)
+        years = _query_years(temporal_text, today)
+        if years and (doc_year is None or doc_year not in years):
+            return False
+        # 过期通知可以回答“本年度已截止”和当时的计划人数，但不能回答当前名额。
+        if _current_quota_question(temporal_text):
+            if (
+                chunk.timeliness_verification_status
+                not in {TimelinessVerificationStatus.CURRENT}
+                or (facts.deadline is not None and today > facts.deadline)
+            ):
+                return False
+    timeliness = chunk.timeliness_verification_status
+    if timeliness == TimelinessVerificationStatus.SUPERSEDED:
+        # 被新版本替代的资源只能回答历史问题；历史消息不能把当前问题伪装成历史问句。
+        return _historical_question(temporal_text)
+    if (
+        doc_kind in {RES_STUDY, RES_CONTACT}
+        and timeliness in {
+            TimelinessVerificationStatus.HISTORICAL,
+            TimelinessVerificationStatus.EXPIRED,
+        }
+        and _current_question(temporal_text)
+    ):
+        # 旧培养方案、旧联系方式不能冒充现行版本；历史消息不能盖过本轮的当前时点。
+        return False
+    return True
 
 
 # --------------------------------------------------------------------------- 元数据与适用范围
@@ -874,6 +1354,20 @@ def _document_facts(chunk: RetrievedChunk, lookup: MetadataLookup | None) -> _Do
             applicability=applicability,
             deadline=metadata.deadline_on,
             has_metadata=True,
+            category_name=metadata.category_name,
+            business_direction_codes=tuple(metadata.business_direction_codes),
+            document_type=metadata.document_type,
+            source_url=metadata.source_url,
+            publisher=metadata.publisher,
+            version_no=metadata.version_no,
+            policy_status=metadata.policy_status,
+            temporal_notes=(
+                dict(metadata.temporal_notes)
+                if isinstance(metadata.temporal_notes, dict)
+                else None
+            ),
+            published_on=metadata.published_on,
+            effective_on=metadata.effective_on,
         )
     return _DocumentFacts(
         record_code=None,
@@ -882,6 +1376,30 @@ def _document_facts(chunk: RetrievedChunk, lookup: MetadataLookup | None) -> _Do
         deadline=None,
         has_metadata=False,
     )
+
+
+def _human_approved(facts: _DocumentFacts) -> bool:
+    """人工审核标记必须严格为布尔 true；字符串 "true" 不算通过。"""
+    notes = facts.temporal_notes
+    return isinstance(notes, dict) and notes.get("human_approved") is True
+
+
+def _metadata_consistent(facts: _DocumentFacts, chunk: RetrievedChunk, today: date) -> bool:
+    """文档版本与片段身份必须一致；任一冲突都视为无法确认。"""
+    if not facts.title.strip() or facts.title != chunk.title:
+        return False
+    if not facts.source_url.strip() or facts.source_url != chunk.source_url:
+        return False
+    if facts.publisher != chunk.publisher:
+        return False
+    if facts.published_on != chunk.published_on:
+        return False
+    if facts.effective_on != chunk.effective_on:
+        return False
+    for value in (facts.published_on, facts.effective_on):
+        if value is not None and value > today:
+            return False
+    return True
 
 
 def _classify(facts: _DocumentFacts) -> str:
@@ -979,6 +1497,97 @@ _FORMAL_ELIGIBILITY = re.compile(
     r"资格|排名|遴选|能否申请|能不能申请|可否申请|申请条件|申请资格|名额|入选|推荐名单|够不够"
 )
 _AVAILABILITY_QUESTION = re.compile(r"还能|现在还|目前还|是否还|办理窗口|现在.*(申请|报名|提交)|今年.*(申请|报名)")
+# 历史通知只拒绝“当前时点还能不能办”；“去年还能报名吗”“当时截止到哪天”属历史状态。
+_CURRENT_AVAILABILITY = re.compile(
+    r"(?:现在|目前|当前|如今|今天).{0,10}(?:还能|还|是否|可以|能|来得及|申请|报名|提交|办理)"
+    r"|(?:今年|本学期|这学期).{0,10}(?:申请|报名|提交|办理|截止)"
+)
+_UNCERTAIN_POLICY = re.compile(
+    r"无法确认(?:是否|现行)|现行版本(?:未确认|不明)|版本(?:不明|待定)|uncertain", re.I
+)
+
+
+def _historical_question(text: str) -> bool:
+    return bool(_HISTORICAL_INTENT.search(text))
+
+
+def _current_question(text: str) -> bool:
+    return bool(_CURRENT_INTENT.search(text)) and not _historical_question(text)
+
+
+def _current_quota_question(text: str) -> bool:
+    """只有当前剩余名额口径才拒绝历史通知；计划人数可作历史信息回答。"""
+    if _historical_question(text):
+        return False
+    return bool(_CURRENT_QUOTA.search(text))
+
+
+def _relative_year(text: str, today: date) -> int | None:
+    """识别“去年/前年”等相对年度；不把“今年”当成历史年度。"""
+    if "前年" in text:
+        return today.year - 2
+    if "去年" in text:
+        return today.year - 1
+    return None
+
+
+def _query_years(text: str, today: date) -> set[int]:
+    """问题里的明确年度，含“今年/去年/前年”；相对年度不能盖过明确年份。"""
+    years = _years(text)
+    relative = _relative_year(text, today)
+    if relative is not None:
+        years.add(relative)
+    if re.search(r"今年|本年", text):
+        years.add(today.year)
+    return years
+
+
+def _historical_year_conflict(
+    text: str, facts: _DocumentFacts, today: date
+) -> bool:
+    """历史资料必须能对上问题里的适用年度；未指定年度的旧政策不用于作答。"""
+    doc_year = _document_year(facts)
+    years = _years(text)
+    if years:
+        # 明确写了年份时，资料适用年度必须命中，不能拿别的年度顶替。
+        return doc_year is None or doc_year not in years
+    if doc_year is None:
+        # 没有适用年度元数据，无法证明历史资料对应哪一年。
+        return True
+    # 未写年份时，只有本年度或未来周期的历史通知可按“本年度已截止”作答；
+    # 更早年份的历史政策必须由用户明确指定年度或相对年度。
+    if doc_year < today.year:
+        relative = _relative_year(text, today)
+        if relative is not None:
+            return doc_year != relative
+        return True
+    return False
+
+
+def _timeliness_conflict(
+    text: str,
+    facts: _DocumentFacts,
+    today: date,
+    timeliness: TimelinessVerificationStatus,
+) -> bool:
+    """历史资料可以回答历史问题，但不能冒充现行政策。"""
+    if _UNCERTAIN_POLICY.search(facts.policy_status or ""):
+        # 无法确认是否为现行版本时，任何确定性结论都不可用。
+        return True
+    if timeliness == TimelinessVerificationStatus.SUPERSEDED:
+        # 已被新版本替代的资料只能回答历史问题，且年度必须对得上。
+        return not _historical_question(text) or _historical_year_conflict(
+            text, facts, today
+        )
+    if timeliness in {
+        TimelinessVerificationStatus.HISTORICAL,
+        TimelinessVerificationStatus.EXPIRED,
+    }:
+        # 问“现在/今年/最新”时，历史或过期资料不能作为现行依据。
+        if _current_question(text):
+            return True
+        return _historical_year_conflict(text, facts, today)
+    return False
 
 
 def _deadline_conflict(
@@ -999,15 +1608,36 @@ def _deadline_conflict(
         TimelinessVerificationStatus.HISTORICAL,
         TimelinessVerificationStatus.EXPIRED,
     }:
-        # 过期资料可以回答“当时截止到哪天”，但不能回答“现在还能不能办”。
-        return availability
+        # 过期资料可以回答“当时/去年还能不能办、截止到哪天”，
+        # 只有问当前时点还能不能办才拒绝，不能见“还能”就一律丢证据。
+        return bool(_CURRENT_AVAILABILITY.search(text))
     return availability
 
 
-_GRADE_KEYS = ("适用年级", "年级", "学生对象", "对象", "适用对象", "招生对象")
-_MAJOR_KEYS = ("适用专业", "专业", "招生专业")
-_TARGET_KEYS = ("适用对象", "对象", "学生对象", "招生对象")
-_COLLEGE_KEYS = ("学院", "适用学院", "所属学院")
+_GRADE_KEYS = (
+    "适用年级", "年级", "学生对象", "招生对象", "grade", "对象", "适用对象", "target",
+)
+_MAJOR_KEYS = ("适用专业", "专业", "招生专业", "major")
+_TARGET_KEYS = ("适用对象", "对象", "学生对象", "招生对象", "target", "audience")
+_COLLEGE_KEYS = ("学院", "适用学院", "所属学院", "college")
+_CONFLICT_GROUPS: tuple[tuple[tuple[str, ...], str], ...] = (
+    (("适用年级", "年级"), "grade"),
+    (("适用专业", "专业", "招生专业"), "major"),
+    (("适用对象", "学生对象", "招生对象", "对象"), "target"),
+    (("学院", "适用学院", "所属学院"), "college"),
+    (("适用届别", "目标届别"), "cohort"),
+)
+
+
+def _applicability_conflict(app: dict[str, str]) -> bool:
+    """同一含义的中文核心键与旧英文键不一致时，标记为需复核并拒绝使用。"""
+    for keys, legacy in _CONFLICT_GROUPS:
+        values = [str(app.get(key) or "").strip() for key in keys]
+        values.append(str(app.get(legacy) or "").strip())
+        distinct = {value for value in values if value}
+        if len(distinct) > 1:
+            return True
+    return False
 
 
 def _first_value(app: dict[str, str], keys: tuple[str, ...]) -> str:
@@ -1020,14 +1650,15 @@ def _first_value(app: dict[str, str], keys: tuple[str, ...]) -> str:
 
 
 def _applicability(
-    text: str, facts: _DocumentFacts, today: date
+    text: str, facts: _DocumentFacts, today: date, *, strict: bool = True
 ) -> bool | None:
     app = facts.applicability or {}
+    if _applicability_conflict(app):
+        return False
     # #31 实际元数据里年级/专业/对象分别落在 适用年级 / 学生对象 / 对象 / 学院 等键上。
     grade_text = _first_value(app, _GRADE_KEYS)
     major_text = _first_value(app, _MAJOR_KEYS)
     target_text = _first_value(app, _TARGET_KEYS)
-    college_text = _first_value(app, _COLLEGE_KEYS)
 
     query_grade = _grade_level(text, today)
     query_major = _PROFESSION.search(text)
@@ -1055,17 +1686,20 @@ def _applicability(
         if allowed is False:
             return False
         unknown = unknown or allowed is None
-    elif query_grade and not grade_text:
+    elif query_grade and not grade_text and strict:
         unknown = True
 
     if query_major and major_text:
         if not _major_allowed(major_text, query_major.group()):
             return False
-    elif query_major and not major_text:
+    elif query_major and not major_text and strict:
         unknown = True
 
     if re.search(r"研究生|硕士(?!生源)|博士", text) and target_text:
         if "本科" in target_text and "研究生" not in target_text:
+            return False
+    if re.search(r"本科生|本科|大[一二三四]", text) and target_text:
+        if "研究生" in target_text and "本科" not in target_text:
             return False
 
     if unknown:
@@ -1109,6 +1743,8 @@ def _grade_allowed(
     通过正式推荐资格的适用性检查；只有问准备、流程类问题时才按参考口径放行。
     """
     if re.search(r"全体|全部|全校|各年级|所有年级", grade_text):
+        return True
+    if re.fullmatch(r"本科生|本科|全体本科生|全体学生", grade_text.strip()):
         return True
     if "大一至大三" in grade_text:
         reference_only = bool(re.search(r"仅[^；;。]{0,12}参考|仅供参考", grade_text))
