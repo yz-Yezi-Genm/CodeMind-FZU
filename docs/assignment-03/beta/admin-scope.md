@@ -69,6 +69,18 @@
 | 四种页面状态 | 加载中、成功、失败、空态 |
 | 数据来源声明 | **只在演示数据模式下显示**；切换到真实接口后改为标注后端接口，不把真实数据标成演示数据 |
 
+### 3.1 真实 API 模式与演示模式的差异
+
+页面先请求真实接口，只有请求失败时才降级到演示数据，两种模式的失败处理完全不同：
+
+| 操作 | 真实 API 成功 | 真实 API 失败 | 演示模式（接口不可用） |
+| --- | --- | --- | --- |
+| 编辑元数据 | 保存后端结果、关闭弹窗、成功提示 | 表单内报错「保存失败」，弹窗保持打开，本地数据不变 | 先请求接口，失败后仅修改内存，提示「修改只保存在当前页面内存，未写入数据库」 |
+| 上传登记 | 按后端返回的 `status` 与 `message` 提示 | 表单内报错「上传失败」，弹窗保持，不新增记录 | 内存新增一条记录，`record_code` 带「演示-」前缀，状态从 `pending` / `blocked` 起算，并注明「文件未上传、未解析、未入库」 |
+| 重建索引 | 显示后端返回的真实 `indexed_count` / `chunk_count` | 弹窗内报错「重建索引失败」，不改本地状态 | 同样报错，并额外声明「演示模式不会伪造索引结果」 |
+
+两条底线：演示模式只在**内存**里生效，提示类型是 `info` 不是 `success`；真实模式失败时不静默、不写本地、不伪造成功。
+
 Alpha 阶段的实测与截图证据见 `docs/assignment-03/admin-integration/`（9 项交互记录、15 张截图、8 份原始输出），数据口径见 `docs/assignment-03/admin/数据口径与契约缺口说明.md`。
 
 ---
@@ -92,14 +104,15 @@ Alpha 阶段的实测与截图证据见 `docs/assignment-03/admin-integration/`�
 | 数据删除申请与二次确认 | P06、P07 |
 | 独立的数据来源 / 数据质量页 | A34、A34b（当前只有概览统计卡） |
 
-### 4.3 契约缺口（阻塞待实现项）
+### 4.3 契约缺口（按 DTO 层级区分）
 
-| 缺口 | 影响 |
-| --- | --- |
-| 5 个后台接口后端均未实现 | `GET/POST /api/v1/admin/documents`、`GET/PATCH /api/v1/admin/documents/{id}`、`POST /api/v1/admin/documents/{id}/reindex` |
-| `DocumentAdminService` 协议缺 `PATCH` 方法 | 协议 4 个方法，前端已调用 5 个 |
-| `DocumentSummary` 缺 `publisher`、`source_url` | 列表的「发布单位或来源」列在真实接口下取不到值 |
-| `PATCH` 缺更新 DTO | 前端只能提交自定义结构，后端无对应契约 |
+| 层级 | 现状 | 缺什么 | 影响 |
+| --- | --- | --- | --- |
+| 列表 DTO | `DocumentSummary` | `publisher`、`source_url` | 列表「发布单位或来源」列在真实接口下取不到值 |
+| 详情 DTO | 没有独立详情契约，`get_document` 返回的也是 `DocumentSummary` | 前端 `DocumentDetailExtras` 的 12 个扩展字段：`version_id`、`publisher`、`responsible_department`、`document_number`、`source_url`、`published_on`、`effective_on`、`deadline_on`、`policy_status`、`applicability`、`verification_note`、`verified_on` | 详情页只能拿列表行数据渲染，真实接口下元数据与核验说明大面积为空 |
+| PATCH 更新 DTO | 前端 `AdminDocumentMetadataPatch` 注释写明「请求体待契约细化」，后端无对应模型 | 可编辑字段白名单与局部更新语义（`DocumentMetadata` 是全量模型，不能直接当 `PATCH` body） | 编辑只能提交前端自定义结构，后端无契约可校验 |
+| 服务协议 | `DocumentAdminService` 有 4 个方法 | 缺 `update` 方法对应 `PATCH` | 即使补了 HTTP 路由，也没有服务边界定义 |
+| HTTP 接口 | 前端已封装 5 个调用 | 后端一个都未实现 | 真实模式下列表、详情、编辑、上传、重建索引全部不可用 |
 
 ### 4.4 后续规划（本轮明确不做）
 
