@@ -73,13 +73,13 @@ class AskInputValidationTests(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(create_app(agent_service=MockAgentService()))
 
-    def test_overlong_query_is_rejected_with_422(self):
+    def test_overlong_query_is_rejected_with_400(self):
         # query 上限 4000 字符（AskRequest 约束）
         response = self.client.post(
             "/api/v1/ask",
             json={"query": "字" * 4001},
         )
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
 
     def test_query_exactly_4000_chars_is_accepted(self):
@@ -93,13 +93,13 @@ class AskInputValidationTests(unittest.TestCase):
 
     def test_missing_query_field_is_rejected(self):
         response = self.client.post("/api/v1/ask", json={})
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
 
     def test_query_wrong_type_is_rejected(self):
         # query 必须是 string，传数字应被拒
         response = self.client.post("/api/v1/ask", json={"query": 12345})
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
 
     def test_extra_unknown_field_is_rejected(self):
@@ -108,19 +108,32 @@ class AskInputValidationTests(unittest.TestCase):
             "/api/v1/ask",
             json={"query": "正常问题", "unexpected": "多余字段"},
         )
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
 
     def test_non_json_body_is_rejected(self):
-        # 请求体不是合法 JSON 时应返回 422 统一错误 envelope
+        # 请求体不是合法 JSON 时应返回 400 统一错误 envelope
         response = self.client.post(
             "/api/v1/ask",
             content="这不是 JSON",
             headers={"Content-Type": "application/json"},
         )
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         body = response.json()
         self.assertEqual(body["error"]["code"], "INVALID_REQUEST")
+
+    def test_openapi_uses_final_error_statuses(self):
+        operation = self.client.get("/openapi.json").json()["paths"]["/api/v1/ask"]["post"]
+        responses = operation["responses"]
+
+        self.assertEqual(
+            {"200", "400", "429", "500", "503", "504"},
+            set(responses),
+        )
+        self.assertNotIn("422", responses)
+        for status_code in ("400", "429", "500", "503", "504"):
+            schema_ref = responses[status_code]["content"]["application/json"]["schema"]["$ref"]
+            self.assertEqual("#/components/schemas/ApiErrorResponse", schema_ref)
 
 
 class ServiceNotConfiguredTests(unittest.TestCase):

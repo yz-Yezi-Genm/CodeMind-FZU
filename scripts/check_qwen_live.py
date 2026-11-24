@@ -10,7 +10,7 @@ from backend.contracts.models import LLMGenerateRequest
 from backend.contracts.protocols import LLMClient
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.errors import ServiceError
-from backend.services.qwen_client import create_qwen_client_from_env
+from backend.services.qwen_client import QwenLLMClient, create_qwen_client_from_env
 from examples.agent_workflow_demo import demo_chunk
 
 
@@ -45,13 +45,19 @@ def main() -> int:
     args = parser.parse_args()
     if not args.live:
         parser.error("Add --live to explicitly run the paid probe; no request was sent")
+    async def run_probe(client: QwenLLMClient) -> dict:
+        try:
+            return await probe(client)
+        finally:
+            await client.aclose()
+
     try:
         if args.env_file is not None:
             from dotenv import load_dotenv
             if not args.env_file.is_file():
                 raise ValueError("Missing environment file")
             load_dotenv(args.env_file, override=False)
-        result = asyncio.run(probe(create_qwen_client_from_env()))
+        result = asyncio.run(run_probe(create_qwen_client_from_env()))
     except ServiceError as exc:
         # No raw exception or provider payload: messages may include private
         # configuration details from future adapters.

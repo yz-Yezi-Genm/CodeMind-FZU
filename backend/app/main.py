@@ -123,7 +123,7 @@ def create_app(
     ) -> JSONResponse:
         return _error_response(
             _request_id(request),
-            status_code=422,
+            status_code=400,
             code="INVALID_REQUEST",
             message="请求参数不符合接口规范，请检查字段和数据类型。",
         )
@@ -187,10 +187,26 @@ def create_app(
         "/api/v1/ask",
         response_model=AskResponse,
         responses={
-            422: {"model": ApiErrorResponse},
-            500: {"model": ApiErrorResponse},
-            503: {"model": ApiErrorResponse},
-            504: {"model": ApiErrorResponse},
+            400: {
+                "model": ApiErrorResponse,
+                "description": "请求参数不符合接口规范。",
+            },
+            429: {
+                "model": ApiErrorResponse,
+                "description": "上游模型服务触发限流。",
+            },
+            500: {
+                "model": ApiErrorResponse,
+                "description": "服务处理请求时发生内部错误。",
+            },
+            503: {
+                "model": ApiErrorResponse,
+                "description": "模型、知识库或 Agent 服务暂时不可用。",
+            },
+            504: {
+                "model": ApiErrorResponse,
+                "description": "上游模型服务响应超时。",
+            },
         },
         tags=["assistant"],
     )
@@ -253,6 +269,25 @@ def create_app(
             warnings=result.warnings,
             created_at=datetime.now(timezone.utc),
         )
+
+    base_openapi = app.openapi
+
+    def beta_openapi() -> dict[str, Any]:
+        """Remove FastAPI's legacy automatic 422 response from the public schema."""
+        if app.openapi_schema is not None:
+            return app.openapi_schema
+        schema = base_openapi()
+        ask_responses = (
+            schema.get("paths", {})
+            .get("/api/v1/ask", {})
+            .get("post", {})
+            .get("responses", {})
+        )
+        ask_responses.pop("422", None)
+        app.openapi_schema = schema
+        return schema
+
+    app.openapi = beta_openapi
 
     return app
 
