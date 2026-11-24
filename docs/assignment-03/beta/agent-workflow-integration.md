@@ -1,8 +1,8 @@
 # Beta AgentWorkflow 联调记录
 
-2026 年 11 月 24 日，吴诗莹。开发分支为 `feat/beta-agent-history`，通过 `f91cc08` 同步 `main` 的 `5973eef`。本轮联调直接运行已合入的 #45 业务规则和 #51 Retriever 契约。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51)
+2026 年 11 月 24 日，吴诗莹。开发分支 `feat/beta-agent-history` 已通过 `883625c` 同步 `main` 的 `a3ffdd0`。本轮使用已合入的 #45 业务规则、#51 Retriever 契约和 #49 后端运行时进行回归。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51) · [后端运行时 #49](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/49)
 
-本轮验收代码提交为 `f4002459acf2d465ccbe229628c3f1d847ebefd9`。
+跨领域名额修订提交为 `f400245`。同步 #49 后，验收代码提交为 `883625c`，HTTP 回归验证了 `INVALID_REQUEST` 返回 400，非法模型响应对应的 `MODEL_UNAVAILABLE` 返回 503。
 
 ## 工作流
 
@@ -33,8 +33,8 @@
 
 | 验证 | 结果 |
 | --- | --- |
-| 仓库根目录完整 pytest | 515 通过，3 跳过，1 条警告，209 个子测试通过。[原始输出](evidence/agent-workflow-full-cross-domain-quota-py31011.txt) |
-| 已合入 #45 的规则、Retriever 和 Agent 联调 | 35 通过，1 条警告，63 个子测试通过。[原始输出](evidence/agent-workflow-integration-cross-domain-quota-py31011.txt) |
+| 仓库根目录完整 pytest | 535 通过，3 跳过，1 条警告，227 个子测试通过。[原始输出](evidence/agent-workflow-full-main-a3ffdd0-py31011.txt) |
+| Agent、Qwen、HTTP 与运行时专项 | 105 通过，1 跳过，1 条警告，101 个子测试通过。包含原有 35 个业务规则与 Retriever 联调用例。[原始输出](evidence/agent-workflow-integration-main-a3ffdd0-py31011.txt) |
 
 两个命令均从仓库根目录使用 Python 3.10.11（Windows AMD64）运行，退出码为 `0`。日志首行保留了 `python -VV`。完整回归跳过了两个正式资料与真实 Qwen 用例和一个当前 Windows 账户无法创建符号链接的用例。警告来自 Starlette 测试客户端的依赖弃用提示。
 
@@ -42,7 +42,7 @@
 $python = '..\python-3.10.11\tools\python.exe'
 & $python -VV
 & $python -m pytest -q -rs --tb=short
-& $python -m pytest -q -rs --tb=short tests/test_agent_workflow_qwen.py::MergedRulesRetrieverIntegrationTests
+& $python -m pytest -q -rs --tb=short tests/test_agent_workflow_api.py tests/test_agent_workflow_qwen.py tests/test_beta_script_lifecycle.py tests/test_backend_runtime.py
 ```
 
 ## 正式验收待办
