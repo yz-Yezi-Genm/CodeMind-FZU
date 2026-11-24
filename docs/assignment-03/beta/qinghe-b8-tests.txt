@@ -1,0 +1,71 @@
+Python 3.10.11 | main a3ffdd046c10fb7af647651c8358eee8d8dde948 | includes #45/#51/#49
+Pending-review technical delivery: 9 packages / 514 chunks. All blocked and human_approved=false.
+
+$ python -m knowledge_base.processing.build_qinghe_b8
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}
+
+
+$ python -m knowledge_base.processing.build_qinghe_b8 --check
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}
+
+
+$ python -m unittest knowledge_base.processing.test_qinghe_b8 -v
+test_all_24_row_ids_duplicates_and_cell_column_routing (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_changed_category_deadline_or_s1_mapping_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_deleted_original_file_or_changed_role_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_distinct_record_identities_exact_categories_and_only_s4 (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_failed_original_preflight_does_not_write_output (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_premature_human_approval_or_manifest_release_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_r3_deadline_five_keys_and_r4_historical_intro_limits (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_r3_process_and_r4_intro_come_from_original_notice_and_cells (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_raw_wu_is_explicit_missing_and_not_a_confirmed_negative (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_rebuild_preserves_legacy_baseline_raw_files_and_approved (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_row_mapping_or_dropped_lab_is_rejected (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+test_two_packages_24_chunks_each_real_index_and_blocked_gates (knowledge_base.processing.test_qinghe_b8.QingheB8Tests) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 10.076s
+
+OK
