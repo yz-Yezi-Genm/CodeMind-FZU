@@ -30,9 +30,9 @@
 
 ## 三、正式加载与过滤验证
 
-通过 `load_approved_alpha_retriever(..., allow_missing=False)` 在含 4 份合规合成包（S1–S4）与 2 份未开放/未签核诱饵包的目录中实测：
+通过 `load_approved_alpha_retriever(..., allow_missing=False)` 在含 5 份合规合成包（S1、S2、S3 及按 PR #45 正式分类拆分的 S4 R3/R2）与 2 份未开放/未签核诱饵包的目录中实测：
 
-- **成功加载（4 份，8 个片段）**：`s1-competition-synthetic.json`、`s2-scholarship-synthetic.json`、`s3-recommendation-synthetic.json`、`s4-resources-synthetic.json`（均满足 `retrieval_status=enabled`、`temporal_notes["human_approved"] is True` 且文件 SHA-256 校验通过，`IndexingStatus.INDEXED` 无 warnings）。
+- **成功加载（5 份，8 个片段）**：`s1-competition-synthetic.json`、`s2-scholarship-synthetic.json`、`s3-recommendation-synthetic.json`、`s4-lab-synthetic.json`（`category_name=实验室与科研团队`）、`s4-study-synthetic.json`（`category_name=培养方案与课程`），均满足 `retrieval_status=enabled`、`temporal_notes["human_approved"] is True`、中文五键 `applicability_raw`（`适用年级`/`适用专业`/`适用对象`/`学院`/`适用届别`）且文件 SHA-256 校验通过，`IndexingStatus.INDEXED` 无 warnings。
 - **门禁跳过（2 份，0 片段入库）**：
   - `decoy-blocked.json`：`retrieval_status=blocked，仅允许加载 enabled 资料`
   - `decoy-unapproved.json`：`temporal_notes 未标记 human_approved=true，未通过人工审核`
@@ -65,9 +65,9 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 | Q4-S2-DEADLINE | S2 奖学金申请 | `奖学金申请表 成绩单 截止时间` | `POLICY_AFFAIRS` | `BETA-SYN-S2-2026#2` | 1 | `第 2 节` / `PDF 第 2 页` | 7.146789 | 准确命中材料与截止时间片段 |
 | Q5-S3-EN | S3 推免条件咨询 | `推免研究生 CET-6 425分 无不及格` | `EDUCATION_CAREER` | `BETA-SYN-S3-2027#1` | 1 | `第 3 条` / `PDF 第 1 页` | 5.623965 | 中英文外语与学业条件准确召回 |
 | Q6-S3-BONUS | S3 推免条件咨询 | `CCF推荐会议 推免学术专长加分` | `EDUCATION_CAREER` | `BETA-SYN-S3-2027#2` | 1 | `第 8 条` / `PDF 第 3 页` | 6.465476 | 准确命中学术专长加分条款 |
-| Q7-S4-LAB | S4 学院资源导航 | `人工智能与大数据实验室 GPU算力申请` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-2026#1` | 1 | `第 1 部分` / `网页 第 1 节` | 6.655438 | 准确命中实验室位置与 GPU 预约渠道 |
-| Q8-S4-OFFICE | S4 学院资源导航 | `本科培养方案 教务办 成绩单盖章` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-2026#2` | 1 | `第 2 部分` / `网页 第 2 节` | 7.583443 | 准确命中培养方案与教务办窗口信息 |
-| Q9-MULTI-DIR | 多业务方向（全库） | `竞赛获奖 综测加分 奖学金申请表` | `None`（全库） | `BETA-SYN-S2-2026#*` | 1 | Top-4 同时召回 S2、S1、S3 相关条款 | 11.489484 | 未出现跨方向漏检 |
+| Q7-S4-LAB | S4 学院资源导航 | `人工智能与大数据实验室 GPU算力申请` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-R3-2026#1` | 1 | `第 1 部分` / `网页 第 1 节` | 8.156222 | 对齐 R3 `实验室与科研团队`，准确命中实验室与 GPU 渠道 |
+| Q8-S4-OFFICE | S4 学院资源导航 | `本科培养方案 教务办 成绩单盖章` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-R2-2026#1` | 1 | `第 2 部分` / `网页 第 2 节` | 9.056452 | 对齐 R2 `培养方案与课程`，准确命中培养方案与教务办窗口 |
+| Q9-MULTI-DIR | 多业务方向（全库） | `竞赛获奖 综测加分 奖学金申请表` | `None`（全库） | `BETA-SYN-S2-2026#*` | 1 | Top-4 同时召回 S2、S1、S3 相关条款 | 11.496657 | 未出现跨方向漏检 |
 
 ### 元数据与原始片段追溯核验
 

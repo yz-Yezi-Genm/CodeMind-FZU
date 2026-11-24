@@ -13,12 +13,21 @@ from scripts.eval_beta_retrieval import (
     run_evaluation,
 )
 
+_OFFICIAL_S4_CATEGORIES = {
+    "通知与办事渠道",
+    "培养方案与课程",
+    "实验室与科研团队",
+    "研究方向与公开介绍",
+    "科研实践与竞赛",
+    "学院公开信息与联系方式",
+}
+
 
 class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
     async def test_s1_to_s4_evaluation_metrics_and_filtering(self):
         summary = await run_evaluation()
 
-        self.assertEqual(len(summary["loaded_packages"]), 4)
+        self.assertEqual(len(summary["loaded_packages"]), 5)
         self.assertEqual(len(summary["skipped_packages"]), 2)
         self.assertEqual(summary["total_indexed_chunks"], 8)
 
@@ -82,14 +91,37 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(meta.record_code, "BETA-SYN-S1-2026")
             self.assertEqual(meta.version_no, "beta-syn-v1")
             self.assertEqual(
-                meta.applicability_raw,
-                {"college": "计算机与大数据学院", "degree": "本科生"},
+                set(meta.applicability_raw.keys()),
+                {"适用年级", "适用专业", "适用对象", "学院", "适用届别"},
             )
+            self.assertEqual(meta.applicability_raw["学院"], "计算机与大数据学院")
+            self.assertEqual(meta.applicability_raw["适用对象"], "本科生")
             self.assertIsNotNone(meta.deadline_on)
             self.assertIs(meta.temporal_notes["human_approved"], True)
             self.assertEqual(meta.source_verification_status.value, "verified")
             self.assertEqual(meta.timeliness_verification_status.value, "current")
             self.assertEqual(meta.retrieval_status, RetrievalStatus.ENABLED)
+
+            # Verify S4 packages align with PR #45 formal RESOURCE_CATEGORY_MAP names.
+            try:
+                from backend.services.alpha_business_rules import RESOURCE_CATEGORY_MAP
+            except ModuleNotFoundError:
+                valid_s4_categories = _OFFICIAL_S4_CATEGORIES
+            else:
+                self.assertEqual(set(RESOURCE_CATEGORY_MAP), _OFFICIAL_S4_CATEGORIES)
+                valid_s4_categories = set(RESOURCE_CATEGORY_MAP)
+            s4_hits = await retriever.retrieve(
+                RetrievalRequest(
+                    query="实验室 培养方案",
+                    business_direction_code="COLLEGE_RESOURCES",
+                    top_k=5,
+                )
+            )
+            self.assertEqual(len(s4_hits), 2)
+            for s4_hit in s4_hits:
+                s4_meta = retriever.get_document_metadata(s4_hit.version_id)
+                self.assertIsNotNone(s4_meta)
+                self.assertIn(s4_meta.category_name, valid_s4_categories)
 
             # Verify all V2.1-Final required ParsedChunk fields are readable & aligned.
             self.assertEqual(parsed.content, hit.content)
@@ -116,7 +148,7 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             for query, expected_code in (
                 ("acm-icpc", "BETA-SYN-S1-2026"),
                 ("cet-6", "BETA-SYN-S3-2027"),
-                ("gpu", "BETA-SYN-S4-2026"),
+                ("gpu", "BETA-SYN-S4-R3-2026"),
             ):
                 hits = await retriever.retrieve(RetrievalRequest(query=query, top_k=2))
                 self.assertTrue(hits, msg=f"expected hit for {query!r}")
@@ -143,7 +175,7 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             # Corpus probe mode (used for formal approved/ verification) runs cleanly.
             probe = await run_corpus_probe(approved_dir, file_root=root)
             self.assertEqual(probe["corpus_type"], "approved_directory_probe")
-            self.assertEqual(len(probe["loaded_packages"]), 4)
+            self.assertEqual(len(probe["loaded_packages"]), 5)
             self.assertEqual(len(probe["skipped_packages"]), 2)
             self.assertEqual(probe["total_indexed_chunks"], 8)
 
