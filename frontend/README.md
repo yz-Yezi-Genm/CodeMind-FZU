@@ -1,5 +1,9 @@
 # CodeMind-FZU Frontend
 
+> **Beta 阶段说明（2026-11-23）**：本机运行方式不变（`npm ci` → `npm run dev`），验收不要求云服务器与域名。
+> Windows 干净环境验证、构建记录与常见错误见
+> [`docs/assignment-03/beta/windows-runtime-test.md`](../docs/assignment-03/beta/windows-runtime-test.md)。
+
 CodeMind-FZU 前端工程骨架：**Vite + 原生 TypeScript 多页面应用（HTML + CSS + TypeScript）**，不引入 React、Vue 等大型框架。
 
 学生端首页提供四类校园问答入口，并通过公共 API 完成问答、追问和来源查看。两端共用请求封装与类型定义。
@@ -31,8 +35,11 @@ npm run dev
 
 | 页面 | 地址 |
 |---|---|
-| 学生端 | <http://127.0.0.1:5173/> |
+| 学生端（演示登录页） | <http://127.0.0.1:5173/> |
+| 学生端工作台 | 在登录页输入任意账号/密码后进入 |
 | 后台管理端 | <http://127.0.0.1:5173/admin/index.html> |
+
+> 学生端登录为**前端演示门禁**（不做真实鉴权）；进入工作台后右上角显示「后端已连接」即说明 Vite 代理与后端连通。
 
 学生端先显示演示登录页。可用测试用户名 `demo` 和数字密码 `123456` 进入现有问答工作台。输入内容仅用于前端格式校验。当前标签页会记住已进入的状态，打开 <http://127.0.0.1:5173/?preview=1> 可重新查看登录页。成功进入工作台后会清除 `preview` 参数，刷新时沿用当前标签页的登录状态。
 

@@ -1,5 +1,9 @@
 # Backend API、Agent 与检索
 
+> **Beta 阶段说明（2026-11-23）**：本机单进程运行即可验收，不依赖云服务器与 PostgreSQL；
+> 会话使用内存实现 `InMemoryConversationStore`。Windows 本机运行、干净环境验证与四大场景的记录见
+> [`docs/assignment-03/beta/windows-runtime-test.md`](../docs/assignment-03/beta/windows-runtime-test.md)。
+
 本目录提供 CodeMind-FZU Alpha 阶段的 FastAPI HTTP 入口、公共 Pydantic v2 契约、真实运行组装、服务端会话历史、Mock Agent、Qwen 适配器、AgentWorkflow、Markdown/TXT 文档解析和本地 BM25 检索。
 
 ## 一、运行入口
@@ -19,7 +23,7 @@
 | 项目 | 要求 | 本次干净环境验证 |
 |---|---|---|
 | Python | **3.10 及以上**（推荐 3.10 / 3.11） | Python 3.10.11 |
-| 运行依赖 | `backend/requirements.txt` | fastapi 0.162.5、pydantic 2.14.3、uvicorn 0.54.0、httpx 0.28.1 |
+| 运行依赖 | `backend/requirements.txt` | fastapi 0.162.5、pydantic 2.14.4、uvicorn 0.54.0、httpx 0.28.1 |
 | 完整验证依赖 | `scripts/requirements-alpha-verification.txt`（pytest 等） | 已验证安装 |
 | 系统 | Windows / macOS / Linux | Windows 11 |
 
@@ -140,9 +144,10 @@ CORS 使用显式来源列表，不允许 `*`；默认覆盖 5173/3000/5500，�
 python -m unittest discover -s tests -v
 ```
 
-本次干净环境（Python 3.10.11）结果：**262 项执行，235 通过、27 跳过、0 失败**。
+本次干净环境（Windows 11 + Python 3.10.11，代码基线 `origin/main`）结果：**275 项执行，通过 247、跳过 28、失败 0**。
 
-跳过项主要来自环境限制与未启用的真实验收（如 Windows 符号链接权限、真实 Qwen 验收开关、未交付的业务规则替身等），不是失败。
+28 项跳过的构成：25 项等待 `scripts.verify_alpha_upstream_integration` 单独执行的上游集成用例（该脚本已单独执行并通过 25 项）、2 项真实 Qwen 验收（需 `RUN_LIVE_QWEN_TESTS=1` 与审核语料）、1 项 Windows 符号链接权限限制。详见
+[`docs/assignment-03/beta/windows-runtime-test.md`](../docs/assignment-03/beta/windows-runtime-test.md)。
 
 专项检查：
 
@@ -188,5 +193,5 @@ python -X utf8 -m scripts.demo_local_retrieval --real
 
 ## 十三、运行指南与验证记录
 
-- 完整环境、前后端启动、联调与常见问题：[Alpha 阶段运行说明](../docs/assignment-03/alpha/run-guide.md)
-- 本轮干净环境验证证据：[evidence/runtime](../docs/assignment-03/alpha/evidence/runtime/)
+- 完整环境、前后端启动、联调与常见问题：[Beta Windows 本机运行指南](../docs/assignment-03/beta/windows-runtime-test.md)（Alpha 历史记录见 [Alpha 阶段运行说明](../docs/assignment-03/alpha/run-guide.md)）
+- 本轮干净环境验证证据：[evidence](../docs/assignment-03/beta/evidence/)
