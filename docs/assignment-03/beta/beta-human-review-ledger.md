@@ -11,7 +11,7 @@
 | 05 | 计算机学院2027年推免接收复试方案及实施细则 | 9 | 组长限定范围签核通过 | expired | blocked（未放行） |
 | 06 | 计算机学院各类院级奖学金评选通知 | 33 | 组长暂缓人工签核 | uncertain | blocked（未放行） |
 | 07 | 2026年星火奖教奖学金评选通知 | 35 | 组长限定范围签核通过 | expired | blocked（未放行） |
-| 08 | 青禾R3：实验室与科研团队 | 24 | 辅助审核完成，待组长决定 | expired | blocked（未放行） |
+| 08 | 青禾R3：实验室与科研团队 | 24 | 组长限定范围签核通过（技术修复前不释放） | expired | blocked（未放行） |
 
 ## 01 本科生奖学金评定管理办法
 
@@ -109,9 +109,9 @@
 - 后续非签核阻塞项：如需扩大到学生申请表填写指导或学生项目团队资格，须先向学院确认正式表格和具体规则；如需回答参评年度/统计周期，须取得学院明确解释。上述事项不影响本次限定范围历史签核，但在确认前不得越界回答。
 
 
-## 08 青禾R3：实验室与科研团队（辅助审核完成，待组长决定）
+## 08 青禾R3：实验室与科研团队（组长限定范围签核通过，技术修复前不释放）
 
-- 辅助审核日期：2026-11-25；人工签核：待组长决定。未将辅助审核冒记为人工签核。
+- 辅助审核日期：2026-11-25；组长于2026-11-25确认限定范围历史签核通过。该签核不等于正式检索放行；四处错误href修复并复验前，资料包继续blocked。
 - 官方最终通知：https://ccds.fzu.edu.cn/info/1160/12008.htm；标题《关于2026-2027学年“青禾计划”本科生进实验室报名的通知》；发布日期2026-10-16。正文规定面向“我院全体本科生”，按附件1选择实验室，将附件2电子版于10月31日前发送到对应实验室联系邮箱；各实验室初选后组织面试或笔试。截止日已过，当前招募、余量及联系方式可达性均未核实。
 - 区分前期需求申报：2026-10-09通知（https://ccds.fzu.edu.cn/info/1160/11988.htm）是向计算机学院、数字中国研究院、医工交叉研究院各实验室征集需求，不是学生报名通知。学生适用范围以10-16最终通知“我院全体本科生”为准，不推断其他学院学生可申请。
 - 候选包：knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r3.json；转换稿：knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md；record_code：计算机学院-2026-青禾计划-R3；version_no：beta-b8-2026-11-23-1；version_id（交接验证报告）：971a0297-6295-52d5-8efe-4cfd3e2f72db；包blob：08baafb5d69ba486c5f4a92d8211b48c85a6d416；24片段。
@@ -123,8 +123,8 @@
 - 联系链接问题（P1，正式释放前应修）：第9条F11原单元格超链接为http://lzc@fzu.edu.cn（文本邮箱lzc@fzu.edu.cn）；第10条F12为http://rcheng@fzu.edu.cn（文本邮箱rcheng@fzu.edu.cn）；第21条F23为http://qinqinzhou@fzu.edu.cn（文本邮箱qinqinzhou@fzu.edu.cn）；第24条F26为http://309568144@qq.com（文本邮箱309568144@qq.com）。这4个URI把邮箱误写成http URL，且“原单元格链接”文本进入R3 chunks；不得作为可点击网页链接输出。建议技术修订时保留邮箱纯文本、删除错误href，或在人工确认后明确改成mailto；不得静默把它们当网页链接。
 - 适用/时效边界：metadata适用范围为计算机与大数据学院（软件学院）本科生，具体实验室按原行条件；专业、届别未明确，不推断不限。metadata.deadline_on=2026-10-31、timeliness_verification_status=expired、policy_status=当期报名已截止；import_snapshot中的“截止日前有效”是2026-10-21时点的旧快照，不能覆盖当前expired状态。接收人数是当时计划，不是当前余量；联系方式是公告附件发布时信息，未核实目前可达。
 - 报名表附件：qinghe-registration.docx在包中保存且SHA匹配，但本轮未独立检查其表单字段/版式；不提供逐栏填写指导。可在历史流程中说明当时通知要求使用附件2，具体表格填写内容不作推断。
-- 建议组长签核范围：仅作为2026—2027学年青禾计划历史名单，解释24条记录的名称、地点、当时公开联系人/联系方式、计划接收人数、原行接收条件、考核方式和10月31日前报名流程；明确报名已截止、人数和联系渠道均为历史信息。禁止回答当前是否招募、实时余量、目前联系人是否有效、个人当前能否进入；不扩大为全校本科生；不合并同名记录；不补全缺失字段；不提供未审核的报名表填写指导。四个错误href须在正式释放前技术修正。
-- 当前状态：source_verification_status=verified；timeliness_verification_status=expired；retrieval_status=blocked；metadata.temporal_notes.human_approved=false。交接验证报告显示R3 24/24 chunks hidden，#45 category map及#51 Retriever lookup signatures matched；旧35片段混合包仍为追溯基线，不得与R3/R4同时开放。未修改候选包、manifest、approved目录或生产状态。
+- 组长确认的签核范围：仅作为2026—2027学年青禾计划历史名单，解释24条记录的名称、地点、当时公开联系人/联系方式、计划接收人数、原行接收条件、考核方式和10月31日前报名流程；明确报名已截止、人数和联系渠道均为历史信息。禁止回答当前是否招募、实时余量、目前联系人是否有效、个人当前能否进入；不扩大为全校本科生；不合并同名记录；不补全缺失字段；不提供未审核的报名表填写指导。四个错误href须在正式释放前技术修正。
+- 当前状态：source_verification_status=verified；timeliness_verification_status=expired；组长限定范围人工签核已通过；候选包JSON的metadata.temporal_notes.human_approved仍为false，retrieval_status仍为blocked（未修改候选包标记）。四处错误href修复、重新核验及后续统一放行前不得进入正式检索。交接验证报告显示R3 24/24 chunks hidden，#45 category map及#51 Retriever lookup signatures matched；旧35片段混合包仍为追溯基线，不得与R3/R4同时开放。未修改候选包、manifest、approved目录或生产状态。
 
 
-进度：5/9包、413/514片段人工签核；0包正式放行。
+进度：6/9包、437/514片段人工签核；0包正式放行。
