@@ -61,6 +61,7 @@ _PERSONAL_RESOURCE = re.compile(r"能不能|能否|可否|是否适用|是否符
 _LAB = r"[\w\-· ]{1,40}?(?:实验室|课题组|科研团队)"
 _LAB_SUBJECT = re.compile(r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9_-]*\s*(?:实验室|课题组|科研团队)")
 _LAB_TOPIC = re.compile(r"实验室|课题组|科研团队|青禾计划")
+_OTHER_QUOTA_TOPIC = re.compile(r"助学金|奖助|单项奖|励志奖|招生办|招生简章")
 _LIVE_LAB_QUOTA = re.compile(
     r"实时.{0,16}(?:名额|人数)|(?:剩余|还剩|还有|剩下).{0,10}(?:名额|几个|多少|几人)"
     r"|名额.{0,10}(?:剩余|还剩|剩下)|(?:现在|目前|当前).{0,16}(?:还招|还接收).{0,6}(?:几个|几人|多少)"
@@ -102,31 +103,46 @@ def is_live_quota_question(text: str) -> bool:
     return bool(_LIVE_LAB_QUOTA.search(text) or (_CURRENT_LAB_QUOTA.search(text) and "计划" not in text))
 
 
+def _lab_quota_topic(text: str) -> bool | None:
+    """Identify an explicit lab topic, a different topic, or an implicit subject."""
+    other_text = _LAB_TOPIC.sub("", text)
+    if _topics(other_text) or _OTHER_QUOTA_TOPIC.search(other_text):
+        return False
+    return True if _LAB_TOPIC.search(text) else None
+
+
 def separate_live_lab_quota(request: AgentRequest) -> str | None:
     """Return the remaining questions, or None for a request without a lab quota issue."""
     query = request.query
-    lab_context = [query, *(turn.content for turn in reversed(request.history))]
-    if not (_LAB_TOPIC.search(query) or (
-        not _topics(query) and any(_LAB_TOPIC.search(text) for text in lab_context[1:])
-    )):
-        return None
-
+    history = [turn.content for turn in reversed(request.history) if turn.role == LLMRole.USER]
+    lab_topic = next((topic for text in history if (topic := _lab_quota_topic(text)) is not None), False)
     clauses = [clause.strip() for clause in _QUESTION_SEPARATOR.split(query) if clause.strip()]
     remaining = []
+    removed = False
+    only_lab_context = True
     for clause in clauses:
-        if not is_live_quota_question(clause):
+        topic = _lab_quota_topic(clause)
+        if topic is not None:
+            lab_topic = topic
+            only_lab_context = only_lab_context and topic
+        if not (lab_topic and is_live_quota_question(clause)):
             remaining.append(clause)
-        elif remaining and _QUOTA_QUALIFIER.match(clause) and _LAB_STATUS.fullmatch(remaining[-1]):
+            continue
+        removed = True
+        if remaining and _QUOTA_QUALIFIER.match(clause) and _LAB_STATUS.fullmatch(remaining[-1]):
             # The user narrowed a general recruitment question to the remaining seats.
             remaining.pop()
-    if len(remaining) == len(clauses):
-        # If the quota intent crosses a clause boundary, retain the refusal.
-        return "" if is_live_quota_question(query) else None
+    if not removed:
+        # A single lab topic can also split one quota question across punctuation.
+        if (only_lab_context and lab_topic and is_live_quota_question(query)
+                and not any(is_live_quota_question(clause) for clause in clauses)):
+            return ""
+        return None
 
     # A research-direction clause may borrow its subject from the omitted clause.
-    lab = next((match.group() for text in lab_context if (match := _LAB_SUBJECT.search(text))), "")
+    lab = next((match.group() for text in [query, *history] if (match := _LAB_SUBJECT.search(text))), "")
     return "。".join(
-        lab + clause if _PUBLIC_INTRO.search(clause) and not _LAB_TOPIC.search(clause) else clause
+        lab + clause if _PUBLIC_INTRO.search(clause) and _lab_quota_topic(clause) is None else clause
         for clause in remaining
     )
 

@@ -21,7 +21,7 @@ from backend.contracts.models import (
 )
 from backend.contracts.protocols import LLMClient, Retriever
 from backend.services.agent_generation import Evidence, generation_request, requested_facts, verify_answer
-from backend.services.agent_policy_context import PolicyScope, contextual_request, is_live_quota_question, separate_live_lab_quota
+from backend.services.agent_policy_context import PolicyScope, contextual_request, separate_live_lab_quota
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 
 logger = logging.getLogger(__name__)
@@ -112,10 +112,14 @@ class AgentWorkflow:
         if not remaining_query:
             return _insufficient(code, message)
 
-        result = await self._run(request.model_copy(update={
-            "query": remaining_query,
-            "history": [turn for turn in request.history if not is_live_quota_question(turn.content)],
-        }))
+        history = []
+        for turn in request.history:
+            remaining = separate_live_lab_quota(request.model_copy(update={"query": turn.content, "history": history}))
+            if remaining is None:
+                history.append(turn)
+            elif remaining:
+                history.append(turn.model_copy(update={"content": remaining}))
+        result = await self._run(request.model_copy(update={"query": remaining_query, "history": history}))
         return result.model_copy(update={
             "answer": f"{result.answer}\n\n{message}" if result.answer else None,
             "warnings": [*result.warnings, WarningItem(code=code, message=message)],

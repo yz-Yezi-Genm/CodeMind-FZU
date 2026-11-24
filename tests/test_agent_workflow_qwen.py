@@ -1273,6 +1273,44 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             self.assertIn("LIVE_LAB_QUOTA_UNVERIFIED", [warning["code"] for warning in result["warnings"]])
         self.assertEqual(len(self.observed), 3)
 
+    async def test_beta_cross_domain_quota_reaches_the_original_workflow_over_http(self):
+        workflow = await self.workflow()
+        clarification = workflow.clarification_rule
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            for query in (
+                "EDA 实验室研究什么？另外，奖学金还有几个名额？",
+                "EDA 实验室研究什么？另外说一下奖学金，还剩几个名额？",
+            ):
+                with self.subTest(query=query), patch.object(workflow, "clarification_rule", wraps=clarification) as rule:
+                    response = await client.post("/api/v1/ask", json={"query": query})
+                    self.assertEqual(response.status_code, 200)
+                    result = response.json()
+                    self.assertEqual(rule.call_args.args[0].query, query)
+                    self.assertEqual(result["status"], "needs_clarification")
+                    self.assertEqual(result["clarifying_question"], alpha_business_rules.QUESTION_SCHOLARSHIP_CATEGORY)
+                    self.assertEqual(result["warnings"], [])
+
+            query = "EDA 实验室研究什么？另外，优秀学生综合奖学金还有几个名额？"
+            with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+                response = await client.post("/api/v1/ask", json={"query": query})
+            self.assertEqual(response.status_code, 200)
+            result = response.json()
+            self.assertEqual(retrieve.call_args.args[0].query, query)
+            self.assertEqual(result["status"], "insufficient_evidence")
+            self.assertEqual(result["citations"], [])
+            self.assertNotIn("LIVE_LAB_QUOTA_UNVERIFIED", [warning["code"] for warning in result["warnings"]])
+
+            query = "EDA 实验室现在还剩几个名额？另外，奖学金还有几个名额？"
+            with patch.object(workflow, "clarification_rule", wraps=clarification) as rule:
+                response = await client.post("/api/v1/ask", json={"query": query})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(rule.call_args.args[0].query, "奖学金还有几个名额")
+            result = response.json()
+            self.assertEqual(result["clarifying_question"], alpha_business_rules.QUESTION_SCHOLARSHIP_CATEGORY)
+            self.assertEqual([warning["code"] for warning in result["warnings"]], ["LIVE_LAB_QUOTA_UNVERIFIED"])
+        self.assertEqual(self.observed, [])
+
     async def test_beta_s4_year_reply_keeps_historical_curriculum_intent_over_http(self):
         metadata = self.package.metadata
         metadata.title = "合成测试：2024年计算机科学与技术专业旧版培养方案"
