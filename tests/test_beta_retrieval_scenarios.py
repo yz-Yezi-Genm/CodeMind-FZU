@@ -214,8 +214,11 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             async def generate(self, request: LLMGenerateRequest) -> LLMResult:
                 self.calls += 1
                 hit = json.loads(request.messages[-1].content)["evidence"][0]
-                payload = {"evidence": [{"chunk_id": hit["chunk_id"], "quote": hit["content"]}]}
-                return LLMResult(content=json.dumps(payload), model="offline-test-double")
+                if "evidence_id" in hit:
+                    payload = {"answer": hit["content"], "used_evidence_ids": [hit["evidence_id"]]}
+                else:
+                    payload = {"evidence": [{"chunk_id": hit["chunk_id"], "quote": hit["content"]}]}
+                return LLMResult(content=json.dumps(payload, ensure_ascii=False), model="offline-test-double")
 
         fixed_today = lambda: date(2026, 9, 10)
         with TemporaryDirectory() as tmp:
