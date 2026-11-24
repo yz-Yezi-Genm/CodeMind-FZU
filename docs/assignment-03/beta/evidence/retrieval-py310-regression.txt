@@ -59,17 +59,17 @@ tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_retri
 tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_s1_to_s4_evaluation_metrics_and_filtering PASSED [ 97%]
 tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_title_plus_content_bm25_has_no_degradation_vs_content_only_stress_suite PASSED [100%]
 
-=================== 36 passed, 12 subtests passed in 5.18s ====================
+=================== 36 passed, 12 subtests passed in 5.31s ====================
 
-=== Command 2: Full backend pytest (tests/) ===
+=== Command 2: Full backend pytest (tests/, synced with PR #46 main 0251ec5) ===
 $ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
-...........................................................................sssssssssssssssssssssssss.s.... [ 19%]
-........................................................................ [ 32%]
-........................................................................ [ 46%]
-....................................................s................... [ 59%]
-........................................................................ [ 72%]
-..............................................s........... [ 83%]
-.........................................................................................                          [100%]
+.................................................................................................................... [ 20%]
+...................s.......................... [ 28%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+..............................s......................................... [ 65%]
+................................................................................................s................................. [ 88%]
+...................................................................                                                [100%]
 ============================== warnings summary ===============================
 .venv\lib\site-packages\fastapi\testclient.py:1
   <REPO>\.venv\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
@@ -77,37 +77,12 @@ $ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
-SKIPPED [1] tests\test_agent_workflow_qwen.py:925: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:754: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:883: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:974: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:819: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:959: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:779: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:904: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:794: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:848: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:1001: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:936: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:668: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:988: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:745: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:771: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:654: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:645: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:662: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:859: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:787: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:713: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:695: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:677: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:686: Run scripts.verify_beta_upstream_integration for merged business-rule and retrieval integration
-SKIPPED [1] tests\test_agent_workflow_qwen.py:1045: Real Qwen acceptance requires explicit opt-in and approved packages
-SKIPPED [1] tests\test_alpha_e2e.py:504: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1634: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
 SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
-513 passed, 28 skipped, 1 warning, 154 subtests passed in 32.61s
+572 passed, 3 skipped, 1 warning, 242 subtests passed in 47.99s
 
-=== Command 3: Beta S1-S4 evaluation script (summary) ===
+=== Command 3: Beta S1-S4 evaluation script ===
 $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
 {
   "corpus_type": "synthetic_beta_s1_s4_fixture",
@@ -156,7 +131,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 1 章 第 3 条",
           "original_locator": "PDF 第 2 页",
-          "score": 7.099617
+          "score": 7.839463
         },
         {
           "rank": 2,
@@ -165,7 +140,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 2 章 第 7 条",
           "original_locator": "PDF 第 4 页",
-          "score": 0.383013
+          "score": 0.057536
         }
       ],
       "note": "中英文混合查询 + 单业务方向过滤"
@@ -185,7 +160,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 2 章 第 7 条",
           "original_locator": "PDF 第 4 页",
-          "score": 4.418056
+          "score": 4.94434
         },
         {
           "rank": 2,
@@ -194,7 +169,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 1 章 第 3 条",
           "original_locator": "PDF 第 2 页",
-          "score": 0.696151
+          "score": 0.496242
         }
       ],
       "note": "中文短语匹配与章节定位"
@@ -214,7 +189,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 1 节",
           "original_locator": "PDF 第 1 页",
-          "score": 8.801863
+          "score": 5.026608
         },
         {
           "rank": 2,
@@ -223,7 +198,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 2 节",
           "original_locator": "PDF 第 2 页",
-          "score": 5.781849
+          "score": 1.986413
         }
       ],
       "note": "标题词 + 正文英文缩写混合检索"
@@ -243,7 +218,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 2 节",
           "original_locator": "PDF 第 2 页",
-          "score": 7.146789
+          "score": 6.64585
         },
         {
           "rank": 2,
@@ -252,7 +227,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 1 节",
           "original_locator": "PDF 第 1 页",
-          "score": 3.579758
+          "score": 3.043512
         },
         {
           "rank": 3,
@@ -261,7 +236,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 2 章 第 7 条",
           "original_locator": "PDF 第 4 页",
-          "score": 0.362789
+          "score": 0.365873
         }
       ],
       "note": "材料与截止时间定位"
@@ -281,7 +256,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 3 条",
           "original_locator": "PDF 第 1 页",
-          "score": 5.623965
+          "score": 6.541245
         },
         {
           "rank": 2,
@@ -290,7 +265,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 8 条",
           "original_locator": "PDF 第 3 页",
-          "score": 0.613363
+          "score": 0.267663
         }
       ],
       "note": "中英文外语条件检索"
@@ -310,7 +285,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 8 条",
           "original_locator": "PDF 第 3 页",
-          "score": 6.465476
+          "score": 6.415483
         },
         {
           "rank": 2,
@@ -319,7 +294,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 3 条",
           "original_locator": "PDF 第 1 页",
-          "score": 0.251329
+          "score": 0.212064
         }
       ],
       "note": "学术专长加分条款检索"
@@ -339,7 +314,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 1 部分",
           "original_locator": "网页 第 1 节",
-          "score": 8.156222
+          "score": 9.098776
         },
         {
           "rank": 2,
@@ -348,7 +323,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 2 部分",
           "original_locator": "网页 第 2 节",
-          "score": 0.56142
+          "score": 0.054224
         }
       ],
       "note": "R3 实验室与科研团队：位置与英文算力关键词"
@@ -368,7 +343,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 2 部分",
           "original_locator": "网页 第 2 节",
-          "score": 9.056452
+          "score": 8.16929
         },
         {
           "rank": 2,
@@ -377,7 +352,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 1,
           "locator": "第 1 部分",
           "original_locator": "网页 第 1 节",
-          "score": 0.177745
+          "score": 0.17487
         }
       ],
       "note": "R2 培养方案与课程：培养方案与办事渠道导航"
@@ -397,25 +372,25 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 2 节",
           "original_locator": "PDF 第 2 页",
-          "score": 11.496657
+          "score": 10.601959
         },
         {
           "rank": 2,
-          "record_code": "BETA-SYN-S2-2026",
-          "version_no": "beta-syn-v1",
-          "chunk_no": 1,
-          "locator": "第 1 节",
-          "original_locator": "PDF 第 1 页",
-          "score": 4.431091
-        },
-        {
-          "rank": 3,
           "record_code": "BETA-SYN-S1-2026",
           "version_no": "beta-syn-v1",
           "chunk_no": 2,
           "locator": "第 2 章 第 7 条",
           "original_locator": "PDF 第 4 页",
-          "score": 3.86557
+          "score": 3.785864
+        },
+        {
+          "rank": 3,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 节",
+          "original_locator": "PDF 第 1 页",
+          "score": 3.43713
         },
         {
           "rank": 4,
@@ -424,7 +399,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
           "chunk_no": 2,
           "locator": "第 8 条",
           "original_locator": "PDF 第 3 页",
-          "score": 2.439325
+          "score": 2.411614
         }
       ],
       "note": "不传 business_direction_code 执行全库检索，避免跨方向漏检"
@@ -439,7 +414,7 @@ LLM: offline test double. Clarification and applicability callbacks are test inp
 {"query": "竞赛认定", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
 {"query": "奖学金", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
 {"query": "推免", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
-{"query": "星桥奖学金申请需要什么", "status": "answered", "warnings": ["ALPHA_EXTRACTIVE_ANSWER"], "llm_calls": 1, "citations": [{"document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548", "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0", "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159", "title": "合成测试资料：星桥奖学金", "publisher": "合成测试机构", "source_url": "https://example.invalid/alpha/scholarship", "published_on": null, "effective_on": null, "locator": "第 2 行", "original_locator": "第 1 页", "excerpt": "星桥奖学金申请需要提交申请表和实践记录。", "source_verification_status": "verified", "timeliness_verification_status": "current", "retrieval_status": "enabled"}]}
+{"query": "星桥奖学金申请需要什么", "status": "answered", "warnings": [], "llm_calls": 1, "citations": [{"document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548", "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0", "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159", "title": "合成测试资料：星桥奖学金", "publisher": "合成测试机构", "source_url": "https://example.invalid/alpha/scholarship", "published_on": "2026-09-01", "effective_on": null, "locator": "第 2 行", "original_locator": "第 1 页", "excerpt": "星桥奖学金申请需要提交申请表和实践记录。", "source_verification_status": "verified", "timeliness_verification_status": "current", "retrieval_status": "enabled"}]}
 PASS: 4 Agent -> Retriever cases
 
 === Command 5: PR #41 9-package 514-chunk read-only handoff & blocked isolation check ===
@@ -600,4 +575,5 @@ $ .\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_pol
 
 === Command 6: git diff --check ===
 $ git diff --check
+warning: in the working copy of 'scripts/eval_beta_bm25_comparison.py', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'tests/test_beta_retrieval_scenarios.py', LF will be replaced by CRLF the next time Git touches it

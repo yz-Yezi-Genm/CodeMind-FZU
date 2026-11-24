@@ -20,9 +20,9 @@
 
 ## 二、本阶段检索模块改进
 
-1. **标题 + 正文联合 BM25 索引**（`backend/retrieval/local.py`）：
-   - 在 `index_document()` 中将 `metadata.title` 的词项与 `chunk.content` 的词项联合纳入 BM25 索引，同时保留“仅正文无可检索词时跳过并报告 `TOKENLESS_CHUNKS_SKIPPED`”的既有约束，避免纯标点片段借标题混入索引。
-   - 标题词与正文词共同参与排序后，查询“文档标题关键词 + 具体条款正文关键词”可准确命中并置顶对应条款片段。
+1. **轻量标题加权 BM25（正文 + 0.1×文档标题）**（`backend/retrieval/local.py`）：
+   - 将正文 BM25（片段级 `chunk.content`）与标题 BM25（文档级 `metadata.title`）分开计算，最终排序分为 `content_bm25 + 0.1 * title_bm25`（`_TITLE_WEIGHT = 0.1`），同时保留“仅正文无可检索词时跳过并报告 `TOKENLESS_CHUNKS_SKIPPED`”的既有约束。
+   - 相比直接将标题词等权拼接到每个片段，轻量标题加权既保留了纯标题命中与标题+正文排序优势，又避免长标题文档的无关片段在多目标跨领域查询中挤占其他必要证据的 Top-K。
 2. **双实例并发索引与单边撤回隔离**（`tests/test_local_retrieval.py`）：
    - 响应 PR #51 审核建议，新增 `test_two_retriever_instances_isolate_independent_withdrawal`：两个 `LocalBM25Retriever` 实例分别索引同一份资料，其中一个实例将资料撤回为 `blocked` 后，该实例的 `retrieve` / `get_document_metadata` / `get_parsed_chunk` 立即清空，而另一个实例不受任何影响。
 3. **公共接口一致性**（已在 PR #51 合入 `main`）：
@@ -75,9 +75,9 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 - `get_document_metadata(hit.version_id)` 完整返回 `record_code`、`version_no`、`applicability_raw`、`deadline_on`、`temporal_notes`、`source_verification_status`、`timeliness_verification_status`、`retrieval_status`；
 - `get_parsed_chunk(hit.chunk_id)` 完整返回 `content`、`locator`、`locator_note`、`original_locator`、`source_file_key`、`chunk_no`，且与 `RetrievedChunk` 一一对应。
 
-## 五、BM25 对照评测（仅正文 vs 标题+正文）
+## 五、BM25 对照评测（仅正文 vs 轻量标题加权 BM25）
 
-为验证在 `LocalBM25Retriever` 中引入 `metadata.title` 联合索引后，标题词是否会在长文档、相似政策标题、同名实验室或跨业务方向场景下挤占 Top-K，使用独立压力合成集（8 份文档、39 个片段、20 条查询，见 `scripts/eval_beta_bm25_comparison.py`，全部采用 `example.invalid` 虚构来源，不触碰真实候选资料）对比了「仅正文 BM25」与「标题+正文 BM25」：
+为验证在 `LocalBM25Retriever` 中引入 `metadata.title` 后，标题词是否会在长文档、相似政策标题、同名实验室或**多目标跨领域查询**场景下挤占 Top-K，使用独立压力合成集（8 份文档、39 个片段、20 条单目标压力查询 + 4 条多目标跨领域查询，见 `scripts/eval_beta_bm25_comparison.py`，全部采用 `example.invalid` 虚构来源，不触碰真实候选资料）对比了「仅正文 BM25」与「轻量标题加权 BM25（`_TITLE_WEIGHT = 0.1`）」：
 
 复现命令：
 
@@ -85,28 +85,40 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_bm25_comparison
 ```
 
-| 指标 / 维度 | 仅正文 BM25 | 标题+正文 BM25（当前实现） | 变化 |
-|---|---|---|---|
-| 文档 / 片段 / 查询规模 | 8 / 39 / 20 | 8 / 39 / 20 | — |
-| 总体 Hit@1 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
-| 总体 Hit@3 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
-| 总体 MRR | 1.0 | 1.0 | 0.0 |
-| 长文档（6 查询）Top-3 模板条款（总则/组织机构/附则/联系人）挤占次数 | 4 | 1 | **-3（下降）** |
-| 相似政策标题区分（4 查询：本科生办法 / 星火通知 / 研究生细则）Hit@1 | 1.0 | 1.0 | 0.0 |
-| 同名实验室区分（4 查询：智能感知实验室 R3 招募 vs R4 介绍、视觉组 vs 语音组）Hit@1 | 1.0 | 1.0 | 0.0 |
-| 标题+正文联合查询（4 查询：政策名仅出现在标题）Hit@1 | 1.0 | 1.0 | 0.0 |
-| 跨业务方向全库竞争排序（2 查询，`business_direction_code=None`）Hit@1 | 1.0 | 1.0 | 0.0 |
+### 反例复现与权重调整效果
 
-**结论**：标题+正文 BM25 在长文档、相似标题、同名实验室及跨业务方向竞争排序中**均无检索退化**，且长文档 Top-3 模板条款挤占次数由 4 次降至 1 次；保留当前 `LocalBM25Retriever` 实现，不扩展向量检索或重排模型。完整对照 JSON 见 [retrieval-bm25-comparison.json](evidence/retrieval-bm25-comparison.json)。
+在复审提出的两条多目标跨领域反例上，调整前（等权拼接标题词到每个片段）与调整后（独立文档级标题 BM25 × `0.1`）对比如下：
+
+- **M01**（`2026年本科生奖学金评定管理办法的一等奖GPA要求，以及本科毕业学分165学分要求？`，期望 `CMP-SCH-UG#4` + `CMP-STUDY-R2#1`）：
+  - 调整前（等权拼接）：Top-5 全被 `CMP-SCH-UG` 占满，丢失 `CMP-STUDY-R2#1`（Recall@5 = `0.5`）；
+  - 调整后（`_TITLE_WEIGHT = 0.1`）：Top-2 即同时命中 `CMP-SCH-UG#4`（#1）与 `CMP-STUDY-R2#1`（#2），**Recall@5 = `1.0`**。
+- **M02**（`2026年青禾计划智能感知实验室招募报名截止日期，以及推免申请人外语CET-6要求？`，期望 `CMP-LAB-R3#3` + `CMP-REC-QUAL#1`）：
+  - 调整前（等权拼接）：Top-5 被实验室包占满，丢失 `CMP-REC-QUAL#1`（Recall@5 = `0.5`）；
+  - 调整后（`_TITLE_WEIGHT = 0.1`）：Top-2 即同时命中 `CMP-LAB-R3#3`（#1）与 `CMP-REC-QUAL#1`（#2），**Recall@5 = `1.0`**。
+
+| 指标 / 维度 | 仅正文 BM25 | 标题+正文 BM25（`_TITLE_WEIGHT = 0.1`） | 变化 |
+|---|---|---|---|
+| 文档 / 片段 / 单目标查询 / 多目标查询 | 8 / 39 / 20 / 4 | 8 / 39 / 20 / 4 | — |
+| 单目标总体 Hit@1 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
+| 单目标总体 Hit@3 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
+| 单目标总体 MRR | 1.0 | 1.0 | 0.0 |
+| 长文档（6 查询）Top-3 模板条款（总则/组织机构/附则/联系人）挤占次数 | 4 | 4 | 0（无恶化） |
+| 相似政策标题区分（4 查询）Hit@1 | 1.0 | 1.0 | 0.0 |
+| 同名实验室区分（4 查询：R3 招募 vs R4 介绍、视觉组 vs 语音组）Hit@1 | 1.0 | 1.0 | 0.0 |
+| 标题+正文联合查询（4 查询：政策名仅出现在标题）Hit@1 | 1.0 | 1.0 | 0.0 |
+| 跨业务方向单目标竞争排序（2 查询，`business_direction_code=None`）Hit@1 | 1.0 | 1.0 | 0.0 |
+| **多目标跨领域 Recall@5（4 查询：M01–M04，含两条复审反例）** | **0.875 (3/4 满召回)** | **0.875 (3/4 满召回；M01/M02/M03 均 1.0)** | **0.0（较等权拼接 0.5 提升 +0.375）** |
+
+**结论**：采用独立正文 BM25 + 轻量文档级标题加权（`_TITLE_WEIGHT = 0.1`）后，单目标 20 条查询保持 100% Hit@1 / Hit@3 / MRR，多目标跨领域 Recall@5 与仅正文 BM25 完全持平（两条复审反例均在 Top-2 满召回），且保留纯标题检索能力，不引入向量检索或复杂重排。完整对照 JSON 见 [retrieval-bm25-comparison.json](evidence/retrieval-bm25-comparison.json)。
 
 ## 六、Python 3.10 回归与 PR #41 9 包 514 片段只读校验
 
-测试环境：`Python 3.10.16`（`.venv`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖；说明：本机 Python 3.10 为 3.10.16，与团队 Python 3.10.x 运行环境同系列兼容）。完整终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
+测试环境：`Python 3.10.16`（`.venv`，已同步包含 PR #46 的最新 `main` `0251ec5`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖）。完整终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
 
 | 验证项 | 命令 | 实际结果 |
 |---|---|---|
 | 检索、加载器与四领域专项 | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests/test_local_retrieval.py tests/test_alpha_corpus.py tests/test_beta_retrieval_scenarios.py -v` | **36 passed, 12 subtests passed** |
-| 后端全量 `pytest` | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **513 passed, 28 skipped, 154 subtests passed**（0 失败） |
+| 后端全量 `pytest`（含 PR #46） | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **572 passed, 3 skipped, 242 subtests passed**（0 失败） |
 | S1–S4 合成基线脚本 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval` | Hit@1 = 1.0 / Hit@3 = 1.0 / MRR = 1.0，拦截 2 份未开放诱饵 |
 | Agent 离线联调 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.check_retrieval_agent` | **PASS: 4 Agent -> Retriever cases** |
 | PR #41 9 包 514 片段只读校验 | `.\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_policy_handoff` | 9 包 / 514 片段（S1:310 / S2:127 / S3:29 / S4:48）完整离线索引；全部 `blocked` 资料 `get_document_metadata()` 与 `get_parsed_chunk()` 均返回 `None`，正式检索命中 0，`approved/` 正式包数为 0 |

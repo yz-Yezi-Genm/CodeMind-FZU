@@ -330,6 +330,18 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
         for cat in ("long_doc", "similar_title", "same_name_lab", "cross_direction"):
             self.assertEqual(title_plus["by_category"][cat]["hit_at_1"], 1.0, msg=cat)
 
+        # Multi-target cross-domain Recall@5 must not degrade vs content-only BM25,
+        # and both review counterexamples (M01, M02) must recall all required targets in Top-5.
+        self.assertGreaterEqual(
+            title_plus["multi_target_recall_at_5"],
+            content_only["multi_target_recall_at_5"],
+        )
+        by_id = {row["query_id"]: row for row in title_plus["multi_target_details"]}
+        self.assertEqual(by_id["M01"]["recall_at_5"], 1.0)
+        self.assertEqual(by_id["M01"]["missing"], [])
+        self.assertEqual(by_id["M02"]["recall_at_5"], 1.0)
+        self.assertEqual(by_id["M02"]["missing"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

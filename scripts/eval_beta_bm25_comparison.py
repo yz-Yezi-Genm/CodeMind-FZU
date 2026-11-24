@@ -29,37 +29,13 @@ from backend.contracts import (
     ParsedFile,
     RetrievalRequest,
 )
-from backend.retrieval.local import LocalBM25Retriever, _IndexedChunk, _IndexedVersion, _terms
+from backend.retrieval.local import LocalBM25Retriever
 
 
 class _ContentOnlyBM25Retriever(LocalBM25Retriever):
-    """Reference baseline indexing chunk.content only (excluding metadata.title)."""
+    """Reference baseline using chunk.content BM25 only (title weight = 0.0)."""
 
-    async def index_document(self, package: DocumentPackage):
-        result = await super().index_document(package)
-        version = self._versions.get(result.version_id)
-        if version is not None:
-            rebuilt = []
-            for chunk in version.chunks:
-                content_terms = _terms(chunk.parsed.content)
-                rebuilt.append(
-                    _IndexedChunk(
-                        parsed=chunk.parsed,
-                        file_id=chunk.file_id,
-                        chunk_id=chunk.chunk_id,
-                        term_counts=Counter(content_terms),
-                        length=len(content_terms),
-                    )
-                )
-            self._put_version(
-                _IndexedVersion(
-                    metadata=version.metadata,
-                    document_id=version.document_id,
-                    version_id=version.version_id,
-                    chunks=tuple(rebuilt),
-                )
-            )
-        return result
+    _title_weight: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -71,6 +47,15 @@ class StressQuery:
     expected_chunk_no: int
     business_direction_code: str | None = None
     top_k: int = 3
+    note: str = ""
+
+
+@dataclass(frozen=True)
+class MultiTargetQuery:
+    query_id: str
+    query: str
+    expected_targets: tuple[tuple[str, int], ...]
+    top_k: int = 5
     note: str = ""
 
 
@@ -275,6 +260,37 @@ STRESS_QUERIES: tuple[StressQuery, ...] = (
     StressQuery("C18", "cross_direction", "ACM-ICPC 蓝桥杯 4个创新学分", "CMP-COMP-BYLAW", 3, None, 3, "全库检索命中竞赛创新学分"),
 )
 
+MULTI_TARGET_QUERIES: tuple[MultiTargetQuery, ...] = (
+    MultiTargetQuery(
+        query_id="M01",
+        query="2026年本科生奖学金评定管理办法的一等奖GPA要求，以及本科毕业学分165学分要求？",
+        expected_targets=(("CMP-SCH-UG", 4), ("CMP-STUDY-R2", 1)),
+        top_k=5,
+        note="复审反例1：长标题奖学金办法与毕业学分双目标跨领域召回",
+    ),
+    MultiTargetQuery(
+        query_id="M02",
+        query="2026年青禾计划智能感知实验室招募报名截止日期，以及推免申请人外语CET-6要求？",
+        expected_targets=(("CMP-LAB-R3", 3), ("CMP-REC-QUAL", 1)),
+        top_k=5,
+        note="复审反例2：长标题实验室招募与推免外语双目标跨领域召回",
+    ),
+    MultiTargetQuery(
+        query_id="M03",
+        query="2026年大学生学科竞赛认定与创新创业学分管理办法的团队第一完成人折算比例，以及星火奖学金特等奖8000元名额？",
+        expected_targets=(("CMP-COMP-BYLAW", 4), ("CMP-SCH-XINGHUO", 2)),
+        top_k=5,
+        note="双目标跨领域：长标题竞赛办法 + 星火奖学金名额金额",
+    ),
+    MultiTargetQuery(
+        query_id="M04",
+        query="2026年计算机与大数据学院本科生奖学金评定管理办法的综测权重，以及智能感知实验室视觉组CVPR论文研究方向？",
+        expected_targets=(("CMP-SCH-UG", 5), ("CMP-LAB-R4", 1)),
+        top_k=5,
+        note="双目标跨领域：10片段长文档 + 同名实验室 R4 研究方向",
+    ),
+)
+
 _BOILERPLATE_MARKERS = ("总则", "组织机构", "附则", "联系人")
 
 
@@ -342,7 +358,46 @@ async def _evaluate_retriever(retriever: LocalBM25Retriever, packages: list[Docu
             "top_hits": top_hits,
         })
 
+    multi_details = []
+    recall5_sum = 0.0
+    all_targets_hit_count = 0
+    for mq in MULTI_TARGET_QUERIES:
+        hits = await retriever.retrieve(
+            RetrievalRequest(query=mq.query, business_direction_code=None, top_k=mq.top_k)
+        )
+        top_hits = []
+        found_pairs: set[tuple[str, int]] = set()
+        for rank, hit in enumerate(hits, start=1):
+            meta = retriever.get_document_metadata(hit.version_id)
+            parsed = retriever.get_parsed_chunk(hit.chunk_id)
+            if meta is None or parsed is None:
+                raise RuntimeError("Missing metadata/chunk lookup")
+            found_pairs.add((meta.record_code, parsed.chunk_no))
+            top_hits.append({
+                "rank": rank,
+                "record_code": meta.record_code,
+                "chunk_no": parsed.chunk_no,
+                "locator": parsed.locator,
+                "score": round(hit.score, 4),
+            })
+        matched = [t for t in mq.expected_targets if t in found_pairs]
+        missing = [f"{code}#{no}" for code, no in mq.expected_targets if (code, no) not in found_pairs]
+        recall_at_5 = len(matched) / len(mq.expected_targets)
+        recall5_sum += recall_at_5
+        if not missing:
+            all_targets_hit_count += 1
+        multi_details.append({
+            "query_id": mq.query_id,
+            "query": mq.query,
+            "expected": [f"{code}#{no}" for code, no in mq.expected_targets],
+            "recall_at_5": round(recall_at_5, 4),
+            "missing": missing,
+            "top_hits": top_hits,
+            "note": mq.note,
+        })
+
     total = len(STRESS_QUERIES)
+    multi_total = len(MULTI_TARGET_QUERIES)
     return {
         "document_count": len(packages),
         "chunk_count": sum(len(p.chunks) for p in packages),
@@ -351,6 +406,9 @@ async def _evaluate_retriever(retriever: LocalBM25Retriever, packages: list[Docu
         "hit_at_3": round(hit3 / total, 4),
         "mrr": round(mrr_sum / total, 4),
         "long_doc_boilerplate_in_top3": boilerplate_in_top3,
+        "multi_target_query_count": multi_total,
+        "multi_target_recall_at_5": round(recall5_sum / multi_total, 4),
+        "multi_target_full_recall_count": all_targets_hit_count,
         "by_category": {
             k: {
                 "count": int(v["count"]),
@@ -361,6 +419,7 @@ async def _evaluate_retriever(retriever: LocalBM25Retriever, packages: list[Docu
             for k, v in per_category.items()
         },
         "details": details,
+        "multi_target_details": multi_details,
     }
 
 
@@ -376,6 +435,11 @@ async def run_comparison() -> dict[str, Any]:
             "hit_at_1": round(title_and_content["hit_at_1"] - content_only["hit_at_1"], 4),
             "hit_at_3": round(title_and_content["hit_at_3"] - content_only["hit_at_3"], 4),
             "mrr": round(title_and_content["mrr"] - content_only["mrr"], 4),
+            "multi_target_recall_at_5": round(
+                title_and_content["multi_target_recall_at_5"]
+                - content_only["multi_target_recall_at_5"],
+                4,
+            ),
             "long_doc_boilerplate_in_top3": (
                 title_and_content["long_doc_boilerplate_in_top3"]
                 - content_only["long_doc_boilerplate_in_top3"]
