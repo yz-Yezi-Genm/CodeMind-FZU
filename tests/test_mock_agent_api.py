@@ -28,6 +28,7 @@ class MockAgentApiTests(unittest.TestCase):
         body = response.json()
 
         self.assertEqual(body["status"], "answered")
+        self.assertEqual(body["answer_mode"], "current_policy")
         self.assertIn("Mock 演示", body["answer"])
         self.assertEqual(body["citations"], [])
 
@@ -43,6 +44,8 @@ class MockAgentApiTests(unittest.TestCase):
         self.assertEqual(body["status"], "needs_clarification")
         self.assertIsNone(body["answer"])
         self.assertIsNotNone(body["clarifying_question"])
+        self.assertIsNone(body["answer_mode"])
+        self.assertEqual(body["citations"], [])
 
     def test_insufficient_evidence(self):
         response = self.client.post(
@@ -58,6 +61,8 @@ class MockAgentApiTests(unittest.TestCase):
             body["answer_mode"],
             "insufficient_data",
         )
+        self.assertEqual(body["citations"], [])
+        self.assertTrue(body["answer"] or body["warnings"])
 
     def test_invalid_request(self):
         response = self.client.post(
