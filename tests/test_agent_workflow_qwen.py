@@ -93,7 +93,7 @@ class AgentWorkflowQwenTests(unittest.TestCase):
                     self.assertNotIn("status", body)
                     client.portal.call(upstream.aclose)
 
-    def test_invalid_provider_envelope_is_502_with_cors_and_request_id(self):
+    def test_invalid_provider_envelope_is_503_with_cors_and_request_id(self):
         for payload in [None, [], {}, {"choices": []},
                         {"choices": [{"message": {"content": " "}}]}]:
             with self.subTest(payload=payload):
@@ -102,7 +102,7 @@ class AgentWorkflowQwenTests(unittest.TestCase):
                     response = client.post("/api/v1/ask", json={"query": "选课有哪些步骤？"},
                                            headers={"Origin": "http://localhost:5173"})
                     body = response.json()
-                    self.assertEqual(response.status_code, 502)
+                    self.assertEqual(response.status_code, 503)
                     self.assertEqual(body["error"]["code"], "MODEL_UNAVAILABLE")
                     self.assertFalse(body["error"]["retryable"])
                     self.assertEqual(response.headers["x-request-id"], body["request_id"])

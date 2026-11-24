@@ -159,7 +159,7 @@ def main():
         "qwen_handoff_checks": [
             "Startup script reads explicit packages and injects the same workflow/model into FastAPI",
             "401/403, 408, 429 and 5xx preserve backend status, request ID and CORS headers",
-            "Malformed/empty provider envelope is HTTP 502; invalid evidence selection is a business refusal",
+            "Malformed/empty provider envelope is HTTP 503; invalid evidence selection is a business refusal",
             "Read timeout and connection failures map to 504/503 without provider detail leakage",
             "Outer workflow timeout cancels the real adapter request",
             "Mixed transport and HTTP failures share the adapter retry budget",

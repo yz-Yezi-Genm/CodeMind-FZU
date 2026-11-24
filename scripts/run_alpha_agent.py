@@ -57,7 +57,13 @@ async def serve(args: argparse.Namespace) -> None:
         workflow_timeout_seconds=args.workflow_timeout_seconds,
     )
     config = uvicorn.Config(app, host=args.host, port=args.port)
-    await uvicorn.Server(config).serve()
+    try:
+        await uvicorn.Server(config).serve()
+    finally:
+        client = getattr(app.state, "llm_client", None)
+        close = getattr(client, "aclose", None)
+        if callable(close):
+            await close()
 
 
 def main() -> int:
