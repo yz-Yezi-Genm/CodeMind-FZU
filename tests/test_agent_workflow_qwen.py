@@ -1222,6 +1222,57 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(result.warnings[0].code, "LIVE_LAB_QUOTA_UNVERIFIED")
         self.assertEqual(len(self.observed), 3)
 
+    async def test_beta_s4_mixed_lab_research_and_quota_over_http(self):
+        self.lab_recruitment_fixture(date(2026, 12, 1), TimelinessVerificationStatus.CURRENT)
+        workflow = await self.workflow()
+        retriever = workflow.retriever
+        quota_question = "EDA 实验室现在还剩几个名额？"
+        research_question = "EDA 实验室研究什么？"
+        mixed_question = "EDA 实验室研究什么，还有几个名额？"
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            quota = (await client.post("/api/v1/ask", json={"query": quota_question})).json()
+            without_intro = (await client.post("/api/v1/ask", json={"query": mixed_question})).json()
+            self.assertEqual(self.observed, [])
+
+            introduction = self.package.model_copy(deep=True)
+            introduction.metadata.record_code = "SYNTH-EDA-RESEARCH"
+            introduction.metadata.title = "合成测试：EDA 实验室研究方向"
+            introduction.metadata.document_type = "研究方向与公开介绍"
+            introduction.metadata.category_name = "研究方向与公开介绍"
+            introduction.metadata.source_url = "https://ccds.fzu.edu.cn/test/eda-intro.htm"
+            introduction.metadata.applicability_raw = None
+            introduction.metadata.deadline_on = None
+            introduction.chunks[0].content = "合成测试：EDA 实验室研究方向为集成电路设计自动化。"
+            await retriever.index_document(introduction)
+
+            # Both sources enter BM25's results. The rules must keep the annual plan out of the prompt.
+            hits = await retriever.retrieve(RetrievalRequest(query=research_question))
+            self.assertEqual({hit.source_url for hit in hits}, {
+                self.package.metadata.source_url, introduction.metadata.source_url,
+            })
+            for query in (mixed_question, "EDA 实验室还有几个名额，研究什么？", research_question):
+                with self.subTest(query=query):
+                    response = await client.post("/api/v1/ask", json={"query": query})
+                    self.assertEqual(response.status_code, 200)
+                    result = response.json()
+                    self.assertEqual((result["status"], result["answer_mode"]), ("answered", "current_policy"))
+                    self.assertIn("集成电路设计自动化", result["answer"])
+                    self.assertNotIn("8 人", result["answer"])
+                    self.assertEqual([citation["excerpt"] for citation in result["citations"]], [introduction.chunks[0].content])
+                    self.assertEqual([entry["content"] for entry in self.observed[-1]], [introduction.chunks[0].content])
+                    if query == research_question:
+                        self.assertEqual(result["warnings"], [])
+                    else:
+                        self.assertIn("暂无经过核验的实时剩余名额", result["answer"])
+                        self.assertEqual([warning["code"] for warning in result["warnings"]], ["LIVE_LAB_QUOTA_UNVERIFIED"])
+
+        for result in (quota, without_intro):
+            self.assertEqual((result["status"], result["answer_mode"]), ("insufficient_evidence", "insufficient_data"))
+            self.assertEqual(result["citations"], [])
+            self.assertIn("LIVE_LAB_QUOTA_UNVERIFIED", [warning["code"] for warning in result["warnings"]])
+        self.assertEqual(len(self.observed), 3)
+
     async def test_beta_s4_year_reply_keeps_historical_curriculum_intent_over_http(self):
         metadata = self.package.metadata
         metadata.title = "合成测试：2024年计算机科学与技术专业旧版培养方案"

@@ -1,6 +1,6 @@
 # Beta AgentWorkflow 联调记录
 
-2026 年 11 月 24 日，吴诗莹。开发分支为 `feat/beta-agent-history`，已通过合并提交 `f91cc08` 同步 `main` 的 `5973eef`。本轮测试覆盖该基线及 #46 的复审修订，直接运行仓库中已合入的业务规则和 Retriever 契约。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51)
+2026 年 11 月 24 日，吴诗莹。开发分支为 `feat/beta-agent-history`，通过 `f91cc08` 同步 `main` 的 `5973eef`。本轮验证基于 `6e763b8` 及后续混合事项修订，直接运行已合入的 #45 业务规则和 #51 Retriever 契约。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51)
 
 ## 工作流
 
@@ -18,7 +18,9 @@
 
 ## 本轮复审修改
 
-- S4 招募期与年度计划人数仍使用通过证据门禁的年度通知。当前剩余名额需要经核验的实时数据。当前接入只有政策资料，因此实时名额问句在模型调用前返回 `insufficient_evidence / insufficient_data`，引用为空。
+- S4 招募期与年度计划人数使用通过证据门禁的年度通知。单独询问实时剩余名额时，当前接入缺少经核验的实时数据，Agent 在模型调用前返回 `insufficient_evidence / insufficient_data`，引用为空。
+- 按业务规则 §2.4 处理混合事项。问「EDA 实验室研究什么，还有几个名额？」时，Agent 将研究方向交给原有工作流，并单独说明实时名额无法确认。通过门禁的 R4 介绍可以形成 `answered / current_policy` 并提供引用，`warnings` 记录 `LIVE_LAB_QUOTA_UNVERIFIED`。只有 R3 年度计划时整问返回证据不足。只问研究方向时按原流程返回。
+- 新增 `/api/v1/ask` 联调覆盖名额单问、研究单问、正反顺序的混合问句及缺少 R4 资料的场景。BM25 同时召回 R3 年度计划和 R4 公开介绍，真实业务规则只让 R4 进入 Mock Qwen 的证据及最终引用。
 - 会话中的年份和历史意图分别处理。补充「2024 年呢」会把新年份和上一轮的旧版培养方案主题一起传给业务规则。当前培养方案问句仍会拒绝已被替代的版本。
 - 「还可以报名吗」可沿用上一轮的具名实验室。若只召回已审核且年度和截止日期明确的过期通知，Agent 引用该通知说明对应年度报名已截止，并提示新一轮招募状态暂无法确认。
 - 联调测试直接导入检出的业务规则、资料加载器和 BM25。常规 pytest 会收集这些用例，涵盖 `POST /api/v1/ask` 及其会话存储。测试使用合成资料和模拟的 Qwen HTTP 响应。
@@ -27,18 +29,19 @@
 
 | 验证 | 结果 |
 | --- | --- |
-| 仓库根目录完整 pytest | 513 通过，3 跳过，1 条警告，204 个子测试通过。[原始输出](evidence/agent-workflow-pytest-main5973eef.txt) |
-| 已合入 #45 的规则、Retriever 和 Agent 联调 | 33 通过，1 条警告，58 个子测试通过。[原始输出](evidence/agent-workflow-merged-rules-main5973eef.txt) |
+| 仓库根目录完整 pytest | 514 通过，3 跳过，1 条警告，207 个子测试通过。[原始输出](evidence/agent-workflow-full-mixed-quota-py31011.txt) |
+| 已合入 #45 的规则、Retriever 和 Agent 联调 | 34 通过，1 条警告，61 个子测试通过。[原始输出](evidence/agent-workflow-integration-mixed-quota-py31011.txt) |
 
-两个命令均从仓库根目录运行，退出码为 `0`。完整回归跳过了两个需正式资料与真实 Qwen 的用例和一个当前 Windows 账户无法创建符号链接的用例。警告来自 Starlette 测试客户端的依赖弃用提示。
+两个命令均从仓库根目录使用 Python 3.10.11（Windows AMD64）运行，退出码为 `0`。日志首行保留了 `python -VV`。完整回归跳过了两个正式资料与真实 Qwen 用例和一个当前 Windows 账户无法创建符号链接的用例。警告来自 Starlette 测试客户端的依赖弃用提示。
 
 ```powershell
-.venv/Scripts/python.exe -m pytest -q -rs --tb=short
-.venv/Scripts/python.exe -m pytest -q -rs --tb=short tests/test_agent_workflow_qwen.py::MergedRulesRetrieverIntegrationTests
+$python = '..\python-3.10.11\tools\python.exe'
+& $python -VV
+& $python -m pytest -q -rs --tb=short
+& $python -m pytest -q -rs --tb=short tests/test_agent_workflow_qwen.py::MergedRulesRetrieverIntegrationTests
 ```
 
 ## 正式验收待办
 
-- [PR #41](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/41) 的青禾候选包在 `1e9693c` 中仍是 `blocked`、`human_approved=false`，`category_name` 为 `科研实践与实验室`。要用正式资料完成 A4 验收，需由资料负责人对齐 #45 的 R3 类别 `实验室与科研团队`，并经组长审核放行。
-- S4 规则目前在上游 Beta 分支。合入 `main` 后需通过正式 `/api/v1/ask` 入口复跑联调。涉及历年报名的资料需明确适用年度和对象。若业务规则拒绝仅写年份的已替代政策查询，请与规则负责人核对历史意图条件。
-- 本地正式 `approved/` 暂无已审核资料包，且本地执行环境未配置 `QWEN_API_KEY`。真实政策和真实 Qwen 的四领域验收仍待具备这些输入后执行。
+- #41 在 `d76de3c` 已提交青禾 R3 `实验室与科研团队` 和 R4 `研究方向与公开介绍` 两个候选包，均为 `blocked`、`human_approved=false`，待最终人工审核。[PR #41](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/41)
+- 正式资料和真实 Qwen 的四领域验收留待后续集成。

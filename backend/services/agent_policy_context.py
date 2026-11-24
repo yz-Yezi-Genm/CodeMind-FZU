@@ -67,6 +67,8 @@ _LIVE_LAB_QUOTA = re.compile(
     r"|还招(?:几个|几人|多少)"
 )
 _CURRENT_LAB_QUOTA = re.compile(r"(?:目前|当前|现在).{0,16}名额")
+_QUESTION_SEPARATOR = re.compile(r"[，,。！？?!；;\n]+|以及|并且|另外|同时问|和(?=(?:现在|目前|还有|还剩|剩余))")
+_QUOTA_QUALIFIER = re.compile(r"^(?:(?:主要|具体)想知道|想知道|想确认|我是想问)")
 _STILL = r"(?:(?:现在|目前|当前)\s*)?"
 _RECRUITING = r"(?:还(?:在)?招(?:人|募|收)?|还(?:能|可以)报名)"
 _QUOTA = r"(?:还剩(?:几个|多少)(?:名额)?|还招(?:几个|几人|多少人?))"
@@ -96,13 +98,37 @@ def _topics(text: str) -> set[int]:
     return {index for index, cue in enumerate(_TOPICS) if cue.search(text)}
 
 
-def asks_live_lab_quota(request: AgentRequest) -> bool:
+def is_live_quota_question(text: str) -> bool:
+    return bool(_LIVE_LAB_QUOTA.search(text) or (_CURRENT_LAB_QUOTA.search(text) and "计划" not in text))
+
+
+def separate_live_lab_quota(request: AgentRequest) -> str | None:
+    """Return the remaining questions, or None for a request without a lab quota issue."""
     query = request.query
-    if not (_LIVE_LAB_QUOTA.search(query) or (_CURRENT_LAB_QUOTA.search(query) and "计划" not in query)):
-        return False
-    return bool(_LAB_TOPIC.search(query) or (
-        not _topics(query) and any(_LAB_TOPIC.search(turn.content) for turn in request.history)
-    ))
+    lab_context = [query, *(turn.content for turn in reversed(request.history))]
+    if not (_LAB_TOPIC.search(query) or (
+        not _topics(query) and any(_LAB_TOPIC.search(text) for text in lab_context[1:])
+    )):
+        return None
+
+    clauses = [clause.strip() for clause in _QUESTION_SEPARATOR.split(query) if clause.strip()]
+    remaining = []
+    for clause in clauses:
+        if not is_live_quota_question(clause):
+            remaining.append(clause)
+        elif remaining and _QUOTA_QUALIFIER.match(clause) and _LAB_STATUS.fullmatch(remaining[-1]):
+            # The user narrowed a general recruitment question to the remaining seats.
+            remaining.pop()
+    if len(remaining) == len(clauses):
+        # If the quota intent crosses a clause boundary, retain the refusal.
+        return "" if is_live_quota_question(query) else None
+
+    # A research-direction clause may borrow its subject from the omitted clause.
+    lab = next((match.group() for text in lab_context if (match := _LAB_SUBJECT.search(text))), "")
+    return "。".join(
+        lab + clause if _PUBLIC_INTRO.search(clause) and not _LAB_TOPIC.search(clause) else clause
+        for clause in remaining
+    )
 
 
 def _year_reply(text: str) -> str | None:
