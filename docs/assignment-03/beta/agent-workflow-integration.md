@@ -1,8 +1,8 @@
 # Beta AgentWorkflow 联调记录
 
-2026 年 11 月 24 日，吴诗莹。开发分支 `feat/beta-agent-history` 已通过 `883625c` 同步 `main` 的 `a3ffdd0`。本轮使用已合入的 #45 业务规则、#51 Retriever 契约和 #49 后端运行时进行回归。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51) · [后端运行时 #49](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/49)
+2026 年 11 月 24 日，吴诗莹。开发分支 `feat/beta-agent-history` 已包含最新 `main` 的 `a3ffdd0`。本轮验收代码为 `2542990`，使用已合入的 #45 业务规则、#51 Retriever 契约和 #49 后端运行时回归中文实验室名称及多轮报名问题。[PR #46](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/46) · [业务规则 #45](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/45) · [Retriever #51](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/51) · [后端运行时 #49](https://github.com/yz-Yezi-Genm/CodeMind-FZU/pull/49)
 
-跨领域名额修订提交为 `f400245`。同步 #49 后，验收代码提交为 `883625c`，HTTP 回归验证了 `INVALID_REQUEST` 返回 400，非法模型响应对应的 `MODEL_UNAVAILABLE` 返回 503。
+跨领域名额修订提交为 `f400245`，同步 #49 的提交为 `883625c`。HTTP 回归覆盖 `INVALID_REQUEST` 返回 400、非法模型响应对应的 `MODEL_UNAVAILABLE` 返回 503。
 
 ## 工作流
 
@@ -20,6 +20,14 @@
 
 ## 本轮复审修改
 
+- 统一实验室、课题组和团队的名称提取，支持完整中文和中英文混合名称。加入历史报名短问的 HTTP 回归，覆盖人工智能自主创新实验室、福州大学图机器学习课题组、网络流量分析与异常检测课题组、EDA创新实验室及带符号的中英混合名称。
+- 切换到另一个具名实验室时清除旧名称、年份和事项。先问人工智能自主创新实验室报名，再问福州大学图机器学习课题组的研究方向，检索只使用新的问句。随后追问报名状态时，仅引用新课题组对应的历史截止日期。
+- Agent 使用完整名称检索、核对历史通知和构造引用。R3 业务规则校验时，已与候选证据核对一致的名称按资源类型传入，避免把名称中的「人工智能」解释为学生专业。用户明确提出的专业条件仍由业务规则校验。反向回归覆盖缺少适用专业与未通过人工审核两种情况。
+- 已核对 #41 中的「福州大学超算团队」「ROIS 团队」，并补充带青禾主题的团队名称切换测试。单独输入以「团队」结尾的名称时，仍由 #45 现有规则判定业务类别，是否将更多具名团队直接归为 R3 待业务规则负责人确认。
+- 无标点的「EDA 实验室研究什么同时还有几个名额」通过 `POST /api/v1/ask` 回归。BM25 召回 R3 和 R4 时，模型只接收 R4 研究介绍，实时名额单独返回无法确认。
+
+## 已通过的前轮复审事项
+
 - 实时名额门禁按问句中的事项关联主题。明确的奖学金主题会结束实验室主题的继承，「EDA 实验室研究什么？另外，奖学金还有几个名额？」会完整进入原有工作流，由实际业务规则询问奖学金类别。只有确认为实验室实时名额的子问句才会被拦截。
 - 新增跨领域 HTTP 回归，覆盖明确的奖学金名额、省略主语但刚切换到奖学金的名额、已明确奖学金类别后保留完整检索问句，以及两类名额同问时只拦截实验室名额。原有实验室名额单问、实验室研究方向单问和同主题混合问句在同一套件中复跑。
 - S4 招募期与年度计划人数使用通过证据门禁的年度通知。单独询问实时剩余名额时，当前接入缺少经核验的实时数据，Agent 在模型调用前返回 `insufficient_evidence / insufficient_data`，引用为空。
@@ -33,8 +41,8 @@
 
 | 验证 | 结果 |
 | --- | --- |
-| 仓库根目录完整 pytest | 535 通过，3 跳过，1 条警告，227 个子测试通过。[原始输出](evidence/agent-workflow-full-main-a3ffdd0-py31011.txt) |
-| Agent、Qwen、HTTP 与运行时专项 | 105 通过，1 跳过，1 条警告，101 个子测试通过。包含原有 35 个业务规则与 Retriever 联调用例。[原始输出](evidence/agent-workflow-integration-main-a3ffdd0-py31011.txt) |
+| 仓库根目录完整 pytest | 538 通过，3 跳过，1 条警告，234 个子测试通过。[原始输出](evidence/agent-workflow-full-lab-names-py31011.txt) |
+| Agent、Qwen、HTTP 与运行时专项 | 165 通过，1 跳过，1 条警告，188 个子测试通过。包含 Agent 单元测试与真实规则、BM25、Mock Qwen 联调。[原始输出](evidence/agent-workflow-integration-lab-names-py31011.txt) |
 
 两个命令均从仓库根目录使用 Python 3.10.11（Windows AMD64）运行，退出码为 `0`。日志首行保留了 `python -VV`。完整回归跳过了两个正式资料与真实 Qwen 用例和一个当前 Windows 账户无法创建符号链接的用例。警告来自 Starlette 测试客户端的依赖弃用提示。
 
@@ -42,7 +50,7 @@
 $python = '..\python-3.10.11\tools\python.exe'
 & $python -VV
 & $python -m pytest -q -rs --tb=short
-& $python -m pytest -q -rs --tb=short tests/test_agent_workflow_api.py tests/test_agent_workflow_qwen.py tests/test_beta_script_lifecycle.py tests/test_backend_runtime.py
+& $python -m pytest -q -rs --tb=short tests/test_agent_workflow.py tests/test_agent_workflow_api.py tests/test_agent_workflow_qwen.py tests/test_beta_script_lifecycle.py tests/test_backend_runtime.py
 ```
 
 ## 正式验收待办
