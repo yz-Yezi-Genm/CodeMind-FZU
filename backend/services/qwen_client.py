@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import math
 import os
 from dataclasses import dataclass, field
 from urllib.parse import urlsplit
@@ -33,6 +34,25 @@ class QwenSettings:
     timeout_seconds: float = 28.0
     max_retries: int = 0
 
+    def __post_init__(self) -> None:
+        if (
+            not isinstance(self.timeout_seconds, (int, float))
+            or isinstance(self.timeout_seconds, bool)
+            or not math.isfinite(self.timeout_seconds)
+            or self.timeout_seconds <= 0
+        ):
+            raise LLMConfigurationError(
+                "QWEN_TIMEOUT_SECONDS 必须是大于 0 的有限数字。"
+            )
+        if (
+            not isinstance(self.max_retries, int)
+            or isinstance(self.max_retries, bool)
+            or not 0 <= self.max_retries <= 3
+        ):
+            raise LLMConfigurationError(
+                "QWEN_MAX_RETRIES 必须是 0 到 3 的整数。"
+            )
+
     @classmethod
     def from_env(cls) -> "QwenSettings":
         timeout_raw = os.getenv("QWEN_TIMEOUT_SECONDS", "28")
@@ -46,8 +66,10 @@ class QwenSettings:
         except ValueError as exc:
             raise LLMConfigurationError("QWEN_MAX_RETRIES 必须是整数。") from exc
 
-        if timeout_seconds <= 0:
-            raise LLMConfigurationError("QWEN_TIMEOUT_SECONDS 必须大于 0。")
+        if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
+            raise LLMConfigurationError(
+                "QWEN_TIMEOUT_SECONDS 必须是大于 0 的有限数字。"
+            )
         if not 0 <= max_retries <= 3:
             raise LLMConfigurationError("QWEN_MAX_RETRIES 必须在 0 到 3 之间。")
 
@@ -58,6 +80,20 @@ class QwenSettings:
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
         )
+
+    @property
+    def maximum_call_budget_seconds(self) -> float:
+        """Configured theoretical retry budget including inter-attempt backoff.
+
+        This is not a strict wall-clock limit for one HTTP request:
+        ``httpx.Timeout`` applies to individual HTTP operations. The actual
+        AgentWorkflow stage deadline is enforced by ``asyncio.wait_for()``.
+        """
+        backoff = sum(
+            0.25 * (2**attempt)
+            for attempt in range(self.max_retries)
+        )
+        return self.timeout_seconds * (self.max_retries + 1) + backoff
 
 
 class QwenLLMClient:
@@ -71,6 +107,9 @@ class QwenLLMClient:
     ) -> None:
         self._settings = settings
         self._http_client = http_client
+        self._owns_http_client = http_client is None
+        self._client_lock = asyncio.Lock()
+        self._closed = False
         self._validate_settings()
 
     def _validate_settings(self) -> None:
@@ -96,6 +135,30 @@ class QwenLLMClient:
     def endpoint(self) -> str:
         return f"{self._settings.base_url.rstrip('/')}/chat/completions"
 
+    async def _get_http_client(self) -> httpx.AsyncClient:
+        if self._http_client is not None:
+            return self._http_client
+        async with self._client_lock:
+            if self._closed:
+                raise LLMUnavailableError("模型客户端已关闭。")
+            if self._http_client is None:
+                self._http_client = httpx.AsyncClient(
+                    timeout=httpx.Timeout(self._settings.timeout_seconds),
+                    follow_redirects=False,
+                )
+            return self._http_client
+
+    async def aclose(self) -> None:
+        """Close a client owned by this adapter; external clients stay caller-owned."""
+        if not self._owns_http_client:
+            return
+        async with self._client_lock:
+            client = self._http_client
+            self._http_client = None
+            self._closed = True
+        if client is not None:
+            await client.aclose()
+
     async def generate(self, request: LLMGenerateRequest) -> LLMResult:
         payload = {
             "model": self._settings.model,
@@ -110,46 +173,37 @@ class QwenLLMClient:
             "Authorization": f"Bearer {self._settings.api_key}",
             "Content-Type": "application/json",
         }
-        owns_client = self._http_client is None
-        client = self._http_client or httpx.AsyncClient(
-            timeout=httpx.Timeout(self._settings.timeout_seconds),
-            follow_redirects=False,
-        )
-
-        try:
-            for attempt in range(self._settings.max_retries + 1):
-                try:
-                    response = await client.post(
-                        self.endpoint,
-                        json=payload,
-                        headers=headers,
-                    )
-                except httpx.TimeoutException as exc:
-                    if attempt < self._settings.max_retries:
-                        await asyncio.sleep(0.25 * (2**attempt))
-                        continue
-                    raise LLMTimeoutError() from exc
-                except httpx.RequestError as exc:
-                    if attempt < self._settings.max_retries:
-                        await asyncio.sleep(0.25 * (2**attempt))
-                        continue
-                    raise LLMUnavailableError() from exc
-
-                if response.status_code < 400:
-                    return self._parse_response(response)
-
-                if (
-                    response.status_code in _RETRYABLE_STATUS_CODES
-                    and attempt < self._settings.max_retries
-                ):
+        client = await self._get_http_client()
+        for attempt in range(self._settings.max_retries + 1):
+            try:
+                response = await client.post(
+                    self.endpoint,
+                    json=payload,
+                    headers=headers,
+                )
+            except httpx.TimeoutException as exc:
+                if attempt < self._settings.max_retries:
                     await asyncio.sleep(0.25 * (2**attempt))
                     continue
-                self._raise_for_status(response.status_code)
+                raise LLMTimeoutError() from exc
+            except httpx.RequestError as exc:
+                if attempt < self._settings.max_retries:
+                    await asyncio.sleep(0.25 * (2**attempt))
+                    continue
+                raise LLMUnavailableError() from exc
 
-            raise LLMUnavailableError()
-        finally:
-            if owns_client:
-                await client.aclose()
+            if response.status_code < 400:
+                return self._parse_response(response)
+
+            if (
+                response.status_code in _RETRYABLE_STATUS_CODES
+                and attempt < self._settings.max_retries
+            ):
+                await asyncio.sleep(0.25 * (2**attempt))
+                continue
+            self._raise_for_status(response.status_code)
+
+        raise LLMUnavailableError()
 
     def _parse_response(self, response: httpx.Response) -> LLMResult:
         try:
@@ -168,11 +222,16 @@ class QwenLLMClient:
             normalized = {
                 key: value
                 for key, value in usage_raw.items()
-                if isinstance(value, int)
+                if isinstance(key, str)
+                and isinstance(value, int)
+                and not isinstance(value, bool)
+                and value >= 0
             }
             usage = normalized or None
 
-        return LLMResult(content=content.strip(), model=str(model), usage=usage)
+        # The adapter transports the model's original content unchanged.
+        # JSON/evidence validation belongs to AgentWorkflow.
+        return LLMResult(content=content, model=str(model), usage=usage)
 
     @staticmethod
     def _raise_for_status(status_code: int) -> None:

@@ -26,6 +26,7 @@ from backend.contracts.models import (
     TimelinessVerificationStatus,
 )
 from backend.services.agent_workflow import AgentWorkflow
+import backend.services.alpha_business_rules as business_rules
 from backend.services.alpha_business_rules import (
     QUESTION_AWARD_GRADE,
     QUESTION_DEPT_AWARD,
@@ -50,6 +51,16 @@ from backend.services.alpha_business_rules import (
     _rank,
     QUESTION_WORK_NAME,
     QUESTION_DEGREE,
+    QUESTION_RESOURCE_TYPE,
+    QUESTION_LAB_PURPOSE,
+    QUESTION_PLAN_SCOPE,
+    COMPETITION,
+    PURPOSE_EVALUATION,
+    RECOMMENDATION,
+    RESOURCES,
+    _analyse,
+    _detect,
+    _purpose,
     alpha_clarification_rule,
     build_alpha_evidence_check,
 )
@@ -78,6 +89,8 @@ def _chunk(
     timeliness: TimelinessVerificationStatus = TimelinessVerificationStatus.CURRENT,
     source: SourceVerificationStatus = SourceVerificationStatus.VERIFIED,
     published_on: date | None = date(2026, 5, 18),
+    source_url: str = "https://example.invalid/policy",
+    publisher: str | None = "福州大学",
 ) -> RetrievedChunk:
     return RetrievedChunk(
         chunk_id=uuid.UUID(int=100 + index),
@@ -86,8 +99,8 @@ def _chunk(
         file_id=uuid.UUID(int=400 + index),
         content=content,
         title=title,
-        publisher="福州大学",
-        source_url="https://example.invalid/policy",
+        publisher=publisher,
+        source_url=source_url,
         published_on=published_on,
         effective_on=None,
         locator="第 7 条",
@@ -107,11 +120,17 @@ def _meta(
     title: str | None = None,
     applicability: dict[str, str] | None = None,
     deadline: date | None = None,
+    category: str = "综评与奖学金",
+    directions: tuple[str, ...] = (),
+    document_type: str = "规范性文件",
+    policy_status: str = "当前有效",
+    approved: bool = True,
 ) -> DocumentMetadata:
     return DocumentMetadata(
         title=title or chunk.title,
-        document_type="规范性文件",
-        category_name="综评与奖学金",
+        document_type=document_type,
+        category_name=category,
+        business_direction_codes=list(directions),
         record_code=record_code,
         version_no="import-1",
         source_url=chunk.source_url,
@@ -119,12 +138,13 @@ def _meta(
         published_on=chunk.published_on,
         deadline_on=deadline,
         applicability_raw=applicability,
-        policy_status="当前有效",
+        policy_status=policy_status,
         source_verification_status=SourceVerificationStatus.VERIFIED,
-        timeliness_verification_status=TimelinessVerificationStatus.CURRENT,
+        timeliness_verification_status=chunk.timeliness_verification_status,
         extraction_status=ExtractionStatus.EXTRACTED,
         v1_inclusion_status=InclusionStatus.INCLUDED,
         retrieval_status=RetrievalStatus.ENABLED,
+        temporal_notes={"human_approved": approved},
     )
 
 
@@ -1408,3 +1428,1049 @@ def test_rank_is_not_reused_without_current_work() -> None:
         "成果是上一学期取得的，以福州大学为第一署名单位。"
     )
     assert alpha_clarification_rule(_request(query, history=history)) == QUESTION_ORDER
+
+
+# --------------------------------------------------------------------------- S4 学院资源
+
+
+def _resource_meta(
+    chunk: RetrievedChunk,
+    *,
+    record_code: str = "计算机学院-2026-青禾计划",
+    category: str = "",
+    directions: tuple[str, ...] = ("COLLEGE_RESOURCES",),
+    applicability: dict[str, str] | None = None,
+    deadline: date | None = None,
+    approved: bool = True,
+    policy_status: str = "当前有效",
+) -> DocumentMetadata:
+    return _meta(
+        chunk,
+        record_code=record_code,
+        category=category,
+        directions=directions,
+        document_type="学院资源",
+        applicability=applicability,
+        deadline=deadline,
+        approved=approved,
+        policy_status=policy_status,
+    )
+
+
+LAB_NOTICE = _chunk(
+    index=201,
+    title="关于开展2026年青禾计划实验室招募的通知",
+    content=(
+        "青禾计划实验室需求一览表：EDA实验室，接收人数5人，"
+        "联系人：张老师，联系电话：13800000000，报名截止2026-10-31。"
+    ),
+    timeliness=TimelinessVerificationStatus.HISTORICAL,
+    source_url="https://ccds.fzu.edu.cn/",
+)
+LAB_INTRO = _chunk(
+    index=202,
+    title="计算机学院实验室研究方向简介",
+    content="EDA实验室研究方向为集成电路设计自动化，科研成果见教师主页。",
+    source_url="https://ccds.fzu.edu.cn/",
+)
+COLLEGE_CONTACT = _chunk(
+    index=203,
+    title="计算机与大数据学院公开联系方式",
+    content="学院办公室电话：0591-2286XXXX，办公地点：旗山校区计算机学院楼。",
+    source_url="https://ccds.fzu.edu.cn/",
+)
+COMPETITION_NOTICE = _chunk(
+    index=204,
+    title="关于组织参加第十七届蓝桥杯报名的通知",
+    content="学院竞赛报名通知：蓝桥杯报名截止2026-09-30，报名入口见学院通知。",
+    source_url="https://ccds.fzu.edu.cn/",
+)
+PLAN = _chunk(
+    index=205,
+    title="计算机科学与技术专业培养方案（2026版）",
+    content="培养方案规定课程、实践与学位学分要求。",
+    source_url="https://ccds.fzu.edu.cn/",
+)
+
+
+def _check_for(*pairs: tuple[RetrievedChunk, DocumentMetadata]):
+    return build_alpha_evidence_check(
+        _lookup_for(*pairs), today=lambda: TODAY
+    )
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("学院有什么资源？", QUESTION_RESOURCE_TYPE),
+        ("资源怎么找？", QUESTION_RESOURCE_TYPE),
+        ("学院有哪些实验室？", None),
+        ("EDA实验室是研究什么的？", None),
+        ("EDA实验室怎么样？", QUESTION_LAB_PURPOSE),
+        ("EDA实验室现在招人吗？", None),
+        ("EDA实验室地址在哪？", None),
+        ("我大二能进EDA实验室吗？", None),
+        ("计算机专业培养方案有哪些课程？", None),
+        ("培养方案在哪看？", QUESTION_PLAN_SCOPE),
+        ("学院通知在哪看？", None),
+        ("学院办公室电话是多少？", None),
+        ("学院有哪些竞赛可以报名？", None),
+    ],
+)
+def test_s4_clarification(query: str, expected: str | None) -> None:
+    assert alpha_clarification_rule(_request(query)) == expected
+
+
+def test_s4_context_followup_does_not_lose_resource_topic() -> None:
+    history = ["学院有哪些实验室？"]
+    assert alpha_clarification_rule(_request("EDA 那个招几个？", history=history)) is None
+    assert _analyse("学院有哪些实验室？\nEDA 那个招几个？", "EDA 那个招几个？")[0] == RESOURCES
+
+
+def test_s4_topic_switch_does_not_inherit_lab() -> None:
+    history = ["EDA 实验室现在招人吗？"]
+    assert alpha_clarification_rule(_request("学院办公室电话是多少？", history=history)) is None
+    assert _analyse(
+        "EDA 实验室现在招人吗？\n学院办公室电话是多少？", "学院办公室电话是多少？"
+    )[0] == RESOURCES
+
+
+def test_s4_lab_recruitment_requires_applicability() -> None:
+    meta_ok = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术", "适用对象": "全体本科生"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta_ok))
+    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is True
+
+    meta_missing = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability=None,
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta_missing))
+    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is False
+
+
+def test_s4_lab_grade_missing_field_is_rejected() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is False
+
+
+def test_s4_lab_intro_cannot_answer_recruitment() -> None:
+    # 标题里带“实验室”不影响定类；R4 的适用范围给全，仍不能回答 R3 招募问题。
+    meta = _resource_meta(
+        LAB_INTRO,
+        category="研究方向与公开介绍",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=None,
+    )
+    check = _check_for((LAB_INTRO, meta))
+    assert check(_request("EDA实验室研究什么？"), LAB_INTRO) is True
+    assert check(_request("EDA实验室现在招人吗？"), LAB_INTRO) is False
+    assert check(_request("EDA实验室现在还招几个？"), LAB_INTRO) is False
+
+
+def test_s4_lab_notice_cannot_answer_research_intro() -> None:
+    # 反向隔离：R3 招募通知即使适用范围完整，也不能冒充 R4 研究方向介绍。
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("EDA实验室研究什么？"), LAB_NOTICE) is False
+    assert check(_request("EDA实验室的研究方向是什么？"), LAB_NOTICE) is False
+    assert check(_request("EDA实验室怎么报名？"), LAB_NOTICE) is True
+
+
+def test_s4_expired_recruitment_allows_history_but_not_current_quota() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("EDA实验室怎么报名？"), LAB_NOTICE) is True
+    assert check(_request("EDA实验室现在还招几个？"), LAB_NOTICE) is False
+    assert check(_request("EDA实验室现在还招吗？"), LAB_NOTICE) is True
+
+
+def test_s4_lab_contact_is_not_college_contact() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("学院办公室电话是多少？"), LAB_NOTICE) is False
+
+
+def test_s4_contact_requires_official_source() -> None:
+    meta = _resource_meta(
+        COLLEGE_CONTACT, record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    check = _check_for((COLLEGE_CONTACT, meta))
+    assert check(_request("学院办公室电话是多少？"), COLLEGE_CONTACT) is True
+
+    unofficial = _chunk(
+        index=206,
+        title="学院联系方式汇总",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url="https://example.invalid/contact",
+        publisher="某网站",
+    )
+    meta = _resource_meta(
+        unofficial, record_code="福大-2026-公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    check = _check_for((unofficial, meta))
+    assert check(_request("学院办公室电话是多少？"), unofficial) is False
+
+
+def test_s4_curriculum_requires_scope() -> None:
+    meta = _resource_meta(
+        PLAN,
+        record_code="计算机学院-2026-培养方案",
+        category="培养方案与课程",
+        applicability={"适用年级": "大二", "适用专业": "计算机科学与技术"},
+    )
+    check = _check_for((PLAN, meta))
+    assert check(_request("计算机专业培养方案有哪些课程？"), PLAN) is True
+    assert check(_request("数学专业培养方案有哪些课程？"), PLAN) is False
+
+
+def test_s4_competition_notice_is_resource_not_credit() -> None:
+    meta = _resource_meta(
+        COMPETITION_NOTICE,
+        record_code="计算机学院-2026-竞赛报名",
+        category="科研实践与竞赛",
+        applicability={"适用年级": "全体本科生"},
+    )
+    check = _check_for((COMPETITION_NOTICE, meta))
+    assert check(_request("学院有哪些竞赛可以报名？"), COMPETITION_NOTICE) is True
+    assert check(_request("蓝桥杯获奖能加多少创新学分？"), COMPETITION_NOTICE) is False
+
+
+def test_s4_document_without_direction_code_is_rejected() -> None:
+    meta = _resource_meta(
+        LAB_INTRO, category="研究方向与公开介绍", directions=()
+    )
+    check = _check_for((LAB_INTRO, meta))
+    assert check(_request("EDA实验室研究什么？"), LAB_INTRO) is False
+
+
+def test_s4_external_college_is_rejected_without_college_field() -> None:
+    meta = _resource_meta(
+        LAB_INTRO, category="研究方向与公开介绍", applicability=None
+    )
+    check = _check_for((LAB_INTRO, meta))
+    assert check(_request("数学与统计学院的实验室研究什么？"), LAB_INTRO) is False
+    assert check(_request("EDA实验室研究什么？"), LAB_INTRO) is True
+
+
+def test_s4_unapproved_or_missing_metadata_is_rejected() -> None:
+    meta = _resource_meta(
+        LAB_INTRO, category="研究方向与公开介绍", approved=False
+    )
+    check = _check_for((LAB_INTRO, meta))
+    assert check(_request("EDA实验室研究什么？"), LAB_INTRO) is False
+    missing = build_alpha_evidence_check(lambda version_id: None, today=lambda: TODAY)
+    assert missing(_request("EDA实验室研究什么？"), LAB_INTRO) is False
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://ccds.fzu.edu.cn/",
+        "https://ccds.fzu.edu.cn.evil.com/",
+        "https://fzu.edu.cn.attacker.com/contact",
+        "https://evil.com/?u=https://ccds.fzu.edu.cn/",
+        "https://user:pass@ccds.fzu.edu.cn/",
+        "https://ccds.fzu.edu.cn:8443/",
+        "https://ccds.fzu.edu.cn@evil.com/",
+        "https://sub.ccds.fzu.edu.cn/",
+        "https://ccds.fzu.edu.cn%00.evil.com/",
+    ],
+)
+def test_s4_official_url_rejects_spoofing(url: str) -> None:
+    chunk = _chunk(
+        index=300,
+        title="计算机与大数据学院公开联系方式",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url=url,
+    )
+    meta = _resource_meta(
+        chunk, record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    check = _check_for((chunk, meta))
+    assert check(_request("学院办公室电话是多少？"), chunk) is False
+
+
+def test_s4_r6_requires_college_direct_page() -> None:
+    news = _chunk(
+        index=301,
+        title="计算机与大数据学院公开联系方式",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url="https://news.fzu.edu.cn/",
+    )
+    meta = _resource_meta(
+        news, record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    check = _check_for((news, meta))
+    assert check(_request("学院办公室电话是多少？"), news) is False
+
+
+def test_s4_r1_official_channel_hosts() -> None:
+    channel = _chunk(
+        index=302,
+        title="教务处办事指南",
+        content="办事指南入口与材料清单见教务处办事指南栏目。",
+        source_url="https://jwch.fzu.edu.cn/bszn.htm",
+    )
+    meta = _resource_meta(
+        channel, record_code="福大-2026-教务处办事指南",
+        category="通知与办事渠道", applicability={"适用对象": "本科生"},
+    )
+    check = _check_for((channel, meta))
+    assert check(_request("教务处办事指南在哪看？"), channel) is True
+
+    bare = _chunk(
+        index=309,
+        title="福州大学办事入口",
+        content="学校办事入口与材料清单见官网。",
+        source_url="https://fzu.edu.cn/",
+    )
+    bare_meta = _resource_meta(
+        bare, record_code="福大-2026-办事入口",
+        category="通知与办事渠道", applicability={"适用对象": "本科生"},
+    )
+    bare_check = _check_for((bare, bare_meta))
+    assert bare_check(_request("学校办事入口在哪看？"), bare) is True
+
+
+def test_s4_wechat_verified_college_account_is_allowed(monkeypatch) -> None:
+    # 生产白名单暂不登记未核实 ID；测试用 fixture 注入占位账号验证核验逻辑。
+    monkeypatch.setattr(business_rules, "COLLEGE_WECHAT_IDS", {"gh_college"})
+    article = _chunk(
+        index=303,
+        title="计算机与大数据学院公开联系方式",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url="https://mp.weixin.qq.com/s/verified-article",
+    )
+    meta = _resource_meta(
+        article, record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学计算机学院",
+            "account_id": "gh_college",
+            "basis": "学院官网底部公众号入口与公众号主体信息页",
+        },
+    }
+    check = _check_for((article, meta))
+    assert check(_request("学院办公室电话是多少？"), article) is True
+
+
+def test_s4_wechat_requires_identity_verification() -> None:
+    article = _chunk(
+        index=304,
+        title="计算机与大数据学院公开联系方式",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url="https://mp.weixin.qq.com/s/unverified-article",
+    )
+    meta = _resource_meta(
+        article, record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    meta.temporal_notes = {"human_approved": True}
+    check = _check_for((article, meta))
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学计算机学院",
+            "account_id": "",
+            "basis": "昵称看起来像官方号",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福大计算机青年备用号",
+            "account_id": "gh_fake",
+            "basis": "文章标题自称官方",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+
+def test_s4_school_wechat_is_not_college_contact() -> None:
+    article = _chunk(
+        index=305,
+        title="计算机与大数据学院公开联系方式",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url="https://mp.weixin.qq.com/s/school-article",
+    )
+    meta = _resource_meta(
+        article, record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式", applicability=None,
+    )
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学",
+            "account_id": "ifzu1958",
+            "basis": "学校官网公众号入口",
+        },
+    }
+    check = _check_for((article, meta))
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    # 同一账号在学校新闻语境下可以回答问题，但只限学校层面内容。
+    news = _chunk(
+        index=308,
+        title="福州大学校园新闻",
+        content="学校本周举办校园开放日，新闻详情见官方公众号。",
+        source_url="https://mp.weixin.qq.com/s/school-news",
+    )
+    news_meta = _resource_meta(
+        news, record_code="福大-2026-校园新闻",
+        category="通知与办事渠道", applicability={"适用对象": "本科生"},
+    )
+    news_meta.temporal_notes = dict(meta.temporal_notes)
+    news_check = _check_for((news, news_meta))
+    assert news_check(_request("学校新闻在哪看？"), news) is True
+
+
+def test_s4_admission_wechat_only_in_admission_scope() -> None:
+    article = _chunk(
+        index=306,
+        title="福州大学招生简章入口",
+        content="招生简章与报考指南入口。",
+        source_url="https://mp.weixin.qq.com/s/admission-article",
+    )
+    meta = _resource_meta(
+        article, record_code="福大-2026-招生简章",
+        category="通知与办事渠道", applicability={"适用对象": "本科生"},
+    )
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学招生考试中心",
+            "account_id": "fzuzsks",
+            "basis": "招生考试中心官网公众号入口",
+        },
+    }
+    check = _check_for((article, meta))
+    assert check(_request("招生简章在哪看？"), article) is True
+    assert check(_request("学院通知公告在哪看？"), article) is False
+
+
+def test_s4_unknown_category_is_rejected() -> None:
+    meta = _resource_meta(
+        LAB_INTRO, category="学院资源导航", applicability=None
+    )
+    check = _check_for((LAB_INTRO, meta))
+    assert check(_request("EDA实验室研究什么？"), LAB_INTRO) is False
+
+
+def test_s4_r4_category_is_not_inferred_from_body_keywords() -> None:
+    # 正文出现“电话”也不能把 R4 改成 R6；R4 只按 category_name 定类。
+    intro = _chunk(
+        index=307,
+        title="EDA实验室简介",
+        content="研究方向为集成电路设计自动化。联系电话仅用于实验室内部。",
+        source_url="https://ccds.fzu.edu.cn/",
+    )
+    meta = _resource_meta(
+        intro, category="研究方向与公开介绍", applicability=None
+    )
+    check = _check_for((intro, meta))
+    assert check(_request("EDA实验室研究什么？"), intro) is True
+    assert check(_request("学院办公室电话是多少？"), intro) is False
+
+
+def test_s4_applicability_key_conflict_is_rejected() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "大二", "grade": "大三"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is False
+
+
+def test_s4_legacy_applicability_keys_still_work() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"grade": "大二", "major": "计算机科学与技术", "target": "本科生"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is True
+
+
+# --------------------------------------------------------------------------- 历史政策与现行政策
+
+
+HISTORICAL_SCHOLARSHIP_2025 = _chunk(
+    index=207,
+    title="福州大学2025年本科生奖学金评定管理办法",
+    content="2025年优秀学生综合奖学金一等奖金额为1500元，参评条件以当年通知为准。",
+    timeliness=TimelinessVerificationStatus.HISTORICAL,
+    published_on=date(2025, 5, 20),
+)
+
+
+def _historical_check():
+    meta = _meta(
+        HISTORICAL_SCHOLARSHIP_2025,
+        record_code="福大-2025-本科奖学金",
+        applicability={"适用年度": "2025年", "适用年级": "全体本科生"},
+    )
+    return build_alpha_evidence_check(
+        _lookup_for((HISTORICAL_SCHOLARSHIP_2025, meta)), today=lambda: TODAY
+    )
+
+
+def test_historical_notice_answers_history_but_not_current_policy() -> None:
+    check = _historical_check()
+    assert check(
+        _request("2025年优秀学生综合奖学金一等奖是什么条件？"), HISTORICAL_SCHOLARSHIP_2025
+    ) is True
+    assert check(
+        _request("现在优秀学生综合奖学金一等奖是什么条件？"), HISTORICAL_SCHOLARSHIP_2025
+    ) is False
+
+
+def test_superseded_policy_only_answers_explicit_history() -> None:
+    meta = _meta(
+        SUPERSEDED_SCHOLARSHIP,
+        record_code="福大-2024-本科奖学金",
+        applicability={"适用年级": "全体本科生"},
+        policy_status="已被替代",
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((SUPERSEDED_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    assert check(
+        _request("2024年的旧奖学金办法里一等奖是什么条件？"), SUPERSEDED_SCHOLARSHIP
+    ) is True
+    assert check(
+        _request("现在的奖学金一等奖是什么条件？"), SUPERSEDED_SCHOLARSHIP
+    ) is False
+
+
+def test_uncertain_policy_version_is_rejected() -> None:
+    meta = _meta(
+        SCHOOL_SCHOLARSHIP,
+        record_code="福大-2026-本科奖学金",
+        applicability={"适用年级": "全体本科生"},
+        policy_status="无法确认是否为现行版本",
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((SCHOOL_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    assert check(
+        _request("现在的优秀学生综合奖学金一等奖是什么条件？"), SCHOOL_SCHOLARSHIP
+    ) is False
+
+
+def test_metadata_identity_mismatch_is_rejected() -> None:
+    meta = _meta(
+        SCHOOL_SCHOLARSHIP,
+        record_code="福大-2026-本科奖学金",
+        title="另一份奖学金办法",
+        applicability={"适用年级": "全体本科生"},
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((SCHOOL_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    assert check(_request("优秀学生综合奖学金一等奖是什么条件？"), SCHOOL_SCHOLARSHIP) is False
+
+
+def test_metadata_lookup_exception_is_rejected() -> None:
+    def explode(version_id):
+        raise RuntimeError("元数据读取失败")
+
+    check = build_alpha_evidence_check(explode, today=lambda: TODAY)
+    assert check(_request("优秀学生综合奖学金一等奖是什么条件？"), SCHOOL_SCHOLARSHIP) is False
+
+
+def test_human_approval_must_be_strict_true() -> None:
+    meta = _meta(
+        SCHOOL_SCHOLARSHIP,
+        record_code="福大-2026-本科奖学金",
+        applicability={"适用年级": "全体本科生"},
+    )
+    meta.temporal_notes = {"human_approved": "true"}
+    check = build_alpha_evidence_check(
+        _lookup_for((SCHOOL_SCHOLARSHIP, meta)), today=lambda: TODAY
+    )
+    assert check(_request("优秀学生综合奖学金一等奖是什么条件？"), SCHOOL_SCHOLARSHIP) is False
+
+
+
+# --------------------------------------------------------------------------- 第二轮整改
+
+
+def test_scenario_detection_prefers_actual_intent() -> None:
+    """推免语境里的竞赛经历、竞赛计分不能被关键词抢成竞赛认定。"""
+    assert _detect("推免要求竞赛经历吗")[0] == RECOMMENDATION
+    assert _purpose("竞赛获奖在推免时加多少分") == PURPOSE_EVALUATION
+    assert _detect("竞赛获奖在推免时加多少分") == (
+        RECOMMENDATION,
+        PURPOSE_EVALUATION,
+    )
+    assert _detect("奖学金通知在哪看")[0] == RESOURCES
+    assert _detect("推免通知在哪看")[0] == RESOURCES
+    # 明确问创新学分或综测加分时，仍按竞赛认定处理。
+    assert _detect("推免时这个竞赛获奖能算创新学分吗")[0] == COMPETITION
+    assert _detect("推免综测里竞赛获奖加几分")[0] == COMPETITION
+
+
+def test_recommendation_with_competition_uses_qualification_policy() -> None:
+    check = _qualification_check()
+    assert check(_request("推免要求竞赛经历吗"), QUALIFICATION_2027) is True
+
+
+def test_notice_channel_queries_are_resources() -> None:
+    notice = _chunk(
+        index=210,
+        title="学院通知公告",
+        content="学院通知公告入口见学院官网“学院通知”栏目。",
+        source_url="https://ccds.fzu.edu.cn/xwzx/xytz.htm",
+    )
+    meta = _resource_meta(
+        notice,
+        record_code="计算机学院-2026-通知渠道",
+        category="通知与办事渠道",
+        applicability={"适用对象": "本科生"},
+    )
+    check = _check_for((notice, meta))
+    assert check(_request("奖学金通知在哪看？"), notice) is True
+    assert check(_request("推免通知在哪看？"), notice) is True
+
+
+def test_historical_policy_requires_matching_year() -> None:
+    check = _historical_check()
+    # 同年度历史查询可用。
+    assert check(
+        _request("2025年优秀学生综合奖学金一等奖是什么条件？"),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is True
+    # 跨年度错配不能拿 2025 办法回答 2024 问题。
+    assert check(
+        _request("2024年优秀学生综合奖学金一等奖是什么条件？"),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is False
+    # 未指定年度的现行口径不能落到旧政策。
+    assert check(
+        _request("优秀学生综合奖学金一等奖是什么条件？"),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is False
+    # 相对年度能和资料年度对上时，可回答历史口径。
+    assert check(
+        _request("去年优秀学生综合奖学金一等奖是什么条件？"),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is True
+
+
+def test_historical_deadline_status_is_answered_not_rejected() -> None:
+    meta = _meta(
+        HISTORICAL_SCHOLARSHIP_2025,
+        record_code="福大-2025-本科奖学金",
+        applicability={"适用年度": "2025年", "适用年级": "全体本科生"},
+        deadline=date(2025, 10, 31),
+    )
+    check = build_alpha_evidence_check(
+        _lookup_for((HISTORICAL_SCHOLARSHIP_2025, meta)), today=lambda: TODAY
+    )
+    assert check(
+        _request("2025年奖学金报名截止到什么时候？"), HISTORICAL_SCHOLARSHIP_2025
+    ) is True
+    assert check(
+        _request("2025年奖学金还能报名吗？"), HISTORICAL_SCHOLARSHIP_2025
+    ) is True
+    assert check(
+        _request("现在还能报名吗？"), HISTORICAL_SCHOLARSHIP_2025
+    ) is False
+
+
+def test_historical_quota_is_answered_but_current_quota_is_rejected() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("2026年青禾计划当时招几个学生？"), LAB_NOTICE) is True
+    assert check(_request("青禾计划2026年招几个学生？"), LAB_NOTICE) is True
+    assert check(_request("EDA实验室现在还招几个？"), LAB_NOTICE) is False
+    assert check(_request("EDA实验室现在还剩几个名额？"), LAB_NOTICE) is False
+
+
+def test_multicategory_resource_query_judges_each_category() -> None:
+    lab_meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    plan_meta = _resource_meta(
+        PLAN,
+        record_code="计算机学院-2026-培养方案",
+        category="培养方案与课程",
+        applicability={"适用年级": "大二", "适用专业": "计算机科学与技术"},
+    )
+    contact_meta = _resource_meta(
+        COLLEGE_CONTACT,
+        record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式",
+        applicability=None,
+    )
+    check = _check_for(
+        (LAB_NOTICE, lab_meta), (PLAN, plan_meta), (COLLEGE_CONTACT, contact_meta)
+    )
+    query = "实验室和培养方案都讲讲"
+    assert check(_request(query), LAB_NOTICE) is True
+    assert check(_request(query), PLAN) is True
+    # 多类别查询不能把没问的 R6 也放进来。
+    assert check(_request(query), COLLEGE_CONTACT) is False
+
+
+def test_multicategory_notice_and_lab_query() -> None:
+    notice = _chunk(
+        index=211,
+        title="学院通知公告",
+        content="学院通知公告入口见学院官网“学院通知”栏目。",
+        source_url="https://ccds.fzu.edu.cn/xwzx/xytz.htm",
+    )
+    notice_meta = _resource_meta(
+        notice,
+        record_code="计算机学院-2026-通知渠道",
+        category="通知与办事渠道",
+        applicability={"适用对象": "本科生"},
+    )
+    lab_meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    plan_meta = _resource_meta(
+        PLAN,
+        record_code="计算机学院-2026-培养方案",
+        category="培养方案与课程",
+        applicability={"适用年级": "大二", "适用专业": "计算机科学与技术"},
+    )
+    check = _check_for(
+        (notice, notice_meta), (LAB_NOTICE, lab_meta), (PLAN, plan_meta)
+    )
+    query = "学院通知在哪看，实验室怎么报名"
+    assert check(_request(query), notice) is True
+    assert check(_request(query), LAB_NOTICE) is True
+    assert check(_request(query), PLAN) is False
+
+
+def test_multicategory_contact_and_practice_query() -> None:
+    contact_meta = _resource_meta(
+        COLLEGE_CONTACT,
+        record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式",
+        applicability=None,
+    )
+    practice_meta = _resource_meta(
+        COMPETITION_NOTICE,
+        record_code="计算机学院-2026-竞赛报名",
+        category="科研实践与竞赛",
+        applicability={"适用年级": "全体本科生"},
+    )
+    lab_meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for(
+        (COLLEGE_CONTACT, contact_meta),
+        (COMPETITION_NOTICE, practice_meta),
+        (LAB_NOTICE, lab_meta),
+    )
+    query = "学院办公室电话和竞赛报名入口"
+    assert check(_request(query), COLLEGE_CONTACT) is True
+    assert check(_request(query), COMPETITION_NOTICE) is True
+    assert check(_request(query), LAB_NOTICE) is False
+
+
+def test_multiturn_time_intent_is_isolated() -> None:
+    """本轮明确时间优先，历史年份不能污染跨年度判断。"""
+    check = _historical_check()
+    history = ["2025年优秀学生综合奖学金一等奖是什么条件？"]
+    assert check(
+        _request("2024年优秀学生综合奖学金一等奖是什么条件？", history=history),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is False
+    assert check(
+        _request("现在优秀学生综合奖学金一等奖是什么条件？", history=history),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is False
+    # 本轮没写时间时才继承上一轮年度。
+    assert check(
+        _request("优秀学生综合奖学金一等奖是什么条件？", history=history),
+        HISTORICAL_SCHOLARSHIP_2025,
+    ) is True
+
+
+def test_multiturn_current_quota_beats_historical_wording() -> None:
+    """历史里的“当时”不能覆盖本轮“现在还剩”。"""
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    history = ["2026年青禾计划当时招几个学生？"]
+    assert check(
+        _request("现在还剩几个名额？", history=history), LAB_NOTICE
+    ) is False
+    # 反过来，本轮问历史人数时也不能被上一轮的“现在”拦住。
+    assert check(
+        _request(
+            "2026年青禾计划当时招几个学生？",
+            history=["现在还剩几个名额？"],
+        ),
+        LAB_NOTICE,
+    ) is True
+
+
+def test_s4_r3_recruitment_requires_matching_year() -> None:
+    meta = _resource_meta(
+        LAB_NOTICE,
+        category="实验室与科研团队",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+        deadline=date(2026, 10, 31),
+    )
+    check = _check_for((LAB_NOTICE, meta))
+    assert check(_request("2026年青禾计划怎么报名？"), LAB_NOTICE) is True
+    assert check(_request("2025年青禾计划怎么报名？"), LAB_NOTICE) is False
+    assert check(_request("2027年青禾计划招几人？"), LAB_NOTICE) is False
+
+
+def test_s4_r4_and_r6_do_not_require_annual_match() -> None:
+    intro_meta = _resource_meta(
+        LAB_INTRO,
+        category="研究方向与公开介绍",
+        applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术"},
+    )
+    contact_meta = _resource_meta(
+        COLLEGE_CONTACT,
+        record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式",
+        applicability=None,
+    )
+    intro_check = _check_for((LAB_INTRO, intro_meta))
+    contact_check = _check_for((COLLEGE_CONTACT, contact_meta))
+    assert intro_check(
+        _request("2025年EDA实验室研究什么？"), LAB_INTRO
+    ) is True
+    assert contact_check(
+        _request("2025年学院办公室电话是多少？"), COLLEGE_CONTACT
+    ) is True
+
+
+def test_s4_wechat_name_and_id_must_match_family() -> None:
+    article = _chunk(
+        index=212,
+        title="计算机与大数据学院公开联系方式",
+        content="学院办公室电话：0591-2286XXXX。",
+        source_url="https://mp.weixin.qq.com/s/family-check",
+    )
+    meta = _resource_meta(
+        article,
+        record_code="计算机学院-2026-学院公开信息",
+        category="学院公开信息与联系方式",
+        applicability=None,
+    )
+    check = _check_for((article, meta))
+
+    # 合法学院名称搭配学校号 ID，不能靠昵称放行。
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学计算机学院",
+            "account_id": "ifzu1958",
+            "basis": "文章标题自称学院官方",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    # 合法学校名称搭配学院 ID，同样拒绝。
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "ifzu1958",
+            "account_id": "gh_college",
+            "basis": "名称与 ID 来自不同主体",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    # 学院名称搭配招生号 ID。
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学计算机学院",
+            "account_id": "fzuzsks",
+            "basis": "文章标题自称学院官方",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    # 生产白名单未登记 `gh_college`，即使是合法学院名称也不通过。
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学计算机学院",
+            "account_id": "gh_college",
+            "basis": "文章标题自称学院官方",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+    # 学院名称搭配未登记的仿冒 `gh_` ID，也不能只靠昵称放行。
+    meta.temporal_notes = {
+        "human_approved": True,
+        "wechat_verification": {
+            "verified": True,
+            "account_name": "福州大学计算机学院",
+            "account_id": "gh_fake",
+            "basis": "文章标题自称学院官方",
+        },
+    }
+    assert check(_request("学院办公室电话是多少？"), article) is False
+
+
+@pytest.mark.parametrize(
+    "timeliness",
+    [TimelinessVerificationStatus.HISTORICAL, TimelinessVerificationStatus.EXPIRED],
+)
+def test_s4_old_contact_rejected_for_current_question(timeliness) -> None:
+    """上一轮“去年”不能让本轮“现在”的旧联系方式通过。"""
+    old_contact = _chunk(
+        index=221,
+        title="计算机与大数据学院公开联系方式（2025）",
+        content="学院办公室电话：0591-2286OLD，办公地点：旗山校区计算机学院楼。",
+        timeliness=timeliness,
+        source_url="https://ccds.fzu.edu.cn/",
+    )
+    meta = _resource_meta(
+        old_contact,
+        record_code="计算机学院-2025-学院公开信息",
+        category="学院公开信息与联系方式",
+        applicability=None,
+        policy_status="已过期",
+    )
+    check = _check_for((old_contact, meta))
+    assert check(
+        _request(
+            "现在学院办公室电话是多少？",
+            history=["去年学院办公室电话是多少？"],
+        ),
+        old_contact,
+    ) is False
+    # 明确问对应年度时，历史联系方式仍可用于历史回答。
+    assert check(_request("2025年学院办公室电话是多少？"), old_contact) is True
+
+
+def test_s4_old_plan_rejected_for_current_question() -> None:
+    """上一轮“旧版”不能让本轮“现在”的旧培养方案通过。"""
+    old_plan = _chunk(
+        index=222,
+        title="计算机科学与技术专业培养方案（2025版）",
+        content="2025版培养方案规定课程、实践与学位学分要求。",
+        timeliness=TimelinessVerificationStatus.HISTORICAL,
+        source_url="https://ccds.fzu.edu.cn/",
+    )
+    meta = _resource_meta(
+        old_plan,
+        record_code="计算机学院-2025-培养方案",
+        category="培养方案与课程",
+        applicability={"适用专业": "计算机科学与技术", "适用年级": "2025级"},
+        policy_status="已过期",
+    )
+    check = _check_for((old_plan, meta))
+    assert check(
+        _request(
+            "现在计算机专业培养方案有哪些课程？",
+            history=["以前旧版培养方案有哪些课程？"],
+        ),
+        old_plan,
+    ) is False
+    assert check(
+        _request("2025年计算机专业培养方案有哪些课程？"), old_plan
+    ) is True
+
+
+def test_s4_superseded_plan_rejected_for_current_question() -> None:
+    """上一轮“旧版”不能让本轮“现在”的被替代资料通过。"""
+    superseded_plan = _chunk(
+        index=223,
+        title="计算机科学与技术专业培养方案（2024版）",
+        content="2024版培养方案已被新版替代。",
+        timeliness=TimelinessVerificationStatus.SUPERSEDED,
+        source_url="https://ccds.fzu.edu.cn/",
+    )
+    meta = _resource_meta(
+        superseded_plan,
+        record_code="计算机学院-2024-培养方案",
+        category="培养方案与课程",
+        applicability={"适用专业": "计算机科学与技术", "适用年级": "2024级"},
+        policy_status="已被替代",
+    )
+    check = _check_for((superseded_plan, meta))
+    assert check(
+        _request(
+            "现在计算机专业培养方案有哪些课程？",
+            history=["2024年旧版培养方案有哪些课程？"],
+        ),
+        superseded_plan,
+    ) is False
+    # 明确问旧版时仍可回答历史信息。
+    assert check(
+        _request("2024年旧版培养方案有哪些课程？"), superseded_plan
+    ) is True

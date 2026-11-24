@@ -1,0 +1,62 @@
+Beta runtime stability tests
+Date: 2026-11-24 (Asia/Shanghai)
+Branch: feat/beta-runtime-stability
+Base main: 5973eef
+Python: 3.14.4 and 3.10.11
+pytest: 9.2.0
+
+Full tests:
+  Command: .venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs
+  Result: 449 passed, 28 skipped, 1 warning, 154 subtests passed
+
+Python 3.10.11 full tests:
+  Command: python310.exe -X utf8 -m pytest tests -q -rs
+  Result: 449 passed, 28 skipped, 1 warning, 154 subtests passed
+  Complete output: runtime-pytest-py310.txt
+
+Python 3.14.4 complete output: runtime-pytest-py314.txt
+
+Directed tests:
+  Command: pytest
+    tests/test_api_validation.py
+    tests/test_mock_agent_api.py
+    tests/test_agent_workflow_api.py
+    tests/test_backend_runtime.py
+    tests/test_qwen_client.py
+    tests/test_agent_workflow_qwen.py
+    tests/test_beta_script_lifecycle.py
+    tests/test_local_retrieval.py
+    tests/test_alpha_business_rules.py -q -rs
+  Python 3.14.4: 306 passed, 26 skipped, 1 warning, 66 subtests passed
+  Python 3.10.11: 306 passed, 26 skipped, 1 warning, 66 subtests passed
+  Complete output: runtime-directed-py314.txt, runtime-directed-py310.txt
+
+Beta upstream integration:
+  Command: python -X utf8 -m scripts.verify_beta_upstream_integration
+  Fixed main: 5973eef
+  Result: Ran 25 tests, OK
+  Complete output: upstream-integration.txt, upstream-integration.json
+
+Frontend compatibility:
+  Command: npm run build
+  Result: TypeScript check and Vite production build passed
+
+Coverage:
+  - FastAPI lifespan startup and health check;
+  - missing QWEN_API_KEY retains health=200 and ask=503;
+  - Qwen timeout, authentication, rate limit, 5xx and connection errors;
+  - malformed and empty provider envelopes;
+  - complete JSON response transport for Agent parsing;
+  - persistent owned HTTP connection and caller-owned injected connection;
+  - direct QwenSettings validation and retry/timeout budget;
+  - V2.1-Final INVALID_REQUEST=400 and MODEL_UNAVAILABLE=503 mappings;
+  - OpenAPI declarations for 400, 429, 500, 503 and 504 without legacy 422;
+  - frontend envelope-based error handling and production build;
+  - diagnostic scripts close clients on success and failure;
+  - conversation isolation, bounded history, serialization and cleanup;
+  - latest merged business rules, approved loader and Retriever metadata contract;
+  - approved corpus failure-closed checks.
+
+Not covered here:
+  - real formal approved-policy answer;
+  - merged Beta AgentWorkflow constrained-generation acceptance.
