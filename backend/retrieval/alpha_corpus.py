@@ -43,7 +43,12 @@ def _resolve_within(root: Path, rel_path: str) -> Path:
         or any(char in rel_path for char in ("\\", ":", "\x00"))
     ):
         raise ValueError(f"非法相对路径：{rel_path!r}")
-    resolved = (root / rel_path).resolve(strict=True)
+    current = root
+    for part in rel_path.split("/"):
+        current = current / part
+        if _is_link(current):
+            raise ValueError(f"路径不能包含符号链接：{rel_path}")
+    resolved = current.resolve(strict=True)
     if not resolved.is_relative_to(root) or not resolved.is_file():
         raise ValueError(f"路径超出允许目录或不是文件：{rel_path}")
     return resolved

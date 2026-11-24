@@ -1,11 +1,22 @@
 """Beta S1-S4 four-domain BM25 retrieval & formal-loading verification tests."""
 from __future__ import annotations
 
+from datetime import date
+import json
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
-from backend.contracts import IndexingStatus, RetrievalRequest, RetrievalStatus
+from backend.contracts import (
+    AgentRequest,
+    AnswerStatus,
+    IndexingStatus,
+    LLMGenerateRequest,
+    LLMResult,
+    RetrievalRequest,
+    RetrievalStatus,
+)
 from backend.retrieval import load_approved_alpha_retriever
 from scripts.eval_beta_retrieval import (
     materialize_synthetic_corpus,
@@ -178,6 +189,125 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(len(probe["loaded_packages"]), 5)
             self.assertEqual(len(probe["skipped_packages"]), 2)
             self.assertEqual(probe["total_indexed_chunks"], 8)
+
+    async def test_retriever_integrates_with_merged_beta_rules_and_agent_workflow(self):
+        try:
+            from backend.contracts import (
+                DocumentMetadata,
+                DocumentPackage,
+                FileProcessingStatus,
+                ParsedChunk,
+                ParsedFile,
+            )
+            from backend.services.agent_workflow import AgentWorkflow
+            from backend.services.alpha_business_rules import (
+                alpha_clarification_rule,
+                build_from_retriever,
+            )
+        except ModuleNotFoundError:
+            self.skipTest("当前精简环境缺少 Agent/Qwen 运行依赖")
+
+        class _OfflineFirstEvidenceLLM:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            async def generate(self, request: LLMGenerateRequest) -> LLMResult:
+                self.calls += 1
+                hit = json.loads(request.messages[-1].content)["evidence"][0]
+                payload = {"evidence": [{"chunk_id": hit["chunk_id"], "quote": hit["content"]}]}
+                return LLMResult(content=json.dumps(payload), model="offline-test-double")
+
+        fixed_today = lambda: date(2026, 9, 10)
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            approved_dir = materialize_synthetic_corpus(root)
+            retriever, _ = await load_approved_alpha_retriever(
+                corpus_dir=approved_dir, file_root=root, allow_missing=False
+            )
+            # Also index a synthetic school-level scholarship bylaw matching PR #45 S2 rules.
+            bylaw_text = "2026学年优秀学生综合奖学金要求学习成绩GPA排名本专业前10%且无不及格课程。"
+            bylaw_path = root / "texts/s2-bylaw-synthetic.md"
+            bylaw_path.write_bytes(bylaw_text.encode("utf-8"))
+            from hashlib import sha256
+            bylaw_pkg = DocumentPackage(
+                metadata=DocumentMetadata(
+                    title="【合成测试】2026年本科生奖学金评定管理办法",
+                    document_type="办法",
+                    category_name="综评与奖学金",
+                    business_direction_codes=["POLICY_AFFAIRS"],
+                    record_code="BETA-SYN-S2-BYLAW-2026",
+                    version_no="beta-syn-v1",
+                    source_url="https://example.invalid/beta/s2-bylaw-synthetic",
+                    published_on=date(2026, 9, 1),
+                    effective_on=date(2026, 9, 1),
+                    deadline_on=date(2026, 10, 20),
+                    applicability_raw={
+                        "适用年级": "全日制本科各年级",
+                        "适用专业": "全院本科专业",
+                        "适用对象": "全日制本科生",
+                        "学院": "计算机与大数据学院",
+                        "适用届别": None,
+                    },
+                    temporal_notes={"human_approved": True, "synthetic_fixture": True},
+                    source_verification_status="verified",
+                    timeliness_verification_status="current",
+                    extraction_status="extracted",
+                    v1_inclusion_status="included",
+                    retrieval_status="enabled",
+                ),
+                files=[
+                    ParsedFile(
+                        file_role="extracted",
+                        storage_key="texts/s2-bylaw-synthetic.md",
+                        original_name="s2-bylaw-synthetic.md",
+                        sha256=sha256(bylaw_text.encode("utf-8")).hexdigest(),
+                        processing_status=FileProcessingStatus.EXTRACTED,
+                    )
+                ],
+                chunks=[
+                    ParsedChunk(
+                        chunk_no=1,
+                        content=bylaw_text,
+                        locator="第 1 节",
+                        locator_note='{"heading": "一、优秀学生综合奖学金评选条件"}',
+                        original_locator="PDF 第 1 页",
+                        source_file_key="texts/s2-bylaw-synthetic.md",
+                    )
+                ],
+            )
+            await retriever.index_document(bylaw_pkg)
+
+            llm = _OfflineFirstEvidenceLLM()
+            workflow = AgentWorkflow(
+                retriever,
+                llm,
+                clarification_rule=lambda req: alpha_clarification_rule(req, today=fixed_today),
+                evidence_check=build_from_retriever(retriever, today=fixed_today),
+                today=fixed_today,
+            )
+
+            # S2 synthetic bylaw passes retrieval + PR #45 business rules + citation validation.
+            s2_res = await workflow.run(AgentRequest(
+                request_id=uuid4(),
+                conversation_id=uuid4(),
+                query="2026学年本科生申请优秀学生综合奖学金有什么GPA和成绩条件？",
+            ))
+            self.assertEqual(s2_res.status, AnswerStatus.ANSWERED)
+            self.assertEqual(llm.calls, 1)
+            self.assertEqual(len(s2_res.citations), 1)
+            self.assertEqual(s2_res.citations[0].locator, "第 1 节")
+            self.assertEqual(s2_res.citations[0].original_locator, "PDF 第 1 页")
+
+            # S4 synthetic package (example.invalid) is retrieved by BM25 but blocked by PR #45
+            # official-host gate via retriever.get_document_metadata() -> insufficient_evidence, 0 new LLM calls.
+            s4_res = await workflow.run(AgentRequest(
+                request_id=uuid4(),
+                conversation_id=uuid4(),
+                query="人工智能与大数据实验室在哪里，怎么申请GPU算力？",
+            ))
+            self.assertEqual(s4_res.status, AnswerStatus.INSUFFICIENT_EVIDENCE)
+            self.assertEqual(llm.calls, 1)
+            self.assertEqual(s4_res.citations, [])
 
 
 if __name__ == "__main__":
