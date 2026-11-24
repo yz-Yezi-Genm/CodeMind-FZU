@@ -15,6 +15,7 @@ from .models import (
     IndexResult,
     LLMGenerateRequest,
     LLMResult,
+    ParsedChunk,
     RetrievalRequest,
     RetrievedChunk,
 )
@@ -31,6 +32,12 @@ class Retriever(Protocol):
     """Implemented by the retrieval owner (王智洋)."""
 
     async def retrieve(self, request: RetrievalRequest) -> list[RetrievedChunk]:
+        ...
+
+    def get_document_metadata(self, version_id: UUID) -> DocumentMetadata | None:
+        ...
+
+    def get_parsed_chunk(self, chunk_id: UUID) -> ParsedChunk | None:
         ...
 
 
