@@ -1183,9 +1183,9 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.citations, [])
         self.assertEqual(self.observed, [])
 
-    def lab_recruitment_fixture(self, deadline, timeliness):
+    def lab_recruitment_fixture(self, deadline, timeliness, lab="EDA 实验室"):
         metadata = self.package.metadata
-        metadata.title = "合成测试：2026年 EDA 实验室报名通知"
+        metadata.title = f"合成测试：2026年 {lab}报名通知"
         metadata.document_type = "年度通知"
         metadata.category_name = "实验室与科研团队"
         metadata.business_direction_codes = [alpha_business_rules.RESOURCE_DIRECTION_CODE]
@@ -1194,7 +1194,7 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         metadata.deadline_on = deadline
         metadata.timeliness_verification_status = timeliness
         self.package.chunks[0].content = (
-            f"合成测试：EDA 实验室计划招收 8 人，报名截止日期为{deadline:%Y-%m-%d}，请提交报名表。"
+            f"合成测试：{lab}计划招收 8 人，报名截止日期为{deadline:%Y-%m-%d}，请提交报名表。"
         )
 
     async def test_beta_s4_current_plan_counts_cannot_answer_live_quota(self):
@@ -1251,7 +1251,8 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual({hit.source_url for hit in hits}, {
                 self.package.metadata.source_url, introduction.metadata.source_url,
             })
-            for query in (mixed_question, "EDA 实验室还有几个名额，研究什么？", research_question):
+            for query in (mixed_question, "EDA 实验室还有几个名额，研究什么？",
+                          "EDA 实验室研究什么同时还有几个名额", research_question):
                 with self.subTest(query=query):
                     response = await client.post("/api/v1/ask", json={"query": query})
                     self.assertEqual(response.status_code, 200)
@@ -1271,7 +1272,7 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual((result["status"], result["answer_mode"]), ("insufficient_evidence", "insufficient_data"))
             self.assertEqual(result["citations"], [])
             self.assertIn("LIVE_LAB_QUOTA_UNVERIFIED", [warning["code"] for warning in result["warnings"]])
-        self.assertEqual(len(self.observed), 3)
+        self.assertEqual(len(self.observed), 4)
 
     async def test_beta_cross_domain_quota_reaches_the_original_workflow_over_http(self):
         workflow = await self.workflow()
@@ -1343,12 +1344,19 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.observed), 1)
 
     async def test_beta_s4_short_registration_reply_uses_expired_lab_notice_over_http(self):
-        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED)
+        for lab in ("EDA 实验室", "人工智能自主创新实验室", "福州大学图机器学习课题组",
+                    "网络流量分析与异常检测课题组", "EDA创新实验室", "“AI+复杂工业系统”创新实验室"):
+            with self.subTest(lab=lab):
+                await self.assert_short_registration_reply(lab)
+
+    async def assert_short_registration_reply(self, lab):
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
         workflow = await self.workflow()
         service = ConversationAgentService(workflow, InMemoryConversationStore())
+        calls_before = len(self.observed)
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
                                      base_url="http://test") as client:
-            first = (await client.post("/api/v1/ask", json={"query": "2026年 EDA 实验室怎么报名？"})).json()
+            first = (await client.post("/api/v1/ask", json={"query": f"2026年{lab}怎么报名？"})).json()
             follow_up = (await client.post("/api/v1/ask", json={
                 "query": "还可以报名吗？", "conversation_id": first["conversation_id"],
             })).json()
@@ -1357,7 +1365,54 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(follow_up["answer_mode"], "historical")
         self.assertIn("2026年10月31日截止", follow_up["answer"])
         self.assertEqual(follow_up["citations"], first["citations"])
+        self.assertEqual(len(self.observed), calls_before + 1)
+
+    async def test_beta_s4_switching_named_labs_discards_previous_lab_and_intent_over_http(self):
+        first_lab = "人工智能自主创新实验室"
+        second_lab = "福州大学图机器学习课题组"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, first_lab)
+        first_excerpt = self.package.chunks[0].content
+        workflow = await self.workflow()
+        self.lab_recruitment_fixture(date(2026, 9, 30), TimelinessVerificationStatus.EXPIRED, second_lab)
+        self.package.metadata.record_code = "SYNTH-GRAPH-RECRUITMENT"
+        await workflow.retriever.index_document(self.package)
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            first = (await client.post("/api/v1/ask", json={"query": f"2026年{first_lab}怎么报名？"})).json()
+            self.assertEqual(first["citations"][0]["excerpt"], first_excerpt)
+            session = first["conversation_id"]
+            with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+                switch = (await client.post("/api/v1/ask", json={
+                    "query": f"那{second_lab}研究什么？", "conversation_id": session,
+                })).json()
+                self.assertEqual(retrieve.call_args.args[0].query, f"那{second_lab}研究什么？")
+            follow_up = (await client.post("/api/v1/ask", json={
+                "query": "还可以报名吗？", "conversation_id": session,
+            })).json()
+        self.assertEqual(switch["status"], "insufficient_evidence")
+        self.assertEqual(switch["citations"], [])
+        self.assertEqual((follow_up["status"], follow_up["answer_mode"]), ("answered", "historical"))
+        self.assertIn("2026年9月30日截止", follow_up["answer"])
+        self.assertEqual([citation["excerpt"] for citation in follow_up["citations"]], [self.package.chunks[0].content])
         self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_lab_name_disambiguation_preserves_explicit_applicability_and_review(self):
+        lab = "人工智能自主创新实验室"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+        workflow = await self.workflow()
+        scoped = await workflow.run(self.request(f"2026年{lab}是否接收人工智能专业学生？"))
+        self.assertEqual(scoped.status, "insufficient_evidence")
+        self.assertEqual(scoped.citations, [])
+
+        self.package.metadata.temporal_notes["human_approved"] = False
+        await workflow.retriever.index_document(self.package)
+        hit = (await workflow.retriever.retrieve(RetrievalRequest(query=lab)))[0]
+        self.assertIs(workflow.retriever.get_document_metadata(hit.version_id).temporal_notes["human_approved"], False)
+        pending = await workflow.run(self.request("还可以报名吗？", [f"2026年{lab}怎么报名？"]))
+        self.assertEqual(pending.status, "insufficient_evidence")
+        self.assertEqual(pending.citations, [])
+        self.assertEqual(self.observed, [])
 
     async def test_clarification_and_evidence_share_injected_clock(self):
         workflow = await self.workflow()

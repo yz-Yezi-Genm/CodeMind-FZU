@@ -21,7 +21,9 @@ from backend.contracts.models import (
 )
 from backend.contracts.protocols import LLMClient, Retriever
 from backend.services.agent_generation import Evidence, generation_request, requested_facts, verify_answer
-from backend.services.agent_policy_context import PolicyScope, contextual_request, separate_live_lab_quota
+from backend.services.agent_policy_context import (
+    PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
+)
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 
 logger = logging.getLogger(__name__)
@@ -347,7 +349,8 @@ class AgentWorkflow:
         if scope_result is None or (metadata.applicability_raw is None and self.evidence_check is None):
             return None
         if self.evidence_check is not None:
-            applicable = self.evidence_check(request.model_copy(deep=True), chunk.model_copy(deep=True))
+            rule_request = recruitment_rule_request(request, metadata, chunk.content)
+            applicable = self.evidence_check(rule_request.model_copy(deep=True), chunk.model_copy(deep=True))
             if not isinstance(applicable, bool):
                 raise ValueError("Evidence rule must return bool")
             if not applicable:

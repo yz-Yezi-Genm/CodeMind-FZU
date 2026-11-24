@@ -10,6 +10,7 @@ from backend.contracts.models import (
     AgentRequest, AgentResult, AnswerStatus, ChunkIndexStatus, ConversationTurn, LLMResult,
     RetrievedChunk, RetrievalStatus, SourceVerificationStatus, TimelinessVerificationStatus,
 )
+from backend.services.agent_policy_context import contextual_request
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError
 from examples.agent_workflow_demo import demo_chunk, demo_metadata, demo_parsed_chunk
@@ -420,6 +421,13 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.status, "needs_clarification")
         self.retriever.retrieve.assert_not_awaited()
         self.llm.generate.assert_not_awaited()
+
+    def test_qinghe_team_names_are_distinct_for_context_switching(self):
+        # #45 does not yet classify a bare team name on its own.
+        history = [ConversationTurn(role="user", content="2025年青禾计划的福州大学超算团队怎么报名？")]
+        request = contextual_request(self.request("那青禾计划的ROIS 团队研究什么？", history))
+        self.assertEqual(request.query, "那青禾计划的ROIS 团队研究什么？")
+        self.assertEqual(request.history, [])
 
     async def test_academic_year_range_is_resolved_from_metadata(self):
         service = self.annual_fixture(year="2025—2026学年")
