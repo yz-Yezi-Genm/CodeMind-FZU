@@ -83,7 +83,12 @@ class QwenSettings:
 
     @property
     def maximum_call_budget_seconds(self) -> float:
-        """Upper-bound duration including retries and inter-attempt backoff."""
+        """Configured theoretical retry budget including inter-attempt backoff.
+
+        This is not a strict wall-clock limit for one HTTP request:
+        ``httpx.Timeout`` applies to individual HTTP operations. The actual
+        AgentWorkflow stage deadline is enforced by ``asyncio.wait_for()``.
+        """
         backoff = sum(
             0.25 * (2**attempt)
             for attempt in range(self.max_retries)

@@ -65,7 +65,7 @@ class MockAgentApiTests(unittest.TestCase):
             json={"query": ""},
         )
 
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.json()["error"]["code"],
             "INVALID_REQUEST",

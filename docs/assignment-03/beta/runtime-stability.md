@@ -1,8 +1,8 @@
 # Beta 后端运行稳定性与 Qwen 适配
 
-日期：2026-11-23
+日期：2026-11-24
 分支：`feat/beta-runtime-stability`
-基线：`origin/main` `306c15d`
+基线：`origin/main` `5973eef`
 
 ## 1. 交付范围
 
@@ -11,11 +11,13 @@
 - `backend/app/alpha.py`
 - `backend/services/alpha_runtime.py`
 - `backend/services/qwen_client.py`
+- `backend/app/main.py`
+- `backend/services/errors.py`
 - `backend/app/config.py`（保持现有 Beta 会话配置）
 - `tests/test_backend_runtime.py`
 - `tests/test_qwen_client.py`
 
-未修改公共 Pydantic 模型、Protocol、学生端 HTTP 路径、AgentWorkflow、Retriever 或业务规则。
+未修改公共 Pydantic 模型、Protocol、学生端 HTTP 路径、AgentWorkflow、Retriever 或业务规则。经组长批准，本轮只统一 V2.1-Final 已规定的两项 HTTP 错误状态。
 
 ## 2. Runtime 行为
 
@@ -29,7 +31,17 @@
 
 知识库、业务规则或 Qwen 配置失败时，健康检查仍可用，问答返回统一 503 错误，不会加载待审核资料或返回 Mock 答案。
 
-## 3. Qwen 适配器
+## 3. 重试预算语义
+
+`maximum_call_budget_seconds = (max_retries + 1) * timeout_seconds + backoff`
+是依据配置计算的理论调用预算，用于在 Runtime 组装阶段提前发现明显超出
+AgentWorkflow 单阶段时限的组合。
+
+该值不是单次网络请求的严格实际耗时上界：`httpx.Timeout` 约束的是连接、
+读取等 HTTP 操作，而不是整次请求的墙钟总时限。正式运行时的实际阶段总时限由
+`AgentWorkflow` 内的 `asyncio.wait_for()` 控制。
+
+## 4. Qwen 适配器
 
 `QwenLLMClient.generate(LLMGenerateRequest) -> LLMResult` 保持公共协议不变。
 
@@ -43,7 +55,7 @@
 - usage 只保留非负整数，拒绝 bool、字符串和负数。
 - 超时、连接失败、限流、鉴权失败、5xx、非法/空响应继续映射为统一 `ServiceError`。
 
-## 4. 会话管理
+## 5. 会话管理
 
 继续使用 `InMemoryConversationStore`：
 
@@ -55,27 +67,40 @@
 - 不同会话严格隔离；
 - 后台清理不会删除正在执行的轮次。
 
-## 5. 测试结果
+## 6. 测试结果
 
 全量：
 
 ```text
 Python 3.14.4:
-378 passed, 28 skipped, 154 subtests passed
+449 passed, 28 skipped, 1 warning, 154 subtests passed
 
 Python 3.10.11:
-378 passed, 28 skipped, 154 subtests passed
+449 passed, 28 skipped, 1 warning, 154 subtests passed
 ```
 
-定向 Runtime、Qwen 和 Agent-Qwen：
+定向 Runtime、Qwen、API、Agent-Qwen、Retriever 和业务规则：
 
 ```text
-81 passed, 26 skipped, 51 subtests passed
+Python 3.14.4: 306 passed, 26 skipped, 1 warning, 66 subtests passed
+Python 3.10.11: 306 passed, 26 skipped, 1 warning, 66 subtests passed
 ```
 
 原始记录见 [runtime-tests.txt](evidence/runtime-tests.txt)，完整标准输出见
 [Python 3.14](evidence/runtime-pytest-py314.txt) 和
 [Python 3.10.11](evidence/runtime-pytest-py310.txt)。
+
+最新 main `5973eef` 的 Beta 上游专项测试结果：
+
+```text
+Ran 25 tests
+OK
+```
+
+记录见 [upstream-integration.txt](evidence/upstream-integration.txt) 和
+[upstream-integration.json](evidence/upstream-integration.json)。原 Alpha
+验收档案保留在 `docs/assignment-03/alpha/evidence/agent-integration/`，未由
+Beta 回归覆盖。
 
 覆盖：
 
@@ -87,17 +112,20 @@ Python 3.10.11:
 - 外部 HTTP client 生命周期由调用方控制；
 - 直接构造 Settings 时拒绝非有限/布尔超时和非法重试次数；
 - Qwen 重试预算超过 AgentWorkflow 阶段超时时失败关闭；
+- HTTP 400/503 最终口径及对应 OpenAPI 声明；
+- 前端统一 envelope 错误处理和 TypeScript/Vite 生产构建；
 - `check_qwen_live.py`、`check_qwen_runtime_live.py`、`run_alpha_agent.py` 在成功和异常路径均关闭客户端；
 - 多轮历史、隔离、并发串行、数量与空闲清理；
-- 未审核、部分索引和知识库缺失失败关闭。
+- 未审核、部分索引和知识库缺失失败关闭；
+- #45 业务规则、#51 Retriever 接口和已审核资料加载器的兼容性。
 
-## 6. 真实 Qwen 验证拆分
+## 7. 真实 Qwen 验证拆分
 
 按管理要求，本 PR 只承担第一阶段运行代码和离线契约测试，不包含真实模型调用证据。
 
 真实 Qwen 受约束 JSON、Agent 联调和 HTTP 验收放在独立第二阶段分支，只有吴诗莹的 Beta Agent 集成验证完成后才具备合并条件。第一阶段使用 `httpx.MockTransport` 验证请求、响应和异常适配，不宣称真实模型已经验收。
 
-## 7. 启动方式
+## 8. 启动方式
 
 正式资料：
 
@@ -117,11 +145,19 @@ $env:ALPHA_PACKAGE_DIR='tests/fixtures/alpha_approved'
 
 合成夹具使用 `example.invalid`，只能用于技术验收，不能进入正式 `approved/`。
 
-## 8. 待确认的接口差异
+## 9. HTTP 错误码
 
-V2.1 错误表写 `INVALID_REQUEST` 为 400，当前 Alpha 兼容实现返回 422；非法上游模型响应当前使用 `MODEL_UNAVAILABLE` + 502，而规范表中该错误码写 503。为遵守“Beta 保持既有 HTTP 行为、公共接口变更先审批”，本轮没有擅自修改这两项，待项目负责人确认统一口径。
+经组长确认，统一以 Beta 接口规范 V2.1-Final 为准：
 
-## 9. 待集成事项
+- `INVALID_REQUEST` 返回 HTTP 400；
+- 非法或空模型响应映射为 `MODEL_UNAVAILABLE`，返回 HTTP 503；
+- `RATE_LIMITED`、`MODEL_TIMEOUT`、`INTERNAL_ERROR` 等其他状态保持不变；
+- `/api/v1/ask` OpenAPI 声明包含 400、429、500、503、504，不再生成旧版 422 声明。
+
+前端统一通过错误响应 envelope 中的 `error.code`、`error.message` 和
+`error.retryable` 处理失败，不依赖本轮发生变化的两个具体数字。
+
+## 10. 待集成事项
 
 - 第二阶段在吴诗莹 Beta Agent 合并后，使用真实 Qwen 复跑 `answer + used_evidence_ids` 的完整 `/api/v1/ask` 链路。
 - 正式 `approved/` 仍无人工签核资料包，四领域正式政策正向验收等待资料放行。

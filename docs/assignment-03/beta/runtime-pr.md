@@ -7,14 +7,21 @@
 ## 修改文件
 
 - `backend/app/alpha.py`
+- `backend/app/main.py`
 - `backend/services/alpha_runtime.py`
+- `backend/services/errors.py`
 - `backend/services/qwen_client.py`
 - `scripts/check_qwen_live.py`
 - `scripts/check_qwen_runtime_live.py`
 - `scripts/run_alpha_agent.py`
+- `scripts/verify_beta_upstream_integration.py`
 - `tests/test_backend_runtime.py`
 - `tests/test_qwen_client.py`
 - `tests/test_beta_script_lifecycle.py`
+- `tests/test_api_validation.py`
+- `tests/test_agent_workflow_api.py`
+- `tests/test_agent_workflow_qwen.py`
+- `tests/test_mock_agent_api.py`
 - `docs/assignment-03/beta/runtime-stability.md`
 - `docs/assignment-03/beta/evidence/`
 
@@ -29,6 +36,9 @@
 - 完善超时、鉴权、限流、5xx、连接失败、非法/空响应处理。
 - Settings 与 Client 共用构造阶段校验，拒绝非有限/布尔超时、非法重试次数、布尔/负数 usage 和缺失配置。
 - Runtime 检查 Qwen 超时与重试预算，禁止超过 AgentWorkflow 单阶段超时。
+- 明确 Qwen 预算属于理论配置值，实际阶段总时限由 `asyncio.wait_for()` 控制。
+- 按 V2.1-Final 统一 `INVALID_REQUEST` 为 400、非法/空模型响应为 503。
+- OpenAPI 声明 400、429、500、503、504，并移除旧版自动 422。
 - 验证无模型 Key 时健康检查仍可用、问答返回统一 503。
 - 验证会话隔离、历史限制、并发串行和后台清理。
 
@@ -37,6 +47,8 @@
 - #35 已审核资料加载器；
 - #32 `create_alpha_workflow()`；
 - #36 `build_from_retriever()`；
+- #45 最新版 S1-S4 业务规则；
+- #51 Retriever 元数据与片段查询契约；
 - 吴诗莹 Beta Agent 分支负责 V2.1 JSON 解析、证据 ID 校验和 Citation 构造；
 - 薛锦荣负责 Windows 环境文档和干净环境验证；
 - 颜俊宇负责模型输出与端到端异常测试。
@@ -47,19 +59,28 @@
 .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs
 ```
 
-Python 3.14.4：`378 passed, 28 skipped, 154 subtests passed`。
+Python 3.14.4：`449 passed, 28 skipped, 1 warning, 154 subtests passed`。
 
-Python 3.10.11：`378 passed, 28 skipped, 154 subtests passed`。
+Python 3.10.11：`449 passed, 28 skipped, 1 warning, 154 subtests passed`。
 
 ```powershell
 .\.venv\Scripts\python.exe -X utf8 -m pytest `
   tests/test_backend_runtime.py `
   tests/test_qwen_client.py `
   tests/test_agent_workflow_qwen.py `
-  tests/test_beta_script_lifecycle.py -q -rs
+  tests/test_beta_script_lifecycle.py `
+  tests/test_api_validation.py `
+  tests/test_mock_agent_api.py `
+  tests/test_agent_workflow_api.py `
+  tests/test_local_retrieval.py `
+  tests/test_alpha_business_rules.py -q -rs
 ```
 
-结果：`81 passed, 26 skipped, 51 subtests passed`。
+双版本结果：`306 passed, 26 skipped, 1 warning, 66 subtests passed`。
+
+最新 main `5973eef` 上游专项：`Ran 25 tests, OK`。
+
+前端兼容：`npm run build` 通过 TypeScript 检查及 Vite 生产构建。
 
 ## 阶段拆分
 
@@ -69,4 +90,4 @@ Python 3.10.11：`378 passed, 28 skipped, 154 subtests passed`。
 
 - 当前 `main` AgentWorkflow 仍采用 Alpha 证据摘录协议，V2.1 受约束自然语言生成需在吴诗莹 Beta 分支合并后复跑。
 - 正式 `approved/` 暂无人工签核资料包。
-- V2.1 错误表与现有 HTTP 兼容行为存在两处差异：参数校验当前为 422、非法模型响应当前为 502；本轮未擅自修改公共 API，待负责人统一确认。
+- 经组长批准，两项 V2.1-Final HTTP 状态已统一；其他错误码和响应结构未改变。
