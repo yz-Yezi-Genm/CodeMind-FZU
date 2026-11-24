@@ -8,7 +8,7 @@ from datetime import date
 from uuid import UUID
 
 from backend.contracts.models import (
-    AgentRequest, DocumentMetadata, LLMGenerateRequest, LLMResult, RetrievalRequest, RetrievedChunk,
+    AgentRequest, DocumentMetadata, LLMGenerateRequest, LLMResult, ParsedChunk, RetrievalRequest, RetrievedChunk,
 )
 from backend.services.agent_workflow import AgentWorkflow
 
@@ -33,8 +33,14 @@ def demo_metadata(chunk: RetrievedChunk) -> DocumentMetadata:
     fields = chunk.model_dump(include={"title", "publisher", "source_url", "published_on", "effective_on",
         "source_verification_status", "timeliness_verification_status", "retrieval_status"})
     return DocumentMetadata(**fields, document_type="合成测试", category_name="测试",
-        record_code="DEMO-NOT-POLICY", version_no="fixture-1", extraction_status="extracted",
+        record_code=f"DEMO-{chunk.document_id}", version_no=f"fixture-{chunk.version_id}", extraction_status="extracted",
+        applicability_raw={"适用对象": "离线测试"},
         v1_inclusion_status="included", temporal_notes={"human_approved": True})
+
+
+def demo_parsed_chunk(chunk: RetrievedChunk) -> ParsedChunk:
+    return ParsedChunk(chunk_no=1, source_file_key="synthetic.md", index_status="indexed",
+                       content=chunk.content, locator=chunk.locator, original_locator=chunk.original_locator)
 
 
 class DemoRetriever:
@@ -50,6 +56,10 @@ class DemoRetriever:
         chunk = next((chunk for chunk in self.chunks if chunk.version_id == version_id), None)
         return demo_metadata(chunk) if chunk is not None else None
 
+    def get_parsed_chunk(self, chunk_id: UUID) -> ParsedChunk | None:
+        chunk = next((chunk for chunk in self.chunks if chunk.chunk_id == chunk_id), None)
+        return demo_parsed_chunk(chunk) if chunk is not None else None
+
 
 class DemoLLMClient:
     """Fake LLMClient selecting the first supplied fixture; no model is called."""
@@ -57,7 +67,7 @@ class DemoLLMClient:
     async def generate(self, request: LLMGenerateRequest) -> LLMResult:
         first = json.loads(request.messages[-1].content)["evidence"][0]
         return LLMResult(model="DEMO-FAKE-NOT-QWEN", content=json.dumps({
-            "evidence": [{"chunk_id": first["chunk_id"], "quote": first["content"]}],
+            "answer": first["content"], "used_evidence_ids": [first["evidence_id"]],
         }, ensure_ascii=False))
 
 

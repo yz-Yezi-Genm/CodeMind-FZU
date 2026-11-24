@@ -494,19 +494,28 @@ class _Retriever:
             return None
         return self._metadata.model_copy(deep=True)
 
+    def get_parsed_chunk(self, chunk_id) -> ParsedChunk | None:
+        chunk = next((chunk for chunk in self._chunks if chunk.chunk_id == chunk_id), None)
+        if chunk is None:
+            return None
+        return ParsedChunk(chunk_no=1, source_file_key="test.md", content=chunk.content,
+                           locator=chunk.locator, original_locator=chunk.original_locator)
+
     async def retrieve(self, request: RetrievalRequest) -> list[RetrievedChunk]:
         self.calls += 1
         return list(self._chunks)
 
 
 class _LLM:
-    def __init__(self, content: str = '{"evidence":[]}') -> None:
-        self._content = content
+    def __init__(self) -> None:
         self.calls = 0
 
     async def generate(self, request) -> LLMResult:
         self.calls += 1
-        return LLMResult(content=self._content, model="stub")
+        evidence = json.loads(request.messages[-1].content)["evidence"]
+        return LLMResult(content=json.dumps({
+            "answer": evidence[0]["content"], "used_evidence_ids": [evidence[0]["evidence_id"]],
+        }), model="stub")
 
 
 @pytest.mark.anyio
@@ -551,10 +560,7 @@ async def test_workflow_answers_with_applicable_evidence() -> None:
     metadata = _full_lookup()(SCHOOL_SCHOLARSHIP.version_id)
     metadata.temporal_notes = {"human_approved": True}
     retriever = _Retriever([SCHOOL_SCHOLARSHIP], metadata=metadata)
-    llm = _LLM(json.dumps(
-        {"evidence": [{"chunk_id": str(SCHOOL_SCHOLARSHIP.chunk_id), "quote": SCHOOL_SCHOLARSHIP.content}]},
-        ensure_ascii=False,
-    ))
+    llm = _LLM()
     workflow = AgentWorkflow(
         retriever=retriever,
         llm_client=llm,

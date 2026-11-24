@@ -37,7 +37,7 @@ class _FirstEvidenceLLM:
     async def generate(self, request: LLMGenerateRequest) -> LLMResult:
         self.calls += 1
         hit = json.loads(request.messages[-1].content)["evidence"][0]
-        output = {"evidence": [{"chunk_id": hit["chunk_id"], "quote": hit["content"]}]}
+        output = {"answer": hit["content"], "used_evidence_ids": [hit["evidence_id"]]}
         return LLMResult(content=json.dumps(output), model="offline-test-double")
 
 

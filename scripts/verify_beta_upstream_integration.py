@@ -1,7 +1,6 @@
-"""Run the Beta upstream integration suite against a fixed main snapshot."""
+"""Run Beta integration tests with the checked-out rules and Retriever."""
 from __future__ import annotations
 
-from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 import json
@@ -9,7 +8,6 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from tempfile import TemporaryDirectory
 
 from scripts.verify_alpha_upstream_integration import agent_source_state
 
@@ -17,67 +15,48 @@ from scripts.verify_alpha_upstream_integration import agent_source_state
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/assignment-03/beta/evidence"
 SOURCES = (
-    ("backend/services/alpha_business_rules.py", "alpha_business_rules.py"),
-    ("backend/retrieval/local.py", "retrieval/local.py"),
-    ("backend/retrieval/alpha_corpus.py", "retrieval/alpha_corpus.py"),
+    "backend/services/alpha_business_rules.py",
+    "backend/retrieval/local.py",
+    "backend/retrieval/alpha_corpus.py",
 )
-
-
-@contextmanager
-def main_snapshot(ref: str):
-    """Yield read-only source blobs from the selected merged main commit."""
-    commit = subprocess.check_output(
-        ["git", "rev-parse", ref],
-        cwd=ROOT,
-        text=True,
-    ).strip()
-    records = []
-    with TemporaryDirectory(prefix="beta-upstream-") as temporary:
-        snapshot = Path(temporary)
-        for source, target in SOURCES:
-            content = subprocess.check_output(
-                ["git", "show", f"{commit}:{source}"],
-                cwd=ROOT,
-            )
-            destination = snapshot / target
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(content)
-            records.append(
-                {
-                    "ref": ref,
-                    "commit": commit,
-                    "source": source,
-                    "sha256": sha256(content).hexdigest(),
-                }
-            )
-        yield temporary, commit, records
 
 
 def main() -> int:
     OUTPUT.mkdir(parents=True, exist_ok=True)
     before = agent_source_state()
-    with main_snapshot("origin/main") as (temporary, main_commit, records):
-        command = [
-            sys.executable,
-            "-X",
-            "utf8",
-            "-m",
-            "unittest",
-            "tests.test_agent_workflow_qwen.UpstreamRulesRetrieverIntegrationTests",
-            "-v",
-        ]
-        process = subprocess.run(
-            command,
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            env=dict(
-                os.environ,
-                ALPHA_UPSTREAM_SNAPSHOT=temporary,
-                PYTHONIOENCODING="utf-8",
-            ),
-        )
+    ref = "origin/main"
+    main_commit = before["main_commit"]
+    records = []
+    for source in SOURCES:
+        content = subprocess.check_output(["git", "show", f"{main_commit}:{source}"], cwd=ROOT)
+        expected = content.replace(b"\r\n", b"\n")
+        checked_out = (ROOT / source).read_bytes().replace(b"\r\n", b"\n")
+        if checked_out != expected:
+            raise RuntimeError(f"Checked-out module differs from {ref}: {source}")
+        records.append({
+            "ref": ref,
+            "commit": main_commit,
+            "source": source,
+            "sha256": sha256(expected).hexdigest(),
+        })
+
+    command = [
+        sys.executable,
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "tests.test_agent_workflow_qwen.MergedRulesRetrieverIntegrationTests",
+        "-v",
+    ]
+    process = subprocess.run(
+        command,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"),
+    )
     if before["source_sha256_lf"] != agent_source_state()["source_sha256_lf"]:
         raise RuntimeError("Agent sources changed during Beta upstream tests")
 

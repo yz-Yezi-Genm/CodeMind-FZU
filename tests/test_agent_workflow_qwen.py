@@ -2,9 +2,7 @@
 import asyncio
 import json
 import os
-import importlib.util
 import sys
-import types
 import unittest
 from datetime import date
 from hashlib import sha256
@@ -20,11 +18,14 @@ from fastapi.testclient import TestClient
 from backend.app.main import create_app
 from backend.app.config import AppSettings
 from backend.contracts.models import (
-    AgentRequest, DocumentPackage, FileProcessingStatus, RetrievalRequest,
+    AgentRequest, DocumentPackage, FileProcessingStatus, RetrievalRequest, RetrievalStatus,
     TimelinessVerificationStatus,
 )
+from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
 from backend.retrieval.local import LocalBM25Retriever
+from backend.services import alpha_business_rules
 from backend.services.agent_workflow import AgentWorkflow, create_alpha_workflow
+from backend.services.alpha_runtime import ConversationAgentService, InMemoryConversationStore
 from backend.services.errors import LLMConfigurationError, ServiceError
 from backend.services.qwen_client import QwenLLMClient, QwenSettings
 from examples.agent_workflow_demo import DemoRetriever, demo_chunk
@@ -52,9 +53,7 @@ class AgentWorkflowQwenTests(unittest.TestCase):
             payload = json.loads(request.content)
             observed.append(payload)
             evidence = json.loads(payload["messages"][-1]["content"])["evidence"][0]
-            text = json.dumps({"evidence": [{
-                "chunk_id": evidence["chunk_id"], "quote": evidence["content"],
-            }]}, ensure_ascii=False)
+            text = json.dumps({"answer": evidence["content"], "used_evidence_ids": [evidence["evidence_id"]]}, ensure_ascii=False)
             return httpx.Response(200, json={
                 "model": "offline-qwen-response-fixture",
                 "choices": [{"message": {"content": text}}],
@@ -149,6 +148,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.package = DocumentPackage.model_validate(items[0])
         # Synthetic review input only; never promote a real policy fixture.
         self.package.metadata.temporal_notes = {"human_approved": True}
+        self.package.metadata.applicability_raw = {"适用对象": "合成资料中的测试学生"}
         for file in self.package.files:
             path = self.file_root / file.storage_key
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -168,9 +168,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         payload = json.loads(request.content)
         self.observed.append(payload)
         evidence = json.loads(payload["messages"][-1]["content"])["evidence"][0]
-        output = self.output if self.output is not None else {"evidence": [{
-            "chunk_id": evidence["chunk_id"], "quote": evidence["content"],
-        }]}
+        output = self.output(evidence) if self.output is not None else {"answer": evidence["content"], "used_evidence_ids": [evidence["evidence_id"]]}
         return httpx.Response(200, json={
             "model": "offline-qwen-response-fixture",
             "choices": [{"message": {"content": json.dumps(output, ensure_ascii=False)}}],
@@ -222,6 +220,37 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(response.json()["citations"], [])
         self.assertEqual(self.observed, [])
 
+    async def test_live_bm25_withdrawal_during_generation_discards_citations(self):
+        query = "星桥奖学金申请需要什么？"
+        for status in (RetrievalStatus.REVIEW_ONLY, RetrievalStatus.BLOCKED):
+            with self.subTest(status=status):
+                workflow = await self.workflow()
+                hit = (await workflow.retriever.retrieve(RetrievalRequest(query=query)))[0]
+                self.assertIsNotNone(workflow.retriever.get_document_metadata(hit.version_id))
+                self.assertIsNotNone(workflow.retriever.get_parsed_chunk(hit.chunk_id))
+
+                async def withdraw_before_returning_model_response(request):
+                    response = self.handler(request)
+                    withdrawn = self.package.model_copy(deep=True)
+                    withdrawn.metadata.retrieval_status = status
+                    await workflow.retriever.index_document(withdrawn)
+                    return response
+
+                async with httpx.AsyncClient(transport=httpx.MockTransport(withdraw_before_returning_model_response)) as upstream:
+                    workflow.llm_client = QwenLLMClient(
+                        QwenSettings(api_key="offline-fixture-not-a-real-key", max_retries=0),
+                        http_client=upstream,
+                    )
+                    body = (await self.ask(workflow, query)).json()
+
+                self.assertIsNone(workflow.retriever.get_document_metadata(hit.version_id))
+                self.assertIsNone(workflow.retriever.get_parsed_chunk(hit.chunk_id))
+                self.assertEqual(body["status"], "insufficient_evidence")
+                self.assertEqual(body["answer_mode"], "insufficient_data")
+                self.assertEqual(body["warnings"][0]["code"], "EVIDENCE_APPROVAL_CHANGED")
+                self.assertEqual(body["citations"], [])
+        self.assertEqual(len(self.observed), 2)
+
     async def test_rule_rejection_occurs_after_real_retrieval_before_qwen(self):
         observed = []
 
@@ -248,8 +277,8 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金条件"))
         for output in [
-            {"evidence": [{"chunk_id": str(uuid4()), "quote": hits[0].content}]},
-            {"evidence": [{"chunk_id": str(hits[0].chunk_id), "quote": "申请可获得99999元"}]},
+            lambda item: {"answer": item["content"], "used_evidence_ids": [str(hits[0].chunk_id)]},
+            lambda item: {"answer": "申请可获得99999元", "used_evidence_ids": [item["evidence_id"]]},
         ]:
             with self.subTest(output=output):
                 self.output = output
@@ -291,7 +320,7 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(self.package.model_dump(), original)
         self.assertEqual(self.observed, [])
 
-    async def test_legacy_package_snapshot_is_read_only_and_metadata_is_detached(self):
+    async def test_legacy_retriever_without_read_only_lookups_cannot_supply_evidence(self):
         class LegacyRetriever:
             def __init__(self, **kwargs):
                 self.store = LocalBM25Retriever(**kwargs)
@@ -305,10 +334,10 @@ class LocalRetrieverQwenIntegrationTests(unittest.IsolatedAsyncioTestCase):
         with patch("backend.retrieval.local.LocalBM25Retriever", LegacyRetriever):
             workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星桥奖学金"))
-        metadata = workflow.retriever.get_document_metadata(hits[0].version_id)
-        metadata.temporal_notes["human_approved"] = False
-        self.assertIs(workflow.retriever.get_document_metadata(hits[0].version_id).temporal_notes["human_approved"], True)
-        self.assertFalse(hasattr(workflow.retriever, "index_document"))
+        self.assertTrue(hits)
+        response = await self.ask(workflow, "星桥奖学金条件")
+        self.assertEqual(response.json()["status"], "insufficient_evidence")
+        self.assertEqual(self.observed, [])
 
     async def test_real_three_policy_packages_stay_blocked_and_skip_qwen(self):
         packages = [DocumentPackage.model_validate_json(
@@ -534,9 +563,7 @@ class QwenLiveProbeOfflineTests(unittest.IsolatedAsyncioTestCase):
             seen.append(data)
             evidence = json.loads(data["messages"][-1]["content"])["evidence"][0]
             return httpx.Response(200, json={"model": "qwen-flash", "usage": {"total_tokens": 103},
-                "choices": [{"message": {"content": json.dumps({"evidence": [{
-                    "chunk_id": evidence["chunk_id"], "quote": evidence["content"],
-                }]})}}]})
+                "choices": [{"message": {"content": json.dumps({"answer": evidence["content"], "used_evidence_ids": [evidence["evidence_id"]]})}}]})
 
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as upstream:
             report = await probe(QwenLLMClient(QwenSettings(
@@ -551,8 +578,14 @@ class QwenLiveProbeOfflineTests(unittest.IsolatedAsyncioTestCase):
         from backend.contracts.models import LLMResult
         from scripts.check_qwen_live import probe
         client = AsyncMock()
-        client.generate.return_value = LLMResult(model="offline", content=json.dumps({
-            "evidence": [{"chunk_id": str(demo_chunk().chunk_id), "quote": "篡改原文"}]}))
+
+        async def fabricate(prompt):
+            first = json.loads(prompt.messages[-1].content)["evidence"][0]
+            return LLMResult(model="offline", content=json.dumps({
+                "answer": "篡改原文", "used_evidence_ids": [first["evidence_id"]],
+            }))
+
+        client.generate.side_effect = fabricate
         with self.assertRaises(ValueError):
             await probe(client)
 
@@ -568,37 +601,13 @@ class QwenLiveProbeOfflineTests(unittest.IsolatedAsyncioTestCase):
         factory.assert_not_called()
 
 
-@unittest.skipUnless(os.getenv("ALPHA_UPSTREAM_SNAPSHOT"),
-                     "Run scripts.verify_beta_upstream_integration for merged "
-                     "business-rule and retrieval integration")
-class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
-    """Merged rule/retrieval implementations, synthetic corpus, mock Qwen HTTP.
-    The runner extracts reviewed Git blobs from a fixed main snapshot.
-    """
+class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
+    """Use the checked-out rules and BM25 with a synthetic corpus and mock Qwen HTTP."""
 
     async def asyncSetUp(self):
-        snapshot = Path(os.environ["ALPHA_UPSTREAM_SNAPSHOT"])
         self.temporary = TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.modules = patch.dict(sys.modules)
-        self.modules.start()
-        self.addCleanup(self.modules.stop)
-        namespace = types.ModuleType("_alpha_upstream_retrieval")
-        namespace.__path__ = [str(snapshot / "retrieval")]
-        sys.modules[namespace.__name__] = namespace
-
-        def load(name, path):
-            spec = importlib.util.spec_from_file_location(name, path)
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[name] = module
-            spec.loader.exec_module(module)
-            return module
-
-        local = load("_alpha_upstream_retrieval.local", snapshot / "retrieval/local.py")
-        self.loader = load("_alpha_upstream_retrieval.alpha_corpus", snapshot / "retrieval/alpha_corpus.py")
-        self.rules = load("backend.services.alpha_business_rules", snapshot / "alpha_business_rules.py")
-        self.local_class = local.LocalBM25Retriever
         items = json.loads((ROOT / "docs/assignment-03/alpha/examples/retrieval-synthetic-packages.json").read_bytes())
         self.package = DocumentPackage.model_validate(items[0])
         self.package.metadata.temporal_notes = {"human_approved": True}
@@ -618,7 +627,8 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             evidence = json.loads(json.loads(request.content)["messages"][-1]["content"])["evidence"]
             self.observed.append(evidence)
             return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({
-                "evidence": [{"chunk_id": evidence[0]["chunk_id"], "quote": evidence[0]["content"]}],
+                "answer": evidence[0]["content"],
+                "used_evidence_ids": [evidence[0]["evidence_id"]],
             }, ensure_ascii=False)}}]})
 
         self.upstream = httpx.AsyncClient(transport=httpx.MockTransport(handler))
@@ -631,11 +641,10 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         approved.mkdir(exist_ok=True)
         (approved / "policy.json").write_text(
             (package or self.package).model_dump_json(), encoding="utf-8")
-        with patch.dict(sys.modules, {"backend.retrieval.alpha_corpus": self.loader}):
-            return await create_alpha_workflow(
-                file_root=self.root, corpus_dir=approved, llm_client=self.llm,
-                today=lambda: date(2026, 11, 20),
-            )
+        return await create_alpha_workflow(
+            file_root=self.root, corpus_dir=approved, llm_client=self.llm,
+            today=lambda: date(2026, 11, 20),
+        )
 
     def request(self, query="优秀学生综合奖学金一等奖要什么条件？", history=None):
         from backend.contracts.models import ConversationTurn
@@ -647,7 +656,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
             result = await workflow.run(self.request("我想问奖学金的事"))
         self.assertEqual(result.status, "needs_clarification")
-        self.assertEqual(result.clarifying_question, self.rules.QUESTION_SCHOLARSHIP_CATEGORY)
+        self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_SCHOLARSHIP_CATEGORY)
         retrieve.assert_not_called()
         self.assertEqual(self.observed, [])
 
@@ -669,7 +678,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         workflow = await self.workflow()
         for lookup in (lambda _: None, lambda _: (_ for _ in ()).throw(RuntimeError("lookup unavailable"))):
             with self.subTest(lookup=lookup), patch.object(workflow.retriever, "get_document_metadata", lookup):
-                workflow.evidence_check = self.rules.build_from_retriever(workflow.retriever)
+                workflow.evidence_check = alpha_business_rules.build_from_retriever(workflow.retriever)
                 result = await workflow.run(self.request())
                 self.assertEqual(result.status, "insufficient_evidence")
         self.assertEqual(self.observed, [])
@@ -732,7 +741,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
 
                 with patch.object(workflow.retriever, "get_parsed_chunk",
                                   None if failure == "method_absent" else lookup):
-                    workflow.evidence_check = self.rules.build_from_retriever(
+                    workflow.evidence_check = alpha_business_rules.build_from_retriever(
                         workflow.retriever, today=lambda: date(2026, 11, 19))
                     result = await workflow.run(self.request(query))
                 self.assertEqual(result.status, "insufficient_evidence")
@@ -742,14 +751,14 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertNotIn("private-chapter-query-detail", result.model_dump_json())
         self.assertEqual(self.observed, [])
 
-    async def test_non_sensitive_document_can_answer_without_chapter_metadata(self):
+    async def test_missing_indexed_chunk_blocks_even_when_the_rule_needs_no_section(self):
         workflow = await self.workflow()
         with patch.object(workflow.retriever, "get_parsed_chunk", return_value=None):
-            workflow.evidence_check = self.rules.build_from_retriever(workflow.retriever)
+            workflow.evidence_check = alpha_business_rules.build_from_retriever(workflow.retriever)
             result = await workflow.run(self.request())
-        self.assertEqual(result.status, "answered")
-        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
-        self.assertEqual(len(self.observed), 1)
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
 
     async def test_clarification_exception_has_strict_agent_refusal_contract(self):
         workflow = await self.workflow()
@@ -798,7 +807,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             with self.subTest(notes=notes):
                 self.package.metadata.temporal_notes = notes
                 (approved / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
-                retriever, report = await self.loader.load_approved_alpha_retriever(
+                retriever, report = await load_approved_alpha_retriever(
                     corpus_dir=approved, file_root=self.root, allow_missing=False)
                 self.assertEqual(report.loaded_packages, ())
                 self.assertEqual(report.total_indexed_chunks, 0)
@@ -807,7 +816,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                     await self.workflow()
                 # Bypass the loader on purpose: Agent's own approval gate must
                 # still reject enabled hits even with a permissive business rule.
-                store = self.local_class(file_root=self.root)
+                store = LocalBM25Retriever(file_root=self.root)
                 await store.index_document(self.package)
                 self.assertTrue(await store.retrieve(RetrievalRequest(query="奖学金")))
                 result = await AgentWorkflow(store, self.llm, clarification_rule=lambda _: None,
@@ -838,10 +847,9 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                         directory = self.root / ("report-" + problem)
                         if problem == "empty":
                             directory.mkdir()
-                    with patch.dict(sys.modules, {"backend.retrieval.alpha_corpus": self.loader}):
-                        with self.assertRaises(ServiceError) as raised:
-                            await create_alpha_workflow(file_root=self.root, corpus_dir=directory,
-                                llm_client=self.llm, clarification_rule=lambda _: None, evidence_check=lambda *_: True)
+                    with self.assertRaises(ServiceError) as raised:
+                        await create_alpha_workflow(file_root=self.root, corpus_dir=directory,
+                            llm_client=self.llm, clarification_rule=lambda _: None, evidence_check=lambda *_: True)
                     self.assertEqual(raised.exception.code, "SERVICE_NOT_CONFIGURED")
         self.assertEqual(self.observed, [])
 
@@ -893,7 +901,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                     wraps=workflow.retriever.retrieve) as retrieve:
                 result = await workflow.run(self.request(query, history))
                 self.assertEqual(result.status, "needs_clarification")
-                self.assertEqual(result.clarifying_question, self.rules.QUESTION_TOP_EIGHT)
+                self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_TOP_EIGHT)
                 retrieve.assert_not_called()
         self.assertEqual(self.observed, [])
         same = "数学建模竞赛国家级二等奖，团队作品，作品《交通预测》，创新学分能认定多少？"
@@ -901,7 +909,7 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.status, "answered")
         self.assertEqual(len(self.observed), 1)
 
-    async def test_historical_rule_applicability_cannot_relax_agent_current_gate(self):
+    async def test_expired_scholarship_notice_with_real_rules_answers_its_own_year(self):
         self.package.metadata.record_code = "SYNTH-2026-星火奖学金"
         self.package.metadata.title = "合成测试：2026年星火奖教奖学金评选通知"
         self.package.metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
@@ -912,14 +920,629 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         workflow = await self.workflow()
         hits = await workflow.retriever.retrieve(RetrievalRequest(query="星火奖学金"))
         self.assertTrue(hits)
-        historical = self.request("星火奖学金去年截止到什么时候？")
+        historical = self.request("2026年星火奖学金当时截止到什么时候？")
         current = self.request("星火奖学金现在还能申请吗，有什么资格要求？")
         self.assertIs(workflow.evidence_check(historical, hits[0]), True)
         self.assertIs(workflow.evidence_check(current, hits[0]), False)
-        for request in (historical, current):
-            result = await workflow.run(request)
-            self.assertEqual(result.status, "insufficient_evidence")
+        result = await workflow.run(historical)
+        self.assertEqual(result.answer_mode, "historical")
+        self.assertIn("2026年历史资料", result.answer)
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+        result = await workflow.run(current)
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_rules_with_bm25_and_qwen_adapter(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-LAB-INTRO"
+        metadata.title = "合成测试：计算机学院实验室研究方向简介"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "研究方向与公开介绍"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-intro.htm"
+        metadata.applicability_raw = None
+        self.package.chunks[0].content = "EDA实验室研究方向为集成电路设计自动化。"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("EDA 实验室主要研究什么？"))
+        self.assertEqual(result.answer_mode, "current_policy")
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+        for query in ("EDA实验室现在还招人吗？", "我大二能进 EDA 实验室吗？"):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        metadata.source_url = "https://ccds.fzu.edu.cn.example.invalid/lab-intro.htm"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("EDA 实验室主要研究什么？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_public_contact_without_applicability_requires_direct_college_page(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-PUBLIC-CONTACT"
+        metadata.title = "合成测试：学院办公室公开联系方式"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "学院公开信息与联系方式"
+        metadata.business_direction_codes = [direction]
+        metadata.applicability_raw = None
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/contact.htm"
+        self.package.chunks[0].content = "合成测试：学院办公室电话为示例号码，办公地点为示例楼。"
+        query = self.request("学院办公室电话和办公地点是什么？")
+        workflow = await self.workflow()
+        result = await workflow.run(query)
+        self.assertEqual(result.answer_mode, "current_policy")
+        self.assertEqual(result.citations[0].source_url, metadata.source_url)
+
+        result = await workflow.run(self.request("我大二能联系学院办公室办理吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        for url in ("https://news.fzu.edu.cn/test/contact.htm", "https://ccds.fzu.edu.cn.example.invalid/contact.htm",
+                    "http://ccds.fzu.edu.cn/test/contact.htm", "https://fake@ccds.fzu.edu.cn/test/contact.htm"):
+            with self.subTest(url=url):
+                metadata.source_url = url
+                result = await (await self.workflow()).run(query)
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_applicability_is_still_required_for_other_categories(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.title = "合成测试：学院资源资料"
+        metadata.document_type = "学院资源"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/resource.htm"
+        metadata.applicability_raw = None
+        for category, query in (
+            ("通知与办事渠道", "学院通知在哪里看？"),
+            ("培养方案与课程", "计算机专业培养方案有哪些课程？"),
+            ("实验室与科研团队", "我大二能进 EDA 实验室吗？"),
+            ("科研实践与竞赛", "学院有哪些科研项目？"),
+        ):
+            with self.subTest(category=category):
+                metadata.category_name = category
+                self.package.chunks[0].content = f"合成测试：{query} 附合成资料。"
+                workflow = await self.workflow()
+                self.assertTrue(await workflow.retriever.retrieve(RetrievalRequest(query=query)))
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_expired_recruitment_with_bm25_and_qwen_adapter(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-LAB-RECRUITMENT-2026"
+        metadata.title = "合成测试：2026年EDA实验室报名通知"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-recruitment.htm"
+        metadata.applicability_raw = {"适用年度": "2026年", "适用对象": "全体本科生"}
+        metadata.deadline_on = date(2026, 10, 31)
+        metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
+        self.package.chunks[0].content = "EDA实验室报名须提交报名表，报名截止2026-10-31。"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("2026年EDA实验室当时报名流程和截止时间是什么？"))
+        self.assertEqual(result.answer_mode, "historical")
+        self.assertIn("2026年历史资料", result.answer)
+        self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+        for query, history in (
+            ("EDA 实验室现在还招吗？", None),
+            ("现在还可以报名 EDA 实验室吗？", None),
+            ("现在还招吗？", ["EDA 实验室主要研究什么？"]),
+        ):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query, history))
+                self.assertEqual(result.status, "answered")
+                self.assertEqual(result.answer_mode, "historical")
+                self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+                self.assertIn("2026年度报名已于2026年10月31日截止", result.answer)
+                self.assertIn("目前是否有新一轮招募，暂无法确认", result.answer)
+        for query in ("EDA 实验室现在还剩几个名额？", "EDA 实验室现在还招几个？",
+                      "AI 实验室现在还招吗？", "EDA 实验室现在还招吗，想知道剩余名额"):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.answer_mode, "insufficient_data")
+                self.assertEqual(result.citations, [])
+        query = self.request("EDA 实验室现在还招吗？")
+
+        active = self.package.model_copy(deep=True)
+        active.metadata.version_no = "v2"
+        active.metadata.timeliness_verification_status = TimelinessVerificationStatus.CURRENT
+        active.metadata.deadline_on = date(2026, 12, 1)
+        active.chunks[0].content = "EDA实验室正在接收报名，请于2026年12月1日前提交报名表。"
+        await workflow.retriever.index_document(active)
+        result = await workflow.run(query)
+        self.assertEqual(result.answer_mode, "procedure_reference")
+        self.assertEqual(result.citations[0].excerpt, active.chunks[0].content)
+        self.assertEqual(len(self.observed[-1]), 1)
+
+        workflow = await self.workflow()
+        original_check = workflow.evidence_check
+
+        def withdrawn_after_first_check(request, chunk):
+            return check.call_count == 1 and original_check(request, chunk)
+
+        with patch.object(workflow, "evidence_check", side_effect=withdrawn_after_first_check) as check:
+            result = await workflow.run(query)
+        self.assertEqual(check.call_count, 2)
+        self.assertEqual(result.warnings[0].code, "EVIDENCE_APPROVAL_CHANGED")
+        self.assertEqual(result.citations, [])
+
+        for title, applicability, deadline in (
+            (metadata.title, metadata.applicability_raw, None),
+            ("合成测试：EDA实验室报名通知", {"适用对象": "全体本科生"}, metadata.deadline_on),
+        ):
+            with self.subTest(title=title, deadline=deadline):
+                metadata.title, metadata.applicability_raw, metadata.deadline_on = title, applicability, deadline
+                workflow = await self.workflow()
+                result = await workflow.run(query)
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 2)
+
+    async def test_beta_s4_current_recruitment_respects_applicability(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.record_code = "SYNTH-ACTIVE-LAB-RECRUITMENT-2026"
+        metadata.title = "合成测试：2026年EDA实验室报名通知"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-recruitment.htm"
+        metadata.applicability_raw = {"适用年度": "2026年", "适用年级": "大二", "适用对象": "本科生"}
+        metadata.deadline_on = date(2026, 12, 1)
+        self.package.chunks[0].content = "EDA实验室面向大二本科生，报名须提交报名表，报名截止2026-12-01。"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("我大二能报名EDA实验室吗？"))
+        self.assertEqual(result.answer_mode, "procedure_reference")
+        self.assertIn("大二本科生", result.answer)
+        result = await workflow.run(self.request("我大一能报名EDA实验室吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
+
+        metadata.title = "合成测试：EDA实验室长期接收条件"
+        metadata.applicability_raw.pop("适用年度")
+        metadata.deadline_on = None
+        self.package.chunks[0].content = "EDA实验室面向大二本科生，需提交学习经历和项目材料。"
+        result = await (await self.workflow()).run(self.request("我大二能进 EDA 实验室吗？"))
+        self.assertEqual(result.answer_mode, "current_policy")
+        self.assertEqual(result.answer, self.package.chunks[0].content)
+
+    async def test_beta_s4_closure_and_quota_use_the_existing_ask_endpoint(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.title = "合成测试：2026年EDA实验室报名通知"
+        metadata.document_type = "学院资源"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/lab-recruitment.htm"
+        metadata.applicability_raw = {"适用年度": "2026年", "适用对象": "全体本科生"}
+        metadata.deadline_on = date(2026, 10, 31)
+        metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
+        self.package.chunks[0].content = "合成测试：EDA实验室报名截止2026-10-31。"
+        workflow = await self.workflow()
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            closure = await client.post("/api/v1/ask", json={"query": "EDA 实验室现在还招吗？"})
+            quota = await client.post("/api/v1/ask", json={"query": "EDA 实验室现在还剩几个名额？"})
+        self.assertEqual(closure.status_code, 200)
+        self.assertEqual(closure.json()["status"], "answered")
+        self.assertEqual(closure.json()["answer_mode"], "historical")
+        self.assertEqual(closure.json()["citations"][0]["excerpt"], self.package.chunks[0].content)
+        self.assertEqual(quota.status_code, 200)
+        self.assertEqual(quota.json()["status"], "insufficient_evidence")
+        self.assertEqual(quota.json()["answer_mode"], "insufficient_data")
+        self.assertEqual(quota.json()["citations"], [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_qinghe_status_uses_r3_notice_and_preserves_personal_scope(self):
+        direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
+        metadata = self.package.metadata
+        metadata.title = "合成测试：2026-2027学年青禾计划本科生进实验室报名通知"
+        metadata.document_type = "年度通知"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [direction]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/qinghe.htm"
+        metadata.applicability_raw = {"对象": "计算机与大数据学院全体本科生", "批次": "2026—2027学年青禾计划"}
+        metadata.deadline_on = date(2026, 10, 31)
+        self.package.chunks[0].content = "合成测试：青禾计划本科生进实验室报名截止日期为2026年10月31日。"
+        for status in (TimelinessVerificationStatus.HISTORICAL, TimelinessVerificationStatus.EXPIRED):
+            metadata.timeliness_verification_status = status
+            workflow = await self.workflow()
+            for query, history in (
+                ("青禾计划现在还招吗？", None),
+                ("现在还招吗？", ["我想了解青禾计划的实验室。"]),
+            ):
+                with self.subTest(status=status, query=query):
+                    result = await workflow.run(self.request(query, history))
+                    self.assertEqual(result.answer_mode, "historical")
+                    self.assertIn("2026年10月31日截止", result.answer)
+                    self.assertIn("目前是否有新一轮招募，暂无法确认", result.answer)
+                    self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+            for query, history in (
+                ("青禾计划现在还剩几个名额？", None),
+                ("现在还剩几个名额？", ["我想了解青禾计划的实验室。"]),
+            ):
+                with self.subTest(status=status, query=query):
+                    result = await workflow.run(self.request(query, history))
+                    self.assertEqual(result.status, "insufficient_evidence")
+                    self.assertEqual(result.citations, [])
+
+        # The pending-review package's old category must still fail the R3 gate.
+        metadata.category_name = "科研实践与实验室"
+        workflow = await self.workflow()
+        result = await workflow.run(self.request("青禾计划现在还招吗？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    def lab_recruitment_fixture(self, deadline, timeliness, lab="EDA 实验室"):
+        metadata = self.package.metadata
+        metadata.title = f"合成测试：2026年 {lab}报名通知"
+        metadata.document_type = "年度通知"
+        metadata.category_name = "实验室与科研团队"
+        metadata.business_direction_codes = [alpha_business_rules.RESOURCE_DIRECTION_CODE]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/eda.htm"
+        metadata.applicability_raw = {"适用年度": "2026年", "适用对象": "全体本科生"}
+        metadata.deadline_on = deadline
+        metadata.timeliness_verification_status = timeliness
+        self.package.chunks[0].content = (
+            f"合成测试：{lab}计划招收 8 人，报名截止日期为{deadline:%Y-%m-%d}，请提交报名表。"
+        )
+
+    async def test_beta_s4_current_plan_counts_cannot_answer_live_quota(self):
+        self.lab_recruitment_fixture(date(2026, 12, 1), TimelinessVerificationStatus.CURRENT)
+        workflow = await self.workflow()
+        for query in (
+            "EDA 实验室现在还招吗？",
+            "2026年 EDA 实验室计划招几人？",
+            "EDA 实验室目前公布的计划名额是多少？",
+        ):
+            result = await workflow.run(self.request(query))
+            self.assertEqual(result.answer_mode, "procedure_reference")
+            self.assertEqual(result.citations[0].excerpt, self.package.chunks[0].content)
+
+        for query, history in (
+            ("EDA 实验室现在还剩几个名额？", None),
+            ("EDA 实验室目前还招多少人？", None),
+            ("还剩几个名额？", ["2026年 EDA 实验室怎么报名？"]),
+        ):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query, history))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.answer_mode, "insufficient_data")
+                self.assertEqual(result.citations, [])
+                self.assertEqual(result.warnings[0].code, "LIVE_LAB_QUOTA_UNVERIFIED")
+        self.assertEqual(len(self.observed), 3)
+
+    async def test_beta_s4_mixed_lab_research_and_quota_over_http(self):
+        self.lab_recruitment_fixture(date(2026, 12, 1), TimelinessVerificationStatus.CURRENT)
+        workflow = await self.workflow()
+        retriever = workflow.retriever
+        quota_question = "EDA 实验室现在还剩几个名额？"
+        research_question = "EDA 实验室研究什么？"
+        mixed_question = "EDA 实验室研究什么，还有几个名额？"
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            quota = (await client.post("/api/v1/ask", json={"query": quota_question})).json()
+            without_intro = (await client.post("/api/v1/ask", json={"query": mixed_question})).json()
+            self.assertEqual(self.observed, [])
+
+            introduction = self.package.model_copy(deep=True)
+            introduction.metadata.record_code = "SYNTH-EDA-RESEARCH"
+            introduction.metadata.title = "合成测试：EDA 实验室研究方向"
+            introduction.metadata.document_type = "研究方向与公开介绍"
+            introduction.metadata.category_name = "研究方向与公开介绍"
+            introduction.metadata.source_url = "https://ccds.fzu.edu.cn/test/eda-intro.htm"
+            introduction.metadata.applicability_raw = None
+            introduction.metadata.deadline_on = None
+            introduction.chunks[0].content = "合成测试：EDA 实验室研究方向为集成电路设计自动化。"
+            await retriever.index_document(introduction)
+
+            # Both sources enter BM25's results. The rules must keep the annual plan out of the prompt.
+            hits = await retriever.retrieve(RetrievalRequest(query=research_question))
+            self.assertEqual({hit.source_url for hit in hits}, {
+                self.package.metadata.source_url, introduction.metadata.source_url,
+            })
+            for query in (mixed_question, "EDA 实验室还有几个名额，研究什么？",
+                          "EDA 实验室研究什么同时还有几个名额", research_question):
+                with self.subTest(query=query):
+                    response = await client.post("/api/v1/ask", json={"query": query})
+                    self.assertEqual(response.status_code, 200)
+                    result = response.json()
+                    self.assertEqual((result["status"], result["answer_mode"]), ("answered", "current_policy"))
+                    self.assertIn("集成电路设计自动化", result["answer"])
+                    self.assertNotIn("8 人", result["answer"])
+                    self.assertEqual([citation["excerpt"] for citation in result["citations"]], [introduction.chunks[0].content])
+                    self.assertEqual([entry["content"] for entry in self.observed[-1]], [introduction.chunks[0].content])
+                    if query == research_question:
+                        self.assertEqual(result["warnings"], [])
+                    else:
+                        self.assertIn("暂无经过核验的实时剩余名额", result["answer"])
+                        self.assertEqual([warning["code"] for warning in result["warnings"]], ["LIVE_LAB_QUOTA_UNVERIFIED"])
+
+        for result in (quota, without_intro):
+            self.assertEqual((result["status"], result["answer_mode"]), ("insufficient_evidence", "insufficient_data"))
+            self.assertEqual(result["citations"], [])
+            self.assertIn("LIVE_LAB_QUOTA_UNVERIFIED", [warning["code"] for warning in result["warnings"]])
+        self.assertEqual(len(self.observed), 4)
+
+    async def test_beta_cross_domain_quota_reaches_the_original_workflow_over_http(self):
+        workflow = await self.workflow()
+        clarification = workflow.clarification_rule
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            for query in (
+                "EDA 实验室研究什么？另外，奖学金还有几个名额？",
+                "EDA 实验室研究什么？另外说一下奖学金，还剩几个名额？",
+            ):
+                with self.subTest(query=query), patch.object(workflow, "clarification_rule", wraps=clarification) as rule:
+                    response = await client.post("/api/v1/ask", json={"query": query})
+                    self.assertEqual(response.status_code, 200)
+                    result = response.json()
+                    self.assertEqual(rule.call_args.args[0].query, query)
+                    self.assertEqual(result["status"], "needs_clarification")
+                    self.assertEqual(result["clarifying_question"], alpha_business_rules.QUESTION_SCHOLARSHIP_CATEGORY)
+                    self.assertEqual(result["warnings"], [])
+
+            query = "EDA 实验室研究什么？另外，优秀学生综合奖学金还有几个名额？"
+            with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+                response = await client.post("/api/v1/ask", json={"query": query})
+            self.assertEqual(response.status_code, 200)
+            result = response.json()
+            self.assertEqual(retrieve.call_args.args[0].query, query)
+            self.assertEqual(result["status"], "insufficient_evidence")
+            self.assertEqual(result["citations"], [])
+            self.assertNotIn("LIVE_LAB_QUOTA_UNVERIFIED", [warning["code"] for warning in result["warnings"]])
+
+            query = "EDA 实验室现在还剩几个名额？另外，奖学金还有几个名额？"
+            with patch.object(workflow, "clarification_rule", wraps=clarification) as rule:
+                response = await client.post("/api/v1/ask", json={"query": query})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(rule.call_args.args[0].query, "奖学金还有几个名额")
+            result = response.json()
+            self.assertEqual(result["clarifying_question"], alpha_business_rules.QUESTION_SCHOLARSHIP_CATEGORY)
+            self.assertEqual([warning["code"] for warning in result["warnings"]], ["LIVE_LAB_QUOTA_UNVERIFIED"])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_year_reply_keeps_historical_curriculum_intent_over_http(self):
+        metadata = self.package.metadata
+        metadata.title = "合成测试：2024年计算机科学与技术专业旧版培养方案"
+        metadata.document_type = "培养方案"
+        metadata.category_name = "培养方案与课程"
+        metadata.business_direction_codes = [alpha_business_rules.RESOURCE_DIRECTION_CODE]
+        metadata.source_url = "https://ccds.fzu.edu.cn/test/curriculum.htm"
+        metadata.applicability_raw = {"适用年度": "2024年", "适用专业": "计算机科学与技术"}
+        metadata.timeliness_verification_status = TimelinessVerificationStatus.SUPERSEDED
+        self.package.chunks[0].content = "合成测试：2024年旧版培养方案规定开设离散数学与编译原理。"
+        workflow = await self.workflow()
+        hit = (await workflow.retriever.retrieve(RetrievalRequest(query="2024年培养方案")))[0]
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            first = (await client.post("/api/v1/ask", json={
+                "query": "以前计算机科学与技术专业的旧版培养方案有哪些课程？",
+            })).json()
+            self.assertEqual(first["status"], "needs_clarification")
+            session = first["conversation_id"]
+            historical = (await client.post("/api/v1/ask", json={"query": "2024年呢？", "conversation_id": session})).json()
+            current = (await client.post("/api/v1/ask", json={
+                "query": "计算机科学与技术专业现在的培养方案有哪些课程？", "conversation_id": session,
+            })).json()
+        self.assertEqual(historical["status"], "answered")
+        self.assertEqual(historical["answer_mode"], "historical")
+        self.assertEqual(historical["citations"][0]["chunk_id"], str(hit.chunk_id))
+        self.assertEqual(current["status"], "insufficient_evidence")
+        self.assertEqual(current["citations"], [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_short_registration_reply_uses_expired_lab_notice_over_http(self):
+        for lab in ("EDA 实验室", "人工智能自主创新实验室", "福州大学图机器学习课题组",
+                    "网络流量分析与异常检测课题组", "EDA创新实验室", "“AI+复杂工业系统”创新实验室"):
+            with self.subTest(lab=lab):
+                await self.assert_short_registration_reply(lab)
+
+    async def assert_short_registration_reply(self, lab):
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+        workflow = await self.workflow()
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        calls_before = len(self.observed)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            first = (await client.post("/api/v1/ask", json={"query": f"2026年{lab}怎么报名？"})).json()
+            follow_up = (await client.post("/api/v1/ask", json={
+                "query": "还可以报名吗？", "conversation_id": first["conversation_id"],
+            })).json()
+        self.assertEqual(first["answer_mode"], "historical")
+        self.assertEqual(follow_up["status"], "answered")
+        self.assertEqual(follow_up["answer_mode"], "historical")
+        self.assertIn("2026年10月31日截止", follow_up["answer"])
+        self.assertEqual(follow_up["citations"], first["citations"])
+        self.assertEqual(len(self.observed), calls_before + 1)
+
+    async def test_beta_s4_switching_named_labs_discards_previous_lab_and_intent_over_http(self):
+        first_lab = "人工智能自主创新实验室"
+        second_lab = "福州大学图机器学习课题组"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, first_lab)
+        first_excerpt = self.package.chunks[0].content
+        workflow = await self.workflow()
+        self.lab_recruitment_fixture(date(2026, 9, 30), TimelinessVerificationStatus.EXPIRED, second_lab)
+        self.package.metadata.record_code = "SYNTH-GRAPH-RECRUITMENT"
+        await workflow.retriever.index_document(self.package)
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            first = (await client.post("/api/v1/ask", json={"query": f"2026年{first_lab}怎么报名？"})).json()
+            self.assertEqual(first["citations"][0]["excerpt"], first_excerpt)
+            session = first["conversation_id"]
+            with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+                switch = (await client.post("/api/v1/ask", json={
+                    "query": f"那{second_lab}研究什么？", "conversation_id": session,
+                })).json()
+                self.assertEqual(retrieve.call_args.args[0].query, f"那{second_lab}研究什么？")
+            follow_up = (await client.post("/api/v1/ask", json={
+                "query": "还可以报名吗？", "conversation_id": session,
+            })).json()
+        self.assertEqual(switch["status"], "insufficient_evidence")
+        self.assertEqual(switch["citations"], [])
+        self.assertEqual((follow_up["status"], follow_up["answer_mode"]), ("answered", "historical"))
+        self.assertIn("2026年9月30日截止", follow_up["answer"])
+        self.assertEqual([citation["excerpt"] for citation in follow_up["citations"]], [self.package.chunks[0].content])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_lab_name_disambiguation_preserves_explicit_applicability_and_review(self):
+        lab = "人工智能自主创新实验室"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+        workflow = await self.workflow()
+        scoped = await workflow.run(self.request(f"2026年{lab}是否接收人工智能专业学生？"))
+        self.assertEqual(scoped.status, "insufficient_evidence")
+        self.assertEqual(scoped.citations, [])
+
+        self.package.metadata.temporal_notes["human_approved"] = False
+        await workflow.retriever.index_document(self.package)
+        hit = (await workflow.retriever.retrieve(RetrievalRequest(query=lab)))[0]
+        self.assertIs(workflow.retriever.get_document_metadata(hit.version_id).temporal_notes["human_approved"], False)
+        pending = await workflow.run(self.request("还可以报名吗？", [f"2026年{lab}怎么报名？"]))
+        self.assertEqual(pending.status, "insufficient_evidence")
+        self.assertEqual(pending.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_verified_team_registration_and_quota_over_http(self):
+        for lab in ("福州大学超算团队", "ROIS 团队"):
+            with self.subTest(lab=lab):
+                self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+                workflow = await self.workflow()
+                service = ConversationAgentService(workflow, InMemoryConversationStore())
+                calls = len(self.observed)
+                async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                             base_url="http://test") as client:
+                    first = (await client.post("/api/v1/ask", json={"query": f"{lab}怎么报名？"})).json()
+                    self.assertEqual((first["status"], first["answer_mode"]), ("answered", "historical"))
+                    self.assertIn("报名已截止", first["answer"])
+                    self.assertIn("请提交报名表", first["answer"])
+                    self.assertEqual(first["citations"][0]["excerpt"], self.package.chunks[0].content)
+                    for query, code in (("还可以报名吗？", "HISTORICAL_POLICY"),
+                                        ("现在还剩几个名额？", "LIVE_LAB_QUOTA_UNVERIFIED")):
+                        result = (await client.post("/api/v1/ask", json={
+                            "query": query, "conversation_id": first["conversation_id"],
+                        })).json()
+                        self.assertEqual(result["warnings"][0]["code"], code)
+                        if query.startswith("还可以"):
+                            self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
+                            self.assertIn("2026年10月31日截止", result["answer"])
+                            self.assertEqual(result["citations"], first["citations"])
+                        else:
+                            self.assertEqual((result["status"], result["answer_mode"]),
+                                             ("insufficient_evidence", "insufficient_data"))
+                            self.assertEqual(result["citations"], [])
+                self.assertEqual(len(self.observed), calls + 1)
+
+    async def test_beta_s4_verified_team_needs_matching_reviewed_recruitment_evidence(self):
+        lab = "ROIS 团队"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED,
+                                     "福州大学超算团队")
+        workflow = await self.workflow()
+        result = await workflow.run(self.request(f"{lab}怎么报名？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
+
+        candidate_path = (ROOT / "knowledge_base/processed/alpha/pending-review"
+                          / "qinghe-b8-2026-11-23/qinghe-r3.json")
+        candidate = DocumentPackage.model_validate_json(candidate_path.read_bytes())
+        self.assertEqual(candidate.metadata.retrieval_status, "blocked")
+        self.assertIs(candidate.metadata.temporal_notes["human_approved"], False)
+        # Even an accidental copy into an approved directory must stay excluded.
+        candidate_dir = self.root / "pending-fixture"
+        candidate_dir.mkdir()
+        (candidate_dir / candidate_path.name).write_bytes(candidate_path.read_bytes())
+        pending, report = await load_approved_alpha_retriever(
+            file_root=self.root, corpus_dir=candidate_dir, allow_missing=False,
+        )
+        self.assertEqual(report.loaded_packages, ())
+        self.assertEqual(await pending.retrieve(RetrievalRequest(query=lab)), [])
+        source_info = "合成测试：ROIS 团队需提交报名表。"
+        self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED, lab)
+        self.package.metadata.deadline_on = None
+        for content, expected_deadline in (
+            (source_info, None),
+            (source_info + "报名截止日期为2026年10月31日。", "2026年10月31日"),
+            (source_info + "请于10月31日前提交。", "10月31日"),
+        ):
+            with self.subTest(content=content):
+                self.package.chunks[0].content = content
+                workflow = await self.workflow()
+                result = await workflow.run(self.request("还可以报名吗？", [f"{lab}怎么报名？"]))
+                self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
+                self.assertIn("截止", result.answer)
+                self.assertEqual("月" in result.answer, expected_deadline is not None)
+                if expected_deadline:
+                    self.assertIn(expected_deadline, result.answer)
+                self.assertEqual(result.citations[0].excerpt, content)
+
+        self.package.metadata.temporal_notes["human_approved"] = False
+        await workflow.retriever.index_document(self.package)
+        result = await workflow.run(self.request(f"{lab}怎么报名？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_verified_team_purpose_intro_and_current_plan(self):
+        lab = "ROIS 团队"
+        self.lab_recruitment_fixture(date(2026, 12, 1), TimelinessVerificationStatus.CURRENT, lab)
+        workflow = await self.workflow()
+        intro = self.package.model_copy(deep=True)
+        intro.metadata.record_code = "SYNTH-ROIS-INTRO"
+        intro.metadata.title = "合成测试：ROIS 团队研究方向"
+        intro.metadata.category_name = "研究方向与公开介绍"
+        intro.metadata.applicability_raw = None
+        intro.metadata.deadline_on = None
+        intro.metadata.document_type = "研究方向与公开介绍"
+        intro.chunks[0].content = "合成测试：ROIS 团队研究方向为合成示例。"
+        await workflow.retriever.index_document(intro)
+        result = await workflow.run(self.request(lab))
+        self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_LAB_PURPOSE)
+        for query, history in ((f"{lab}研究什么？", []), ("研究什么？", [lab])):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query, history))
+                self.assertEqual(result.answer_mode, "current_policy")
+                self.assertEqual([citation.excerpt for citation in result.citations], [intro.chunks[0].content])
+                self.assertEqual([entry["content"] for entry in self.observed[-1]], [intro.chunks[0].content])
+        active = await workflow.run(self.request(f"{lab}怎么报名？"))
+        self.assertEqual(active.answer_mode, "procedure_reference")
+        self.assertEqual([citation.excerpt for citation in active.citations], [self.package.chunks[0].content])
+        for query, history in ((f"{lab}现在还剩几个名额？", []), ("现在还剩几个名额？", [f"{lab}怎么报名？"])):
+            result = await workflow.run(self.request(query, history))
+            self.assertEqual(result.warnings[0].code, "LIVE_LAB_QUOTA_UNVERIFIED")
             self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 3)
+
+    async def test_beta_team_routing_keeps_unknown_and_competition_teams_out_of_s4(self):
+        workflow = await self.workflow()
+        with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+            for query in ("陌生团队怎么报名？", "NOTROIS 团队怎么报名？", "福州大学超算团队二队怎么报名？"):
+                with self.subTest(query=query):
+                    result = await workflow.run(self.request(query, ["ROIS 团队怎么报名？"]))
+                    self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_TOPIC)
+            for history, expected in (
+                ([], alpha_business_rules.QUESTION_COMPETITION_NAME),
+                (["蓝桥杯竞赛怎么报名？"], alpha_business_rules.QUESTION_LEVEL),
+                (["ROIS 团队怎么报名？"], alpha_business_rules.QUESTION_COMPETITION_NAME),
+            ):
+                result = await workflow.run(self.request("我们竞赛团队还能报名吗？", history))
+                self.assertEqual(result.clarifying_question, expected)
+            result = await workflow.run(self.request("ROIS 团队参加蓝桥杯竞赛怎么报名？"))
+            self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_LEVEL)
+            retrieve.assert_not_awaited()
         self.assertEqual(self.observed, [])
 
     async def test_clarification_and_evidence_share_injected_clock(self):
@@ -930,22 +1553,8 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
             llm_client=self.llm, today=lambda: date(2030, 1, 1))
         result = await workflow.run(query)
         self.assertEqual(result.status, "needs_clarification")
-        self.assertEqual(result.clarifying_question, self.rules.QUESTION_RECOMMENDATION_OBJECT)
+        self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_RECOMMENDATION_OBJECT)
         self.assertEqual(self.observed, [])
-
-    async def test_merged_retriever_matches_latest_upstream_without_replacement(self):
-        # Actual imported main implementation, not the temporary PR module.
-        self.assertEqual((ROOT / "backend/retrieval/local.py").read_bytes().replace(b"\r\n", b"\n"),
-            (Path(os.environ["ALPHA_UPSTREAM_SNAPSHOT"]) / "retrieval/local.py").read_bytes().replace(b"\r\n", b"\n"))
-        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
-        directory = self.root / "merged-approved"
-        directory.mkdir()
-        (directory / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
-        store, report = await load_approved_alpha_retriever(corpus_dir=directory,
-            file_root=self.root, allow_missing=False)
-        self.assertTrue(report.loaded_packages)
-        workflow = await create_alpha_workflow(file_root=self.root, retriever=store, llm_client=self.llm)
-        self.assertEqual((await workflow.run(self.request())).status, "answered")
 
     def recommendation_package(self):
         self.package.metadata.record_code = "SYNTH-2027-推免资格推荐"
@@ -993,31 +1602,11 @@ class UpstreamRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
             result = await workflow.run(self.request(query, history))
         self.assertEqual(result.status, "needs_clarification")
-        self.assertEqual(result.clarifying_question, self.rules.QUESTION_ORDER)
+        self.assertEqual(result.clarifying_question, alpha_business_rules.QUESTION_ORDER)
         self.assertEqual(result.citations, [])
         retrieve.assert_not_called()
         self.assertEqual(self.observed, [])
 
-    async def test_merged_business_rules_match_snapshot_and_run_without_snapshot_replacement(self):
-        source = ROOT / "backend/services/alpha_business_rules.py"
-        self.assertEqual(source.read_bytes().replace(b"\r\n", b"\n"),
-            (Path(os.environ["ALPHA_UPSTREAM_SNAPSHOT"]) / "alpha_business_rules.py").read_bytes().replace(b"\r\n", b"\n"))
-        spec = importlib.util.spec_from_file_location("_alpha_merged_rules", source)
-        merged = importlib.util.module_from_spec(spec)
-        sys.modules[spec.name] = merged
-        spec.loader.exec_module(merged)
-        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
-        directory = self.root / "merged-all-approved"
-        directory.mkdir()
-        (directory / "policy.json").write_text(self.package.model_dump_json(), encoding="utf-8")
-        store, report = await load_approved_alpha_retriever(corpus_dir=directory,
-            file_root=self.root, allow_missing=False)
-        self.assertTrue(report.loaded_packages)
-        with patch.dict(sys.modules, {"backend.services.alpha_business_rules": merged}):
-            workflow = await create_alpha_workflow(file_root=self.root, retriever=store,
-                llm_client=self.llm, today=lambda: date(2026, 11, 20))
-        self.assertIs(workflow.clarification_rule.func, merged.alpha_clarification_rule)
-        self.assertEqual((await workflow.run(self.request())).status, "answered")
 
 
 @unittest.skipUnless(find_spec("backend.services.alpha_business_rules") is not None,
