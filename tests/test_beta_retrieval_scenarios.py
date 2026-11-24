@@ -18,6 +18,7 @@ from backend.contracts import (
     RetrievalStatus,
 )
 from backend.retrieval import load_approved_alpha_retriever
+from scripts.eval_beta_bm25_comparison import run_comparison
 from scripts.eval_beta_retrieval import (
     materialize_synthetic_corpus,
     run_corpus_probe,
@@ -311,6 +312,23 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(s4_res.status, AnswerStatus.INSUFFICIENT_EVIDENCE)
             self.assertEqual(llm.calls, 1)
             self.assertEqual(s4_res.citations, [])
+
+    async def test_title_plus_content_bm25_has_no_degradation_vs_content_only_stress_suite(self):
+        comparison = await run_comparison()
+        content_only = comparison["content_only"]
+        title_plus = comparison["title_and_content"]
+
+        self.assertGreaterEqual(title_plus["chunk_count"], 35)
+        self.assertGreaterEqual(title_plus["query_count"], 20)
+        self.assertGreaterEqual(title_plus["hit_at_1"], content_only["hit_at_1"])
+        self.assertGreaterEqual(title_plus["hit_at_3"], content_only["hit_at_3"])
+        self.assertGreaterEqual(title_plus["mrr"], content_only["mrr"])
+        self.assertLessEqual(
+            title_plus["long_doc_boilerplate_in_top3"],
+            content_only["long_doc_boilerplate_in_top3"],
+        )
+        for cat in ("long_doc", "similar_title", "same_name_lab", "cross_direction"):
+            self.assertEqual(title_plus["by_category"][cat]["hit_at_1"], 1.0, msg=cat)
 
 
 if __name__ == "__main__":

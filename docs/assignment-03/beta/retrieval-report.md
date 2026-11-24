@@ -1,8 +1,8 @@
-# Beta 本地知识检索（BM25）阶段性测试与验证报告
+# Beta 本地知识检索（BM25）技术交付与合成评测报告
 
-2026-11-23 · 知识库检索与资料入库（王智洋）
+2026-11-24 · 知识库检索与资料入库（王智洋）
 
-> **数据边界说明**：本报告当前记录的是 **Beta 合成测试资料（`example.invalid`）** 上的四领域基线验收与加载门禁验证结果，**不代表正式审核政策资料已完成放行**。仓库 `knowledge_base/processed/alpha/approved/` 目前尚未合入经人工签核的正式资料包；待丁晓炜交付正式整理包并经罗宇泽最终审核放行后，将使用同一套评测脚本补充正式资料的检索验收记录。
+> **验收边界声明**：本报告与 PR #53 **仅代表 Beta 检索技术交付、BM25 对照评测与合成四领域基线验证，不代表正式政策资料检索验收完成**。仓库 `knowledge_base/processed/alpha/approved/` 当前正式包数为 0，PR #41 交付的 9 包 514 片段全部保持 `retrieval_status=blocked`、`human_approved=false`。待正式资料经人工签核放行至 `approved/` 后，将另行补充真实四领域查询集、期望片段标注、原文对照及真实检索指标。
 
 ## 一、数据库五大业务方向字典核对
 
@@ -75,7 +75,44 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 - `get_document_metadata(hit.version_id)` 完整返回 `record_code`、`version_no`、`applicability_raw`、`deadline_on`、`temporal_notes`、`source_verification_status`、`timeliness_verification_status`、`retrieval_status`；
 - `get_parsed_chunk(hit.chunk_id)` 完整返回 `content`、`locator`、`locator_note`、`original_locator`、`source_file_key`、`chunk_no`，且与 `RetrievedChunk` 一一对应。
 
-## 五、待完成事项（依赖上游正式资料交接）
+## 五、BM25 对照评测（仅正文 vs 标题+正文）
 
-1. 待丁晓炜完成 Beta 正式资料整理并经罗宇泽人工审核放行至 `knowledge_base/processed/alpha/approved/` 后，执行真实正式资料包的加载过滤、S1–S4 四领域检索与原文对照验收，并将真实验收结果补充至本报告。
-2. 配合吴诗莹完成 Beta `AgentWorkflow` 端到端联调（验证检索召回、业务规则门禁与 Citation 引用链路）。
+为验证在 `LocalBM25Retriever` 中引入 `metadata.title` 联合索引后，标题词是否会在长文档、相似政策标题、同名实验室或跨业务方向场景下挤占 Top-K，使用独立压力合成集（8 份文档、39 个片段、20 条查询，见 `scripts/eval_beta_bm25_comparison.py`，全部采用 `example.invalid` 虚构来源，不触碰真实候选资料）对比了「仅正文 BM25」与「标题+正文 BM25」：
+
+复现命令：
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_bm25_comparison
+```
+
+| 指标 / 维度 | 仅正文 BM25 | 标题+正文 BM25（当前实现） | 变化 |
+|---|---|---|---|
+| 文档 / 片段 / 查询规模 | 8 / 39 / 20 | 8 / 39 / 20 | — |
+| 总体 Hit@1 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
+| 总体 Hit@3 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
+| 总体 MRR | 1.0 | 1.0 | 0.0 |
+| 长文档（6 查询）Top-3 模板条款（总则/组织机构/附则/联系人）挤占次数 | 4 | 1 | **-3（下降）** |
+| 相似政策标题区分（4 查询：本科生办法 / 星火通知 / 研究生细则）Hit@1 | 1.0 | 1.0 | 0.0 |
+| 同名实验室区分（4 查询：智能感知实验室 R3 招募 vs R4 介绍、视觉组 vs 语音组）Hit@1 | 1.0 | 1.0 | 0.0 |
+| 标题+正文联合查询（4 查询：政策名仅出现在标题）Hit@1 | 1.0 | 1.0 | 0.0 |
+| 跨业务方向全库竞争排序（2 查询，`business_direction_code=None`）Hit@1 | 1.0 | 1.0 | 0.0 |
+
+**结论**：标题+正文 BM25 在长文档、相似标题、同名实验室及跨业务方向竞争排序中**均无检索退化**，且长文档 Top-3 模板条款挤占次数由 4 次降至 1 次；保留当前 `LocalBM25Retriever` 实现，不扩展向量检索或重排模型。完整对照 JSON 见 [retrieval-bm25-comparison.json](evidence/retrieval-bm25-comparison.json)。
+
+## 六、Python 3.10 回归与 PR #41 9 包 514 片段只读校验
+
+测试环境：`Python 3.10.16`（`.venv`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖；说明：本机 Python 3.10 为 3.10.16，与团队 Python 3.10.x 运行环境同系列兼容）。完整终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
+
+| 验证项 | 命令 | 实际结果 |
+|---|---|---|
+| 检索、加载器与四领域专项 | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests/test_local_retrieval.py tests/test_alpha_corpus.py tests/test_beta_retrieval_scenarios.py -v` | **36 passed, 12 subtests passed** |
+| 后端全量 `pytest` | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **513 passed, 28 skipped, 154 subtests passed**（0 失败） |
+| S1–S4 合成基线脚本 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval` | Hit@1 = 1.0 / Hit@3 = 1.0 / MRR = 1.0，拦截 2 份未开放诱饵 |
+| Agent 离线联调 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.check_retrieval_agent` | **PASS: 4 Agent -> Retriever cases** |
+| PR #41 9 包 514 片段只读校验 | `.\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_policy_handoff` | 9 包 / 514 片段（S1:310 / S2:127 / S3:29 / S4:48）完整离线索引；全部 `blocked` 资料 `get_document_metadata()` 与 `get_parsed_chunk()` 均返回 `None`，正式检索命中 0，`approved/` 正式包数为 0 |
+| 格式检查 | `git diff --check` | 退出码 0 |
+
+## 七、后续正式资料验收事项（另行提交，不阻塞 PR #53）
+
+1. 待正式政策资料经人工签核放行至 `knowledge_base/processed/alpha/approved/` 后，另行补充真实四领域查询集、期望片段标注、原文/章节对照及真实检索指标。
+2. 配合吴诗莹完成 Beta `AgentWorkflow`（PR #46 合入后）端到端联调与回归测试。
