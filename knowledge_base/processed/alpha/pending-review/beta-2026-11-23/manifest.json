@@ -44,9 +44,9 @@
       "chunk_count": 33,
       "source_units": 33,
       "source_verification_status": "verified",
-      "timeliness_verification_status": "uncertain",
+      "timeliness_verification_status": "expired",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "xinghuo",
