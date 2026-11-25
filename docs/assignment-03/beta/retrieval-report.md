@@ -59,15 +59,15 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 
 | 编号 | 场景 | 查询语句 | 过滤方向 | 期望目标 | 命中排名 | Top-1 定位追溯（`locator` / `original_locator`） | BM25 分数 | 人工相关性核查 |
 |---|---|---|---|---|---|---|---|---|
-| Q1-S1-EN | S1 竞赛认定 | `ACM-ICPC 国家级一等奖 创新创业学分` | `COMPETITION_RESEARCH` | `BETA-SYN-S1-2026#1` | 1 | `第 1 章 第 3 条` / `PDF 第 2 页` | 7.099617 | 准确命中 A 类竞赛与创新学分条款 |
-| Q2-S1-ZH | S1 竞赛认定 | `竞赛认定申请 综测科创加分` | `COMPETITION_RESEARCH` | `BETA-SYN-S1-2026#2` | 1 | `第 2 章 第 7 条` / `PDF 第 4 页` | 4.418056 | 准确命中认定流程与综测加分条款 |
-| Q3-S2-TITLE | S2 奖学金申请 | `院级奖学金 评选通知 GPA排名` | `POLICY_AFFAIRS` | `BETA-SYN-S2-2026#1` | 1 | `第 1 节` / `PDF 第 1 页` | 8.801863 | 标题词 + GPA 正文词共同生效，置顶条件片段 |
-| Q4-S2-DEADLINE | S2 奖学金申请 | `奖学金申请表 成绩单 截止时间` | `POLICY_AFFAIRS` | `BETA-SYN-S2-2026#2` | 1 | `第 2 节` / `PDF 第 2 页` | 7.146789 | 准确命中材料与截止时间片段 |
-| Q5-S3-EN | S3 推免条件咨询 | `推免研究生 CET-6 425分 无不及格` | `EDUCATION_CAREER` | `BETA-SYN-S3-2027#1` | 1 | `第 3 条` / `PDF 第 1 页` | 5.623965 | 中英文外语与学业条件准确召回 |
-| Q6-S3-BONUS | S3 推免条件咨询 | `CCF推荐会议 推免学术专长加分` | `EDUCATION_CAREER` | `BETA-SYN-S3-2027#2` | 1 | `第 8 条` / `PDF 第 3 页` | 6.465476 | 准确命中学术专长加分条款 |
-| Q7-S4-LAB | S4 学院资源导航 | `人工智能与大数据实验室 GPU算力申请` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-R3-2026#1` | 1 | `第 1 部分` / `网页 第 1 节` | 8.156222 | 对齐 R3 `实验室与科研团队`，准确命中实验室与 GPU 渠道 |
-| Q8-S4-OFFICE | S4 学院资源导航 | `本科培养方案 教务办 成绩单盖章` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-R2-2026#1` | 1 | `第 2 部分` / `网页 第 2 节` | 9.056452 | 对齐 R2 `培养方案与课程`，准确命中培养方案与教务办窗口 |
-| Q9-MULTI-DIR | 多业务方向（全库） | `竞赛获奖 综测加分 奖学金申请表` | `None`（全库） | `BETA-SYN-S2-2026#*` | 1 | Top-4 同时召回 S2、S1、S3 相关条款 | 11.496657 | 未出现跨方向漏检 |
+| Q1-S1-EN | S1 竞赛认定 | `ACM-ICPC 国家级一等奖 创新创业学分` | `COMPETITION_RESEARCH` | `BETA-SYN-S1-2026#1` | 1 | `第 1 章 第 3 条` / `PDF 第 2 页` | 7.839463 | 准确命中 A 类竞赛与创新学分条款 |
+| Q2-S1-ZH | S1 竞赛认定 | `竞赛认定申请 综测科创加分` | `COMPETITION_RESEARCH` | `BETA-SYN-S1-2026#2` | 1 | `第 2 章 第 7 条` / `PDF 第 4 页` | 4.94434 | 准确命中认定流程与综测加分条款 |
+| Q3-S2-TITLE | S2 奖学金申请 | `院级奖学金 评选通知 GPA排名` | `POLICY_AFFAIRS` | `BETA-SYN-S2-2026#1` | 1 | `第 1 节` / `PDF 第 1 页` | 5.026608 | 标题词 + GPA 正文词共同生效，置顶条件片段 |
+| Q4-S2-DEADLINE | S2 奖学金申请 | `奖学金申请表 成绩单 截止时间` | `POLICY_AFFAIRS` | `BETA-SYN-S2-2026#2` | 1 | `第 2 节` / `PDF 第 2 页` | 6.64585 | 准确命中材料与截止时间片段 |
+| Q5-S3-EN | S3 推免条件咨询 | `推免研究生 CET-6 425分 无不及格` | `EDUCATION_CAREER` | `BETA-SYN-S3-2027#1` | 1 | `第 3 条` / `PDF 第 1 页` | 6.541245 | 中英文外语与学业条件准确召回 |
+| Q6-S3-BONUS | S3 推免条件咨询 | `CCF推荐会议 推免学术专长加分` | `EDUCATION_CAREER` | `BETA-SYN-S3-2027#2` | 1 | `第 8 条` / `PDF 第 3 页` | 6.415483 | 准确命中学术专长加分条款 |
+| Q7-S4-LAB | S4 学院资源导航 | `人工智能与大数据实验室 GPU算力申请` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-R3-2026#1` | 1 | `第 1 部分` / `网页 第 1 节` | 9.098776 | 对齐 R3 `实验室与科研团队`，准确命中实验室与 GPU 渠道 |
+| Q8-S4-OFFICE | S4 学院资源导航 | `本科培养方案 教务办 成绩单盖章` | `COLLEGE_RESOURCES` | `BETA-SYN-S4-R2-2026#1` | 1 | `第 2 部分` / `网页 第 2 节` | 8.16929 | 对齐 R2 `培养方案与课程`，准确命中培养方案与教务办窗口 |
+| Q9-MULTI-DIR | 多业务方向（全库） | `竞赛获奖 综测加分 奖学金申请表` | `None`（全库） | `BETA-SYN-S2-2026#*` | 1 | Top-4 同时召回 S2、S1、S3 相关条款 | 10.601959 | 未出现跨方向漏检 |
 
 ### 元数据与原始片段追溯核验
 
@@ -126,7 +126,7 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 | BM25 三路对照评测 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_bm25_comparison` | `title_and_content` 单目标 20/20 Hit@1=1.0，多目标 4/4 Recall@5=1.0（旧版等权拼接 `0.625`） |
 | S1–S4 合成基线脚本 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval` | Hit@1 = 1.0 / Hit@3 = 1.0 / MRR = 1.0，拦截 2 份未开放诱饵 |
 | Agent 离线联调 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.check_retrieval_agent` | **PASS: 4 Agent -> Retriever cases** |
-| PR #41 9 包 514 片段隔离检查 | `knowledge_base.processing.check_beta_policy_handoff` + 独立只读隔离脚本 | 说明：`main` 上的 PR #56（`1060688`）已将 6 份待审核包更新为 `human_approved=true`（仍保持 `blocked`），而未同步更新 `check_beta_policy_handoff.py` 第 34 行的旧断言（本 PR 按要求未改动 `knowledge_base/processing/` 及候选资料）；独立只读校验确认：全部 9 包 / 514 片段（S1:310 / S2:127 / S3:29 / S4:48，含 6 份 `human_approved=true` 但 `blocked` 的包）完整离线索引，所有 `get_document_metadata()` 与 `get_parsed_chunk()` 均返回 `None`，四方向正式检索命中均为 `0`，`load_approved_alpha_retriever()` 在三个目录下加载包数均为 `0` |
+| PR #41 9 包 514 片段隔离检查 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.check_beta_blocked_isolation` | 说明：`main` 上的 PR #56（`1060688`）已将 6 份待审核包更新为 `human_approved=true`（仍保持 `blocked`），而未同步更新 `check_beta_policy_handoff.py` 第 34 行的旧断言（本 PR 按要求未改动 `knowledge_base/processing/` 及候选资料）；独立只读脚本 `scripts/check_beta_blocked_isolation.py` 复核确认：全部 9 包 / 514 片段（S1:310 / S2:127 / S3:29 / S4:48，含 6 份 `human_approved=true` 但 `blocked` 的包）完整离线索引，所有 `get_document_metadata()` 与 `get_parsed_chunk()` 均返回 `None`，四方向正式检索命中均为 `0`，`load_approved_alpha_retriever()` 在三个目录下加载包数均为 `0` |
 | 格式检查 | `git diff --check` | 退出码 0 |
 
 ## 七、后续正式资料验收事项（另行提交，不阻塞 PR #53）

@@ -444,7 +444,8 @@ Traceback (most recent call last):
 ValueError: Handoff must remain unapproved and blocked: competition
 
 === Note on Command 5 (main 179e618) & Independent Read-Only 9-Package 514-Chunk Isolation Check ===
-Note: PR #56 (1060688) updated 6 pending-review packages to temporal_notes.human_approved=true while keeping retrieval_status=blocked, without updating knowledge_base/processing/check_beta_policy_handoff.py line 34. Per review instruction, PR #41/#56 files were NOT modified; independent read-only isolation verification across all 9 packages / 514 chunks follows:
+Note: PR #56 (1060688) updated 6 pending-review packages to temporal_notes.human_approved=true while keeping retrieval_status=blocked, without updating knowledge_base/processing/check_beta_policy_handoff.py line 34. Per review instruction, PR #41/#56 files were NOT modified; standalone read-only check command and output follow:
+$ .\.venv\Scripts\python.exe -X utf8 -m scripts.check_beta_blocked_isolation
 {
   "packages": 9,
   "chunks": 514,
