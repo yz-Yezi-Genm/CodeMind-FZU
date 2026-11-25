@@ -18,25 +18,25 @@
 
 - 审核人：项目组长（本人在对话中确认）；审核日期：2026-11-24。
 - 原始签核：“我已人工复核福大学〔2026〕23号本科生奖学金评定管理办法，同意第01份资料审核通过，认可current时效及上述限定回答范围。先登记签核结论，暂不开放正式检索，继续审核第02份创新创业实践与素质拓展学分认定办法。”
-- 基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：福大-2026-本科奖学金；version_no：beta-review-2026-11-23-1；version_id：c8f6bae5-c663-5a69-a2f8-df8642b62e05；候选包 blob：2af35550bdf5a3233ded158a4fbcb1098a7bf3c1。
+- 基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：福大-2026-本科奖学金；version_no：beta-review-2026-11-23-1；version_id：c8f6bae5-c663-5a69-a2f8-df8642b62e05；候选包 blob：19b9198bbfcf6a996d1f3271cfd260c799e3a756。
 - 来源：https://stuic.fzu.edu.cn/info/1032/6937.htm 。2026-05-18公布施行，第14条废止福大学〔2024〕37号。
 - 现行性辅助核查所用公开证据链接： https://stuic.fzu.edu.cn/xsgl/gzzd.htm 、https://law.fzu.edu.cn/info/1064/13285.htm 、https://bio.fzu.edu.cn/info/1053/4993.htm 、https://miec.fzu.edu.cn/info/1034/3004.htm 。组长认可截至审核日的证据，不代表校方专门出具有效性证明。
 - 辅助比对：59/59正文段落顺序一致、59/59 Markdown与JSON一致、59/59定位一致；HTML SHA-256 cdbb5410575e98f7bcd2a868dedaee1bf535ebb26c5de83c42e731771b90dc8c，Markdown SHA-256 6b47294ea131a6c7f60fa20d4683e4912c7bb5f92651ab64a90ed79ddde58fa0。
 - 拟允许：校级通则中明确的通用参评条件、综合奖学金金额和综测排名门槛、实验班与非实验班评定比例、单项奖学金条件与金额上限、一般评审公示异议流程。
 - 禁止：承诺个人获奖、以GPA排名替代综测排名、把排名门槛当实际获奖比例、无当期通知确认开放申请或实时名额、以通则代替国家或院级/社会专项具体细则。
-- 放行前验收：必须核查多片段证据覆盖，特别是第5条排除条件、第7条排名与比例、向上取整和毕业年级规则，验证上述边界在检索和Agent中真实生效；不得以签核记录替代测试。候选包继续保持 uncertain / blocked / human_approved=false；拟 current 仅为已确认的放行目标状态。
+- 放行前验收：必须核查多片段证据覆盖，特别是第5条排除条件、第7条排名与比例、向上取整和毕业年级规则，验证上述边界在检索和Agent中真实生效；不得以签核记录替代测试。候选包与manifest已同步登记`timeliness_verification_status=current`、`human_approved=true`；`retrieval_status=blocked`保持不变。放行前仍须完成多片段证据覆盖及Agent边界回归验收。
 
 
 ## 02 创新创业实践与素质拓展学分认定管理实施办法
 
 - 审核人：项目组长（本人在对话中确认）；审核日期：2026-11-24。
 - 原始签核：“我已人工复核校教〔2024〕7号创新创业实践与素质拓展学分认定管理实施办法，同意第02份资料限定范围审核通过，认可校级通用办法current时效及上述限制。登记签核结论，暂不开放正式检索，继续审核第03份2026竞赛级别认定目录及三份附件。”
-- 基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：福大-2024-创新创业学分认定；version_no：beta-review-2026-11-23-1；version_id：e77bc47b-d65f-5056-aafd-56db7d294a10；候选包 blob：560614390f54cc40f2ba0f9dd185f48afccba005。
+- 基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：福大-2024-创新创业学分认定；version_no：beta-review-2026-11-23-1；version_id：e77bc47b-d65f-5056-aafd-56db7d294a10；候选包 blob：7696b86fcf8366a335cefdbcdfa2d772e8bade45。
 - 来源：https://jwch.fzu.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbtreeid=1095&wbnewsid=12993 。2024-05-30发布，2024-09-01施行；第27条载2016办法过渡安排和2022办法废止。本次原教务处页面访问受认证限制，辅助核查使用学院官方转载 https://xjzz.fzu.edu.cn/info/1083/3986.htm 以及执行通知 https://jwch.fzu.edu.cn/info/1039/13893.htm 、https://wx.fzu.edu.cn/info/1074/4179.htm 、https://civil.fzu.edu.cn/info/1352/15986.htm 、https://chem.fzu.edu.cn/info/1066/15820.htm 、https://art.fzu.edu.cn/info/1104/10750.htm 。组长认可校级通用办法现行性，不代表所有年级、专业或当期申报均适用。
 - 辅助比对：75/75正文片段匹配；11/11表格、77行及单元格内容/rowspan/colspan匹配；86/86 Markdown与JSON、行号一致。此前未独立重算SHA-256，放行前补验。
 - 拟允许：解释校级通用认定条件、原始分表、累计及重复获奖规则、团队前八名、2学分成绩记载、原则性办理流程。具体竞赛须另核适用目录和获奖时间。
 - 禁止：原始分、学分、综测分直接互换；忽略年级、培养方案、时间及团队排名；承诺认定成功或当前申请开放；擅自解释第22条专业技术证书“学分”与第11条的换算关系。缺乏学院当期通知、专业适用依据或目录时追问/拒答。
-- 放行前验收：补查文件SHA-256，验证竞赛目录跨年度、重复获奖、团队排名、原始分与最终成绩、一次记载限制及第22条单位歧义的实际回答边界。候选包保持 uncertain / blocked / human_approved=false；current为签核认可的限定范围放行目标，并非已入库。
+- 放行前验收：补查文件SHA-256，验证竞赛目录跨年度、重复获奖、团队排名、原始分与最终成绩、一次记载限制及第22条单位歧义的实际回答边界。候选包与manifest已同步登记`timeliness_verification_status=current`、`human_approved=true`；`retrieval_status=blocked`保持不变。放行前仍须补验文件SHA-256并完成列明的回答边界回归。
 
 
 
@@ -44,12 +44,12 @@
 
 - 审核人：项目组长（本人在对话中确认）；审核日期：2026-11-24。
 - 原始签核：“我已人工复核校教〔2026〕9号竞赛级别认定通知及三份附件，同意第03份资料限定范围审核通过，认可2026版目录current时效及上述回答限制。登记签核结论，暂不开放正式检索，继续审核第04份2027届本科推免推荐资格方案。”
-- 基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：福大-2026-竞赛项目级别认定；version_no：beta-review-2026-11-23-1；version_id：92e414c2-6b8c-5f69-b073-05921b0faa55；候选包 blob：276f695cd5a29e68be31e06644dda3356612af23。
+- 基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：福大-2026-竞赛项目级别认定；version_no：beta-review-2026-11-23-1；version_id：92e414c2-6b8c-5f69-b073-05921b0faa55；候选包 blob：830217e8fb85678aae724ef15e942c6a1f6f61af。
 - 来源：https://jwch.fzu.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=14534&wbtreeid=1039 。2026-03-06发布，公布起作为学分认定、绩效核算等依据。公开执行依据：https://wx.fzu.edu.cn/info/1074/4179.htm 、https://art.fzu.edu.cn/info/1104/10750.htm 、https://math.fzu.edu.cn/info/1171/10393.htm 。不同学院历史证书过渡口径不完全一致，计算机学院具体口径尚未核实；本次官方原通知重访遇认证限制，原件核验基于仓库保存的官方快照。
 - 独立技术核验：三份DOCX的205/205数据行、208/208含表头行、962/962单元格（统一空白与NFKC）一致；无gridSpan/vMerge、脚注/尾注引用或相关批注部件；10/10通知正文、3/3附件入口、224/224 Markdown/JSON及行号一致；5/5文件原始字节SHA-256匹配。哈希：competition.md=de6a9907444a99f3bf0aafe30a38286fb43e7223e67c6c0d4607d125bbf8fe0b；福州大学大学生学科竞赛级别认定（直接认定）一览表（2026年版）.docx=99e64a99830e59198843a26a9a2b2db19f326b777000ba1c43721fb57ec300ff；福州大学大学生学科竞赛级别认定一览表（2026版）.docx=596c62ee1f2694b08f421605275e0eb53161bdd5e247a40f149af2feef94704c；福州大学大学生体育类竞赛级别认定一览表（2026版）.docx=07a6abe9417a03e122118d28e1e302937a03ebe41c89261902ab932b21d7dd57；competition.html=3bb57a4513aa4851ce603efd34899b9e1cacd4bcfc09a239e0d9902a916d0042。
 - 拟允许：带2026版限定查询原目录赛事名称、认定级别、附件及序号；按具体赛段、奖项、时间、团队身份等与第02份学分办法联合解释，必要时追问。
 - 禁止：无依据将新版追溯至2026-03-06以前或当天证书；用赛事级别直接替代赛段/获奖等级；目录未列即断言不认定；将学分目录与奖学金A类、综测分混用；体育特殊规则或高水平运动员限制遗漏；教师绩效条文用于学生。跨年度个人认定缺学院口径时拒绝确定结论。
-- 放行前验收：目录准确定位、时间与赛段边界、体育专项、两包联合多证据召回、未知赛事与不同评价体系隔离。候选包保持 uncertain / blocked / human_approved=false；current为签核认可的放行目标。尚未开放正式检索。
+- 放行前验收：目录准确定位、时间与赛段边界、体育专项、两包联合多证据召回、未知赛事与不同评价体系隔离。候选包与manifest已同步登记`timeliness_verification_status=current`、`human_approved=true`；`retrieval_status=blocked`保持不变。跨年度个人认定及计算机学院具体过渡口径未核实，不在签核范围内。
 
 ## 04 2027届本科推免推荐资格方案（暂缓签核；PDF第4页版式复核通过）
 
@@ -72,16 +72,16 @@
 - 审核人：项目组长（本人在对话中确认）；审核日期：2026-11-25。
 - 原始签核：“我已人工复核福州大学计算机与大数据学院（软件学院）2027年推免接收复试方案，同意第05份资料限定范围审核通过，认可expired历史时效及上述限制。ZIP附件填写指导不纳入审核范围。登记签核结论，暂不开放正式检索，继续审核第06份资料。”
 - 官方来源：https://ccds.fzu.edu.cn/info/1138/11961.htm；发布日期：2026-09-17。
-- 候选包：knowledge_base/processed/alpha/pending-review/beta-2026-11-23/retest.json；基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：计算机学院-2026-推免复试参考；version_no：beta-review-2026-11-23-1；version_id：按原审核清单登记；候选包 blob：b57bc91b09dadee4c22bb12a6402b980e59fd05f；共9片段。
+- 候选包：knowledge_base/processed/alpha/pending-review/beta-2026-11-23/retest.json；基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：计算机学院-2026-推免复试参考；version_no：beta-review-2026-11-23-1；version_id：按原审核清单登记；候选包 blob：afd813bfc26f30b699fb709a745f6af91b50d457；共9片段。
 - 签核范围：仅允许解释2027届接收推免生的历史复试方案正文；时效expired；不得回答当前开放报名、剩余名额或下一届规则；ZIP附件填写指导明确排除。
 - 技术核验：retest.md/retest.html/retest.pdf三项SHA-256均与候选包登记一致；9/9 PDF页片段与Markdown内容完全匹配；原件定位PDF p.1—p.9。PDFium九页AI版式对照是既有辅助证据，不记作本次人工目视签核。
-- 正式状态：人工签核台账记录限定范围通过；候选包本身仍保持retrieval_status=blocked、temporal_notes.human_approved=false，未改manifest、approved目录或生产代码。后续另行授权、PR和技术验收后方可放行。
+- 正式状态：人工签核台账记录限定范围通过；候选包与manifest已同步登记`timeliness_verification_status=expired`、`temporal_notes.human_approved=true`及`human_approved=true`；`retrieval_status=blocked`保持不变，未修改approved目录或生产代码。后续仍须另行授权并完成PR/技术验收方可放行。
 
 ## 06 计算机学院各类院级奖学金评选通知（组长已签核：限定范围历史资料；检索仍blocked）
 
 - 人工审核决定：**组长于2026-11-25明确同意限定范围历史审核通过**。组长确认2026评选周期及各专项原文中的业绩参考期间，认可上述奖项名称处理；要求保留33个片段及技术核验结果，`timeliness_verification_status=expired`、`temporal_notes.human_approved=true`，但`retrieval_status=blocked`，暂不开放正式检索。
 - 官方来源：https://ccds.fzu.edu.cn/info/1165/11707.htm；标题：关于做好福州大学计算机与大数据学院各类院级奖学金评选工作的通知；网页发布日期：2026-04-13。
-- 候选包：knowledge_base/processed/alpha/pending-review/beta-2026-11-23/college-scholarship.json；基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：计算机学院-2026-院级奖学金；version_no：beta-review-2026-11-23-1；version_id：d04c3928-f9e5-5c43-95d5-9e82958454b0；候选包blob：11faa79d28ae96907d1e92c54a9dd51569da2dc7；共33片段。
+- 候选包：knowledge_base/processed/alpha/pending-review/beta-2026-11-23/college-scholarship.json；基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：计算机学院-2026-院级奖学金；version_no：beta-review-2026-11-23-1；version_id：d04c3928-f9e5-5c43-95d5-9e82958454b0；候选包blob：028af0c81442d0ec975a6a9229b3f97256525b0f；共33片段。
 - 独立技术核验：college-scholarship.html SHA-256 f481f8e757556a604a72da37de4e0e0de4f448e6dc528444a4a3a37508260e90；college-scholarship.md SHA-256 21e3f431f8b40f7ca8b8403e7e045fef435c5643238cc94b0f8185f211d54201；college-attachments.zip SHA-256 3023a76d80d3ff80ad5fa474727a4d754f1dc3b71774af15588f98505338902d。三项与包内登记一致；33/33 Markdown片段与JSON内容完全一致，33/33原件定位存在且唯一；HTML提取33个来源单元，1877个可见正文字符，未覆盖文本节点0。奖学金类别表共9行（含表头），原件rowspan=3、rowspan=2等合并单元格结构在转换稿中保留。
 - 核心内容：四类院级奖学金。学科竞赛类20名（爱国者之星5000元×5、星火4000元×10、UPTOP3000元×5）；学术类10名（星火4000元×10）；学业类10名本科生（爱国者之星3000元×5、UPTOP3000元×5）；学生工作类20名（星火4000元×10、荣耀计算机2000元×10）。上述为原文计划名额和金额，不代表当前名额或个人获奖。
 - 基本条件：正式学籍、在读全日制本科生和研究生；品德、纪律及学术诚信要求；原则上同一学生同一学年不能获得两个及以上单项4000元及以上的大额专项奖学金/助学金。专项条件不同：如UPTOP学科竞赛奖明确仅限全日制本科生；学业类限本科生；星火若干类别要求评选年度综测专业前40%（含）及相应竞赛/科研/学生工作表现，且三年内只能获评一次；学业类爱国者奖学金要求连续两学期专业排名前8%。
@@ -99,7 +99,7 @@
 - 官方原文：https://ccds.fzu.edu.cn/info/1119/11710.htm；标题《关于做好2026年福州大学“星火奖教奖学金”评选工作的通知》；发布日期2026-04-20。
 - 2025对照原文：https://ccds.fzu.edu.cn/info/1119/11125.htm；标题《关于做好2025年福州大学“星火奖教奖学金”评选工作的通知》；发布日期2025-05-12。
 - 2026结果公示：https://ccds.fzu.edu.cn/info/1165/11723.htm；2026-04-30发布，公示期2026-04-30至2026-05-07，公示2026年星火奖教金、星火奖学金、荣耀计算机、UPTOP、爱国者之星五类推荐名单。只证明推荐名单公示已发生，不将其表述为捐赠方审批后的最终获奖结果。
-- 候选包：knowledge_base/processed/alpha/pending-review/beta-2026-11-23/xinghuo.json；基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：计算机学院-2026-星火奖学金；version_no：beta-review-2026-11-23-1；候选包blob：2dfe61c3b25d76d9aec8277475f4e2235ceaf4d8；共35片段。manifest登记source_units=35、chunk_count=35、source_verification_status=verified、timeliness_verification_status=expired、retrieval_status=blocked、human_approved=false；manifest未提供version_id，不补造。
+- 候选包：knowledge_base/processed/alpha/pending-review/beta-2026-11-23/xinghuo.json；基线：0251ec531c306eda21333eeb3d294425620d95a8；record_code：计算机学院-2026-星火奖学金；version_no：beta-review-2026-11-23-1；候选包blob：71c1c3d0e881b7ea6aa491784c3ae65096764940；共35片段。manifest登记source_units=35、chunk_count=35、source_verification_status=verified、timeliness_verification_status=expired、retrieval_status=blocked、human_approved=false；manifest未提供version_id，不补造。
 - 原件与转换稿核验：xinghuo.html SHA-256 f80fd20e4d0c07c8252e425075e642684131c80adbb1a600c64f371df5c773ac（保留UTF-8 BOM）；xinghuo.md SHA-256 89f52819eb6bf4c40cb6c04841c2a733fbc5d33c1702b94ed7b4e0bca378fcd5；xinghuo-forms.rar SHA-256 b99ec34294b07689725302a25aed8575057da551a040b6f7353484e7701d9ade（163092 bytes）。三项均与候选包登记一致；35/35 Markdown片段与JSON逐项完全一致，35个原件定位唯一且均存在；HTML抽取35个来源单元、1285个可见正文字符、未覆盖正文文本节点0。
 - 通知总则：掌中云科技有限公司创始人洪森伟与周柳鸿夫妇定向捐赠100万元；款项实施5年、每年20万元，其中奖教金40%（8万元）、奖学金60%（12万元）。通知称“2026年沿用2025年评选细则”。
 - 教师奖教金：对象为计算机与大数据学院在职教职员工；类别1优秀教师、类别2优秀竞赛指导教师（两类合计12人）、类别3优秀教育工作者（4人）；每年16人、每人5000元；连续三年只能获评一次。不得将教师师德、教学工作量或教师类别用于学生资格判断。
@@ -112,7 +112,7 @@
 - 附件覆盖缺口：学生细则在通知正文内，但RAR本身未见学生专用申请表；第06份院级奖学金通知及其分类汇总表虽存在相近学生星火奖类别，但第06份现已由组长暂缓签核，不能未经官方确认就把第06份附件视为第07份学生申请表的正式替代。应向学院确认学生申请表/汇总表实际使用哪一份。
 - 元数据一致性问题：metadata.deadline_on=2026-04-26，但import_snapshot.deadline_on为空；metadata.effective_on=null，但import_snapshot“生效日期”写2026-04-20，而通知没有明确单独写明生效日期，不应仅因发布日期就认定生效日；import_snapshot“适用年级=全体本科生”与正文学生对象“全日制本科生和研究生”不一致，需修正/确认。以上仅记为候选包元数据问题，不直接改包。
 - 组长限定范围签核结论（2026-11-25）：同意按2026年度历史规则参考通过；范围仅限通知正文已核实的2026年规则，教师与学生条款严格隔离；参评年度统计口径、学生专用申请表和学生项目团队资格均不作推断；相关缺口必须在回答中明示。
-- 时效与检索：截止2026-04-26，且2026-04-30至2026-05-07已有推荐名单公示，故timeliness_verification_status=expired；source_verification_status=verified；retrieval_status=blocked。人工签核记录仅记入本台账；按组长此前要求，不修改候选包、manifest或approved目录，因此候选包及manifest中的temporal_notes.human_approved=false、retrieval_status=blocked保持原样，正式检索不开放。
+- 时效与检索：截止2026-04-26，且2026-04-30至2026-05-07已有推荐名单公示，故timeliness_verification_status=expired；source_verification_status=verified；retrieval_status=blocked。候选包与manifest已同步登记`timeliness_verification_status=expired`、`temporal_notes.human_approved=true`及`human_approved=true`；`retrieval_status=blocked`保持不变，未修改approved目录。正式检索仍不开放。
 - 后续非签核阻塞项：如需扩大到学生申请表填写指导或学生项目团队资格，须先向学院确认正式表格和具体规则；如需回答参评年度/统计周期，须取得学院明确解释。上述事项不影响本次限定范围历史签核，但在确认前不得越界回答。
 
 
