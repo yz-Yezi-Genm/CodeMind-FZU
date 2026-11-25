@@ -1,8 +1,9 @@
 Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
-.............................................................................................................................................s.................................................................... [ 54%]
-........................................................................ [ 72%]
-........................................................................ [ 91%]
-................................s                                        [100%]
+......................................................................................................................................... [ 34%]
+.....s........................................................... [ 50%]
+........................................................................ [ 69%]
+........................................................................ [ 87%]
+..................................................s                      [100%]
 ============================== warnings summary ===============================
 ..\python-3.10.11\tools\lib\site-packages\fastapi\testclient.py:1
   D:\se_teamalpha\python-3.10.11\tools\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
@@ -10,6 +11,6 @@ Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
-SKIPPED [1] tests\test_agent_workflow_qwen.py:1848: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1888: Real Qwen acceptance requires explicit opt-in and approved packages
 SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
-385 passed, 2 skipped, 1 warning, 222 subtests passed in 11.07s
+395 passed, 2 skipped, 1 warning, 230 subtests passed in 23.57s

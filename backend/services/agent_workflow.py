@@ -315,11 +315,15 @@ class AgentWorkflow:
             answer.append("本届方案为历史资料，当期办理已结束。")
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message="仅供 2027 届历史口径参考。"))
         if VolunteerScoreKind.RAW in by_kind:
-            scores = (
-                "；".join(f"{format_volunteer_hours(hours)} 小时的原始分为 {volunteer_service_raw_score(hours)} 分"
-                         for hours in scoring.hours)
-                if scoring.hours else "0 ≤ h < 30 计 2 分，30 ≤ h < 60 计 4 分，h ≥ 60 计 6 分（h 的单位为小时）"
-            )
+            if scoring.raw_max:
+                scores = f"原始分最高档为 {volunteer_service_raw_score(60)} 分（60 小时及以上）"
+            elif scoring.hours:
+                scores = "；".join(
+                    f"{format_volunteer_hours(hours)} 小时的原始分为 {volunteer_service_raw_score(hours)} 分"
+                    for hours in scoring.hours
+                )
+            else:
+                scores = "0 ≤ h < 30 计 2 分，30 ≤ h < 60 计 4 分，h ≥ 60 计 6 分（h 的单位为小时）"
             answer.append(f"按组长确认的项目解释口径，志愿服务{scores}。各档不重复累加。"
                           "区间端点是项目解释，官方原文未明确采用左闭右开区间。")
         if VolunteerScoreKind.PERCENT in by_kind:

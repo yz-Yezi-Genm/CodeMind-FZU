@@ -276,7 +276,14 @@ _RECOMMENDATION_QUALIFICATION = re.compile(r"资格|排名|遴选|推荐办法|�
 _VOLUNTEER = re.compile(r"志愿服务|志愿时长|志愿活动")
 _VOLUNTEER_SCORE = re.compile(r"成绩|原始分|计分|加分|算分|得分|评分|(?:[多少几]|[0-9])分|分数|怎么算|怎么给分")
 _VOLUNTEER_RAW = re.compile(r"原始分|分档|时长计分|按时长")
-_VOLUNTEER_PERCENT = re.compile(r"百分制|基础分|(?:最高|最大)原始分|原始分最高|换算公式|归一化")
+_VOLUNTEER_RAW_MAX = re.compile(
+    r"原始分(?:的)?(?:最高|最大)(?:档(?:位)?|(?:可以|能|可)?(?:加|计|得|拿)(?:几|多少)分)"
+)
+_VOLUNTEER_MAX_REFERENCE = r"(?:最高|最大)原始分|原始分(?:最高|最大)"
+_VOLUNTEER_PERCENT = re.compile(
+    rf"百分制|基础分|换算公式|归一化"
+    rf"|(?:专业|入围学生)(?:的)?(?:志愿服务)?(?:{_VOLUNTEER_MAX_REFERENCE})"
+)
 _SCORE_CONNECTOR = r"\s*(?:以及|和|与|及|还有|、)\s*"
 _VOLUNTEER_RAW_WITH_PERCENT = re.compile(
     rf"原始分档|原始分(?:分别|是|有|为)?多少|原始分{_SCORE_CONNECTOR}(?:百分制|总评|权重)"
@@ -298,7 +305,10 @@ _INEXACT_HOUR_PREFIX = (
     r"不到|不足|不满|未满|少于|低于|超过|超出|多于|大于(?:等于)?|小于(?:等于)?|高于|不超过|不低于|不少于|不多于"
     r"|至少|至多|最多|最少|约(?:有|为)?|大约|大概|估计|近|差不多|将近|接近|大致|[<>≤≥]"
 )
-_INEXACT_HOUR_SUFFIX = r"(?:及|或)?\s*以[上下内外]|左右|上下|多(?:一点|一些)?(?![少长大久])|余|出头|起|或更[多少]"
+_INEXACT_HOUR_SUFFIX = (
+    r"(?:及其|或者|及|或)?\s*以[上下内外]|(?:之)?内(?!容)|不到|不足|未满"
+    r"|左右|上下|多(?:一点|一些)?(?![少长大久])|余|出头|起|或更[多少]"
+)
 _HOUR_RANGE = r"(?:到|至|或(?:者)?|[-—–~～±])"
 _DURATION_TERM = rf"{_DURATION_ENDPOINT}\s*(?:个\s*)?{_DURATION_UNIT}"
 _DURATION_RANGE = (
@@ -325,7 +335,8 @@ _VOLUNTEER_HOURS_REPLY = re.compile(
 _VOLUNTEER_COHORT_REPLY = re.compile(r"(?:20\d{2}年|20\d{2}届)(?:呢|[？?。！!])*\s*")
 _VOLUNTEER_KIND_REPLY = re.compile(
     r"(?:我想(?:问|查|看)|想(?:问|查|看)|查|看)?\s*"
-    r"(原始分(?:档|数)?|百分制(?:成绩|换算(?:公式)?)?|(?:总评|综合测评)?(?:权重|占比))[？?。！!]*"
+    rf"({_VOLUNTEER_RAW_MAX.pattern}(?:是?多少)?|原始分(?:档|数)?"
+    r"|百分制(?:成绩|换算(?:公式)?)?|(?:总评|综合测评)?(?:权重|占比))[？?。！!]*"
 )
 _VOLUNTEER_SCORE_RECORD = "计算机学院-2027-推免资格推荐"
 _VOLUNTEER_SCORE_SOURCE = "https://ccds.fzu.edu.cn/info/1119/11932.htm"
@@ -501,6 +512,7 @@ class VolunteerScoringRequest:
     kinds: frozenset[VolunteerScoreKind]
     hours: tuple[Fraction, ...]
     invalid_hours: bool
+    raw_max: bool = False
 
 
 def volunteer_scoring_request(request: AgentRequest) -> VolunteerScoringRequest | None:
@@ -513,10 +525,14 @@ def volunteer_scoring_request(request: AgentRequest) -> VolunteerScoringRequest 
         (VolunteerScoreKind.PERCENT, _VOLUNTEER_PERCENT),
         (VolunteerScoreKind.WEIGHT, _VOLUNTEER_WEIGHT),
     ) if cue.search(query)}
-    # Mentions of raw scores as inputs to the formula do not ask for the raw tier.
-    if VolunteerScoreKind.PERCENT in kinds and not _VOLUNTEER_RAW_WITH_PERCENT.search(query):
+    raw_max = bool(_VOLUNTEER_RAW_MAX.search(query))
+    # Only an explicit tier question or a joint request selects RAW alongside the formula.
+    if VolunteerScoreKind.PERCENT in kinds and not (raw_max or _VOLUNTEER_RAW_WITH_PERCENT.search(query)):
         kinds.discard(VolunteerScoreKind.RAW)
-    if duration_units and not kinds and "成绩" not in query and "折算" not in query:
+    ambiguous_max = kinds == {VolunteerScoreKind.RAW} and not raw_max and re.search(_VOLUNTEER_MAX_REFERENCE, query)
+    if ambiguous_max:
+        kinds.clear()
+    if duration_units and not (kinds or ambiguous_max) and "成绩" not in query and "折算" not in query:
         kinds.add(VolunteerScoreKind.RAW)
     if not (kinds or duration_units or _VOLUNTEER_SCORE.search(query) or "折算" in query):
         return None
@@ -533,7 +549,7 @@ def volunteer_scoring_request(request: AgentRequest) -> VolunteerScoringRequest 
         if any(part < 0 for part in parts):
             return VolunteerScoringRequest(frozenset(kinds), (), invalid_hours=True)
         hours.append(sum(parts, Fraction(1, 2) if duration.endswith("半") else Fraction(0)))
-    return VolunteerScoringRequest(frozenset(kinds), tuple(hours), invalid_hours=False)
+    return VolunteerScoringRequest(frozenset(kinds), tuple(hours), invalid_hours=False, raw_max=raw_max)
 
 
 def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
@@ -602,7 +618,7 @@ def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
     return request.model_copy(update={"query": query, "history": [] if _has_time_intent(query) else history})
 
 
-def volunteer_service_raw_score(hours: Decimal | Fraction) -> int:
+def volunteer_service_raw_score(hours: int | Decimal | Fraction) -> int:
     """Project interpretation for the 2027 recommendation plan, in hours."""
     if (isinstance(hours, Decimal) and not hours.is_finite()) or hours < 0:
         raise ValueError("Volunteer service hours must be finite and nonnegative")

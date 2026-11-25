@@ -1662,6 +1662,7 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
                                      base_url="http://test") as client:
             for duration in ("30小时及以上", "30小时或以上", "30小时及以下", "30小时或以下",
+                             "30小时内", "30小时不到", "30小时或者以上", "30小时及其以上",
                              "不到30分钟", "30分钟左右", "30到60分钟", "几分钟"):
                 with self.subTest(duration=duration):
                     first = (await client.post("/api/v1/ask", json={"query": f"{subject}原始分怎么算？"})).json()
@@ -1677,16 +1678,55 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                             self.assertIsNone(result["answer"])
                             self.assertEqual(result["citations"], [])
                         retrieve.assert_not_awaited()
-                    for query in ("30分钟", "那半小时呢"):
+                    for query, expected in (("29.5小时", "29.5 小时的原始分为 2 分"),
+                                            ("30分钟", "0.5 小时的原始分为 2 分"),
+                                            ("那半小时呢", "0.5 小时的原始分为 2 分")):
                         response = await client.post("/api/v1/ask", json={"query": query, "conversation_id": session})
                         self.assertEqual(response.status_code, 200)
                         result = response.json()
                         self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
-                        self.assertIn("0.5 小时的原始分为 2 分", result["answer"])
+                        self.assertIn(expected, result["answer"])
                         self.assertEqual([citation["excerpt"] for citation in result["citations"]],
                                          [self.package.chunks[0].content])
             single = (await client.post("/api/v1/ask", json={"query": f"{subject}30分钟多少分？"})).json()
             self.assertIn("0.5 小时的原始分为 2 分", single["answer"])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_volunteer_scoring_maximum_tier_and_formula_parameter_over_http(self):
+        self.volunteer_scoring_package()
+        workflow = await self.workflow()
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        raw, _, formula, _ = [chunk.content for chunk in self.package.chunks]
+        subject = "2027届推免志愿服务"
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+                response = await client.post("/api/v1/ask", json={"query": f"{subject}最高原始分是多少？"})
+                self.assertEqual(response.status_code, 200)
+                ambiguous = response.json()
+                self.assertEqual(ambiguous["status"], "needs_clarification")
+                self.assertEqual(ambiguous["clarifying_question"], alpha_business_rules.QUESTION_VOLUNTEER_SCORE_KIND)
+                self.assertIsNone(ambiguous["answer"])
+                self.assertEqual(ambiguous["citations"], [])
+                retrieve.assert_not_awaited()
+            for query, citations, expected in (
+                ("原始分最高档是多少？", [raw], "原始分最高档为 6 分"),
+                ("原始分最高可以加几分？", [raw], "原始分最高档为 6 分"),
+                ("百分制公式中的专业最高原始分是什么？", [formula], "本专业推免入围学生的志愿服务最高原始分"),
+                ("原始分以及百分制成绩分别怎么算？", [raw, formula], "百分制成绩 ="),
+            ):
+                with self.subTest(query=query):
+                    response = await client.post("/api/v1/ask", json={"query": subject + query})
+                    self.assertEqual(response.status_code, 200)
+                    result = response.json()
+                    self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
+                    self.assertIn(expected, result["answer"])
+                    self.assertEqual([citation["excerpt"] for citation in result["citations"]], citations)
+            response = await client.post("/api/v1/ask", json={
+                "query": "原始分最高档是多少？", "conversation_id": ambiguous["conversation_id"],
+            })
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("原始分最高档为 6 分", response.json()["answer"])
         self.assertEqual(self.observed, [])
 
     async def test_beta_volunteer_scoring_clarifies_concept_and_keeps_the_user_choice_over_http(self):

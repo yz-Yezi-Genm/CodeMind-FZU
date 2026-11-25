@@ -106,6 +106,7 @@ def test_volunteer_service_clarifies_cohort_and_invalid_duration():
 @pytest.mark.parametrize("hours", [
     "30到60小时", "30小时到60小时", "不到30小时", "30小时以上", "30小时以内", "30小时左右",
     "30小时及以上", "30小时或以上", "30小时及以下", "30小时或以下",
+    "30小时内", "30小时不到", "30小时或者以上", "30小时及其以上",
     "约29.5小时", "30—60小时", "30-60小时", "30±2小时", "30或60小时", "大于等于30小时", "-1小时",
     "约30分钟", "30分钟左右", "不到30分钟", "30到60分钟", "几分钟", "超过半小时", "二个 半小时",
 ])
@@ -130,6 +131,21 @@ def test_volunteer_service_converts_exact_durations(duration, hours, points):
 def test_volunteer_service_recognizes_joint_score_concepts(concepts):
     selection = business_rules.volunteer_scoring_request(_request(f"2027届推免志愿服务{concepts}分别怎么算？"))
     assert selection.kinds == {business_rules.VolunteerScoreKind.RAW, business_rules.VolunteerScoreKind.PERCENT}
+
+
+@pytest.mark.parametrize(("question", "kind", "raw_max"), [
+    ("原始分最高档是多少？", business_rules.VolunteerScoreKind.RAW, True),
+    ("原始分最高可以加几分？", business_rules.VolunteerScoreKind.RAW, True),
+    ("百分制公式中的专业最高原始分是什么？", business_rules.VolunteerScoreKind.PERCENT, False),
+    ("本专业的志愿服务最高原始分在公式里是什么？", business_rules.VolunteerScoreKind.PERCENT, False),
+    ("最高原始分是多少？", None, False),
+])
+def test_volunteer_service_distinguishes_maximum_tier_from_formula_input(question, kind, raw_max):
+    request = _request(f"2027届推免志愿服务{question}")
+    selection = business_rules.volunteer_scoring_request(request)
+    assert selection.kinds == ({kind} if kind else set())
+    assert selection.raw_max is raw_max
+    assert alpha_clarification_rule(request) == (None if kind else business_rules.QUESTION_VOLUNTEER_SCORE_KIND)
 
 
 def _chunk(
