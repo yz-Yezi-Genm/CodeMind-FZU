@@ -23,14 +23,14 @@
       "适用专业": "",
       "适用对象": "全日制在校本科生"
     },
-    "policy_status": "官方正文已核对；现行性/适用性待最终审核",
+    "policy_status": "current（组长于2026-11-24限定范围人工审核通过；仅按校级通则明确条款回答）",
     "source_verification_status": "verified",
-    "timeliness_verification_status": "uncertain",
+    "timeliness_verification_status": "current",
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "blocked",
     "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
-    "verification_note": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；待人工确认。校级通则不能替代院级/专项细则。",
+    "verification_note": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；人工审核已完成；按scope_limitations限定适用。校级通则不能替代院级/专项细则。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
     "import_snapshot": {
       "记录编号": "福大-2026-本科奖学金",
       "标题": "福州大学本科生奖学金评定管理办法",
@@ -71,14 +71,14 @@
       "附件哈希": "{}"
     },
     "temporal_notes": {
-      "checked_on": "2026-11-23",
-      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-      "human_approved": false,
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "human_approved": true,
       "baseline_version": "import-1",
       "beta_domains": [
         "S2"
       ],
-      "scope_limitations": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；待人工确认。校级通则不能替代院级/专项细则。",
+      "scope_limitations": "仅限福大学〔2026〕23号校级本科生奖学金通则明确条款：通用参评条件、综合奖学金金额和综测排名门槛、实验班与非实验班评定比例、单项奖学金条件及金额上限、一般评审公示异议流程。不得承诺个人获奖，不以GPA排名替代综测排名，不把排名门槛解释为实际获奖比例；不据此判断实时名额或申请开放；校级通则不能替代国家、院级或社会专项细则。具体适用仍按办法原文及对应专项/当期通知核验。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json"
     }
   },
