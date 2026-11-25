@@ -8,7 +8,7 @@
 
 旧`beta-2026-11-23/qinghe.json`及其35片段继续作原件追溯/重提取基线，**不纳入本清单，不与R3/R4重复入库**。其他原Alpha版本和44条登记也不计入本轮514片段。
 
-9个候选包JSON仍维持`retrieval_status=blocked`、`temporal_notes.human_approved=false`；正式approved包数0、正式检索命中0。人工签核结果以本清单及人工审核台账为准；限定范围签核通过不自动改变候选包标记，也不等于正式问答放行。必要技术修复、复验及后续统一放行完成前，所有候选包继续blocked。`source_verification_status=verified`及技术索引通过不代替人工签核。
+9个候选包均维持`retrieval_status=blocked`；其中6个资料包已同步登记`temporal_notes.human_approved=true`（仅限定范围人工签核），其余3个资料包仍为`human_approved=false`（第04份推免推荐资格待业务规则修复与复审；青禾R3/R4的包级签核标记尚未同步，且R3仍有技术修复项）。正式approved包数0、正式检索命中0。限定范围签核通过不等于正式问答放行；必要技术修复、复验及后续统一放行完成前，所有候选包继续blocked。`source_verification_status=verified`及技术索引通过不代替人工签核。
 
 `version_id`不是新加的DTO字段，使用合并后LocalBM25Retriever实际`index_document()`生成的UUID；复现脚本逐包验证，见[9包索引与隔离报告](beta-policy-handoff-validation.json)。原件位置、转换稿和包路径均相对仓库根，需一起接收。
 
