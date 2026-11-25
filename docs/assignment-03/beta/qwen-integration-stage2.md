@@ -2,7 +2,7 @@
 
 日期：2026-11-25
 分支：`feat/beta-runtime-qwen-integration`
-同步基线：`origin/main` `179e618`
+同步基线：`origin/main` `a27c13d`
 
 ## 1. 阶段边界
 
@@ -15,7 +15,7 @@ Protocol、AgentWorkflow、Retriever 或业务规则。
 
 ## 2. 真实链路
 
-固定 main `179e618` 后，通过本机 uvicorn TCP HTTP 执行：
+固定 main `a27c13d` 后，通过本机 uvicorn TCP HTTP 执行：
 
 ```text
 POST /api/v1/ask
@@ -47,6 +47,9 @@ POST /api/v1/ask
 - Citation 的 `chunk_id`、`excerpt`、来源和审核状态来自同一次真实检索；
 - `X-Request-ID` 与响应 `request_id` 一致。
 
+脚本会实际断言 `answer_mode`、Citation excerpt 与检索片段一致，以及
+`X-Request-ID` 与响应 `request_id` 一致，不是仅记录响应结果。
+
 模型原始内容：
 
 ```json
@@ -59,6 +62,8 @@ POST /api/v1/ask
 
 - 合成资料未载明奖学金金额时，`POST /api/v1/ask` 返回 HTTP 200、
   `insufficient_evidence`、空引用，warning 为 `REQUESTED_FACT_NOT_FOUND`。
+- E2E 脚本会实际断言拒绝状态的 `answer_mode=insufficient_data` 和 warning
+  集合等于 `REQUESTED_FACT_NOT_FOUND`。
 - 正式 `knowledge_base/processed/alpha/approved/` 尚未放行资料时，运行时启动
   失败关闭，问答返回 HTTP 503、`KNOWLEDGE_BASE_UNAVAILABLE`，不会调用 Qwen
   或返回 Mock 答案。
@@ -70,15 +75,16 @@ POST /api/v1/ask
 - 未知、重复、跨轮 evidence ID 被拒绝；
 - 有效 ID 搭配编造答案被拒绝；
 - 自由文本或不符合 JSON envelope 的输出不能绕过证据校验；
+- 两个真实模型入口在未提供 `--live` 时于读取配置前退出；
 - 非法或空模型 envelope 返回 HTTP 503 `MODEL_UNAVAILABLE`；
 - 限流保持 HTTP 429 `RATE_LIMITED`；
 - 超时返回 HTTP 504 `MODEL_TIMEOUT`，连接失败返回 HTTP 503；
 - 工作流总超时会取消底层模型调用。
 
-定向结果：`10 passed, 1 warning, 30 subtests passed`。记录见
+定向结果：`12 passed, 1 warning, 30 subtests passed`。记录见
 [qwen-negative-mock.txt](evidence/qwen-negative-mock.txt)。
 
-最新 main `179e618` 的 Agent、业务规则、Retriever 与 HTTP 专项集成结果为
+最新 main `a27c13d` 的 Agent、业务规则、Retriever 与 HTTP 专项集成结果为
 `Ran 48 tests, OK`，记录见
 [upstream-integration.txt](evidence/upstream-integration.txt)。
 
@@ -92,10 +98,10 @@ POST /api/v1/ask
 
 ```text
 Python 3.14.4:
-632 passed, 3 skipped, 1 warning, 274 subtests passed
+642 passed, 3 skipped, 1 warning, 274 subtests passed
 
 Python 3.10.11:
-632 passed, 3 skipped, 1 warning, 274 subtests passed
+642 passed, 3 skipped, 1 warning, 274 subtests passed
 ```
 
 跳过项：
@@ -108,6 +114,9 @@ Python 3.10.11:
 
 - [stage2-pytest-py314.txt](evidence/stage2-pytest-py314.txt)
 - [stage2-pytest-py310.txt](evidence/stage2-pytest-py310.txt)
+
+前端 #54 回归：`9` 项学生端 API 测试通过，TypeScript 与 Vite 生产构建通过。
+记录见 [stage2-frontend-check.txt](evidence/stage2-frontend-check.txt)。
 
 ## 6. 资料与模型边界
 

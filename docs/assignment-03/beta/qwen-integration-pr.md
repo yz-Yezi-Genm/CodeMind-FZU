@@ -21,12 +21,15 @@
 ## 完成功能
 
 - 同步 main `179e618`，包含 #46 AgentWorkflow 和 #49 运行稳定性；
+- 两个真实模型入口均要求显式 `--live`；未授权时不读取密钥、不调用模型；
 - 通过本机 uvicorn TCP HTTP 调用最终 `/api/v1/ask`；
 - 真实 `qwen-flash` 返回 `answer + used_evidence_ids` 受约束 JSON；
 - 单证据探针要求 `used_evidence_ids` 精确等于 `["E1"]`；
 - Agent 校验本次动态 evidence ID，并用真实检索片段构造 Citation；
 - 合成资料正向请求返回 200、answered、非空引用；
+- 对正常回答的 `answer_mode`、Citation 原文和 `X-Request-ID` 做实际断言；
 - 缺少金额证据时返回 200、insufficient_evidence、空引用；
+- 对待拒答的 `answer_mode` 和 `REQUESTED_FACT_NOT_FOUND` 做实际断言；
 - 正式 approved 资料未放行时返回 503、KNOWLEDGE_BASE_UNAVAILABLE；
 - 未知、重复、跨轮 ID、伪造答案、非法模型响应、限流和超时由独立 Mock
   Transport 测试覆盖。
@@ -41,11 +44,12 @@
 ## 测试
 
 ```text
-Python 3.14.4: 632 passed, 3 skipped, 1 warning, 274 subtests passed
-Python 3.10.11: 632 passed, 3 skipped, 1 warning, 274 subtests passed
-Mock Transport 定向: 10 passed, 1 warning, 30 subtests passed
+Python 3.14.4: 642 passed, 3 skipped, 1 warning, 274 subtests passed
+Python 3.10.11: 642 passed, 3 skipped, 1 warning, 274 subtests passed
+Mock Transport 与 live guard 定向: 12 passed, 1 warning, 30 subtests passed
 上游专项: Ran 48 tests, OK
 真实 Qwen HTTP 联调: HTTP 200, answered, non-empty citation
+前端学生 API 测试: 9 passed
 ```
 
 ## 已知问题

@@ -1,6 +1,7 @@
 """Run the final Beta Qwen -> AgentWorkflow -> POST /api/v1/ask integration."""
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
 import os
@@ -11,7 +12,6 @@ import time
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 
-from dotenv import load_dotenv
 import httpx
 import uvicorn
 
@@ -112,10 +112,34 @@ def _post(client: httpx.Client, query: str) -> tuple[int, dict, dict[str, str]]:
     return response.status_code, response.json(), dict(response.headers)
 
 
-def main() -> int:
-    env_path = ROOT / "backend/.env"
-    if env_path.is_file():
-        load_dotenv(env_path, override=False)
+def _require(condition: bool, message: str) -> None:
+    if not condition:
+        raise RuntimeError(message)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Explicitly allow paid Qwen requests",
+    )
+    parser.add_argument(
+        "--env-file",
+        type=Path,
+        help="Optional local environment file; existing process values win",
+    )
+    args = parser.parse_args(argv)
+    if not args.live:
+        parser.error(
+            "Add --live to explicitly run the paid E2E check; no request was sent"
+        )
+    if args.env_file is not None:
+        from dotenv import load_dotenv
+
+        if not args.env_file.is_file():
+            raise ValueError("Environment file does not exist")
+        load_dotenv(args.env_file, override=False)
     if not os.getenv("QWEN_API_KEY"):
         raise RuntimeError("QWEN_API_KEY is not configured")
 
@@ -141,8 +165,10 @@ def main() -> int:
             )
     elapsed_ms = round((time.monotonic() - started) * 1000)
 
-    if positive_status != 200:
-        raise RuntimeError(f"Synthetic live request returned HTTP {positive_status}")
+    _require(
+        positive_status == 200,
+        f"Synthetic live request returned HTTP {positive_status}",
+    )
     if positive_body.get("status") != "answered":
         raise RuntimeError(
             "Synthetic live request did not answer: "
@@ -164,22 +190,63 @@ def main() -> int:
                 ensure_ascii=False,
             )
         )
+    _require(
+        positive_body.get("answer_mode") == "current_policy",
+        "Synthetic live request returned the wrong answer_mode",
+    )
+    _require(
+        positive_headers.get("x-request-id") == positive_body.get("request_id"),
+        "Positive response X-Request-ID does not match request_id",
+    )
     citations = positive_body.get("citations")
-    if not isinstance(citations, list) or not citations:
-        raise RuntimeError("Synthetic live request returned no citation")
-    if any(
-        not isinstance(citation, dict)
-        or not citation.get("chunk_id")
-        or not citation.get("excerpt")
-        or not citation.get("source_url")
-        for citation in citations
-    ):
-        raise RuntimeError("Citation fields are incomplete")
+    _require(
+        isinstance(citations, list) and bool(citations),
+        "Synthetic live request returned no citation",
+    )
+    _require(
+        all(
+            isinstance(citation, dict)
+            and citation.get("chunk_id")
+            and citation.get("excerpt")
+            and citation.get("source_url")
+            for citation in citations
+        ),
+        "Citation fields are incomplete",
+    )
+    _require(
+        all(
+            citation["excerpt"] in retrieval_diagnostic["hit_excerpts"]
+            for citation in citations
+        ),
+        "Citation excerpt does not match the retrieved chunk",
+    )
 
-    if refusal_status != 200 or refusal_body.get("status") != "insufficient_evidence":
-        raise RuntimeError("Missing-fact request did not fail closed")
-    if refusal_body.get("citations"):
-        raise RuntimeError("Insufficient-evidence response contains citations")
+    _require(
+        refusal_status == 200
+        and refusal_body.get("status") == "insufficient_evidence",
+        "Missing-fact request did not fail closed",
+    )
+    _require(
+        refusal_body.get("answer_mode") == "insufficient_data",
+        "Missing-fact response returned the wrong answer_mode",
+    )
+    _require(
+        refusal_headers.get("x-request-id") == refusal_body.get("request_id"),
+        "Insufficient response X-Request-ID does not match request_id",
+    )
+    _require(
+        refusal_body.get("citations") == [],
+        "Insufficient-evidence response contains citations",
+    )
+    refusal_codes = {
+        warning.get("code")
+        for warning in refusal_body.get("warnings", [])
+        if isinstance(warning, dict)
+    }
+    _require(
+        refusal_codes == {"REQUESTED_FACT_NOT_FOUND"},
+        "Missing-fact response returned unexpected warnings",
+    )
 
     formal_settings = AppSettings(alpha_package_dir=FORMAL_CORPUS)
     formal_app = create_alpha_app(
@@ -192,10 +259,19 @@ def main() -> int:
                 client,
                 POSITIVE_QUERY,
             )
-    if formal_status != 503:
-        raise RuntimeError(f"Unreleased formal corpus returned HTTP {formal_status}")
-    if formal_body.get("error", {}).get("code") != "KNOWLEDGE_BASE_UNAVAILABLE":
-        raise RuntimeError("Unreleased formal corpus returned the wrong error code")
+    _require(
+        formal_status == 503,
+        f"Unreleased formal corpus returned HTTP {formal_status}",
+    )
+    _require(
+        formal_headers.get("x-request-id") == formal_body.get("request_id"),
+        "Formal corpus X-Request-ID does not match request_id",
+    )
+    _require(
+        formal_body.get("error", {}).get("code")
+        == "KNOWLEDGE_BASE_UNAVAILABLE",
+        "Unreleased formal corpus returned the wrong error code",
+    )
 
     print(
         json.dumps(

@@ -1,15 +1,15 @@
 Approved corpus rejected loaded=0 skipped=0 detail=
 Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
 {
-  "time_asia_shanghai": "2026-11-25T18:20:19.389457+08:00",
+  "time_asia_shanghai": "2026-11-25T23:03:24.114413+08:00",
   "scope": "Real Qwen HTTP -> current AgentWorkflow -> FastAPI; synthetic example.invalid corpus only",
   "model": "qwen-flash",
   "synthetic": {
     "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
     "http_status": 200,
-    "request_id": "730dd660-21b3-406a-99a0-1ae9f58430a4",
+    "request_id": "45864dfb-419c-4dac-9e75-e3bd74b77916",
     "transport": "uvicorn TCP HTTP",
-    "x_request_id": "730dd660-21b3-406a-99a0-1ae9f58430a4",
+    "x_request_id": "45864dfb-419c-4dac-9e75-e3bd74b77916",
     "status": "answered",
     "answer": "根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。",
     "answer_mode": "current_policy",
@@ -32,7 +32,7 @@ Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
       }
     ],
     "warnings": [],
-    "elapsed_ms": 6303,
+    "elapsed_ms": 6307,
     "retrieval": {
       "loaded_packages": 1,
       "skipped_packages": [],
@@ -49,15 +49,15 @@ Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
         "prompt_tokens": 383,
         "total_tokens": 447
       },
-      "raw_content": "{\"answer\":\"根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1-e4524f76ed0e427295d22123ebe85fd8\"]}"
+      "raw_content": "{\"answer\":\"根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1-100a4cf68466432380cbac64d52533fe\"]}"
     }
   },
   "synthetic_insufficient_evidence": {
     "query": "2026年优秀学生综合奖学金金额是多少？",
     "http_status": 200,
-    "request_id": "0a9da3c7-a336-49c3-bbb5-fa54b7e277c2",
+    "request_id": "2f1f50bd-b6b9-4366-97b3-5478dacffc85",
     "transport": "uvicorn TCP HTTP",
-    "x_request_id": "0a9da3c7-a336-49c3-bbb5-fa54b7e277c2",
+    "x_request_id": "2f1f50bd-b6b9-4366-97b3-5478dacffc85",
     "status": "insufficient_evidence",
     "answer_mode": "insufficient_data",
     "citations": [],
@@ -71,9 +71,9 @@ Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
   "formal_unreleased": {
     "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
     "http_status": 503,
-    "request_id": "da686044-0995-46ee-bc82-228c20988588",
+    "request_id": "57eff773-5b59-458f-9022-e8065bd5d600",
     "transport": "uvicorn TCP HTTP",
-    "x_request_id": "da686044-0995-46ee-bc82-228c20988588",
+    "x_request_id": "57eff773-5b59-458f-9022-e8065bd5d600",
     "error": {
       "code": "KNOWLEDGE_BASE_UNAVAILABLE",
       "message": "没有通过人工审核且完整建立索引的正式政策资料包。",

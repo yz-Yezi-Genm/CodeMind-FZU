@@ -1,7 +1,9 @@
 Real Qwen single-evidence constrained JSON probe
 Date: 2026-11-25 (Asia/Shanghai)
+Command:
+  .\.venv\Scripts\python.exe -X utf8 -m scripts.check_beta_qwen_generation --live --env-file backend\.env
 Scope: direct Qwen adapter probe only; not the final HTTP E2E acceptance.
 Assertion: used_evidence_ids must be exactly ["E1"]; an empty list is rejected.
 
 Script output:
-{"success": true, "model": "qwen-flash", "usage": {"completion_tokens": 21, "prompt_tokens": 122, "total_tokens": 143}, "latency_ms": 4740, "raw_content": "{\"answer\":\"奖学金申请需要提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1\"]}", "parsed": {"answer": "奖学金申请需要提交申请表和成绩单。", "used_evidence_ids": ["E1"]}}
+{"success": true, "model": "qwen-flash", "usage": {"completion_tokens": 21, "prompt_tokens": 122, "total_tokens": 143}, "latency_ms": 3188, "raw_content": "{\"answer\":\"奖学金申请需要提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1\"]}", "parsed": {"answer": "奖学金申请需要提交申请表和成绩单。", "used_evidence_ids": ["E1"]}}

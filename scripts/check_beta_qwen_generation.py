@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
+from pathlib import Path
 import time
 
 from backend.contracts.models import (
@@ -14,7 +16,13 @@ from backend.contracts.models import (
 from backend.services.qwen_client import create_qwen_client_from_env
 
 
-async def main() -> None:
+async def run_live(env_file: Path | None) -> None:
+    if env_file is not None:
+        from dotenv import load_dotenv
+
+        if not env_file.is_file():
+            raise ValueError("Environment file does not exist")
+        load_dotenv(env_file, override=False)
     client = create_qwen_client_from_env()
     started = time.monotonic()
     try:
@@ -79,5 +87,26 @@ async def main() -> None:
     )
 
 
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Explicitly allow a paid Qwen request",
+    )
+    parser.add_argument(
+        "--env-file",
+        type=Path,
+        help="Optional local environment file; existing process values win",
+    )
+    args = parser.parse_args(argv)
+    if not args.live:
+        parser.error(
+            "Add --live to explicitly run the paid probe; no request was sent"
+        )
+    asyncio.run(run_live(args.env_file))
+    return 0
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    raise SystemExit(main())

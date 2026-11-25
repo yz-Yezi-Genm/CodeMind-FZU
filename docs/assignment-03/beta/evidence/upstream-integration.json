@@ -1,10 +1,10 @@
 {
-  "time_asia_shanghai": "2026-11-25T18:21:42.649993+08:00",
-  "agent_commit": "eb337e24cdcff35032a3131b333b73ded098e88a",
+  "time_asia_shanghai": "2026-11-25T23:06:25.636807+08:00",
+  "agent_commit": "41be3ca42b98be4b29efafb875b881f072b0d3c4",
   "agent_worktree_changes_included": true,
-  "main_commit": "179e6181969c5e157c32a8ad2d8ccc3ef564ee0f",
+  "main_commit": "a27c13d82c0059dd9dec71882e23b77ff50419ae",
   "agent_source_state": {
-    "base_commit": "eb337e24cdcff35032a3131b333b73ded098e88a",
+    "base_commit": "41be3ca42b98be4b29efafb875b881f072b0d3c4",
     "source_sha256_lf": {
       "backend/__init__.py": "845da59f5760bf8179adad042a26eb8865c357b20d8b774809352368b8185e62",
       "backend/app/__init__.py": "45390889d8a4a81a685fa8f8fb38422e5f6ff8840d7df1405f088ab5347ae8e2",
@@ -21,8 +21,8 @@
       "backend/requirements-dev.txt": "0fde52259befafc63b39d6519bf349ad5495773801c3824d5e1213f74f5fb7df",
       "backend/requirements.txt": "4f3428393c44c6a769a4236fdf8c09c2898d2d4acdb63122d710d29891f1894a",
       "backend/retrieval/__init__.py": "d712aa742af61d17dcea9b0e033679eac0e9c42e8ee646c5224bc450f14729db",
-      "backend/retrieval/alpha_corpus.py": "fe69d6e4eb82d9970496a28c3c3868fe0b167fdf555239972457abb4239e187e",
-      "backend/retrieval/local.py": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20",
+      "backend/retrieval/alpha_corpus.py": "c4dc5fa21b7f3136c6e8e6cfabf79a9d94257949c5392808297ab8ccd6936fe3",
+      "backend/retrieval/local.py": "07ac5c3ba9482b417c9badf5cd63fb1cf519517f94e8422103950d0dcb29f68d",
       "backend/services/__init__.py": "7f046044817ea7579f0327f16c769a32c9b053c9e428a42dc15cba1de8c5658a",
       "backend/services/agent_generation.py": "3031288996d28a6ab69beb2c3e27ae8403c32cab773d453c92b850b1aadac025",
       "backend/services/agent_policy_context.py": "e570a202e27c42b2388203f355027a5de43b1223a20e85ec7acbe3dde83e1362",
@@ -52,13 +52,16 @@
       "knowledge_base/processing/test_policy_review.py": "061a8101a3da51a987253af0903ef92945ef48bb686a02bd83a09355556a7deb",
       "knowledge_base/processing/test_qinghe_b8.py": "46f54a30f910f4017f9b7ea92cd2916b724ab15a2f7b253a4564bf0ce8677b00",
       "knowledge_base/processing/test_qinghe_conversion.py": "8f1de88677ceed0bdecd5dfae4c3488d186cfeaf265390387e812fb3da0acb83",
-      "scripts/check_beta_qwen_e2e.py": "4bfa697fb2932a1c26b7cf51e0cc03ea627ad46682aa4ebdd163287d61787d80",
-      "scripts/check_beta_qwen_generation.py": "94152277ffabfe65c6805cb1b36b0cf9371b0f3e1e79954b0c82b6283f8cb1c0",
+      "scripts/check_beta_blocked_isolation.py": "9d31b711481d6ab8b2a8f0f85187d881d9bb5a0cb2659e0c4f94d2528e2b960e",
+      "scripts/check_beta_qwen_e2e.py": "a49ce4455afbed2c0bd9faf03f2fb7b92ea1f8695bdba932cb809acb922048dc",
+      "scripts/check_beta_qwen_generation.py": "ffbe6bc425eafa9ea860501d1310f137dec95ea792c775a6693a99f6bb82e11d",
       "scripts/check_document_processing.py": "de3832c09805e38d5be3deb1d781d7294c86095c790a01f6329fef36b3111049",
       "scripts/check_qwen_live.py": "fb02b4039202ddbe29e2675e9a7f3fe55de03e14242483b3cd95037257bfa0a9",
       "scripts/check_qwen_runtime_live.py": "d6e7d775104ab959310be4690dea677a2ae577e046524260753fe214caac8912",
-      "scripts/check_retrieval_agent.py": "edef4192d3edb373d567d761b275513b9ea5af922bff0e97251640f898efddcc",
+      "scripts/check_retrieval_agent.py": "73d768ef1c8fc35a6d7e941b4b05f3454261b604feab6af03a324b3bf6d2cf05",
       "scripts/demo_local_retrieval.py": "19ae6493b7b425c18828b294169ff39c5a052914b214d6d84488665da0d32c22",
+      "scripts/eval_beta_bm25_comparison.py": "c987269cb89ac41b6c108847b4770c8338df938ba7c632ca4bd74c74312c8361",
+      "scripts/eval_beta_retrieval.py": "d6e3f3a96e2ed40665bed32bdbd60e7777c09b45d42ba4620d8973317eac3154",
       "scripts/parse_alpha_documents.py": "2e8c6fba5e03c834b0089bf87f9225ed774cdd7b84965277ab0078943b5b4bf3",
       "scripts/requirements-alpha-verification.txt": "7da08197c02437b78a9df2244354ebcf501c0a0849cd2c38770c0a0332eca968",
       "scripts/run_alpha_agent.py": "778407993c6ad1e2b875c4bbe0b254b701e416ffb8e58e2c35626ab3fd36546d",
@@ -70,19 +73,21 @@
       "tests/test_agent_workflow_api.py": "b8b358fc966d12297a4d1e37ca6a90be9da799ce8157b03751f1c1d0506def25",
       "tests/test_agent_workflow_qwen.py": "84a71e95a591ba6f97b6cb2d41ad868c0dcc2c3f39295033a4a16f7d7cefe8be",
       "tests/test_alpha_business_rules.py": "95bf161a32af96b919180f232ec2e0e4193e073a5ad2592e691f69bc8f622306",
-      "tests/test_alpha_corpus.py": "5ae0d1358560c16f23b5efc6822acd09cb36eba4bcb7e8fd86141dd554c45518",
+      "tests/test_alpha_corpus.py": "ff1b4be70bec034e194c62ef5c35de4dbb370f1d56fa51ea55074e637ef0afde",
       "tests/test_alpha_e2e.py": "22804fe8900de56e109baa6c662c7d65512362d90f8c86264227008792073759",
       "tests/test_api_validation.py": "441c4e2c4514a1b74ea2543cfd2196f4a492d45034d7c37fac828997756babdc",
       "tests/test_backend_runtime.py": "05f78e2271707a5f92a6182fa0760faf497ac3f350024f1984fd81691cc480c3",
+      "tests/test_beta_live_script_guards.py": "0544419b018cbb64e1216f1f6b6dbebdf8c50dd32527183557a698abb2133e8f",
       "tests/test_beta_response_contract_validation.py": "11039126067ee5249f527a8bb1de133c617483bfc7697da027c344b95fc791b3",
+      "tests/test_beta_retrieval_scenarios.py": "8b66cb5fb960f64f2694c11ac27123a15d594ce0672c6a57d8c5757894484ba1",
       "tests/test_beta_script_lifecycle.py": "02c3fff56fb6b51c56b0dcc193f15a670126721f40bd4f4605598937b6592aa6",
       "tests/test_document_processing.py": "f0f8fa336a99261b089a4cf1dfa90693c388b2936e25295c2d3715e6cdca8a01",
       "tests/test_interface_contracts.py": "fc8f9be163e107e09eccb094a61ae08b62e02a016fb551a1c5e87d66d4d48625",
-      "tests/test_local_retrieval.py": "183b963183ff692f1eda23a4902edb0c3f08c4cce83661387f92915771548c71",
+      "tests/test_local_retrieval.py": "b2bc35c15eb83c0621ec89ebc39c87a51d169cfb1df9d01b35751bc1d36b771f",
       "tests/test_mock_agent_api.py": "bba06f0a2ecedac7fb45dab9e3bea2a638c72b96d16616e9f976d63a23277bde",
       "tests/test_qwen_client.py": "f9342b2e276116300860045f7b520ba7a0d05ebc2b0598fcaa9cbbb4ff4d5e35"
     },
-    "main_commit": "179e6181969c5e157c32a8ad2d8ccc3ef564ee0f",
+    "main_commit": "a27c13d82c0059dd9dec71882e23b77ff50419ae",
     "pending_merge_parent": null,
     "required_merged_history": {
       "main_with_pr36": {
@@ -106,21 +111,21 @@
   "sources": [
     {
       "ref": "origin/main",
-      "commit": "179e6181969c5e157c32a8ad2d8ccc3ef564ee0f",
+      "commit": "a27c13d82c0059dd9dec71882e23b77ff50419ae",
       "source": "backend/services/alpha_business_rules.py",
       "sha256": "12e78978c1f73583559867d17a28863cdc1a790016e3341e66bd3cfc424e5fad"
     },
     {
       "ref": "origin/main",
-      "commit": "179e6181969c5e157c32a8ad2d8ccc3ef564ee0f",
+      "commit": "a27c13d82c0059dd9dec71882e23b77ff50419ae",
       "source": "backend/retrieval/local.py",
-      "sha256": "ce7b8602c8fa7c059580acfe078c51460355470895a48d82c8e063d312bc7e20"
+      "sha256": "07ac5c3ba9482b417c9badf5cd63fb1cf519517f94e8422103950d0dcb29f68d"
     },
     {
       "ref": "origin/main",
-      "commit": "179e6181969c5e157c32a8ad2d8ccc3ef564ee0f",
+      "commit": "a27c13d82c0059dd9dec71882e23b77ff50419ae",
       "source": "backend/retrieval/alpha_corpus.py",
-      "sha256": "fe69d6e4eb82d9970496a28c3c3868fe0b167fdf555239972457abb4239e187e"
+      "sha256": "c4dc5fa21b7f3136c6e8e6cfabf79a9d94257949c5392808297ab8ccd6936fe3"
     }
   ],
   "command": [
