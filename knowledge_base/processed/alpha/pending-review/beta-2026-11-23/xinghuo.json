@@ -24,14 +24,14 @@
       "教师条款": "全文为完整性保留，学生问答不得引用教师资格、名额或金额",
       "年度": "2026年沿用2025细则，申请期已过"
     },
-    "policy_status": "本批次截止/首批安排已过，仅历史参考；待最终审核",
+    "policy_status": "expired（2026年星火奖教奖学金通知；组长限定范围历史审核通过）",
     "source_verification_status": "verified",
     "timeliness_verification_status": "expired",
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "blocked",
     "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
-    "verification_note": "通知发布2026-04-20，2026沿用2025细则，2026-04-26前报送，申请期已过。学生30人/4000元等条款与教师16人/5000元分开；正文保留章节上下文，学生问答不得用教师条件。RAR沿用全量隐私审计；旧DOC未新增为正式政策正文，填写指导及人工审核待办。",
+    "verification_note": "通知发布2026-04-20，2026沿用2025细则，2026-04-26前报送，申请期已过。学生30人/4000元等条款与教师16人/5000元分开；正文保留章节上下文，学生问答不得用教师条件。RAR沿用全量隐私审计；旧DOC未新增为正式政策正文，填写指导及人工审核待办。 组长于2026-11-25已完成限定范围人工审核并签核；时效状态登记为expired。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
     "import_snapshot": {
       "记录编号": "计算机学院-2026-星火奖学金",
       "标题": "关于做好2026年福州大学“星火奖教奖学金”评选工作的通知",
@@ -72,14 +72,14 @@
       "附件哈希": "{\"原始资料/学院/计算机学院_2026_星火奖学金申请表.rar\": \"b99ec34294b07689725302a25aed8575057da551a040b6f7353484e7701d9ade\"}"
     },
     "temporal_notes": {
-      "checked_on": "2026-11-23",
-      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-      "human_approved": false,
+      "checked_on": "2026-11-25",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-25",
+      "human_approved": true,
       "baseline_version": "import-1",
       "beta_domains": [
         "S2"
       ],
-      "scope_limitations": "通知发布2026-04-20，2026沿用2025细则，2026-04-26前报送，申请期已过。学生30人/4000元等条款与教师16人/5000元分开；正文保留章节上下文，学生问答不得用教师条件。RAR沿用全量隐私审计；旧DOC未新增为正式政策正文，填写指导及人工审核待办。",
+      "scope_limitations": "仅作为2026年度历史规则参考，限于通知正文已核实的2026年条款；教师奖教金与学生奖学金严格隔离，学生问答不得引用教师资格、人数、金额或材料。不得用于当前或2027年度申请资格、开放状态、剩余名额或个人获奖承诺；不得推断学生项目团队独立奖项、学生专用申请表、参评年度统计口径或未载明的类别名额；2026推荐名单公示不等于捐赠方最终获奖审批。RAR中的教师表格不作为学生填写指导。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json"
     }
   },
