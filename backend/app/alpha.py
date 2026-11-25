@@ -1,4 +1,4 @@
-"""Alpha FastAPI entry point with a lifespan-managed real runtime."""
+"""Beta FastAPI entry point with a lifespan-managed real runtime."""
 from __future__ import annotations
 
 import logging
@@ -66,7 +66,7 @@ def create_alpha_app(
         settings=app_settings,
         lifespan=lifespan,
         description=(
-            "Alpha real runtime: approved BM25 corpus, AgentWorkflow, "
+            "Beta real runtime: approved BM25 corpus, AgentWorkflow, "
             "Qwen evidence selection and bounded conversations."
         ),
     )

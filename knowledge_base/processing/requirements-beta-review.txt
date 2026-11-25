@@ -1,0 +1,7 @@
+# Offline source review tools only; do not add XLSX/PDF support to DocumentParser.
+# Use a separate environment alongside backend/requirements.txt.
+lxml==6.1.1
+openpyxl==3.1.5
+pypdf==6.21.4
+pypdfium2==5.13.0
+pdfplumber==0.11.9

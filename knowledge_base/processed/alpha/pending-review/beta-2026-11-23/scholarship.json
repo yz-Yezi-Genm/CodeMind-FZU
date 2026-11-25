@@ -1,0 +1,697 @@
+{
+  "metadata": {
+    "title": "福州大学本科生奖学金评定管理办法",
+    "document_type": "规范性文件",
+    "category_name": "综评与奖学金",
+    "business_direction_codes": [
+      "POLICY_AFFAIRS"
+    ],
+    "record_code": "福大-2026-本科奖学金",
+    "version_no": "beta-review-2026-11-23-1",
+    "publisher": "福州大学",
+    "responsible_department": "学生工作部（处）",
+    "document_number": "福大学〔2026〕23号",
+    "source_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+    "source_page_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+    "published_on": "2026-05-18",
+    "issued_on": null,
+    "effective_on": "2026-05-18",
+    "deadline_on": null,
+    "document_written_on": null,
+    "applicability_raw": {
+      "适用年级": "全体本科生",
+      "适用专业": "",
+      "适用对象": "全日制在校本科生"
+    },
+    "policy_status": "current（组长于2026-11-24限定范围人工审核通过；仅按校级通则明确条款回答）",
+    "source_verification_status": "verified",
+    "timeliness_verification_status": "current",
+    "extraction_status": "extracted",
+    "v1_inclusion_status": "included",
+    "retrieval_status": "blocked",
+    "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
+    "verification_note": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；人工审核已完成；按scope_limitations限定适用。校级通则不能替代院级/专项细则。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
+    "import_snapshot": {
+      "记录编号": "福大-2026-本科奖学金",
+      "标题": "福州大学本科生奖学金评定管理办法",
+      "发布单位": "福州大学",
+      "负责部门": "学生工作部（处）",
+      "文号": "福大学〔2026〕23号",
+      "资料类型": "规范性文件",
+      "发布日期": "2026-05-18",
+      "生效日期": "2026-05-18",
+      "适用年级": "全体本科生",
+      "适用专业": "",
+      "适用对象": "全日制在校本科生",
+      "状态": "当前有效",
+      "来源网址": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+      "原始文件": "原始资料/学校/福州大学_2026_本科生奖学金评定管理办法.html",
+      "附件路径": "",
+      "最后核验日期": "2026-10-18",
+      "内容哈希": "cdbb5410575e98f7bcd2a868dedaee1bf535ebb26c5de83c42e731771b90dc8c",
+      "截止日期": "",
+      "文件成文日期": "",
+      "核验状态": "本地文件与来源登记已核查；政策时效待逐条联网复核",
+      "核验说明": "",
+      "检索用途": "默认候选，使用前须按状态和适用范围筛选",
+      "附件来源": "",
+      "来源页面": "",
+      "来源页面发布日期": "",
+      "整理文件": "整理资料/学校/福州大学_2026_本科生奖学金评定管理办法.md",
+      "正文文件": "正文资料/学校/福州大学_2026_本科生奖学金评定管理办法.md",
+      "正文提取状态": "已提取正文，待人工语义复核",
+      "附件处理状态": "未登记附件",
+      "本地核查日期": "2026-10-21",
+      "初次核查整理稿状态": "摘要或简要说明",
+      "关联资料": "",
+      "印发日期": "",
+      "主题分类": "综评与奖学金",
+      "原登记内容哈希": "CDBB541057F98F7BCD2A868DEDAEE1BF535EBB26C5DE83C42E731771B90DC8C",
+      "哈希更正说明": "原索引值与现存HTML字节不符且位数不正确；本轮按原始HTML重算SHA256，保留旧登记值。本地重算不表示重新联网验证了政策。",
+      "附件哈希": "{}"
+    },
+    "temporal_notes": {
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "human_approved": true,
+      "baseline_version": "import-1",
+      "beta_domains": [
+        "S2"
+      ],
+      "scope_limitations": "仅限福大学〔2026〕23号校级本科生奖学金通则明确条款：通用参评条件、综合奖学金金额和综测排名门槛、实验班与非实验班评定比例、单项奖学金条件及金额上限、一般评审公示异议流程。不得承诺个人获奖，不以GPA排名替代综测排名，不把排名门槛解释为实际获奖比例；不据此判断实时名额或申请开放；校级通则不能替代国家、院级或社会专项细则。具体适用仍按办法原文及对应专项/当期通知核验。",
+      "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json"
+    }
+  },
+  "files": [
+    {
+      "file_role": "extracted",
+      "storage_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_name": "scholarship.md",
+      "media_type": "text/markdown",
+      "sha256": "6b47294ea131a6c7f60fa20d4683e4912c7bb5f92651ab64a90ed79ddde58fa0",
+      "source_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+      "processing_status": "extracted"
+    },
+    {
+      "file_role": "original",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_name": "scholarship.html",
+      "media_type": "text/html",
+      "sha256": "cdbb5410575e98f7bcd2a868dedaee1bf535ebb26c5de83c42e731771b90dc8c",
+      "source_url": "https://stuic.fzu.edu.cn/info/1032/6937.htm",
+      "processing_status": "saved"
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_no": 1,
+      "content": "## 福州大学本科生奖学金评定管理办法 |  | 来源单元0001\n\n福大学[2026] 23号",
+      "locator": "L1-L3 | 福州大学本科生奖学金评定管理办法 |  | 来源单元0001",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 1, \"line_end\": 3, \"char_start\": 0, \"char_end\": 48, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 |  | 来源单元0001\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/div/p[1]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 2,
+      "content": "## 福州大学本科生奖学金评定管理办法 |  | 来源单元0002\n\n各学院：",
+      "locator": "L5-L7 | 福州大学本科生奖学金评定管理办法 |  | 来源单元0002",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 5, \"line_end\": 7, \"char_start\": 50, \"char_end\": 89, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 |  | 来源单元0002\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/div/p[2]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 3,
+      "content": "## 福州大学本科生奖学金评定管理办法 |  | 来源单元0003\n\n修订后的《福州大学本科生奖学金评定管理办法》经校长办公会议（2026年第7次）审议通过，现印发给你们，请遵照执行。",
+      "locator": "L9-L11 | 福州大学本科生奖学金评定管理办法 |  | 来源单元0003",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 9, \"line_end\": 11, \"char_start\": 91, \"char_end\": 183, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 |  | 来源单元0003\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/div/p[3]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 4,
+      "content": "## 福州大学本科生奖学金评定管理办法 |  | 来源单元0004\n\n福 州 大 学",
+      "locator": "L13-L15 | 福州大学本科生奖学金评定管理办法 |  | 来源单元0004",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 13, \"line_end\": 15, \"char_start\": 185, \"char_end\": 227, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 |  | 来源单元0004\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/div/p[7]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 5,
+      "content": "## 福州大学本科生奖学金评定管理办法 |  | 来源单元0005\n\n2026年5月18日",
+      "locator": "L17-L19 | 福州大学本科生奖学金评定管理办法 |  | 来源单元0005",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 17, \"line_end\": 19, \"char_start\": 229, \"char_end\": 274, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 |  | 来源单元0005\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/div/p[8]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 6,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 | 来源单元0006\n\n福州大学本科生奖学金评定管理办法",
+      "locator": "L21-L23 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 | 来源单元0006",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 21, \"line_end\": 23, \"char_start\": 276, \"char_end\": 343, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 | 来源单元0006\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[2]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 7,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0007\n\n第一章 总 则",
+      "locator": "L25-L27 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0007",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 25, \"line_end\": 27, \"char_start\": 345, \"char_end\": 413, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0007\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[4]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 8,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0008\n\n第一条 为全面贯彻党的教育方针，落实立德树人根本任务，促进学生德、智、体、美、劳全面发展，努力培养更多让党放心、爱国奉献、担当民族复兴重任的时代新人。结合学校实际，特制定本办法。",
+      "locator": "L29-L31 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0008",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 29, \"line_end\": 31, \"char_start\": 415, \"char_end\": 565, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0008\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[5]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 9,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0009\n\n第二条 本办法适用于我校全日制在校本科生。",
+      "locator": "L33-L35 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0009",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 33, \"line_end\": 35, \"char_start\": 567, \"char_end\": 649, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第一章 总 则 | 来源单元0009\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[6]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 10,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0010\n\n第二章 奖学金的类别",
+      "locator": "L37-L39 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0010",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 37, \"line_end\": 39, \"char_start\": 651, \"char_end\": 725, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0010\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[7]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 11,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0011\n\n第三条 奖学金包括国家级奖学金项目、校级奖学金项目和社会捐赠专项奖学金项目三种类别。",
+      "locator": "L41-L43 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0011",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 41, \"line_end\": 43, \"char_start\": 727, \"char_end\": 833, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0011\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[8]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 12,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0012\n\n国家级奖学金项目是由中华人民共和国中央人民政府、地方政府出资设立，包括国家奖学金、国家励志奖学金等。",
+      "locator": "L45-L47 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0012",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 45, \"line_end\": 47, \"char_start\": 835, \"char_end\": 949, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0012\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[9]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 13,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0013\n\n校级奖学金项目是由学校设立，包括优秀学生综合奖学金、文化科技创新创业奖学金和单项奖学金等。",
+      "locator": "L49-L51 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0013",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 49, \"line_end\": 51, \"char_start\": 951, \"char_end\": 1060, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0013\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[10]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 14,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0014\n\n社会捐赠专项奖学金项目是由热心教育事业和人才培养的社会团体、企事业单位或个人出资在我校设立，包括宝钢奖学金等。",
+      "locator": "L53-L55 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0014",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 53, \"line_end\": 55, \"char_start\": 1062, \"char_end\": 1181, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第二章 奖学金的类别 | 来源单元0014\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[11]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 15,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0015\n\n第三章 奖学金的评定",
+      "locator": "L57-L59 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0015",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 57, \"line_end\": 59, \"char_start\": 1183, \"char_end\": 1257, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0015\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[12]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 16,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0016\n\n第四条 参评各类奖学金的学生应具备以下基本条件：",
+      "locator": "L61-L63 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0016",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 61, \"line_end\": 63, \"char_start\": 1259, \"char_end\": 1347, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0016\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[13]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 17,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0017\n\n(一)热爱社会主义祖国，拥护中国共产党的领导，自觉遵守宪法和法律，严格遵守校纪校规。",
+      "locator": "L65-L67 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0017",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 65, \"line_end\": 67, \"char_start\": 1349, \"char_end\": 1455, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0017\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[14]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 18,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0018\n\n(二)理想信念坚定，道德品质良好，恪守学术诚信，热爱所学专业，学习勤奋，成绩优良。",
+      "locator": "L69-L71 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0018",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 69, \"line_end\": 71, \"char_start\": 1457, \"char_end\": 1562, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0018\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[15]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 19,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0019\n\n(三)尊师爱校，乐于奉献，关心集体，团结同学，积极参加各种社会工作、文体活动，乐于劳动锻炼，身心健康。",
+      "locator": "L73-L75 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0019",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 73, \"line_end\": 75, \"char_start\": 1564, \"char_end\": 1679, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0019\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[16]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 20,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0020\n\n第五条 在评定学期中有下列情况之一，不具备获得各类奖学金的资格：",
+      "locator": "L77-L79 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0020",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 77, \"line_end\": 79, \"char_start\": 1681, \"char_end\": 1777, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0020\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[17]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 21,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0021\n\n(一)违反校纪校规，受到警告以上处分，在处分期限内的。",
+      "locator": "L81-L83 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0021",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 81, \"line_end\": 83, \"char_start\": 1779, \"char_end\": 1870, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0021\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[18]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 22,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0022\n\n(二)休学或保留学籍的。",
+      "locator": "L85-L87 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0022",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 85, \"line_end\": 87, \"char_start\": 1872, \"char_end\": 1948, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0022\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[19]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 23,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0023\n\n(三)所修习的课程(除任意选修课外)有不及格的。",
+      "locator": "L89-L91 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0023",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 89, \"line_end\": 91, \"char_start\": 1950, \"char_end\": 2038, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0023\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[20]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 24,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0024\n\n第六条 国家奖学金、国家励志奖学金的评定按国家和福建省有关规定另行制定文件执行。",
+      "locator": "L93-L95 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0024",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 93, \"line_end\": 95, \"char_start\": 2040, \"char_end\": 2144, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0024\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[21]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 25,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0025\n\n第七条 优秀学生综合奖学金",
+      "locator": "L97-L99 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0025",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 97, \"line_end\": 99, \"char_start\": 2146, \"char_end\": 2223, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0025\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[22]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 26,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0026\n\n(一)优秀学生综合奖学金的评定以学生综合素质测评成绩为依据，其中平均学分绩点以教务部门提供的数据为准（不含校选课成绩，已获学分的课程再次修读不计入）。",
+      "locator": "L101-L103 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0026",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 101, \"line_end\": 103, \"char_start\": 2225, \"char_end\": 2364, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0026\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[23]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 27,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0027\n\n(二)评定等级及金额：",
+      "locator": "L105-L107 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0027",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 105, \"line_end\": 107, \"char_start\": 2366, \"char_end\": 2441, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0027\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[24]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 28,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0028\n\n设立一等奖、二等奖、三等奖；一等奖1500元/学期，二等奖1000元/学期，三等奖500元/学期。",
+      "locator": "L109-L111 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0028",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 109, \"line_end\": 111, \"char_start\": 2443, \"char_end\": 2556, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0028\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[25]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 29,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0029\n\n(三)评定标准：",
+      "locator": "L113-L115 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0029",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 113, \"line_end\": 115, \"char_start\": 2558, \"char_end\": 2630, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0029\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[26]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 30,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0030\n\n1.一等奖学金：学期综合测评名次在本专业学生前10%。",
+      "locator": "L117-L119 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0030",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 117, \"line_end\": 119, \"char_start\": 2632, \"char_end\": 2723, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0030\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[27]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 31,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0031\n\n2.二等奖学金：学期综合测评名次在本专业学生前20%。",
+      "locator": "L121-L123 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0031",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 121, \"line_end\": 123, \"char_start\": 2725, \"char_end\": 2816, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0031\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[28]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 32,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0032\n\n3.三等奖学金：学期综合测评名次在本专业学生前40%。",
+      "locator": "L125-L127 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0032",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 125, \"line_end\": 127, \"char_start\": 2818, \"char_end\": 2909, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0032\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[29]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 33,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0033\n\n(四)评定比例：",
+      "locator": "L129-L131 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0033",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 129, \"line_end\": 131, \"char_start\": 2911, \"char_end\": 2983, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0033\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[30]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 34,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0034\n\n1.校级实验班评定人数不超过学生总数的36%，其中：一等奖不超过6%，一、二等奖总和不超过16%。",
+      "locator": "L133-L135 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0034",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 133, \"line_end\": 135, \"char_start\": 2985, \"char_end\": 3098, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0034\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[31]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 35,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0035\n\n2.非校级实验班评定人数不超过学生总数的18%，其中：一等奖不超过3%，一、二等奖总和不超过8%。经教务处认定的院级实验班可参照校级实验班执行，经费由学院自筹。",
+      "locator": "L137-L139 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0035",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 137, \"line_end\": 139, \"char_start\": 3100, \"char_end\": 3244, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0035\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[32]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 36,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0036\n\n3.在符合一等奖学金评定标准且本专业评定学生总人数及奖学金总金额不超过规定的前提下，一等奖评定人数可按评定比例向上取整核定。",
+      "locator": "L141-L143 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0036",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 141, \"line_end\": 143, \"char_start\": 3246, \"char_end\": 3372, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0036\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[33]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 37,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0037\n\n(五)大四下学期(建筑与城乡规划学院的为大五下学期)无专业课程的，或学期总学分低于15学分的，不再评定优秀学生综合奖学金，改为评定专技奖。参评对象为通过专业业务水平考试者(如会计专业技术资格考试、国家统一法律职业资格考试等)，每人不超过300元。各学院专技奖总金额一般不高于优秀学生综合奖学金总额的15%，从学院奖学金专户列支。",
+      "locator": "L145-L147 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0037",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 145, \"line_end\": 147, \"char_start\": 3374, \"char_end\": 3602, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0037\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[34]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 38,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0038\n\n（六）优秀学生综合奖学金每学期评定一次，于每年4月、10月进行。",
+      "locator": "L149-L151 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0038",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 149, \"line_end\": 151, \"char_start\": 3604, \"char_end\": 3700, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0038\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[35]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 39,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0039\n\n第八条 文化科技创新创业奖学金按照《福州大学学生文化科技创新创业奖学金实施细则》执行。",
+      "locator": "L153-L155 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0039",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 153, \"line_end\": 155, \"char_start\": 3702, \"char_end\": 3809, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0039\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[36]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 40,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0040\n\n第九条 单项奖学金",
+      "locator": "L157-L159 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0040",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 157, \"line_end\": 159, \"char_start\": 3811, \"char_end\": 3884, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0040\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[37]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 41,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0041\n\n(一)单项奖学金包括学习进步奖、精神文明建设奖。",
+      "locator": "L161-L163 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0041",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 161, \"line_end\": 163, \"char_start\": 3886, \"char_end\": 3974, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0041\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[38]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 42,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0042\n\n(二)学习进步奖参评对象为在评定学期进步名次超过30名或大于40%者。每人每学期不超过400元。",
+      "locator": "L165-L167 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0042",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 165, \"line_end\": 167, \"char_start\": 3976, \"char_end\": 4088, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0042\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[39]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 43,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0043\n\n(三)精神文明建设奖参评对象为在年度精神文明建设中成绩突出者。每人每学期不超过300元。",
+      "locator": "L169-L171 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0043",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 169, \"line_end\": 171, \"char_start\": 4090, \"char_end\": 4198, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0043\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[40]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 44,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0044\n\n(四)学院根据单项奖学金总额，统筹安排各学期奖项人数和金额，获奖比例不超过学生总数的25%。",
+      "locator": "L173-L175 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0044",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 173, \"line_end\": 175, \"char_start\": 4200, \"char_end\": 4310, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0044\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[41]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 45,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0045\n\n(五)单项奖学金每学期评定一次，于每年4月、10月进行。",
+      "locator": "L177-L179 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0045",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 177, \"line_end\": 179, \"char_start\": 4312, \"char_end\": 4404, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0045\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[42]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 46,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0046\n\n第十条 社会捐赠专项奖学金",
+      "locator": "L181-L183 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0046",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 181, \"line_end\": 183, \"char_start\": 4406, \"char_end\": 4483, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0046\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[43]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 47,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0047\n\n(一)社会捐赠专项奖学金的评定按照学校各项社会奖学金的设立规定和评定办法执行。",
+      "locator": "L185-L187 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0047",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 185, \"line_end\": 187, \"char_start\": 4485, \"char_end\": 4588, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0047\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[44]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 48,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0048\n\n(二)设立在学院的社会捐赠专项奖学金，由学生工作部（处）负责指导和监督。学院社会捐赠专项奖学金设立后应在一个月内报学生工作部（处）备案，评定结果应在一周内报学生工作部（处）备案。",
+      "locator": "L189-L191 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0048",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 189, \"line_end\": 191, \"char_start\": 4590, \"char_end\": 4743, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第三章 奖学金的评定 | 来源单元0048\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[45]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 49,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0049\n\n第四章 组织管理",
+      "locator": "L193-L195 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0049",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 193, \"line_end\": 195, \"char_start\": 4745, \"char_end\": 4815, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0049\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[46]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 50,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0050\n\n第十一条 学校设立奖学金评定管理委员会(以下简称“校评委会”)。校评委会主任由校领导担任，委员由学生工作部（处）、计财处和教务处等部门负责人组成，办公室设在学生工作部（处）。",
+      "locator": "L197-L199 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0050",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 197, \"line_end\": 199, \"char_start\": 4817, \"char_end\": 4966, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0050\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[47]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 51,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0051\n\n第十二条 各学院成立相应的奖学金评审委员会(以下简称“院评委会”),主任由学院分管学生工作的副书记担任，委员由辅导员、学生代表组成，负责制定实施细则、奖学金评审、公示及解释等工作。",
+      "locator": "L201-L203 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0051",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 201, \"line_end\": 203, \"char_start\": 4968, \"char_end\": 5120, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第四章 组织管理 | 来源单元0051\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[48]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 52,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0052\n\n第五章 工作要求",
+      "locator": "L205-L207 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0052",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 205, \"line_end\": 207, \"char_start\": 5122, \"char_end\": 5192, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0052\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[49]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 53,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0053\n\n第十三条 工作要求",
+      "locator": "L209-L211 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0053",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 209, \"line_end\": 211, \"char_start\": 5194, \"char_end\": 5265, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0053\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[50]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 54,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0054\n\n(一)学校每学年对本科生奖学金评定工作做出安排，各学院负责本学院本科生各项奖学金的评定工作。学院应根据学校要求组织学生申请，以班级为单位成立测评小组，对学生进行全面考核，严格评审。",
+      "locator": "L213-L215 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0054",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 213, \"line_end\": 215, \"char_start\": 5267, \"char_end\": 5419, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0054\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[51]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 55,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0055\n\n(二)奖学金评定坚持“公平、公正、公开”的原则，做到评定条件、名额、程序和结果公开。学院公示应在班级或学生集中住宿的楼栋公告栏进行，对评定程序和评定结果存有异议的，可在公示期内提出。",
+      "locator": "L217-L219 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0055",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 217, \"line_end\": 219, \"char_start\": 5421, \"char_end\": 5574, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0055\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[52]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 56,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0056\n\n(三)对在奖学金评定中弄虚作假的，一经查实，学校将撤销其所得奖项，追缴已发奖学金，并依规予以相应的纪律处分。",
+      "locator": "L221-L223 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0056",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 221, \"line_end\": 223, \"char_start\": 5576, \"char_end\": 5692, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第五章 工作要求 | 来源单元0056\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[53]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 57,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0057\n\n第六章 附 则",
+      "locator": "L225-L227 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0057",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 225, \"line_end\": 227, \"char_start\": 5694, \"char_end\": 5762, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0057\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[54]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 58,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0058\n\n第十四条 本办法自公布之日起施行。其他有关文件与本办法不一致的，以本办法为准。原《福州大学本科生奖学金管理办法》(福大学〔2024〕37号)同步废止。",
+      "locator": "L229-L231 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0058",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 229, \"line_end\": 231, \"char_start\": 5764, \"char_end\": 5900, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0058\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[55]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 59,
+      "content": "## 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0059\n\n第十五条 本办法具体解释工作由学生工作部（处）承担。",
+      "locator": "L233-L235 | 福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0059",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 233, \"line_end\": 235, \"char_start\": 5902, \"char_end\": 5989, \"heading_path\": [{\"level\": 2, \"title\": \"福州大学本科生奖学金评定管理办法 | 福州大学本科生奖学金评定管理办法 / 第六章 附 则 | 来源单元0059\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/scholarship.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/scholarship.html",
+      "original_locator": "/html/body/nav/ul/li/div/li[11]/div/div[5]/div[2]/div[2]/div[2]/form/div[1]/div/p[56]",
+      "index_status": "pending"
+    }
+  ]
+}

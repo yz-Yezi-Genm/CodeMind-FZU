@@ -1,0 +1,22 @@
+{
+  "packages": 2,
+  "chunks": 48,
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "raw_labs": 24,
+  "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+  "index_checks": [
+    {
+      "category": "R3",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    },
+    {
+      "category": "R4",
+      "indexed_chunks": 24,
+      "metadata_hidden": true,
+      "chunk_lookups_hidden": 24
+    }
+  ]
+}

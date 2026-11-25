@@ -1,0 +1,3629 @@
+[
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 1,
+    "chunk_no": 1,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A3:I3",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 1,
+      "line_end": 37,
+      "char_start": 0,
+      "char_end": 659,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号01·福州大学超算团队"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A3",
+        "raw_value": "1",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      },
+      {
+        "cell": "B3",
+        "raw_value": "福州大学超算团队",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a36c43327911c620f5b628ed1613fa4ba09d2abb39be655ab2ab1b9cd204fed2"
+      },
+      {
+        "cell": "D3",
+        "raw_value": "福州大学国家大学科技园2号楼B口4层南405",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "74d6067bc7cddbc05aca3e0794cc262bf5d6408e32408aa6b71eeae311fc4255"
+      },
+      {
+        "cell": "E3",
+        "raw_value": "廖祥文\n吴运兵",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "503b6ce65a14881434af636e78c8d167dae1b8a4fca06ae385f11d4bcdff8370"
+      },
+      {
+        "cell": "F3",
+        "raw_value": "吴运兵（13859028940）\n28806938@qq.com",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:28806938@qq.com"
+        ],
+        "raw_value_sha256": "1c91c224f4dc9ae5a2d926664341881422c3b524b557e42ea114723a5285eeeb"
+      },
+      {
+        "cell": "G3",
+        "raw_value": "接收10人左右，为每名入选学生提供工位和PC机。要求：态度积极、基础扎实，原则上要求绩点前30%。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "c5d96034e8fe796c95f064fea89c599e9be68c6041e45b8cf687497ba5db42ff"
+      },
+      {
+        "cell": "H3",
+        "raw_value": "考核方案采用面试和基础考试等，侧重考查参与态度、基础知识、学习成绩等",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0de0a784e0066385680c9c831599c9ddcc373bb1664caf9ef1b0f62892b29eee"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 2,
+    "chunk_no": 2,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A4:I4",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 39,
+      "line_end": 74,
+      "char_start": 661,
+      "char_end": 1289,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号02·网络流量分析与异常检测课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A4",
+        "raw_value": "2",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+      },
+      {
+        "cell": "B4",
+        "raw_value": "网络流量分析与异常检测课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "138ec1600678cf70bde0ec6ade7ecb4f5753bc1efca68a77e6aa68b5f1bb8eee"
+      },
+      {
+        "cell": "D4",
+        "raw_value": "福州大学计算机与大数据学院2#302",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "370583a2057c5c51d41a3ef3d689fb084c06bc0ae4507b6da54e25a13bc94d6f"
+      },
+      {
+        "cell": "E4",
+        "raw_value": "张浩",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "3e9ae5f93f1fdb9cd0d182452d37febfbf788495e75e3b4b5b286363739e66f0"
+      },
+      {
+        "cell": "F4",
+        "raw_value": "13720825396\nzhanghao@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:zhanghao@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "33585f65948804e88f8749546eceddffcc75c1acefc7d65e5c13c0486aec0fc3"
+      },
+      {
+        "cell": "G4",
+        "raw_value": "4人左右。要求：勤奋好学，具有一定的计算机网络和网络安全基础。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fe6a8fd07a2c208e070f2188533b22b62474300dbf8280738bfa652ae6c3af9b"
+      },
+      {
+        "cell": "H4",
+        "raw_value": "考核方式采用面试结合学业成绩。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af3a5b559205e618d7a8e341eb61ab307f54f6865a73d3571f1e1c9c1f389e9f"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 3,
+    "chunk_no": 3,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A5:I5",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 76,
+      "line_end": 110,
+      "char_start": 1291,
+      "char_end": 1904,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号03·人工智能自主创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A5",
+        "raw_value": "3",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"
+      },
+      {
+        "cell": "B5",
+        "raw_value": "人工智能自主创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "89b8d40363da5c85c16edd916c0ed0bfcb728cde13a9cc96852af49cdf0daef5"
+      },
+      {
+        "cell": "D5",
+        "raw_value": "福州大学计算机与大数据学院3#506",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af00a330dd8baec4466982ae26f86a77ec16dd4497301bf571b3a3971d070275"
+      },
+      {
+        "cell": "E5",
+        "raw_value": "陈飞",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b7394611f66e9dd0b2b264da1f83965c3095d1e2f1dab056b985b90fec5aefd2"
+      },
+      {
+        "cell": "F5",
+        "raw_value": "380509981@qq.com",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:380509981@qq.com"
+        ],
+        "raw_value_sha256": "bd1be2d6863bd40563a1141a9591751146eef869cb9e321baaccc27422f79b7f"
+      },
+      {
+        "cell": "G5",
+        "raw_value": "接收10人左右，为每名入选学生提供工位。要求：态度积极、基础扎实，热爱创新实践。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d9bbc8de6accbe0c9fb31101e039f77bdfb57b17be4e0746da0dbc4803986f9d"
+      },
+      {
+        "cell": "H5",
+        "raw_value": "考核方式采用面试结合学业成绩。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af3a5b559205e618d7a8e341eb61ab307f54f6865a73d3571f1e1c9c1f389e9f"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 4,
+    "chunk_no": 4,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A6:I6",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 112,
+      "line_end": 146,
+      "char_start": 1906,
+      "char_end": 2531,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号04·福州大学图机器学习课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A6",
+        "raw_value": "4",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
+      },
+      {
+        "cell": "B6",
+        "raw_value": "福州大学图机器学习课题组 ",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "dae6bdddafc43c549144b235bb3c4458d43066f453b4f9b03e593c02287562db"
+      },
+      {
+        "cell": "D6",
+        "raw_value": "福州大学计算机与大数据学院2#402",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "1b8026a1db7bfa286acf6141ebd3607b2512b87af53d3172e1bb992085f46683"
+      },
+      {
+        "cell": "E6",
+        "raw_value": "吴伶",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "cf23d1d90e90ce4378489dd40c0ca08f35d2d301cd4ef68be07b0fd27b836eac"
+      },
+      {
+        "cell": "F6",
+        "raw_value": "wuling1985@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:wuling1985@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "0f67191933bef37466a125a0594180de2008e57530984d89c2fcdba37198acbb"
+      },
+      {
+        "cell": "G6",
+        "raw_value": "4人左右。要求：勤奋好学，具有一定的数据挖掘基础、复杂网络分析、深度学习基础。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "44440003bbecd7268ae4394bd06e70917503d32322824b630b0da746143da4c6"
+      },
+      {
+        "cell": "H6",
+        "raw_value": "考核方式采用面试结合学业成绩。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af3a5b559205e618d7a8e341eb61ab307f54f6865a73d3571f1e1c9c1f389e9f"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 5,
+    "chunk_no": 5,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A7:I7",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 148,
+      "line_end": 182,
+      "char_start": 2533,
+      "char_end": 3182,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号05·福州大学认知系统与信息处理实验室EIC小组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A7",
+        "raw_value": "5",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+      },
+      {
+        "cell": "B7",
+        "raw_value": "福州大学认知系统与信息处理实验室EIC小组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0fb7a8462299f8f767b30e9e50183c25a151065b2f51733487f708aa9fe2831e"
+      },
+      {
+        "cell": "D7",
+        "raw_value": "计算机与大数据学院2#404",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "5f3190bed2a0ed3d20dfbc5af00b521b31b3385552b3732ea7271cc4260f4681"
+      },
+      {
+        "cell": "E7",
+        "raw_value": "廖龙龙",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "43264d4ff5785ddf7ae249afd01f2917692cba531aa825ac3e883f890308f9df"
+      },
+      {
+        "cell": "F7",
+        "raw_value": "t20104@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:t20104@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "6b705417fbd8c29a1c2240f4d4b8f13b2efd191c6688aa744b931752b450225e"
+      },
+      {
+        "cell": "G7",
+        "raw_value": "3-4人，提供token和共享工位。要求: 具有强烈的自愿提升科研能力(保研)或工程开发能力(就业)的愿景和动力",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "03dccec91aa67d95296053c372d76fb1eb5908afb8085d4aff70a95f3489b5b8"
+      },
+      {
+        "cell": "H7",
+        "raw_value": "面试(侧重学习态度及其目标规划)",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "49eb434216dce17c6b82a6302f0e01990ccf89f5f5012d20502bf897cc1d522b"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 6,
+    "chunk_no": 6,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A8:I8",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 184,
+      "line_end": 218,
+      "char_start": 3184,
+      "char_end": 3915,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号06·IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A8",
+        "raw_value": "6",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
+      },
+      {
+        "cell": "B8",
+        "raw_value": "IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e725c9d474e16f6ed3acfb260abe21ab6597c6f056c34e24303443f3a635126c"
+      },
+      {
+        "cell": "D8",
+        "raw_value": "福州大学计算机与大数据学院4#125",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "948db1352f629ba5d9bbf6e38d7882e0e7da95c10dc6e98b69082a687d37d7bf"
+      },
+      {
+        "cell": "E8",
+        "raw_value": "檀彦超",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "45ac98ce392730d94947ad92de1857014032d71da22ee5b800a3b3c287e3a896"
+      },
+      {
+        "cell": "F8",
+        "raw_value": "yctan@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:yctan@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "c5efdd34284789eb1cfab704cc073406e047707e8c0d2d1068513495cc69fd30"
+      },
+      {
+        "cell": "G8",
+        "raw_value": "3-4人，为每名入选学生提供工位。要求：态度积极上进，有一定主观能动性，且具有良好编程能力和英语能力。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "848e0163dd6699bfbe41463339b60102cc4ce630aa6d416addf4adb8dea44278"
+      },
+      {
+        "cell": "H8",
+        "raw_value": "考核方式采用面试结合学业成绩。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af3a5b559205e618d7a8e341eb61ab307f54f6865a73d3571f1e1c9c1f389e9f"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 7,
+    "chunk_no": 7,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A9:I9",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 220,
+      "line_end": 254,
+      "char_start": 3917,
+      "char_end": 4492,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号07·福州大学数据挖掘课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A9",
+        "raw_value": "7",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451"
+      },
+      {
+        "cell": "B9",
+        "raw_value": "福州大学数据挖掘课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fec66c2df3c7de889f9a8632fb791fd03961edc6ed8d9c2081c68b48e2a3d4ca"
+      },
+      {
+        "cell": "D9",
+        "raw_value": "福州大学计算机与大数据学院4#129",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "07bdbc1b9acfc219853cd4d830e85f8da98649e8bd8e4be24462744cd8f9502b"
+      },
+      {
+        "cell": "E9",
+        "raw_value": "王正鸿",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "361be8a57dc028d9f7c9d043f7d64a0b56b6ec8a20c5f0c8928f2f4262932c22"
+      },
+      {
+        "cell": "F9",
+        "raw_value": "wzh@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:wzh@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "d1f9baf5fdb35c80c1f7243b861fb210cc4e221035c18ee655b7d95ac0b7119f"
+      },
+      {
+        "cell": "G9",
+        "raw_value": "10人左右，要求：勤奋好学，主动积极",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d36001f7d52ae5c58184df3f1e5b4f8091ea261dbf76ac73f5b0b94779b9bd66"
+      },
+      {
+        "cell": "H9",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 8,
+    "chunk_no": 8,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A10:I10",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 256,
+      "line_end": 289,
+      "char_start": 4494,
+      "char_end": 5108,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号08·空间数据挖掘与信息共享教育部重点实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A10",
+        "raw_value": "8",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3"
+      },
+      {
+        "cell": "B10",
+        "raw_value": "空间数据挖掘与信息共享教育部重点实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "c5daa47defcb2e03a12dec983d3c3126e9b383a699851d89e414f397861626c7"
+      },
+      {
+        "cell": "D10",
+        "raw_value": "福州大学国家大学科技园8号楼",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "63fb74fa758e15eeb5e71f3bd4976b840a46870db5f059e1649b6f8bf31a9925"
+      },
+      {
+        "cell": "E10",
+        "raw_value": "林梦婧",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e168210df3038daaa3929783a501bf8783668073eb867e60a3cd9524b2d76a1b"
+      },
+      {
+        "cell": "F10",
+        "raw_value": "15396009699",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fbb23368294bdff3c289da9f3c9129df12117d8dd31b023a81b2f2f273a9a2c5"
+      },
+      {
+        "cell": "G10",
+        "raw_value": "计划接收人数：4\n主要条件：掌握Python、R语言等计算机语言并有能力进行深度学习等相关内容的数值模拟、数据分析。对灾害风险、生态评价、人地关系有一定兴趣的学生。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "06532b4e98f0648ae6dcdb806ab8257e7fd31928a017cb1a95911f210c20c54b"
+      },
+      {
+        "cell": "H10",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 9,
+    "chunk_no": 9,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A11:I11",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 291,
+      "line_end": 325,
+      "char_start": 5110,
+      "char_end": 5701,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号09·数据智能与交叉信息课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A11",
+        "raw_value": "9",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "19581e27de7ced00ff1ce50b2047e7a567c76b1cbaebabe5ef03f7c3017bb5b7"
+      },
+      {
+        "cell": "B11",
+        "raw_value": "数据智能与交叉信息课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d330f0140ec1774631ba27b5d99437f2256b31d6d3aab9784f492730d729b4ea"
+      },
+      {
+        "cell": "D11",
+        "raw_value": "3号楼101",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a92b00e130566f99a9385a2c0602331d8d5f44a3ccf955127c94cc636acd07cb"
+      },
+      {
+        "cell": "E11",
+        "raw_value": "赖志宸",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "1ff9b82608403893fb468bde45a28233d00b33a517cec0c437ecc49fcc0207d1"
+      },
+      {
+        "cell": "F11",
+        "raw_value": "lzc@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "http://lzc@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "c1f5246b635db9fac8df6184417061465315fe26267ab4c3ec1c5aa4fe7ed54d"
+      },
+      {
+        "cell": "G11",
+        "raw_value": "2-5人，绩点排名前30% 或 具有突出竞赛成果，有保研或留学意向优先。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "cf221879e49c301702dd7279eeb6ac336cd2b1ee60b1e41190a84e3687a27cf4"
+      },
+      {
+        "cell": "H11",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 10,
+    "chunk_no": 10,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A12:I12",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 327,
+      "line_end": 361,
+      "char_start": 5703,
+      "char_end": 6369,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号10·福州大学-数字媒体实验室（Digital Media Lab，DML)"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A12",
+        "raw_value": "10",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5"
+      },
+      {
+        "cell": "B12",
+        "raw_value": "福州大学-数字媒体实验室（Digital Media Lab，DML)",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a2e34b7acf1240f22f9b654666a21b7113a3b48406a7242dff532ebe6a330073"
+      },
+      {
+        "cell": "D12",
+        "raw_value": "科技园",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e62e3aee66a48845f5ed0339941bd1fb23ff79c892d71ac102f42774161b6cb2"
+      },
+      {
+        "cell": "E12",
+        "raw_value": "程日",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e15020a807075433c648a0039f5734a7da190a92a4153742d23d1b2b836c2d56"
+      },
+      {
+        "cell": "F12",
+        "raw_value": "rcheng@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "http://rcheng@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "7fc9f7cf97834f7b067261e8a14581b9516fb687158561c8200745d178ed4832"
+      },
+      {
+        "cell": "G12",
+        "raw_value": "3人，可稳定投入科研时间，能够定期参加组会。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9812f6214bd32685c7b0fd63443cf7fd4b039f6111f64ca43a6f2c02d9ff1f97"
+      },
+      {
+        "cell": "H12",
+        "raw_value": "前期进行科研基础训练；在掌握基础科研知识后，根据个人情况安排参与科研课题或项目研究。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "04992c23acba55236ad9fc74af03b0c4ba2e9306bfbdba044ba013f834cc50b1"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 11,
+    "chunk_no": 11,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A13:I13",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 363,
+      "line_end": 395,
+      "char_start": 6371,
+      "char_end": 6895,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号11·复杂网络大数据分析实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A13",
+        "raw_value": "11",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8"
+      },
+      {
+        "cell": "B13",
+        "raw_value": "复杂网络大数据分析实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "922d249223dcef53de263d7a1c9139b07e3ca6e4dc5e13840c8b4bc8a4f26873"
+      },
+      {
+        "cell": "D13",
+        "raw_value": "计算机与大数据学院2号楼402",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "188fd231a788a775a7a79ffab2b35aa6649e7bd7195698692fa33ca77b8c8527"
+      },
+      {
+        "cell": "E13",
+        "raw_value": "郭昆",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "03551c02bd7a4dd22d31ce5b5be29d1fd3753635fdd1e44019eff08bdb43c406"
+      },
+      {
+        "cell": "F13",
+        "raw_value": "gukn123@163.com",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ec5269eb197259d678c9130bcb7797a82ec8ccb7079269dd8c200d8c60572676"
+      },
+      {
+        "cell": "G13",
+        "raw_value": "5",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+      },
+      {
+        "cell": "H13",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 12,
+    "chunk_no": 12,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A14:I14",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 397,
+      "line_end": 438,
+      "char_start": 6897,
+      "char_end": 7590,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号12·“AI+复杂工业系统”创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A14",
+        "raw_value": "12",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+      },
+      {
+        "cell": "B14",
+        "raw_value": "“AI+复杂工业系统”创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "5f566852d39a6d3fc52c039769a88d2acc6fcd9920861b633c13f5e857b9ba92"
+      },
+      {
+        "cell": "D14",
+        "raw_value": "计算机与大数据学院3号楼104",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4205c4c61cfab20bc86c837b133640769a898cd9ac953974be7015d854e263d1"
+      },
+      {
+        "cell": "E14",
+        "raw_value": "张和洪\n张百一",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "38e1f80a8a1b6b1b2b51cc33661e94c2e8e83016d56b169d38fc0f563eed18e1"
+      },
+      {
+        "cell": "F14",
+        "raw_value": "13625095094\n1204713191@qq.com\n\n 18810721611\nzhangbaiyi@fzu.edu.cn ",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:1204713191@qq.com",
+          "mailto:zhangbaiyi@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "d7ba189103f0ec9d726d483f38c962a45460c2df0e3080123baad52e1d8a9393"
+      },
+      {
+        "cell": "G14",
+        "raw_value": "招收3-5名",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "99cf372a8f902aabf705e511a7125c8e127596cc4e26101a43aaa4307d52174b"
+      },
+      {
+        "cell": "H14",
+        "raw_value": "面试结合学业成绩",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e7741569f5ae32c2fecff5185dcbfd8cd954ed8538c7ec59190655fe9c878508"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 13,
+    "chunk_no": 13,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A15:I15",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 440,
+      "line_end": 476,
+      "char_start": 7592,
+      "char_end": 8223,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号13·多模态智能感知计算研究课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A15",
+        "raw_value": "13",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "3fdba35f04dc8c462986c992bcf875546257113072a909c162f7e470e581e278"
+      },
+      {
+        "cell": "B15",
+        "raw_value": "多模态智能感知计算研究课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4722212fdac9d14f67c50e0583ec44cbe7998a8f4174054c2f9489e2d6a68c62"
+      },
+      {
+        "cell": "D15",
+        "raw_value": "计算机与大数据学院2号楼509",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "5e198b6a1ac8740f41db209f7821983ec3da0340489a37c3232abef9e89cbd11"
+      },
+      {
+        "cell": "E15",
+        "raw_value": "翁谦\n林嘉雯",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b7aee9550e5bb160f52ed6f73c63e20deb811406ab83e63ab6d954cc08e32d77"
+      },
+      {
+        "cell": "F15",
+        "raw_value": "13960903417\nfzuwq@qq.com",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:fzuwq@qq.com"
+        ],
+        "raw_value_sha256": "7cc3cc4ff57747a7297a22d45cf38acdc8b3b327368212788ef17cb30dfffd0d"
+      },
+      {
+        "cell": "G15",
+        "raw_value": "招收3-5名",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "99cf372a8f902aabf705e511a7125c8e127596cc4e26101a43aaa4307d52174b"
+      },
+      {
+        "cell": "H15",
+        "raw_value": "面试结合学业成绩，希望学生能勇于尝试挑战，对AI应用有一定基础，对AI方向有深入思考和学习欲望",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0333fddccf56c4bc6b54ef73f43b39de7dbd2638919a3363a80e50cd99f9fa37"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 14,
+    "chunk_no": 14,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A16:I16",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 478,
+      "line_end": 513,
+      "char_start": 8225,
+      "char_end": 8815,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号14·EDA创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A16",
+        "raw_value": "14",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61"
+      },
+      {
+        "cell": "B16",
+        "raw_value": "EDA创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ba0d4694b939a9e4fa7119d077c202b618793909d44fe0dee56ff1b8e6b9439c"
+      },
+      {
+        "cell": "D16",
+        "raw_value": "计算机与大数据学院3号楼209",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ab99475534d8a3f675aefc35949d0b46a3fde3d4713d8c0f5b8f69e27700aea2"
+      },
+      {
+        "cell": "E16",
+        "raw_value": "陈家瑞",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b14c65032aa7a668dfde7b9ed3fa78e64a6548fa2afcaece1bfef741887137c4"
+      },
+      {
+        "cell": "F16",
+        "raw_value": "18960870800\n21399095@qq.com",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:21399095@qq.com"
+        ],
+        "raw_value_sha256": "cb9f87f2ab54725b09776e484615996064cd26bafff43955e4c44718c87fc406"
+      },
+      {
+        "cell": "G16",
+        "raw_value": "招收3-5名",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "99cf372a8f902aabf705e511a7125c8e127596cc4e26101a43aaa4307d52174b"
+      },
+      {
+        "cell": "H16",
+        "raw_value": "考核方式采用面试结合学业成绩。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af3a5b559205e618d7a8e341eb61ab307f54f6865a73d3571f1e1c9c1f389e9f"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 15,
+    "chunk_no": 15,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A17:I17",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 515,
+      "line_end": 549,
+      "char_start": 8817,
+      "char_end": 9398,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号15·EDA创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A17",
+        "raw_value": "15",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+      },
+      {
+        "cell": "B17",
+        "raw_value": "EDA创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ba0d4694b939a9e4fa7119d077c202b618793909d44fe0dee56ff1b8e6b9439c"
+      },
+      {
+        "cell": "D17",
+        "raw_value": "计算机与大数据学院2号楼301",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "cb500e13818a167486087d52b4ddfaa4e27c4e3c411bc34931273158eb7b55b7"
+      },
+      {
+        "cell": "E17",
+        "raw_value": "刘耿耿",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "f2c1a37b5a1b6b2ef65909daa86cc6439500e20ecff4abfb6d8a1a85f183d616"
+      },
+      {
+        "cell": "F17",
+        "raw_value": "chenzhisheng@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:chenzhisheng@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "7c86b0dd2a68cd5eafd352f750aebb598db4a06326184832a47c6b2714c697b0"
+      },
+      {
+        "cell": "G17",
+        "raw_value": "招收6-8人",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "280b95468b25af1126ad8597028e6706ca374cde993f2f2c393b96e533895c2f"
+      },
+      {
+        "cell": "H17",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 16,
+    "chunk_no": 16,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A18:I18",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 551,
+      "line_end": 585,
+      "char_start": 9400,
+      "char_end": 9977,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号16·高效学习与智能计算实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A18",
+        "raw_value": "16",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9"
+      },
+      {
+        "cell": "B18",
+        "raw_value": "高效学习与智能计算实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "535ec56cb790e481fd4106ce783382c510c894eb82df965dd5380b7b1f2b96a6"
+      },
+      {
+        "cell": "D18",
+        "raw_value": "计算机与大数据学院4号楼126",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0c0cfe9618299eb2253934ae0738934dfa490f7052325b018e9ab05108323275"
+      },
+      {
+        "cell": "E18",
+        "raw_value": "陈光永",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d6bda431d1b990c39366379684f72c8e94449e8cba8aa42e9bb119ef927b982c"
+      },
+      {
+        "cell": "F18",
+        "raw_value": "gychen@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:gychen@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "0d01be30aadd40c3f9a742ec0523e8084e82442ea1fecdc7ba36b2fe29641545"
+      },
+      {
+        "cell": "G18",
+        "raw_value": "招收2-5人",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "963a551a540f2de96e2d976aa9c9adaf9bee25a3a34b5fec568986269b77c584"
+      },
+      {
+        "cell": "H18",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 17,
+    "chunk_no": 17,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A19:I19",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 587,
+      "line_end": 621,
+      "char_start": 9979,
+      "char_end": 10552,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号17·知识推理课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A19",
+        "raw_value": "17",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4523540f1504cd17100c4835e85b7eefd49911580f8efff0599a8f283be6b9e3"
+      },
+      {
+        "cell": "B19",
+        "raw_value": "知识推理课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "435e03bb657f59b670d2fbf69f07f8ff01e58d14c842c418156deb3f8585a20c"
+      },
+      {
+        "cell": "D19",
+        "raw_value": "计算机与大数据学院2号楼409",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "10a29aba1a8e54d21e4bcf5c91d19d7bca7084f7e2fc16bef53762602093b04a"
+      },
+      {
+        "cell": "E19",
+        "raw_value": "杨锦发",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "8605995b77a42b1f9a064046883dab75a3a704136a25b62c925c1660c351d1be"
+      },
+      {
+        "cell": "F19",
+        "raw_value": "jinfayang@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:jinfayang@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "74e8f4534089cda455a51b813cc849291368a9dd07ab1317aad6839db1aac458"
+      },
+      {
+        "cell": "G19",
+        "raw_value": "招收2-5人",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "963a551a540f2de96e2d976aa9c9adaf9bee25a3a34b5fec568986269b77c584"
+      },
+      {
+        "cell": "H19",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 18,
+    "chunk_no": 18,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A20:I20",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 623,
+      "line_end": 657,
+      "char_start": 10554,
+      "char_end": 11183,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号18·空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A20",
+        "raw_value": "18",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4ec9599fc203d176a301536c2e091a19bc852759b255bd6818810a42c5fed14a"
+      },
+      {
+        "cell": "B20",
+        "raw_value": "空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "2c9b49543aeba1d75a337eea43b878c24164aea610c7c341527e200355d2cb03"
+      },
+      {
+        "cell": "D20",
+        "raw_value": "晋江楼18层",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "1a7b8a80a723fee50f62618b1eac8ec86f4a33c8f31829d5f8db1c2c50c75b66"
+      },
+      {
+        "cell": "E20",
+        "raw_value": "高嘉良",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "3fefbc7e7b3d069acf497a8a78a621df9af2a690eeb0001d1f0919b8e569c6d1"
+      },
+      {
+        "cell": "F20",
+        "raw_value": "13051426299；gaojl@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:gaojl@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "25bd1c08eaef268d5f4498e0e8c4c39bbfd01493f19ddf00680b3217d6bf6228"
+      },
+      {
+        "cell": "G20",
+        "raw_value": "招收2-3人；爱生活、爱观察、爱思考、肯动手的同学优先",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "3f95ee4171ad8d59e6e5387ac4d8d6660a372564b2f5c152660f1cad7455132b"
+      },
+      {
+        "cell": "H20",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 19,
+    "chunk_no": 19,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A21:I21",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 659,
+      "line_end": 694,
+      "char_start": 11185,
+      "char_end": 11800,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号19·工业智能课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A21",
+        "raw_value": "19",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9400f1b21cb527d7fa3d3eabba93557a18ebe7a2ca4e471cfe5e4c5b4ca7f767"
+      },
+      {
+        "cell": "B21",
+        "raw_value": "工业智能课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "52ab1f727dfb2e8b8c86d8b29c8c6ad267377e10454e8fea01d65c70da0995aa"
+      },
+      {
+        "cell": "D21",
+        "raw_value": "计算机与大数据学院2号楼303",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0d872f1d3dcf088874afbfbf7999894703abf60e1abb747e5116d2628131a795"
+      },
+      {
+        "cell": "E21",
+        "raw_value": "郑相涵",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "f013ca57927109710466545ed93955e621a6119527a0db3a0df4ab39e695d6c0"
+      },
+      {
+        "cell": "F21",
+        "raw_value": "15080025921\nxianghan.zheng@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:xianghan.zheng@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "0c464410aac77ef936e3a659614adc97da8fb7151c8ceba28fa5a1a1b71f7b63"
+      },
+      {
+        "cell": "G21",
+        "raw_value": "招收2-5人；勤奋好学、肯动手，有保研/考研意向优先",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b3ecc4c71bb00d72098585011887a508cf9b9cb28dc0c657c09095713fac9f06"
+      },
+      {
+        "cell": "H21",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 20,
+    "chunk_no": 20,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A22:I22",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 696,
+      "line_end": 730,
+      "char_start": 11802,
+      "char_end": 12371,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号20·网络空间安全实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A22",
+        "raw_value": "20",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "f5ca38f748a1d6eaf726b8a42fb575c3c71f1864a8143301782de13da2d9202b"
+      },
+      {
+        "cell": "B22",
+        "raw_value": "网络空间安全实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "da3c26269420c2e324c63dcac65f8785c38578141d9e631fe6e612fe610345bc"
+      },
+      {
+        "cell": "D22",
+        "raw_value": "计算机与大数据学院2号楼401",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "c668524ea8ee152e4fa4ba223655469837d171073b21368d2273946c38fbae24"
+      },
+      {
+        "cell": "E22",
+        "raw_value": "印佳丽",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "26e91440792c370d62ab6ae65bbf66fb413b47fe252f9648182a3bf9768c879d"
+      },
+      {
+        "cell": "F22",
+        "raw_value": "jlyin@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:jlyin@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "a1348503ee003c94f3ff581f5d9eabffbb1d4b23f7bbe8cfdcdc2855dcd5768e"
+      },
+      {
+        "cell": "G22",
+        "raw_value": "招收2-5人",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "963a551a540f2de96e2d976aa9c9adaf9bee25a3a34b5fec568986269b77c584"
+      },
+      {
+        "cell": "H22",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 21,
+    "chunk_no": 21,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A23:I23",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 732,
+      "line_end": 766,
+      "char_start": 12373,
+      "char_end": 13029,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号21·大模型轻量化与自动机器学习课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A23",
+        "raw_value": "21",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "6f4b6612125fb3a0daecd2799dfd6c9c299424fd920f9b308110a2c1fbd8f443"
+      },
+      {
+        "cell": "B23",
+        "raw_value": "大模型轻量化与自动机器学习课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9166f2b6fe4d282bb3da0d29564fdcd16953a9f19ff5162fcb1418ac9cfd9acc"
+      },
+      {
+        "cell": "D23",
+        "raw_value": "福州大学计算机与大数据学院4#130",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a433ee38f9f3ddc8752c61ca0dc937520d08c5546d8ca512b8544dad4050671f"
+      },
+      {
+        "cell": "E23",
+        "raw_value": "周勤勤",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fa66ea05dbe527e3f2075b8a53a9a965897c9feaa859995be4bc2a3d428eff84"
+      },
+      {
+        "cell": "F23",
+        "raw_value": "qinqinzhou@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [
+          "http://qinqinzhou@fzu.edu.cn"
+        ],
+        "raw_value_sha256": "80305f1be7d938e79fcb9c46a11b7312aba5c7521502e10c84aaf4cf1b453afa"
+      },
+      {
+        "cell": "G23",
+        "raw_value": "3-5人左右，可提供工位，要求：有一定的目标，有稳定的时间能投入到科研中，具备良好的沟通表达能力以及编程和英语读写能力。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ffee257ab7c4d71fe45a83544c23f31b7fc3c689e9f7b1072c30b83a1b741744"
+      },
+      {
+        "cell": "H23",
+        "raw_value": "面试结合学业成绩",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e7741569f5ae32c2fecff5185dcbfd8cd954ed8538c7ec59190655fe9c878508"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 22,
+    "chunk_no": 22,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A24:I24",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 768,
+      "line_end": 802,
+      "char_start": 13031,
+      "char_end": 13598,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号22·ROIS 团队"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A24",
+        "raw_value": "22",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "785f3ec7eb32f30b90cd0fcf3657d388b5ff4297f2f9716ff66e9b69c05ddd09"
+      },
+      {
+        "cell": "B24",
+        "raw_value": "ROIS 团队",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af7b5f0632d02782e96da4ea0f4fa72b5f635dae94f1ebeb2aaa5c9eebbc62c8"
+      },
+      {
+        "cell": "D24",
+        "raw_value": "计算机与大数据学院2号楼405",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "bf21845b47444650c8505deb3b4a4798fbe4878e2e44119f34ac2142bda1b7f8"
+      },
+      {
+        "cell": "E24",
+        "raw_value": "何萧玲",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "36280ca01a373673472d629eeeb5c056604761a6de538f64068d3ce0697342af"
+      },
+      {
+        "cell": "F24",
+        "raw_value": "contact@rois.team",
+        "missing": false,
+        "hyperlinks": [
+          "mailto:contact@rois.team"
+        ],
+        "raw_value_sha256": "f064aba839b4c29f7f94452c61458266e97333fddaa25f80a395bfa19cc48c99"
+      },
+      {
+        "cell": "G24",
+        "raw_value": "2 人左右。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "f706443d2ccbd6265c80ce16b47f76f0640ce8ce6ca76e048c1e760a18f03445"
+      },
+      {
+        "cell": "H24",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 23,
+    "chunk_no": 23,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A25:I25",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 804,
+      "line_end": 836,
+      "char_start": 13600,
+      "char_end": 14134,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号23·医学影像人工智能实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A25",
+        "raw_value": "23",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790"
+      },
+      {
+        "cell": "B25",
+        "raw_value": "医学影像人工智能实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fbfa01c87e6f4ea1b90e5decdb4d380c18455c117aacfd17f782e5c624fcde8c"
+      },
+      {
+        "cell": "D25",
+        "raw_value": "科技园7号楼5楼",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "2cb8938dff9273a9919f870bc4895c2f89de953674e733c9041a3a457265b619"
+      },
+      {
+        "cell": "E25",
+        "raw_value": "吴相君",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "8406a513f798c5ace7ade41201b159cafc8d69499d6c2b6d6d9e18a5d77f96a6"
+      },
+      {
+        "cell": "F25",
+        "raw_value": "13387112138/xiangjunwu@fzu.edu.cn",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "5e22052e80b2f8d33eb3cd17f9ded42b3056b57701437a6d8a7d0bd63a40c7d1"
+      },
+      {
+        "cell": "G25",
+        "raw_value": "6",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
+      },
+      {
+        "cell": "H25",
+        "raw_value": "面试",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "205f3859abe469be388577ef8118a33bebb96430b7c792b7eb6afed36007ea80"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r3.json",
+    "category": "R3",
+    "lab_no": 24,
+    "chunk_no": 24,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r3.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A26:I26",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 838,
+      "line_end": 873,
+      "char_start": 14136,
+      "char_end": 14717,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R3·实验室序号24·EDA"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A26",
+        "raw_value": "24",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "c2356069e9d1e79ca924378153cfbbfb4d4416b1f99d41a2940bfdb66c5319db"
+      },
+      {
+        "cell": "B26",
+        "raw_value": "EDA",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "643d95ce1960f537cfb7fba37de6d749754785d805b51f3143c5259e70167721"
+      },
+      {
+        "cell": "D26",
+        "raw_value": "无",
+        "missing": true,
+        "hyperlinks": [],
+        "raw_value_sha256": "484d55613910eb8c0917fe308b499d474115ced993cd002a17d7cc75254330a4"
+      },
+      {
+        "cell": "E26",
+        "raw_value": "邓新国",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "620b3b7ad23a1cccee978234943923cdb1b68f8c3f90c791cf27079106c64a28"
+      },
+      {
+        "cell": "F26",
+        "raw_value": "309568144@qq.com",
+        "missing": false,
+        "hyperlinks": [
+          "http://309568144@qq.com"
+        ],
+        "raw_value_sha256": "810dec5f5791e0f30c84f9b7978abc78b0ecf66d6ac63634155ca4f78916d5df"
+      },
+      {
+        "cell": "G26",
+        "raw_value": "2\n对EDA感兴趣",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "85774ba343205eff010236af28549b9f86990faee033c3d2f0fdfee1ec84eb93"
+      },
+      {
+        "cell": "H26",
+        "raw_value": "无",
+        "missing": true,
+        "hyperlinks": [],
+        "raw_value_sha256": "484d55613910eb8c0917fe308b499d474115ced993cd002a17d7cc75254330a4"
+      }
+    ],
+    "missing_cells": [
+      "D26",
+      "H26"
+    ],
+    "selected_columns": "ABDEFGH",
+    "notice": {
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "locators": [
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+        "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]"
+      ]
+    }
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 1,
+    "chunk_no": 1,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A3:I3",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 1,
+      "line_end": 38,
+      "char_start": 0,
+      "char_end": 1836,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号01·福州大学超算团队"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A3",
+        "raw_value": "1",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      },
+      {
+        "cell": "B3",
+        "raw_value": "福州大学超算团队",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a36c43327911c620f5b628ed1613fa4ba09d2abb39be655ab2ab1b9cd204fed2"
+      },
+      {
+        "cell": "C3",
+        "raw_value": "福州大学超级计算团队旨在培养面向未来的超级计算拔尖创新人才。秉承“师生共建、产学协同”理论，近几年以来，屡创佳绩：\n（1）连续六年闯入世界大学生超算竞赛（ASC）全球总决赛，并获得一等奖；（2）2018年，全国并行应用大赛（PAC）银奖和国家工程实验室特别奖；（3）2019年首届数字中国创新大赛总决赛一等奖和最佳商业价值奖；（4）2021年获ACM中国国际并行计算挑战赛（IPCC）三等奖。实验室每年遴选组队参加全国并行应用大赛PAC和世界大学生超算ASC竞赛、IPCC挑战赛。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b75b94608a99af1255b4ba7636f28b81dc4b500c78507ab4faf45bc5290ce2ad"
+      },
+      {
+        "cell": "I3",
+        "raw_value": "福州大学超算团队的媒体宣传与报道\n1、 学习强国（视频）https://article.xuexi.cn/articles/index.html?share_to=wx_single&study_style_id=video_default&source=share&art_id=2408458832829729620&item_id=2408458832829729620&cdn=https%3A%2F%2Fregion-fujian-resource\n2、 新福建（视频）https://share.fjdaily.com/displayTemplate/news/newsDetail/3370/3478783.html?isShare=true&advColumnId=0\n3、 福建省人民政府转载网页：2025-05-25\nhttps://www.fujian.gov.cn/xwdt/mszx/202505/t20250525_6917805.htm\n4、 福建日报网页：2025-05-25\nhttps://fjrb.fjdaily.com/pc/con/202505/25/content_452666.html\n5、 学习强国福建学习平台转载网页：2025-05-25\nhttps://www.xuexi.cn/local/normalTemplate.html?itemId=1606547488427475680\n6、 福州晚报网页：2025-05-16\nhttps://mag.fznews.com.cn/fzwb/2025/20250516/20250516_A02/20250516_A02_2.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://article.xuexi.cn/articles/index.html?share_to=wx_single&study_style_id=video_default&source=share&art_id=2408458832829729620&item_id=2408458832829729620&cdn=https%3A%2F%2Fregion-fujian-resource",
+          "https://share.fjdaily.com/displayTemplate/news/newsDetail/3370/3478783.html?isShare=true&advColumnId=0",
+          "https://www.fujian.gov.cn/xwdt/mszx/202505/t20250525_6917805.htm",
+          "https://fjrb.fjdaily.com/pc/con/202505/25/content_452666.html",
+          "https://www.xuexi.cn/local/normalTemplate.html?itemId=1606547488427475680",
+          "https://mag.fznews.com.cn/fzwb/2025/20250516/20250516_A02/20250516_A02_2.htm"
+        ],
+        "raw_value_sha256": "a4686e3b4457808d2b5131039793f0315438c46e32fbd567da22aef9ed7c2b83"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 2,
+    "chunk_no": 2,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A4:I4",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 40,
+      "line_end": 56,
+      "char_start": 1838,
+      "char_end": 2287,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号02·网络流量分析与异常检测课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A4",
+        "raw_value": "2",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+      },
+      {
+        "cell": "B4",
+        "raw_value": "网络流量分析与异常检测课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "138ec1600678cf70bde0ec6ade7ecb4f5753bc1efca68a77e6aa68b5f1bb8eee"
+      },
+      {
+        "cell": "C4",
+        "raw_value": "课题组研究领域涉及网络流量异常检测、安全大数据分析、机器学习算法、智能计算、优化算法设计等。近期主要研究内容涉及基于图表示的恶意流量检测、加密流量多模态分类、基于联邦学习与域泛化分布式入侵检测、多维特征融合的集成学习网络异常流量检测、半监督异常流量检测、SDN环境下DDoS检测等工作。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d2b4830151b2d640d6507685cb5e5c6072680e40343885732e0097e70e664c32"
+      },
+      {
+        "cell": "I4",
+        "raw_value": "详见指导教师主页https://ccds.fzu.edu.cn/info/1203/5012.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1203/5012.htm"
+        ],
+        "raw_value_sha256": "65537f4dae718c3a57b74012ea32b257479e3544b3c09afb3fd6c78af8f33aad"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 3,
+    "chunk_no": 3,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A5:I5",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 58,
+      "line_end": 96,
+      "char_start": 2289,
+      "char_end": 3417,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号03·人工智能自主创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A5",
+        "raw_value": "3",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"
+      },
+      {
+        "cell": "B5",
+        "raw_value": "人工智能自主创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "89b8d40363da5c85c16edd916c0ed0bfcb728cde13a9cc96852af49cdf0daef5"
+      },
+      {
+        "cell": "C5",
+        "raw_value": "福州大学网络信息安全与计算机技术国家级实验教学中心旨在培养具有创新实验和国产化自主研发能力的人工智能创新人才。实验室涉及：华为昇腾AI，信创研发、人工智能创新竞赛、人工智能算法实践等研究内容。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "26e02e37cbc40b87f692b3c2e0768d11d0080e0e660198b4be64bd438435b9bd"
+      },
+      {
+        "cell": "I5",
+        "raw_value": "详见指导教师主页：\nhttps://ccds.fzu.edu.cn/info/1202/10637.htm\nhttps://csip.fzu.edu.cn/?page_id=787\nhttps://ccds.fzu.edu.cn/info/1210/7096.htm \nhttps://ccds.fzu.edu.cn/info/1210/11962.htm\nhttps://ccds.fzu.edu.cn/info/1205/11963.htm\nhttps://ccds.fzu.edu.cn/info/1205/7115.htm\nhttps://ccds.fzu.edu.cn/info/1205/7116.htm\nhttps://ccds.fzu.edu.cn/info/1205/7113.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1202/10637.htm",
+          "https://csip.fzu.edu.cn/?page_id=787",
+          "https://ccds.fzu.edu.cn/info/1210/7096.htm",
+          "https://ccds.fzu.edu.cn/info/1210/11962.htm",
+          "https://ccds.fzu.edu.cn/info/1205/11963.htm",
+          "https://ccds.fzu.edu.cn/info/1205/7115.htm",
+          "https://ccds.fzu.edu.cn/info/1205/7116.htm",
+          "https://ccds.fzu.edu.cn/info/1205/7113.htm"
+        ],
+        "raw_value_sha256": "9fc019c33ff65f54ceab9bf464713f0aacbd622fa8607c8a4d6de8e8c4e87352"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 4,
+    "chunk_no": 4,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A6:I6",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 98,
+      "line_end": 114,
+      "char_start": 3419,
+      "char_end": 3753,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号04·福州大学图机器学习课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A6",
+        "raw_value": "4",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
+      },
+      {
+        "cell": "B6",
+        "raw_value": "福州大学图机器学习课题组 ",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "dae6bdddafc43c549144b235bb3c4458d43066f453b4f9b03e593c02287562db"
+      },
+      {
+        "cell": "C6",
+        "raw_value": "研究方向为数据挖掘和智能信息处理、机器学习、灰色方法和算法设计与分析、医工交叉研究。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a78a9d369f4619bd40f920c06e3e21cfd1496c7d6b14f426f9e717cc09c18ac8"
+      },
+      {
+        "cell": "I6",
+        "raw_value": "详见教师主页：https://ccds.fzu.edu.cn/szdw/szxx.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/szdw/szxx.htm"
+        ],
+        "raw_value_sha256": "764be92681a05cdf53906638c222e8795f4575f4aab2a632d6e1b18b23036def"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 5,
+    "chunk_no": 5,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A7:I7",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 116,
+      "line_end": 132,
+      "char_start": 3755,
+      "char_end": 4093,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号05·福州大学认知系统与信息处理实验室EIC小组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A7",
+        "raw_value": "5",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+      },
+      {
+        "cell": "B7",
+        "raw_value": "福州大学认知系统与信息处理实验室EIC小组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0fb7a8462299f8f767b30e9e50183c25a151065b2f51733487f708aa9fe2831e"
+      },
+      {
+        "cell": "C7",
+        "raw_value": "主要研究多模态深度学习、多智能体系统开发",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ffb95b490db5c75667dd8ba3be2b25dcf7955aa3731e6c8053bd61605f717a6f"
+      },
+      {
+        "cell": "I7",
+        "raw_value": "见教师主页：https://ccds.fzu.edu.cn/info/1207/8330.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1207/8330.htm"
+        ],
+        "raw_value_sha256": "11108c89e704ec8e86d00a2b80e91460e1e7f6b9dff6bd59b2318cc4e34ea50e"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 6,
+    "chunk_no": 6,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A8:I8",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 134,
+      "line_end": 150,
+      "char_start": 4095,
+      "char_end": 4576,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号06·IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A8",
+        "raw_value": "6",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
+      },
+      {
+        "cell": "B8",
+        "raw_value": "IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e725c9d474e16f6ed3acfb260abe21ab6597c6f056c34e24303443f3a635126c"
+      },
+      {
+        "cell": "C8",
+        "raw_value": "IDEA实验室主要研究方向包括智慧医疗、数据挖掘、人工智能、大语言模型、多模态融合、推荐系统及其相关领域。实验室氛围积极上进，致力于发表高水平学术论文。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ff26613e80203a7c8f7cc5012adc832751048e78d7e7597621b8bcde0d7131c9"
+      },
+      {
+        "cell": "I8",
+        "raw_value": "详见教师主页：https://ccds.fzu.edu.cn/info/1207/8959.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1207/8959.htm"
+        ],
+        "raw_value_sha256": "639fa5662dc552b7e2533ea29fd7ebd7241b240f37faac7a8b67214393d84889"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 7,
+    "chunk_no": 7,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A9:I9",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 152,
+      "line_end": 166,
+      "char_start": 4578,
+      "char_end": 4866,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号07·福州大学数据挖掘课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A9",
+        "raw_value": "7",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451"
+      },
+      {
+        "cell": "B9",
+        "raw_value": "福州大学数据挖掘课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fec66c2df3c7de889f9a8632fb791fd03961edc6ed8d9c2081c68b48e2a3d4ca"
+      },
+      {
+        "cell": "C9",
+        "raw_value": "主要研究时空数据挖掘、图神经网络、视觉语言模型、强化学习等在遥感、建筑、城市计算、海洋大气中的科学应用",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "82fcdb0dcde089580c02bd1ce923d3b2249bf338b09c09b7564d459a5ea5ab00"
+      },
+      {
+        "cell": "I9",
+        "raw_value": "见教师主页：https://ccds.fzu.edu.cn/info/1203/11293.htm",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0921d4c4f2a2cdc5c2537c30e1a78219a0a179962301fe4ab68b5b51a55a3550"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 8,
+    "chunk_no": 8,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A10:I10",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 168,
+      "line_end": 182,
+      "char_start": 4868,
+      "char_end": 5438,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号08·空间数据挖掘与信息共享教育部重点实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A10",
+        "raw_value": "8",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3"
+      },
+      {
+        "cell": "B10",
+        "raw_value": "空间数据挖掘与信息共享教育部重点实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "c5daa47defcb2e03a12dec983d3c3126e9b383a699851d89e414f397861626c7"
+      },
+      {
+        "cell": "C10",
+        "raw_value": "空间数据挖掘与信息共享教育部重点实验室主要围绕环境与自然资源遥感、地理信息建模与分析技术、网络地理信息共享服务技术、时空数据挖掘与决策理论方法等四个研究方向。本组主要研究方向为城市/矿区遥感生态评价、人类活动/人类健康与生态关系、灾害风险（极端气候、地质灾害、火灾、景观）评估分析、数值模拟与预测等。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9fdce8b115c4922e2262094c15a1d356c8bee94de6d084444b93222cdd9a4fd3"
+      },
+      {
+        "cell": "I10",
+        "raw_value": "林梦婧，女，数字中国研究院（福建）副教授，硕士生导师，2024年获得中国科学院大学博士学位。曾前往剑桥大学、加州大学伯克利分校、香港中文大学、台湾东吴大学、厦门大学等多所国内外知名高校交流学习，获包括宝钢教育奖等国内外奖项三十余项。主要从事韧性城市、人地关系等研究。近5年主持课题/省部级子课题5项，参与课题与工作项目近30项，多次在国内外大型会议担任分会场召集人、进行口头汇报及海报展示，发表期刊论文20余篇，发明专利三项",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "48c66963759c40147c4222755c7fe82de8ae6862b9016b7ec33406a50c3db358"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 9,
+    "chunk_no": 9,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A11:I11",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 184,
+      "line_end": 200,
+      "char_start": 5440,
+      "char_end": 5888,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号09·数据智能与交叉信息课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A11",
+        "raw_value": "9",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "19581e27de7ced00ff1ce50b2047e7a567c76b1cbaebabe5ef03f7c3017bb5b7"
+      },
+      {
+        "cell": "B11",
+        "raw_value": "数据智能与交叉信息课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "d330f0140ec1774631ba27b5d99437f2256b31d6d3aab9784f492730d729b4ea"
+      },
+      {
+        "cell": "C11",
+        "raw_value": "聚焦数据挖掘、时空智能、交叉信息研究，导师为 2025 年国家海外引才专项引进的丹麦奥尔堡大学博士，深耕科研一线，提供系统科研训练与一对一指导，凭海外经历在外语学习、留学申请上给予指导。欢迎自驱力极强、有志深造的本科生加入。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e5e0e374d59c4fa4c41a238346a0dc881e46d183ca678320b15a7a2a8b555027"
+      },
+      {
+        "cell": "I11",
+        "raw_value": "课题组负责人主页： https://www.zhichenlai.com/。曾指导浙江大学、悉尼科技大学和电子科技大学研究生在NeurIPS、IJCAI、CIKM和PR等期刊会议发表论文。",
+        "missing": false,
+        "hyperlinks": [
+          "https://www.zhichenlai.com/"
+        ],
+        "raw_value_sha256": "fdf99739302de5c89a5b4c097cb4a16010bc839bdd2dfb4609a91c289805d2a1"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 10,
+    "chunk_no": 10,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A12:I12",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 202,
+      "line_end": 218,
+      "char_start": 5890,
+      "char_end": 6293,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号10·福州大学-数字媒体实验室（Digital Media Lab，DML)"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A12",
+        "raw_value": "10",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5"
+      },
+      {
+        "cell": "B12",
+        "raw_value": "福州大学-数字媒体实验室（Digital Media Lab，DML)",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "a2e34b7acf1240f22f9b654666a21b7113a3b48406a7242dff532ebe6a330073"
+      },
+      {
+        "cell": "C12",
+        "raw_value": "DML数字媒体实验室聚焦数字图像视频处理基本机理研究，长期致力于数字图像智能处理、视频分析与理解、语义分割处理、多模态信息处理等数字媒体处理领域的算法与机理研究。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "8a818343a68642cbba0f8ee51ad9d190f5f8e1f7f2d425c6eda729a25c2f18ba"
+      },
+      {
+        "cell": "I12",
+        "raw_value": "https://richeng-web.github.io/",
+        "missing": false,
+        "hyperlinks": [
+          "https://richeng-web.github.io/"
+        ],
+        "raw_value_sha256": "354a869cc367e0605b85897aae6e4322f8912fd5e26c0e1cdfc18039a73b2b24"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 11,
+    "chunk_no": 11,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A13:I13",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 220,
+      "line_end": 235,
+      "char_start": 6295,
+      "char_end": 7260,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号11·复杂网络大数据分析实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A13",
+        "raw_value": "11",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8"
+      },
+      {
+        "cell": "B13",
+        "raw_value": "复杂网络大数据分析实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "922d249223dcef53de263d7a1c9139b07e3ca6e4dc5e13840c8b4bc8a4f26873"
+      },
+      {
+        "cell": "C13",
+        "raw_value": "实验室主要研究方向包括复杂网络分析，隐私保护图学习、分布式图计算、医疗数据分析等。实验室配有由教授、副教授、博士生和硕士生组成的科研梯队，以及高性能CPU服务器集群和GPU服务器，能够为网络大数据分析挖掘的科研提供良好的学术指导和实验环境。实验室实行2+2的实习规划，即两个学期的专业知识补强+两个学期的论文、项目或竞赛实践。实习期间，将针对具体课题组建由研究生和本科生组成的研究小组，定期展开讨论。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fe0fbdc39c9b34f4c6c6b3bee10706db765d86512a2c03847998c8cfe8c92a74"
+      },
+      {
+        "cell": "I13",
+        "raw_value": "近年来，在科研方面，在TBD、TCSS、TNSE、计算机学报、软件学报、通信学报、IJCAI、ICNP、ChineseCSCW等国内外知名学术期刊和会议上发表多篇论文，多次获得Best Paper Award和Best Student Award等奖励。在产学合作方面，与亿力科技、实达迪美等企业合作进行大数据技术在电力、保险、能源等行业的应用研究，研究成果投入企业实际应用，获得国家发明专利10余项，软件著作权6项。其中，“基于云架构的能源监测与分析平台的研制及产业化”获得CCF科技进步杰出奖。在学科竞赛方面，组织指导学生参加多届CCF大数据与计算智能大赛（CCF BDCI），多次获得全国二等奖和优胜奖。\n参与实验室实习的本科同学能够在大四前参与发表学术论文（如：https://ccds.fzu.edu.cn/info/1120/9428.htm）、获得竞赛奖励（如：https://ccds.fzu.edu.cn/info/1120/1866.htm），或在产学合作项目（如：https://ccds.fzu.edu.cn/info/1120/8396.htm）中得到锻炼，丰富个人履历。2025、2026届本科毕业生中有多位在实验室实习（https://ccds.fzu.edu.cn/info/1161/10750.htm）。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "306b65d9f8ec282b51b653b121bd83267f92af9269deefeba648490b4444ab06"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 12,
+    "chunk_no": 12,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A14:I14",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 237,
+      "line_end": 258,
+      "char_start": 7262,
+      "char_end": 8018,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号12·“AI+复杂工业系统”创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A14",
+        "raw_value": "12",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+      },
+      {
+        "cell": "B14",
+        "raw_value": "“AI+复杂工业系统”创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "5f566852d39a6d3fc52c039769a88d2acc6fcd9920861b633c13f5e857b9ba92"
+      },
+      {
+        "cell": "C14",
+        "raw_value": "围绕航空发动机高空环境模拟系统、大型能源动力系统等复杂工业系统，开展信号处理、主动抗扰与智能控制、多智能体协同控制、故障诊断与容错控制、系统安全性与韧性、计算流体力学与深度学习建模、工业大模型应用与AI辅助决策等方向的研究，涵盖理论与算法研究、软硬件系统开发及产品研制等。实验室拥有航空发动机环境模拟试验数字孪生与硬件在环融合测试平台，可支持科研训练、工程应用研究及课程实验等活动。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9d667f91d31466a2bb83691f50415863a6e655e2154373de1a33b56c9e1dfce9"
+      },
+      {
+        "cell": "I14",
+        "raw_value": "所带学生获2024中国国际大学生创新大赛金奖、第十八届“挑战杯”全国大学生课外学术科技作品竞赛二等奖、美国大学生数学建模竞赛、全国大学生电子设计竞赛等赛事奖项。\n多名学生毕业后，通过推免或统招升入北京大学、厦门大学、福州大学等国内外知名高校继续深造，或在中国移动福建省分公司等知名企业就业。\n主页：https://ccds.fzu.edu.cn/info/1206/9081.htm\nhttps://ccds.fzu.edu.cn/info/1203/11303.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1206/9081.htm",
+          "https://ccds.fzu.edu.cn/info/1203/11303.htm"
+        ],
+        "raw_value_sha256": "d901863f83d7ef1c377c7642f1d76564c23bc4d11b958559f7efdd4fd180f544"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 13,
+    "chunk_no": 13,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A15:I15",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 260,
+      "line_end": 280,
+      "char_start": 8020,
+      "char_end": 8601,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号13·多模态智能感知计算研究课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A15",
+        "raw_value": "13",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "3fdba35f04dc8c462986c992bcf875546257113072a909c162f7e470e581e278"
+      },
+      {
+        "cell": "B15",
+        "raw_value": "多模态智能感知计算研究课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4722212fdac9d14f67c50e0583ec44cbe7998a8f4174054c2f9489e2d6a68c62"
+      },
+      {
+        "cell": "C15",
+        "raw_value": "1、智能影像分析及其在遥感和医学领域的应用；2、语音增强分析及应用；3、智能文档分析及应用。小组与省立医院、厦门亿联公司等均有良好的合作关系，可支持学生结合具体应用场景开展理论学习、关键技术研究",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "37e09cdb15900bc412f07feccaf55b7f2cb70864c92f8bc4ade7f68dc8e7924a"
+      },
+      {
+        "cell": "I15",
+        "raw_value": "所带学生多次获人工智能竞赛省级奖项，指导2022,2023级本科生以第一作者在CCF-C类会议发表论文，或联合申请专利\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/5194.htm\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/5195.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1207/5194.htm",
+          "https://ccds.fzu.edu.cn/info/1207/5195.htm"
+        ],
+        "raw_value_sha256": "f827e65b9c42c40847a0c72d71b96354540b5890bc1bce37d9866ccd88f2c0d3"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 14,
+    "chunk_no": 14,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A16:I16",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 282,
+      "line_end": 300,
+      "char_start": 8603,
+      "char_end": 9046,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号14·EDA创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A16",
+        "raw_value": "14",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61"
+      },
+      {
+        "cell": "B16",
+        "raw_value": "EDA创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ba0d4694b939a9e4fa7119d077c202b618793909d44fe0dee56ff1b8e6b9439c"
+      },
+      {
+        "cell": "C16",
+        "raw_value": "EDA创新实验室主要从事集成电路物理设计、印刷电路板(PCB)的自动化设计(EDA)算法和工具研究开发，与上海立芯、华为等企业积极开展产学研合作。相关基础知识主要涉及：离散数学、数据结构与算法。\n",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "8cb6d0373d0fa86b120f4e2a6482040a5998c1c3a0654a78c86763f29159d3ba"
+      },
+      {
+        "cell": "I16",
+        "raw_value": "实验室多次在国际计算机辅助设计会议（ICCAD）CAD竞赛、EDA精英挑战赛等获奖。\n详见教师主页： https://ccds.fzu.edu.cn/info/1203/11959.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1203/11959.htm"
+        ],
+        "raw_value_sha256": "cab00e6f83df7f083220f2379ae7808576ec3e8a858ff7a77cc128161a21935d"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 15,
+    "chunk_no": 15,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A17:I17",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 302,
+      "line_end": 320,
+      "char_start": 9048,
+      "char_end": 9598,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号15·EDA创新实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A17",
+        "raw_value": "15",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+      },
+      {
+        "cell": "B17",
+        "raw_value": "EDA创新实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "ba0d4694b939a9e4fa7119d077c202b618793909d44fe0dee56ff1b8e6b9439c"
+      },
+      {
+        "cell": "C17",
+        "raw_value": "实验室面向集成电路电子设计自动化（EDA）前沿技术，重点开展芯片物理设计、智能优化算法及人工智能赋能EDA等方向研究。实验室注重科研创新与人才培养相结合，积极推进产学研协同，在高水平论文、发明专利及国内外EDA设计竞赛等方面取得了系列成果，致力于培养具有创新能力的集成电路EDA人才。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "2ad4bebdae32aecaf04995d76bd887106daf240f80550c7dc31a274b9a1ec39b"
+      },
+      {
+        "cell": "I17",
+        "raw_value": "详见教师主页： https://ccds.fzu.edu.cn/info/1202/9820.htm https://ccds.fzu.edu.cn/info/1204/11596.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1202/9820.htm",
+          "https://ccds.fzu.edu.cn/info/1204/11596.htm"
+        ],
+        "raw_value_sha256": "6819bc668162a30e31c76b6d0dd1b18c0bf9c4dcf8ee72ed181730904f2e0789"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 16,
+    "chunk_no": 16,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A18:I18",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 322,
+      "line_end": 338,
+      "char_start": 9600,
+      "char_end": 10111,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号16·高效学习与智能计算实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A18",
+        "raw_value": "16",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9"
+      },
+      {
+        "cell": "B18",
+        "raw_value": "高效学习与智能计算实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "535ec56cb790e481fd4106ce783382c510c894eb82df965dd5380b7b1f2b96a6"
+      },
+      {
+        "cell": "C18",
+        "raw_value": "实验室面向大模型时代人工智能高效学习的前沿技术与应用需求，聚焦有限数据与计算资源条件下的模型学习与适配，重点开展大模型领域适配与高效微调、视觉与多模态高效学习、智能优化算法及其应用等方向研究。实验室注重科研创新与人才培养相结合，推动基础理论、关键技术与应用实践协同发展，积极推进产学研合作，致力于提升智能系统的学习效率、泛化能力与领域适应性，培养具有扎实理论基础、科研创新能力和工程实践能力的人工智能人才。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0e4b63b2b541d1cfda47fd82e0d36a67b6d42921217b0d48c1c36b3a49fc29f2"
+      },
+      {
+        "cell": "I18",
+        "raw_value": "详见教师主页： https://ccds.fzu.edu.cn/info/1202/8884.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1202/8884.htm"
+        ],
+        "raw_value_sha256": "eb07479ea2b3197888aa8b9dc3776e2d9ac6c5b4f79815a54d5bca9c7a397458"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 17,
+    "chunk_no": 17,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A19:I19",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 340,
+      "line_end": 356,
+      "char_start": 10113,
+      "char_end": 10507,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号17·知识推理课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A19",
+        "raw_value": "17",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4523540f1504cd17100c4835e85b7eefd49911580f8efff0599a8f283be6b9e3"
+      },
+      {
+        "cell": "B19",
+        "raw_value": "知识推理课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "435e03bb657f59b670d2fbf69f07f8ff01e58d14c842c418156deb3f8585a20c"
+      },
+      {
+        "cell": "C19",
+        "raw_value": "聚焦人工智能与大数据智能计算领域，主要研究知识图谱、大语言模型、数据挖掘及智能信息处理等。围绕知识获取、知识推理和智能应用等问题，面向医疗、智能服务等实际需求，开展基础理论、核心算法及应用研究",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "672476e277ae106e67b37c062eb18697edd89130199bcd344d7ef8250bc86499"
+      },
+      {
+        "cell": "I19",
+        "raw_value": "详见教师主页： https://ccds.fzu.edu.cn/info/1202/8884.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1202/8884.htm"
+        ],
+        "raw_value_sha256": "eb07479ea2b3197888aa8b9dc3776e2d9ac6c5b4f79815a54d5bca9c7a397458"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 18,
+    "chunk_no": 18,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A20:I20",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 358,
+      "line_end": 374,
+      "char_start": 10509,
+      "char_end": 11116,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号18·空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A20",
+        "raw_value": "18",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "4ec9599fc203d176a301536c2e091a19bc852759b255bd6818810a42c5fed14a"
+      },
+      {
+        "cell": "B20",
+        "raw_value": "空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "2c9b49543aeba1d75a337eea43b878c24164aea610c7c341527e200355d2cb03"
+      },
+      {
+        "cell": "C20",
+        "raw_value": "课题组面向“AI+地理空间智能”开展研究，就是让AI更好地理解“在哪里、发生了什么、为什么发生、接下来会怎样”。我们从旅游出行、城市运行、港口航运等真实场景出发，结合地图、新闻、社交媒体和交通数据，开展时空数据挖掘、知识图谱、大模型应用与社会现象模拟等研究。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "612b5109cb06f86d8ef6f60787003c09ded9f886827c7adfe30b45e390d0eda2"
+      },
+      {
+        "cell": "I20",
+        "raw_value": "课题组学生团队参加第四届“数智港航”数据创新应用大赛，获得一等奖、二等奖、三等奖各1项；已有同学参与论文撰写、国家发明专利申请和原型系统开发。欢迎希望提升保研竞争力、竞赛能力和实践能力的本科生加入。详见教师主页：http://adcfj.cn/sirc/door/team/TeacherList/Detail?personId=1273",
+        "missing": false,
+        "hyperlinks": [
+          "http://adcfj.cn/sirc/door/team/TeacherList/Detail?personId=1273"
+        ],
+        "raw_value_sha256": "34aeaae48f9827caec380eeee7cfe62c78f2e4b0d91ed964c9fc854c2e71dce1"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 19,
+    "chunk_no": 19,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A21:I21",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 376,
+      "line_end": 392,
+      "char_start": 11118,
+      "char_end": 11530,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号19·工业智能课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A21",
+        "raw_value": "19",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9400f1b21cb527d7fa3d3eabba93557a18ebe7a2ca4e471cfe5e4c5b4ca7f767"
+      },
+      {
+        "cell": "B21",
+        "raw_value": "工业智能课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "52ab1f727dfb2e8b8c86d8b29c8c6ad267377e10454e8fea01d65c70da0995aa"
+      },
+      {
+        "cell": "C21",
+        "raw_value": "聚焦工业互联网应用领域的技术攻关，重点围绕工业数据中台构建、工业智能体研发、代码审计与脆弱性分析关键方向，推动工业智能技术与生产、研发、销售、服务全流程的深度融合。项目与材料制造、文创设计、跨境电商领域龙头企业深度合作，成果落地。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "dbfe0a2bf2e4aee30fd448f6a27574309496a0ddec4583c8305b0bd225f0c2f8"
+      },
+      {
+        "cell": "I21",
+        "raw_value": "详见教师主页：https://ccds.fzu.edu.cn/info/1206/8258.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1206/8258.htm"
+        ],
+        "raw_value_sha256": "0a2ac45a4b37dba676448863753f63d0c3cde36dfc83efcfa8d8a55b27941141"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 20,
+    "chunk_no": 20,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A22:I22",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 394,
+      "line_end": 410,
+      "char_start": 11532,
+      "char_end": 11983,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号20·网络空间安全实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A22",
+        "raw_value": "20",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "f5ca38f748a1d6eaf726b8a42fb575c3c71f1864a8143301782de13da2d9202b"
+      },
+      {
+        "cell": "B22",
+        "raw_value": "网络空间安全实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "da3c26269420c2e324c63dcac65f8785c38578141d9e631fe6e612fe610345bc"
+      },
+      {
+        "cell": "C22",
+        "raw_value": "网络空间安全实验室聚焦人工智能安全、大模型与智能体安全、攻防对抗、数据与系统安全等前沿方向，面向网络空间领域的现实安全威胁开展基础研究与应用技术攻关。实验室以理论研究、原型开发、实证验证为核心，围绕大模型越狱对抗、Agent 智能体安全、对抗样本、投毒攻击、隐私保护、漏洞挖掘等关键科学问题开展研究。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "0dde28743ebe142f1a3a1d7aaacc32cf3941f6ae37315a6e35788073d5687e86"
+      },
+      {
+        "cell": "I22",
+        "raw_value": "详见教师主页：https://ccds.fzu.edu.cn/info/1202/8451.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1202/8451.htm"
+        ],
+        "raw_value_sha256": "f19e86682c7ab3604b9ce91b906681a042bbc5aed9978ae9c1d38e1257a34779"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 21,
+    "chunk_no": 21,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A23:I23",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 412,
+      "line_end": 426,
+      "char_start": 11985,
+      "char_end": 12466,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号21·大模型轻量化与自动机器学习课题组"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A23",
+        "raw_value": "21",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "6f4b6612125fb3a0daecd2799dfd6c9c299424fd920f9b308110a2c1fbd8f443"
+      },
+      {
+        "cell": "B23",
+        "raw_value": "大模型轻量化与自动机器学习课题组",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "9166f2b6fe4d282bb3da0d29564fdcd16953a9f19ff5162fcb1418ac9cfd9acc"
+      },
+      {
+        "cell": "C23",
+        "raw_value": "课题组目前主要围绕自动机器学习、大模型轻量化开展以下几个方向研究：(1)自动机器学习：自动机器学习主要分为搜索空间设计、黑盒优化以及精度估计，研究自动化机器学习的算法以及在不同领域的应用。(2)深度学习模型设计以及模型轻量化：探索新的深度学习算法和网络结构，利用神经网络结构搜索、剪枝、量化、蒸馏技术实现模型轻量化部署。(3)大模型与自动机器学习结合：研究利用神经网络结构搜索的相关技术对大模型结构进行探索，以及大模型驱动的高自主化神经网络结构搜索的研究。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "03d0e2c7106844aed431b181d0fa75b0ef5b3e60b9a5c474b89082936df3063f"
+      },
+      {
+        "cell": "I23",
+        "raw_value": "详见教师主页：https://ccds.fzu.edu.cn/info/1207/11299.htm",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "bedcd4e30387faccb2a485c4117f0aea75e890cceeb39cb5f4faee91200a93ee"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 22,
+    "chunk_no": 22,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A24:I24",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 428,
+      "line_end": 444,
+      "char_start": 12468,
+      "char_end": 12980,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号22·ROIS 团队"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A24",
+        "raw_value": "22",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "785f3ec7eb32f30b90cd0fcf3657d388b5ff4297f2f9716ff66e9b69c05ddd09"
+      },
+      {
+        "cell": "B24",
+        "raw_value": "ROIS 团队",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "af7b5f0632d02782e96da4ea0f4fa72b5f635dae94f1ebeb2aaa5c9eebbc62c8"
+      },
+      {
+        "cell": "C24",
+        "raw_value": "ROIS，全称为Researcher Of Information Security，是福州大学数学与计算机科学学院信息安全专业学生于2013年9月发起组建、依托网络系统信息安全福建省高校重点实验室的兴趣团队。实验室以安全领域为核心，主要研究网络与系统安全、信息安全攻防、漏洞挖掘与利用、数据安全与隐私保护、安全智能等方向，注重“以研促学、以赛促练”，定期开展技术分享、安全竞赛训练与项目实践，并积极以团队名义参与世界各地的信息安全类赛事，致力于培养具有扎实安全基础、创新实践能力和团队协作精神的信息安全人才。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "881fb7a87eb7ab91e59b0199611ff6de1c0971d4799015733d6e1245d0cb354c"
+      },
+      {
+        "cell": "I24",
+        "raw_value": "详见战队官网：https://www.rois.team/",
+        "missing": false,
+        "hyperlinks": [
+          "https://www.rois.team/"
+        ],
+        "raw_value_sha256": "33aa35e5ab38da9e17d04bd4d3c08169bac095752fb5371e8ce73b0c6edbaafb"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 23,
+    "chunk_no": 23,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A25:I25",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 446,
+      "line_end": 460,
+      "char_start": 12982,
+      "char_end": 13550,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号23·医学影像人工智能实验室"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A25",
+        "raw_value": "23",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790"
+      },
+      {
+        "cell": "B25",
+        "raw_value": "医学影像人工智能实验室",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "fbfa01c87e6f4ea1b90e5decdb4d380c18455c117aacfd17f782e5c624fcde8c"
+      },
+      {
+        "cell": "C25",
+        "raw_value": "实验室依托福州大学医工交叉研究院，聚焦医学影像人工智能、肿瘤精准放疗及新型医学成像，开展图像重建、自动分割、影像合成与智能诊疗研究。与福建省肿瘤医院、福建省立医院等建立合作，具备多中心临床数据和高性能计算条件，为学生提供算法研究与临床应用相结合的科研训练。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "1743cdeb8a588af71426728e22673fc2df880fe7b339730954afa27235e29b98"
+      },
+      {
+        "cell": "I25",
+        "raw_value": "团队围绕鼻咽癌靶区自动分割、磁共振影像合成、放疗并发症风险预测及磁粒子成像重建等方向开展研究，形成了算法开发、软件集成与临床验证相结合的研究基础。研发的鼻咽癌MR自动分割算法已集成至软件，并在福建省肿瘤医院放疗科供医生试用；围绕多中心鼻咽癌MRI三维靶区分割及转移淋巴结标注差异处理，已申请两项发明专利。团队联合培养来自福州大学、福建医科大学及天津大学福州学院的博士、硕士研究生、本科生，依托真实临床问题开展多学科协作，培养学生在医学数据处理、深度学习建模、实验分析与软件开发等方面的综合能力。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "00aef91067ca3e53323b76c6ecf146756a84bcce57ef63b29ab20a4f43554fbf"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  },
+  {
+    "package": "qinghe-r4.json",
+    "category": "R4",
+    "lab_no": 24,
+    "chunk_no": 24,
+    "source_file_key": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/texts/qinghe-r4.md",
+    "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+    "original_sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+    "original_locator": "Sheet1!A26:I26",
+    "locator_note": {
+      "coordinate_system": "decoded_text_lf_bom_removed",
+      "line_start": 462,
+      "line_end": 478,
+      "char_start": 13552,
+      "char_end": 13964,
+      "heading_path": [
+        {
+          "level": 2,
+          "title": "R4·实验室序号24·EDA"
+        }
+      ],
+      "note": "本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。"
+    },
+    "fields": [
+      {
+        "cell": "A26",
+        "raw_value": "24",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "c2356069e9d1e79ca924378153cfbbfb4d4416b1f99d41a2940bfdb66c5319db"
+      },
+      {
+        "cell": "B26",
+        "raw_value": "EDA",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "643d95ce1960f537cfb7fba37de6d749754785d805b51f3143c5259e70167721"
+      },
+      {
+        "cell": "C26",
+        "raw_value": "EDA研究方向，发表SCI、EI论文多篇。学生获openDACS 开源 EDA 与芯片大赛开源新秀奖、中国研究生创“芯”大赛 · EDA 精英挑战赛一等奖、海峡两岸信息服务创新大赛暨福建省计算机软件设计大赛最佳创新奖、一等奖、二等奖，本科生srtp验收优秀等。",
+        "missing": false,
+        "hyperlinks": [],
+        "raw_value_sha256": "966a8836247c93252a641bb90d91e7ac4caad4c45d6f097f475b86ac2f52459b"
+      },
+      {
+        "cell": "I26",
+        "raw_value": "https://ccds.fzu.edu.cn/info/1203/5006.htm",
+        "missing": false,
+        "hyperlinks": [
+          "https://ccds.fzu.edu.cn/info/1203/5006.htm"
+        ],
+        "raw_value_sha256": "73d0869b4d1c03b616a721e061c793a3d10580812850833dbfe6a526b835b694"
+      }
+    ],
+    "missing_cells": [],
+    "selected_columns": "ABCI",
+    "notice": null
+  }
+]

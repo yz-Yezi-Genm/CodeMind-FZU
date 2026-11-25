@@ -10,12 +10,14 @@ from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 
+from backend.app.alpha import create_alpha_app
 from backend.app.config import PROJECT_ROOT, AppSettings, ConfigurationError
 from backend.app.main import create_app
 from backend.contracts.models import (
     AgentRequest,
     AgentResult,
     AnswerStatus,
+    AnswerMode,
     ConversationTurn,
     LLMGenerateRequest,
     LLMResult,
@@ -26,7 +28,11 @@ from backend.services.alpha_runtime import (
     InMemoryConversationStore,
     build_alpha_runtime,
 )
-from backend.services.errors import KnowledgeBaseUnavailableError, ServiceError
+from backend.services.errors import (
+    KnowledgeBaseUnavailableError,
+    LLMConfigurationError,
+    ServiceError,
+)
 
 
 class CapturingAgentService:
@@ -37,6 +43,7 @@ class CapturingAgentService:
         self.request = request
         return AgentResult(
             status=AnswerStatus.ANSWERED,
+            answer_mode=AnswerMode.CURRENT_POLICY,
             answer="契约联调成功。",
         )
 
@@ -76,6 +83,7 @@ class RecordingConversationAgent:
         )
         return AgentResult(
             status=AnswerStatus.ANSWERED,
+            answer_mode=AnswerMode.CURRENT_POLICY,
             answer=f"已处理：{request.query}",
         )
 
@@ -95,6 +103,7 @@ class BlockingConversationAgent(RecordingConversationAgent):
             await self.allow_second.wait()
             return AgentResult(
                 status=AnswerStatus.ANSWERED,
+                answer_mode=AnswerMode.CURRENT_POLICY,
                 answer=f"已处理：{request.query}",
             )
         return await super().run(request)
@@ -107,12 +116,8 @@ class EvidenceSelectingRuntimeLLM:
         return LLMResult(
             content=json.dumps(
                 {
-                    "evidence": [
-                        {
-                            "chunk_id": first["chunk_id"],
-                            "quote": first["content"],
-                        }
-                    ]
+                    "answer": first["content"],
+                    "used_evidence_ids": [first["evidence_id"]]
                 },
                 ensure_ascii=False,
             ),
@@ -304,6 +309,30 @@ class BackendRuntimeTests(unittest.TestCase):
         self.assertEqual(settings.conversation_idle_seconds, 600)
         self.assertEqual(settings.conversation_cleanup_interval_seconds, 30)
 
+    def test_health_stays_available_when_qwen_configuration_is_missing(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_approved",
+        )
+        with patch.dict(os.environ, {"QWEN_API_KEY": ""}, clear=False):
+            app = create_alpha_app(settings=settings)
+            with TestClient(app) as client:
+                health = client.get("/api/v1/health")
+                response = client.post(
+                    "/api/v1/ask",
+                    json={"query": "测试未配置模型"},
+                )
+
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(
+            response.json()["error"]["code"],
+            "SERVICE_NOT_CONFIGURED",
+        )
+        self.assertEqual(
+            response.headers["x-request-id"],
+            response.json()["request_id"],
+        )
+
 
 class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
     def request(
@@ -430,6 +459,7 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
                     raise RuntimeError("temporary failure")
                 return AgentResult(
                     status=AnswerStatus.ANSWERED,
+                    answer_mode=AnswerMode.CURRENT_POLICY,
                     answer="重试成功",
                 )
 
@@ -566,6 +596,28 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 clarification_rule=lambda _request: None,
                 evidence_check=lambda _request, _chunk: True,
             )
+
+    async def test_runtime_rejects_qwen_retry_budget_above_workflow_timeout(self):
+        settings = AppSettings(
+            alpha_package_dir=PROJECT_ROOT / "tests/fixtures/alpha_approved",
+        )
+        with patch.dict(
+            os.environ,
+            {
+                "QWEN_API_KEY": "offline-budget-fixture",
+                "QWEN_TIMEOUT_SECONDS": "20",
+                "QWEN_MAX_RETRIES": "1",
+            },
+            clear=False,
+        ):
+            with self.assertRaises(LLMConfigurationError) as raised:
+                await build_alpha_runtime(
+                    settings,
+                    file_root=PROJECT_ROOT,
+                )
+
+        self.assertEqual(raised.exception.code, "SERVICE_NOT_CONFIGURED")
+        self.assertIn("预算超过", raised.exception.message)
 
 
 @unittest.skipUnless(

@@ -1,0 +1,153 @@
+{
+  "packages": 9,
+  "chunks": 514,
+  "domain_chunks": {
+    "S1": 310,
+    "S2": 127,
+    "S3": 29,
+    "S4": 48
+  },
+  "enabled_packages": 0,
+  "human_approved_packages": 0,
+  "approved_packages": 0,
+  "formal_hits": {
+    "COMPETITION_RESEARCH": 0,
+    "POLICY_AFFAIRS": 0,
+    "EDUCATION_CAREER": 0,
+    "COLLEGE_RESOURCES": 0
+  },
+  "loader_checks": [
+    {
+      "directory": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23",
+      "loaded_packages": 0,
+      "indexed_chunks": 0,
+      "skipped_packages": 8
+    },
+    {
+      "directory": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23",
+      "loaded_packages": 0,
+      "indexed_chunks": 0,
+      "skipped_packages": 2
+    },
+    {
+      "directory": "knowledge_base/processed/alpha/approved",
+      "loaded_packages": 0,
+      "indexed_chunks": 0,
+      "skipped_packages": 0
+    }
+  ],
+  "index_results": [
+    {
+      "key": "competition",
+      "domain": "S1",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/competition.json",
+      "version_id": "92e414c2-6b8c-5f69-b073-05921b0faa55",
+      "chunks": 224,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 224
+    },
+    {
+      "key": "innovation",
+      "domain": "S1",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/innovation.json",
+      "version_id": "e77bc47b-d65f-5056-aafd-56db7d294a10",
+      "chunks": 86,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 86
+    },
+    {
+      "key": "scholarship",
+      "domain": "S2",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/scholarship.json",
+      "version_id": "c8f6bae5-c663-5a69-a2f8-df8642b62e05",
+      "chunks": 59,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 59
+    },
+    {
+      "key": "college-scholarship",
+      "domain": "S2",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/college-scholarship.json",
+      "version_id": "d04c3928-f9e5-5c43-95d5-9e82958454b0",
+      "chunks": 33,
+      "timeliness": "uncertain",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 33
+    },
+    {
+      "key": "xinghuo",
+      "domain": "S2",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/xinghuo.json",
+      "version_id": "908442f5-eaed-59bf-a613-c79f143994c4",
+      "chunks": 35,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 35
+    },
+    {
+      "key": "recommendation",
+      "domain": "S3",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/recommendation.json",
+      "version_id": "cfcfa918-e8f5-50a7-a1bb-fbff63862581",
+      "chunks": 20,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 20
+    },
+    {
+      "key": "retest",
+      "domain": "S3",
+      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/retest.json",
+      "version_id": "22d8e751-93e5-5f81-88b2-8de460f9b009",
+      "chunks": 9,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 9
+    },
+    {
+      "key": "qinghe-r3",
+      "domain": "S4",
+      "package": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r3.json",
+      "version_id": "971a0297-6295-52d5-8efe-4cfd3e2f72db",
+      "chunks": 24,
+      "timeliness": "expired",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 24
+    },
+    {
+      "key": "qinghe-r4",
+      "domain": "S4",
+      "package": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r4.json",
+      "version_id": "97e81dbb-1972-5798-90d6-fef650abd223",
+      "chunks": 24,
+      "timeliness": "historical",
+      "retrieval_status": "blocked",
+      "human_approved": false,
+      "metadata_lookup": null,
+      "hidden_chunk_lookups": 24
+    }
+  ],
+  "compatibility": {
+    "pr45_category_map": "matched",
+    "pr51_lookup_signatures": "matched"
+  }
+}

@@ -34,12 +34,8 @@ class EvidenceSelectingLLM:
         return LLMResult(
             content=json.dumps(
                 {
-                    "evidence": [
-                        {
-                            "chunk_id": first["chunk_id"],
-                            "quote": first["content"],
-                        }
-                    ]
+                    "answer": first["content"],
+                    "used_evidence_ids": [first["evidence_id"]]
                 },
                 ensure_ascii=False,
             ),
@@ -112,7 +108,7 @@ class AgentWorkflowApiTests(unittest.TestCase):
     def test_invalid_http_query_still_returns_existing_error_envelope(self):
         with self.client([]) as client:
             response = client.post("/api/v1/ask", json={"query": ""})
-            self.assertEqual(response.status_code, 422)
+            self.assertEqual(response.status_code, 400)
             self.assertEqual(response.json()["error"]["code"], "INVALID_REQUEST")
 
     def test_alpha_lifespan_uses_real_bm25_workflow_and_http_adapter(self):

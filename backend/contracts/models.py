@@ -135,6 +135,41 @@ class WarningItem(ContractModel):
     message: str = Field(min_length=1, max_length=1000)
 
 
+def _validate_response_shape(
+    *,
+    status: AnswerStatus,
+    answer: str | None,
+    answer_mode: AnswerMode | None,
+    clarifying_question: str | None,
+    citations: list[Citation],
+    warnings: list[WarningItem],
+) -> None:
+    """Enforce the shared V2.1 response shape, not factual correctness."""
+    if status == AnswerStatus.ANSWERED:
+        if not answer or not answer.strip():
+            raise ValueError("answered 状态必须提供非空 answer")
+        if answer_mode is None:
+            raise ValueError("answered 状态必须明确 answer_mode")
+    elif status == AnswerStatus.NEEDS_CLARIFICATION:
+        if not clarifying_question or not clarifying_question.strip():
+            raise ValueError("needs_clarification 状态必须提供非空 clarifying_question")
+        if answer is not None:
+            raise ValueError("needs_clarification 状态下 answer 必须为 null")
+        if answer_mode is not None:
+            raise ValueError("needs_clarification 状态下 answer_mode 必须为 null")
+        if citations:
+            raise ValueError("needs_clarification 状态下 citations 必须为空")
+    elif status == AnswerStatus.INSUFFICIENT_EVIDENCE:
+        if answer_mode != AnswerMode.INSUFFICIENT_DATA:
+            raise ValueError("insufficient_evidence 必须使用 insufficient_data answer_mode")
+        if citations:
+            raise ValueError("insufficient_evidence 状态下 citations 必须为空")
+        if not (answer and answer.strip()) and not any(
+            warning.message.strip() for warning in warnings
+        ):
+            raise ValueError("insufficient_evidence 必须说明证据不足原因")
+
+
 class AskResponse(ContractModel):
     request_id: UUID
     conversation_id: UUID
@@ -148,18 +183,14 @@ class AskResponse(ContractModel):
 
     @model_validator(mode="after")
     def validate_result_shape(self) -> "AskResponse":
-        if self.status == AnswerStatus.ANSWERED and not self.answer:
-            raise ValueError("answered 状态必须提供非空 answer")
-        if self.status == AnswerStatus.NEEDS_CLARIFICATION:
-            if not self.clarifying_question:
-                raise ValueError("needs_clarification 状态必须提供 clarifying_question")
-            if self.answer is not None:
-                raise ValueError("needs_clarification 状态下 answer 必须为 null")
-        if (
-            self.status == AnswerStatus.INSUFFICIENT_EVIDENCE
-            and self.answer_mode != AnswerMode.INSUFFICIENT_DATA
-        ):
-            raise ValueError("insufficient_evidence 必须使用 insufficient_data answer_mode")
+        _validate_response_shape(
+            status=self.status,
+            answer=self.answer,
+            answer_mode=self.answer_mode,
+            clarifying_question=self.clarifying_question,
+            citations=self.citations,
+            warnings=self.warnings,
+        )
         return self
 
 
@@ -197,18 +228,14 @@ class AgentResult(ContractModel):
 
     @model_validator(mode="after")
     def validate_result_shape(self) -> "AgentResult":
-        if self.status == AnswerStatus.ANSWERED and not self.answer:
-            raise ValueError("answered 状态必须提供非空 answer")
-        if self.status == AnswerStatus.NEEDS_CLARIFICATION:
-            if not self.clarifying_question:
-                raise ValueError("needs_clarification 状态必须提供 clarifying_question")
-            if self.answer is not None:
-                raise ValueError("needs_clarification 状态下 answer 必须为 null")
-        if (
-            self.status == AnswerStatus.INSUFFICIENT_EVIDENCE
-            and self.answer_mode != AnswerMode.INSUFFICIENT_DATA
-        ):
-            raise ValueError("insufficient_evidence 必须使用 insufficient_data answer_mode")
+        _validate_response_shape(
+            status=self.status,
+            answer=self.answer,
+            answer_mode=self.answer_mode,
+            clarifying_question=self.clarifying_question,
+            citations=self.citations,
+            warnings=self.warnings,
+        )
         return self
 
 

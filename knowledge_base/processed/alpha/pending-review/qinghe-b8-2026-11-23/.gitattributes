@@ -1,0 +1,3 @@
+# Raw values retain whitespace; character offsets and file SHA use LF.
+texts/*.md text eol=lf -whitespace
+*.json text eol=lf
