@@ -1,0 +1,469 @@
+﻿=== Environment & Baseline ===
+Synced origin/main SHA: a9206cd
+Python 3.10.16
+fastapi            0.162.5
+httpx              0.28.1
+openpyxl           3.1.5
+pydantic           2.14.4
+pydantic_core      2.50.5
+pytest             9.2.0
+starlette          1.7.0
+uvicorn            0.54.0
+
+=== Command 1: Targeted retrieval, loader, and Beta S1-S4 tests ===
+$ .\.venv\Scripts\python.exe -X utf8 -m pytest tests/test_local_retrieval.py tests/test_alpha_corpus.py tests/test_beta_retrieval_scenarios.py -v
+============================= test session starts =============================
+platform win32 -- Python 3.10.16, pytest-9.2.0, pluggy-1.7.0 -- <REPO>\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: <REPO>
+plugins: anyio-4.16.0
+collecting ... collected 36 items
+
+tests/test_local_retrieval.py::LocalRetrievalTests::test_bad_chunk_references_and_duplicate_numbers_are_rejected PASSED [  2%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_chunk_numbers_are_scoped_to_their_source_file PASSED [  5%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_chunks_without_searchable_terms_are_not_counted PASSED [  8%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_disabled_chunks_stay_unsearchable PASSED [ 11%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_invalid_revocation_still_removes_only_its_version 
+tests/test_local_retrieval.py::LocalRetrievalTests::test_invalid_revocation_still_removes_only_its_version PASSED [ 13%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_local_files_are_checked_before_indexing PASSED [ 16%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_local_retriever_conforms_to_retriever_protocol_signatures PASSED [ 19%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_metadata_and_chunk_lookups_expose_enabled_snapshots_only PASSED [ 22%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_missing_unready_source_is_ignored_only_when_unused PASSED [ 25%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_mutating_package_or_results_does_not_change_index PASSED [ 27%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_rank_and_trace_matching_chunks PASSED [ 30%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_real_parser_handoff_indexes_without_exposing_policies 
+tests/test_local_retrieval.py::LocalRetrievalTests::test_real_parser_handoff_indexes_without_exposing_policies PASSED [ 33%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_reindex_clears_old_hits_when_all_source_chunks_are_skipped PASSED [ 36%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_reindex_replaces_version_and_revokes_access PASSED [ 38%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_rejects_invalid_storage_location 
+tests/test_local_retrieval.py::LocalRetrievalTests::test_rejects_invalid_storage_location PASSED [ 41%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_request_filters_and_no_match PASSED [ 44%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_reviewed_source_remains_searchable PASSED [ 47%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_title_and_content_terms_both_contribute_to_bm25_retrieval PASSED [ 50%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_two_retriever_instances_isolate_independent_withdrawal PASSED [ 52%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_unopened_packages_do_not_affect_results_or_scores PASSED [ 55%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_unprocessed_source_files_are_skipped_in_mixed_package 
+tests/test_local_retrieval.py::LocalRetrievalTests::test_unprocessed_source_files_are_skipped_in_mixed_package PASSED [ 58%]
+tests/test_local_retrieval.py::LocalRetrievalTests::test_unvalidated_mutations_cannot_open_a_package PASSED [ 61%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_agent_workflow_evidence_check_reads_applicability_and_deadline PASSED [ 63%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_external_root_and_intermediate_symlink_are_rejected PASSED [ 66%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_external_directory_is_rejected PASSED [ 69%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_directory_loader_skips_unapproved_and_failed_packages PASSED [ 72%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_empty_approved_dir_loads_cleanly PASSED [ 75%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_manifest_loader_enforces_human_approved_and_directory_boundary PASSED [ 77%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_missing_dir_returns_empty_by_default_and_raises_when_disallowed PASSED [ 80%]
+tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_partial_package_with_zero_indexed_chunks_is_observable_in_report PASSED [ 83%]
+tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_english_case_insensitive_top_k_direction_filter_and_probe_mode PASSED [ 86%]
+tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_metadata_and_parsed_chunk_fields_match_beta_v21_requirements PASSED [ 88%]
+tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_multi_direction_full_corpus_query_avoids_cross_domain_omission PASSED [ 91%]
+tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_retriever_integrates_with_merged_beta_rules_and_agent_workflow PASSED [ 94%]
+tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_s1_to_s4_evaluation_metrics_and_filtering PASSED [ 97%]
+tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_title_plus_content_bm25_has_no_degradation_vs_content_only_stress_suite PASSED [100%]
+
+=================== 36 passed, 12 subtests passed in 5.87s ====================
+
+=== Command 2: Full backend pytest (tests/, synced with origin/main a9206cd) ===
+$ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
+......................................................................................................................................... [ 21%]
+.....s........................................................... [ 31%]
+........................................................................ [ 42%]
+........................................................................ [ 53%]
+..........................................................s............. [ 65%]
+........................................................................ [ 76%]
+....................................................s..... [ 85%]
+............................................................... [ 95%]
+................................                    [100%]
+============================== warnings summary ===============================
+.venv\lib\site-packages\fastapi\testclient.py:1
+  <REPO>\.venv\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1888: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
+SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
+640 passed, 3 skipped, 1 warning, 274 subtests passed in 74.24s (0:01:14)
+
+=== Command 3: Beta S1-S4 evaluation script ===
+$ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
+{
+  "corpus_type": "synthetic_beta_s1_s4_fixture",
+  "loaded_packages": [
+    "approved/s1-competition-synthetic.json",
+    "approved/s2-scholarship-synthetic.json",
+    "approved/s3-recommendation-synthetic.json",
+    "approved/s4-lab-synthetic.json",
+    "approved/s4-study-synthetic.json"
+  ],
+  "skipped_packages": [
+    [
+      "approved/decoy-blocked.json",
+      "retrieval_status=blocked，仅允许加载 enabled 资料"
+    ],
+    [
+      "approved/decoy-unapproved.json",
+      "temporal_notes 未标记 human_approved=true，未通过人工审核"
+    ]
+  ],
+  "total_indexed_chunks": 8,
+  "metrics": {
+    "query_count": 9,
+    "hit_at_1": 1.0,
+    "hit_at_3": 1.0,
+    "mrr": 1.0
+  },
+  "negative_checks": {
+    "no_match_count": 0,
+    "decoy_blocked_count": 0,
+    "decoy_unapproved_count": 0
+  },
+  "results": [
+    {
+      "query_id": "Q1-S1-EN",
+      "scenario": "S1 竞赛认定",
+      "query": "ACM-ICPC 国家级一等奖 创新创业学分",
+      "business_direction_code": "COMPETITION_RESEARCH",
+      "expected": "BETA-SYN-S1-2026#1",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S1-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 章 第 3 条",
+          "original_locator": "PDF 第 2 页",
+          "score": 7.839463
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S1-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 章 第 7 条",
+          "original_locator": "PDF 第 4 页",
+          "score": 0.057536
+        }
+      ],
+      "note": "中英文混合查询 + 单业务方向过滤"
+    },
+    {
+      "query_id": "Q2-S1-ZH",
+      "scenario": "S1 竞赛认定",
+      "query": "竞赛认定申请 综测科创加分",
+      "business_direction_code": "COMPETITION_RESEARCH",
+      "expected": "BETA-SYN-S1-2026#2",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S1-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 章 第 7 条",
+          "original_locator": "PDF 第 4 页",
+          "score": 4.94434
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S1-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 章 第 3 条",
+          "original_locator": "PDF 第 2 页",
+          "score": 0.496242
+        }
+      ],
+      "note": "中文短语匹配与章节定位"
+    },
+    {
+      "query_id": "Q3-S2-TITLE",
+      "scenario": "S2 奖学金申请",
+      "query": "院级奖学金 评选通知 GPA排名",
+      "business_direction_code": "POLICY_AFFAIRS",
+      "expected": "BETA-SYN-S2-2026#1",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 节",
+          "original_locator": "PDF 第 1 页",
+          "score": 5.026608
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 节",
+          "original_locator": "PDF 第 2 页",
+          "score": 1.986413
+        }
+      ],
+      "note": "标题词 + 正文英文缩写混合检索"
+    },
+    {
+      "query_id": "Q4-S2-DEADLINE",
+      "scenario": "S2 奖学金申请",
+      "query": "奖学金申请表 成绩单 截止时间",
+      "business_direction_code": "POLICY_AFFAIRS",
+      "expected": "BETA-SYN-S2-2026#2",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 节",
+          "original_locator": "PDF 第 2 页",
+          "score": 6.64585
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 节",
+          "original_locator": "PDF 第 1 页",
+          "score": 3.043512
+        },
+        {
+          "rank": 3,
+          "record_code": "BETA-SYN-S1-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 章 第 7 条",
+          "original_locator": "PDF 第 4 页",
+          "score": 0.365873
+        }
+      ],
+      "note": "材料与截止时间定位"
+    },
+    {
+      "query_id": "Q5-S3-EN",
+      "scenario": "S3 推免条件咨询",
+      "query": "推免研究生 CET-6 425分 无不及格",
+      "business_direction_code": "EDUCATION_CAREER",
+      "expected": "BETA-SYN-S3-2027#1",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S3-2027",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 3 条",
+          "original_locator": "PDF 第 1 页",
+          "score": 6.541245
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S3-2027",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 8 条",
+          "original_locator": "PDF 第 3 页",
+          "score": 0.267663
+        }
+      ],
+      "note": "中英文外语条件检索"
+    },
+    {
+      "query_id": "Q6-S3-BONUS",
+      "scenario": "S3 推免条件咨询",
+      "query": "CCF推荐会议 推免学术专长加分",
+      "business_direction_code": "EDUCATION_CAREER",
+      "expected": "BETA-SYN-S3-2027#2",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S3-2027",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 8 条",
+          "original_locator": "PDF 第 3 页",
+          "score": 6.415483
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S3-2027",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 3 条",
+          "original_locator": "PDF 第 1 页",
+          "score": 0.212064
+        }
+      ],
+      "note": "学术专长加分条款检索"
+    },
+    {
+      "query_id": "Q7-S4-LAB",
+      "scenario": "S4 学院资源导航",
+      "query": "人工智能与大数据实验室 GPU算力申请",
+      "business_direction_code": "COLLEGE_RESOURCES",
+      "expected": "BETA-SYN-S4-R3-2026#1",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S4-R3-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 部分",
+          "original_locator": "网页 第 1 节",
+          "score": 9.098776
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S4-R2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 2 部分",
+          "original_locator": "网页 第 2 节",
+          "score": 0.054224
+        }
+      ],
+      "note": "R3 实验室与科研团队：位置与英文算力关键词"
+    },
+    {
+      "query_id": "Q8-S4-OFFICE",
+      "scenario": "S4 学院资源导航",
+      "query": "本科培养方案 教务办 成绩单盖章",
+      "business_direction_code": "COLLEGE_RESOURCES",
+      "expected": "BETA-SYN-S4-R2-2026#1",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S4-R2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 2 部分",
+          "original_locator": "网页 第 2 节",
+          "score": 8.16929
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S4-R3-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 部分",
+          "original_locator": "网页 第 1 节",
+          "score": 0.17487
+        }
+      ],
+      "note": "R2 培养方案与课程：培养方案与办事渠道导航"
+    },
+    {
+      "query_id": "Q9-MULTI-DIR",
+      "scenario": "多业务方向（全库检索）",
+      "query": "竞赛获奖 综测加分 奖学金申请表",
+      "business_direction_code": null,
+      "expected": "BETA-SYN-S2-2026#*",
+      "matched_rank": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 节",
+          "original_locator": "PDF 第 2 页",
+          "score": 10.601959
+        },
+        {
+          "rank": 2,
+          "record_code": "BETA-SYN-S1-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 2 章 第 7 条",
+          "original_locator": "PDF 第 4 页",
+          "score": 3.785864
+        },
+        {
+          "rank": 3,
+          "record_code": "BETA-SYN-S2-2026",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 1,
+          "locator": "第 1 节",
+          "original_locator": "PDF 第 1 页",
+          "score": 3.43713
+        },
+        {
+          "rank": 4,
+          "record_code": "BETA-SYN-S3-2027",
+          "version_no": "beta-syn-v1",
+          "chunk_no": 2,
+          "locator": "第 8 条",
+          "original_locator": "PDF 第 3 页",
+          "score": 2.411614
+        }
+      ],
+      "note": "不传 business_direction_code 执行全库检索，避免跨方向漏检"
+    }
+  ]
+}
+
+=== Command 4: Agent offline integration check ===
+$ .\.venv\Scripts\python.exe -X utf8 -m scripts.check_retrieval_agent
+Agent: backend.services.agent_workflow.AgentWorkflow (current checkout)
+LLM: offline test double. Clarification and applicability callbacks are test inputs.
+{"query": "竞赛认定", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
+{"query": "奖学金", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
+{"query": "推免", "status": "insufficient_evidence", "warnings": ["NO_ELIGIBLE_EVIDENCE"], "llm_calls": 0, "citations": []}
+{"query": "星桥奖学金申请需要什么", "status": "answered", "warnings": [], "llm_calls": 1, "citations": [{"document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548", "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0", "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159", "title": "合成测试资料：星桥奖学金", "publisher": "合成测试机构", "source_url": "https://example.invalid/alpha/scholarship", "published_on": "2026-09-01", "effective_on": null, "locator": "第 2 行", "original_locator": "第 1 页", "excerpt": "星桥奖学金申请需要提交申请表和实践记录。", "source_verification_status": "verified", "timeliness_verification_status": "current", "retrieval_status": "enabled"}]}
+PASS: 4 Agent -> Retriever cases
+
+=== Command 5: Standalone 9-package 514-chunk read-only blocked isolation check ===
+$ .\.venv\Scripts\python.exe -X utf8 -m scripts.check_beta_blocked_isolation
+{
+  "packages": 9,
+  "chunks": 514,
+  "domain_chunks": {
+    "S1": 310,
+    "S2": 127,
+    "S3": 29,
+    "S4": 48
+  },
+  "scoped_human_approved_true_but_blocked": 6,
+  "enabled_packages": 0,
+  "all_metadata_lookups_none": true,
+  "all_chunk_lookups_none": true,
+  "formal_hits": {
+    "COMPETITION_RESEARCH": 0,
+    "POLICY_AFFAIRS": 0,
+    "EDUCATION_CAREER": 0,
+    "COLLEGE_RESOURCES": 0
+  },
+  "loader_checks": [
+    {
+      "directory": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23",
+      "loaded": 0,
+      "indexed_chunks": 0,
+      "skipped": 8
+    },
+    {
+      "directory": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23",
+      "loaded": 0,
+      "indexed_chunks": 0,
+      "skipped": 2
+    },
+    {
+      "directory": "knowledge_base/processed/alpha/approved",
+      "loaded": 0,
+      "indexed_chunks": 0,
+      "skipped": 0
+    }
+  ]
+}
+
+=== Command 6: git diff --check ===
+$ git diff --check
+warning: in the working copy of 'docs/assignment-03/beta/retrieval-report.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_beta_retrieval_scenarios.py', LF will be replaced by CRLF the next time Git touches it

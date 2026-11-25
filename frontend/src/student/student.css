@@ -292,6 +292,11 @@
   font-size: 14px;
 }
 
+.student-sources h3 {
+  margin: 16px 0 0;
+  font-size: 14px;
+}
+
 .student-citation {
   margin-block: 10px;
   padding: 10px 14px;
