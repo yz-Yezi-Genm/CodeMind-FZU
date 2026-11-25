@@ -117,12 +117,12 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 
 ## 六、Python 3.10 回归与 PR #41 9 包 514 片段只读校验
 
-同步基线：`origin/main` = **`179e618`**（含 PR #41、#45、#46、#49、#55、#56、#57）。测试环境：`Python 3.10.16`（`.venv`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖）。完整脱敏终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
+同步基线：`origin/main` = **`a9206cd`**（含 PR #41、#45、#46、#49、#54、#55、#56、#57）。测试环境：`Python 3.10.16`（`.venv`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖）。完整脱敏终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
 
 | 验证项 | 命令 | 实际结果 |
 |---|---|---|
 | 检索、加载器与四领域专项 | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests/test_local_retrieval.py tests/test_alpha_corpus.py tests/test_beta_retrieval_scenarios.py -v` | **36 passed, 12 subtests passed** |
-| 后端全量 `pytest`（基线 `179e618`） | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **640 passed, 3 skipped, 274 subtests passed**（0 失败） |
+| 后端全量 `pytest`（基线 `a9206cd`） | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **640 passed, 3 skipped, 274 subtests passed**（0 失败） |
 | BM25 三路对照评测 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_bm25_comparison` | `title_and_content` 单目标 20/20 Hit@1=1.0，多目标 4/4 Recall@5=1.0（旧版等权拼接 `0.625`） |
 | S1–S4 合成基线脚本 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval` | Hit@1 = 1.0 / Hit@3 = 1.0 / MRR = 1.0，拦截 2 份未开放诱饵 |
 | Agent 离线联调 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.check_retrieval_agent` | **PASS: 4 Agent -> Retriever cases** |
@@ -132,4 +132,4 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 ## 七、后续正式资料验收事项（另行提交，不阻塞 PR #53）
 
 1. 待正式政策资料经人工签核放行至 `knowledge_base/processed/alpha/approved/` 后，另行补充真实四领域查询集、期望片段标注、原文/章节对照及真实检索指标。
-2. 配合吴诗莹完成 Beta `AgentWorkflow`（PR #46 合入后）端到端联调与回归测试。
+2. PR #46（Beta `AgentWorkflow`）已合入 `main` 并已完成离线联调回归；后续在正式资料放行后，配合吴诗莹补跑正式语料下的端到端验收。

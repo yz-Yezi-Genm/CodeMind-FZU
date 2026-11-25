@@ -1,5 +1,5 @@
 ﻿=== Environment & Baseline ===
-Synced origin/main SHA: 179e618
+Synced origin/main SHA: a9206cd
 Python 3.10.16
 fastapi            0.162.5
 httpx              0.28.1
@@ -60,9 +60,9 @@ tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_retri
 tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_s1_to_s4_evaluation_metrics_and_filtering PASSED [ 97%]
 tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_title_plus_content_bm25_has_no_degradation_vs_content_only_stress_suite PASSED [100%]
 
-=================== 36 passed, 12 subtests passed in 5.79s ====================
+=================== 36 passed, 12 subtests passed in 5.87s ====================
 
-=== Command 2: Full backend pytest (tests/, synced with origin/main 179e618) ===
+=== Command 2: Full backend pytest (tests/, synced with origin/main a9206cd) ===
 $ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
 ......................................................................................................................................... [ 21%]
 .....s........................................................... [ 31%]
@@ -83,7 +83,7 @@ $ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
 SKIPPED [1] tests\test_agent_workflow_qwen.py:1888: Real Qwen acceptance requires explicit opt-in and approved packages
 SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
 SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
-640 passed, 3 skipped, 1 warning, 274 subtests passed in 64.82s (0:01:04)
+640 passed, 3 skipped, 1 warning, 274 subtests passed in 74.24s (0:01:14)
 
 === Command 3: Beta S1-S4 evaluation script ===
 $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
@@ -420,31 +420,7 @@ LLM: offline test double. Clarification and applicability callbacks are test inp
 {"query": "星桥奖学金申请需要什么", "status": "answered", "warnings": [], "llm_calls": 1, "citations": [{"document_id": "bbc4592c-0025-523e-95cd-06ccc2a54548", "version_id": "7593f056-be30-5cda-84ae-e6f7c06c87a0", "chunk_id": "a67d7143-47ed-58c7-8ea3-3334f22e0159", "title": "合成测试资料：星桥奖学金", "publisher": "合成测试机构", "source_url": "https://example.invalid/alpha/scholarship", "published_on": "2026-09-01", "effective_on": null, "locator": "第 2 行", "original_locator": "第 1 页", "excerpt": "星桥奖学金申请需要提交申请表和实践记录。", "source_verification_status": "verified", "timeliness_verification_status": "current", "retrieval_status": "enabled"}]}
 PASS: 4 Agent -> Retriever cases
 
-=== Command 5: PR #41 9-package 514-chunk read-only handoff & blocked isolation check ===
-$ .\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_policy_handoff
-Traceback (most recent call last):
-  File "<PY310_HOME>\lib\runpy.py", line 196, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "<PY310_HOME>\lib\runpy.py", line 86, in _run_code
-    exec(code, run_globals)
-  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 103, in <module>
-    main()
-  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 92, in main
-    print(json.dumps(run_check(), ensure_ascii=False, indent=2))
-  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 99, in run_check
-    return asyncio.run(check())
-  File "<PY310_HOME>\lib\asyncio\runners.py", line 44, in run
-    return loop.run_until_complete(main)
-  File "<PY310_HOME>\lib\asyncio\base_events.py", line 649, in run_until_complete
-    return future.result()
-  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 50, in check
-    for domain, key, path, package in selected_packages():
-  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 35, in selected_packages
-    raise ValueError(f"Handoff must remain unapproved and blocked: {key}")
-ValueError: Handoff must remain unapproved and blocked: competition
-
-=== Note on Command 5 (main 179e618) & Independent Read-Only 9-Package 514-Chunk Isolation Check ===
-Note: PR #56 (1060688) updated 6 pending-review packages to temporal_notes.human_approved=true while keeping retrieval_status=blocked, without updating knowledge_base/processing/check_beta_policy_handoff.py line 34. Per review instruction, PR #41/#56 files were NOT modified; standalone read-only check command and output follow:
+=== Command 5: Standalone 9-package 514-chunk read-only blocked isolation check ===
 $ .\.venv\Scripts\python.exe -X utf8 -m scripts.check_beta_blocked_isolation
 {
   "packages": 9,
@@ -489,5 +465,5 @@ $ .\.venv\Scripts\python.exe -X utf8 -m scripts.check_beta_blocked_isolation
 
 === Command 6: git diff --check ===
 $ git diff --check
-warning: in the working copy of 'scripts/eval_beta_bm25_comparison.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/assignment-03/beta/retrieval-report.md', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'tests/test_beta_retrieval_scenarios.py', LF will be replaced by CRLF the next time Git touches it

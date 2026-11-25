@@ -65,7 +65,7 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
                 all(r.status == IndexingStatus.INDEXED and not r.warnings for r in report.index_results)
             )
 
-            # Without business_direction_code, a cross-domain query retrieves both S1 and S2.
+            # Without business_direction_code, a cross-domain query retrieves S1, S2, and S3.
             hits = await retriever.retrieve(
                 RetrievalRequest(query="竞赛获奖 综测加分 奖学金申请表", top_k=4)
             )
@@ -75,6 +75,7 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
             }
             self.assertIn("BETA-SYN-S1-2026", record_codes)
             self.assertIn("BETA-SYN-S2-2026", record_codes)
+            self.assertIn("BETA-SYN-S3-2027", record_codes)
 
     async def test_metadata_and_parsed_chunk_fields_match_beta_v21_requirements(self):
         with TemporaryDirectory() as tmp:
