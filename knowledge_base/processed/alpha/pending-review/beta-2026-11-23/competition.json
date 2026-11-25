@@ -23,14 +23,14 @@
       "适用专业": "全校相关本科专业",
       "适用对象": "竞赛学分认定申请者；教师绩效条文不作为学生问答范围"
     },
-    "policy_status": "官方正文已核对；现行性/适用性待最终审核",
+    "policy_status": "current（2026版目录；组长于2026-11-24限定范围人工审核通过）",
     "source_verification_status": "verified",
-    "timeliness_verification_status": "uncertain",
+    "timeliness_verification_status": "current",
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "blocked",
     "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
-    "verification_note": "2026-11-23真实通知正文、校教〔2026〕9号及三份附件入口已核对；本网络可读取，无需账号。三份DOCX与Alpha原件SHA-256相同，逐行保留合并标记及脚注。竞赛级别认定用于规定的学分/绩效用途，不能直接换成综测加分或奖学金等级。205数据行未获逐项人工签核；后续版本非全站穷尽核验。",
+    "verification_note": "2026-11-23真实通知正文、校教〔2026〕9号及三份附件入口已核对；本网络可读取，无需账号。三份DOCX与Alpha原件SHA-256相同，逐行保留合并标记及脚注。竞赛级别认定用于规定的学分/绩效用途，不能直接换成综测加分或奖学金等级。205数据行未获逐项人工签核；后续版本非全站穷尽核验。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
     "import_snapshot": {
       "记录编号": "福大-2026-竞赛项目级别认定",
       "标题": "关于公布大学生学科竞赛级别认定结果的通知（2026年版）",
@@ -71,14 +71,14 @@
       "附件哈希": "{\"原始资料/学校/福州大学_2026_学科竞赛级别直接认定一览表.docx\": \"99e64a99830e59198843a26a9a2b2db19f326b777000ba1c43721fb57ec300ff\", \"原始资料/学校/福州大学_2026_学科竞赛级别认定一览表.docx\": \"596c62ee1f2694b08f421605275e0eb53161bdd5e247a40f149af2feef94704c\", \"原始资料/学校/福州大学_2026_体育类竞赛级别认定一览表.docx\": \"07a6abe9417a03e122118d28e1e302937a03ebe41c89261902ab932b21d7dd57\"}"
     },
     "temporal_notes": {
-      "checked_on": "2026-11-23",
-      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-      "human_approved": false,
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "human_approved": true,
       "baseline_version": "import-1",
       "beta_domains": [
         "S1"
       ],
-      "scope_limitations": "2026-11-23真实通知正文、校教〔2026〕9号及三份附件入口已核对；本网络可读取，无需账号。三份DOCX与Alpha原件SHA-256相同，逐行保留合并标记及脚注。竞赛级别认定用于规定的学分/绩效用途，不能直接换成综测加分或奖学金等级。205数据行未获逐项人工签核；后续版本非全站穷尽核验。",
+      "scope_limitations": "仅按2026版目录查询赛事名称、认定级别、附件及序号；结合具体赛段、奖项、时间、团队身份，必要时与第02份学分办法联合解释。不得将竞赛级别直接替代赛段/获奖等级、综测加分或奖学金等级；不得无依据追溯适用于2026-03-06以前的证书；目录未列不直接断言不认定；保留体育专项规则和高水平运动员限制；教师绩效条文不得用于学生。跨年度个人认定及计算机学院具体过渡口径尚未核实，遇此类问题应追问或拒绝确定结论。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json"
     }
   },
