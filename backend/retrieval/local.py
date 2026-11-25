@@ -32,6 +32,7 @@ _HAN = r"\u3400-\u4dbf\u4e00-\u9fff\U00020000-\U000323af"
 _TOKEN_RUNS = re.compile(fr"(?P<han>[{_HAN}]+)|(?:(?![{_HAN}])[^\W_])+")
 _K1 = 1.2
 _B = 0.75
+_TITLE_WEIGHT = 0.1
 _INDEXABLE_FILE_STATUSES = {FileProcessingStatus.EXTRACTED, FileProcessingStatus.REVIEWED}
 
 
@@ -78,6 +79,8 @@ class _IndexedVersion:
     document_id: UUID
     version_id: UUID
     chunks: tuple[_IndexedChunk, ...]
+    title_term_counts: Counter[str]
+    title_length: int
 
 
 class LocalBM25Retriever:
@@ -86,6 +89,8 @@ class LocalBM25Retriever:
     With file_root configured, check local file availability and declared digests
     before inserting a version. Construct a separate instance for each corpus.
     """
+
+    _title_weight: float = _TITLE_WEIGHT
 
     def __init__(self, *, file_root: Path | None = None) -> None:
         self._file_root = file_root.resolve(strict=True) if file_root is not None else None
@@ -204,6 +209,7 @@ class LocalBM25Retriever:
         skipped_sources: Counter[str] = Counter()
         skipped_disabled = False
         skipped_tokenless = 0
+        title_terms = _terms(metadata.title)
         for chunk in snapshot.chunks:
             file_id, processing_status = source_files[chunk.source_file_key]
             if processing_status not in _INDEXABLE_FILE_STATUSES:
@@ -212,8 +218,8 @@ class LocalBM25Retriever:
             if chunk.index_status == ChunkIndexStatus.DISABLED:
                 skipped_disabled = True
                 continue
-            terms = _terms(chunk.content)
-            if not terms:
+            content_terms = _terms(chunk.content)
+            if not content_terms:
                 skipped_tokenless += 1
                 continue
             referenced_files.add(chunk.source_file_key)
@@ -223,8 +229,8 @@ class LocalBM25Retriever:
                 parsed=chunk,
                 file_id=file_id,
                 chunk_id=_local_id("chunk", str(file_id), str(chunk.chunk_no)),
-                term_counts=Counter(terms),
-                length=len(terms),
+                term_counts=Counter(content_terms),
+                length=len(content_terms),
             ))
 
         # Only unready sources with no retained citation can skip integrity
@@ -261,7 +267,12 @@ class LocalBM25Retriever:
             )
         status = IndexingStatus.PARTIAL if warnings else IndexingStatus.INDEXED
         self._put_version(_IndexedVersion(
-            metadata, document_id, version_id, tuple(entries)
+            metadata,
+            document_id,
+            version_id,
+            tuple(entries),
+            Counter(title_terms),
+            len(title_terms),
         ))
         return IndexResult(
             **result_ids, status=status, indexed_count=len(entries), warnings=warnings
@@ -273,6 +284,7 @@ class LocalBM25Retriever:
         if not query_terms:
             return []
 
+        eligible_versions = []
         candidates = []
         for version in self._versions.values():
             metadata = version.metadata
@@ -285,11 +297,13 @@ class LocalBM25Retriever:
                 and request.business_direction_code not in metadata.business_direction_codes
             ):
                 continue
-            candidates.extend((version, chunk) for chunk in version.chunks)
+            if version.chunks:
+                eligible_versions.append(version)
+                candidates.extend((version, chunk) for chunk in version.chunks)
         if not candidates:
             return []
 
-        # Only eligible chunks contribute to corpus statistics.
+        # Only eligible chunks contribute to content corpus statistics.
         count = len(candidates)
         average_length = sum(chunk.length for _, chunk in candidates) / count
         idf = {}
@@ -298,15 +312,41 @@ class LocalBM25Retriever:
             if frequency:
                 idf[term] = log1p((count - frequency + 0.5) / (frequency + 0.5))
 
+        # Compute lightweight document-level title BM25 separately so a long
+        # matching title cannot crowd out relevant chunks from other documents.
+        title_scores: dict[UUID, float] = {}
+        if self._title_weight > 0:
+            titled_versions = [v for v in eligible_versions if v.title_length > 0]
+            if titled_versions:
+                v_count = len(titled_versions)
+                avg_title_len = sum(v.title_length for v in titled_versions) / v_count
+                title_idf = {}
+                for term in query_terms:
+                    freq = sum(term in v.title_term_counts for v in titled_versions)
+                    if freq:
+                        title_idf[term] = log1p((v_count - freq + 0.5) / (freq + 0.5))
+                for version in titled_versions:
+                    t_norm = _K1 * (1 - _B + _B * version.title_length / avg_title_len)
+                    t_score = fsum(
+                        weight * (_K1 + 1) * version.title_term_counts[term]
+                        / (version.title_term_counts[term] + t_norm)
+                        for term, weight in title_idf.items()
+                        if term in version.title_term_counts
+                    )
+                    if t_score > 0:
+                        title_scores[version.version_id] = t_score
+
         ranked = []
         for version, chunk in candidates:
             normalizer = _K1 * (1 - _B + _B * chunk.length / average_length)
-            score = fsum(
+            content_score = fsum(
                 weight * (_K1 + 1) * chunk.term_counts[term]
                 / (chunk.term_counts[term] + normalizer)
                 for term, weight in idf.items()
                 if term in chunk.term_counts
             )
+            title_score = title_scores.get(version.version_id, 0.0)
+            score = content_score + self._title_weight * title_score
             if score > 0:
                 ranked.append((score, version, chunk))
         ranked.sort(key=lambda hit: (-hit[0], hit[2].chunk_id))
