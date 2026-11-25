@@ -1,6 +1,6 @@
 /**
  * 与 backend/contracts/models.py 对齐的前端类型定义。
- * 公共字段与状态值以 docs/assignment-03/interface-contract-v1.md 为准，不要在前端另立一套。
+ * 学生端 HTTP 字段和状态以 Beta 接口规范 V2.1-Final 为准。
  */
 
 export type AnswerStatus =
@@ -49,17 +49,36 @@ export interface Citation {
   retrieval_status: 'blocked' | 'review_only' | 'enabled';
 }
 
-export interface AskResponse {
+interface AskResponseBase {
   request_id: string;
   conversation_id: string;
-  status: AnswerStatus;
-  answer: string | null;
-  answer_mode: AnswerMode | null;
-  clarifying_question: string | null;
   citations: Citation[];
   warnings: WarningItem[];
   created_at: string;
 }
+
+export type AskResponse = AskResponseBase & (
+  | {
+    status: 'answered';
+    answer: string;
+    answer_mode: AnswerMode;
+    clarifying_question: string | null;
+  }
+  | {
+    status: 'needs_clarification';
+    answer: null;
+    answer_mode: null;
+    clarifying_question: string;
+    citations: [];
+  }
+  | {
+    status: 'insufficient_evidence';
+    answer: string | null;
+    answer_mode: 'insufficient_data';
+    clarifying_question: string | null;
+    citations: [];
+  }
+);
 
 /* ==========================================================================
  * 后台管理端（林彦翔）

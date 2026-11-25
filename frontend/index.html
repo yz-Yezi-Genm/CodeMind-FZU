@@ -6,9 +6,35 @@
     <meta name="description" content="面向福州大学学生的校园事务与发展信息助手" />
     <title>CodeMind-FZU · 演示登录</title>
     <link rel="icon" href="/src/student/assets/fzu.png" />
+    <style>
+      #student-startup[hidden], #demo-entry[hidden], #demo-workspace[hidden] { display: none; }
+      #student-startup {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        overflow: auto;
+        padding: 24px;
+        background: #f6f5f2;
+        color: #1f2937;
+        font: 16px/1.6 "Microsoft YaHei", system-ui, sans-serif;
+      }
+      .startup-card { box-sizing: border-box; width: min(100%, 440px); }
+      .startup-card h1 { margin: 0 0 8px; font-size: 26px; }
+      .startup-card p { margin: 0 0 16px; }
+      .startup-card a { color: #a91d35; font-weight: 600; text-underline-offset: 3px; }
+    </style>
   </head>
   <body>
-    <main id="demo-entry" class="demo-entry">
+    <div id="student-startup">
+      <div class="startup-card">
+        <h1>CodeMind-FZU</h1>
+        <p id="student-startup-message" role="status">正在加载学生端…</p>
+        <a id="student-local-link" href="http://127.0.0.1:5173/" hidden>打开本地学生端</a>
+        <noscript><p>请启用 JavaScript 后刷新页面。</p></noscript>
+      </div>
+    </div>
+    <main id="demo-entry" class="demo-entry" hidden>
       <canvas id="pointer-field" aria-hidden="true"></canvas>
       <div class="ripple-plane" aria-hidden="true"></div>
       <header class="demo-header">
@@ -110,24 +136,24 @@
             <p>从校园事务查询到发展信息获取，让每一步都有依据。</p>
           </div>
           <div id="student-topics" class="student-topics" aria-label="校园问答主题">
-            <button type="button" data-query="申请国家奖学金需要满足什么条件？">
+            <button type="button" data-query="申请校级奖学金需要满足什么条件？">
               <span class="student-topic-icon"><img src="/src/student/assets/policy.svg" alt="" /></span>
-              <span class="student-topic-copy"><strong>政策与事务办理</strong><small>查询奖学金申报、综测管理和教务事务。</small></span>
+              <span class="student-topic-copy"><strong>奖学金申请</strong><small>查询奖学金申请条件和材料要求。</small></span>
               <span class="student-topic-arrow" aria-hidden="true">›</span>
             </button>
             <button type="button" data-query="申请推免需要满足哪些基本条件？">
               <span class="student-topic-icon"><img src="/src/student/assets/study.svg" alt="" /></span>
-              <span class="student-topic-copy"><strong>升学与就业发展</strong><small>了解推免条件、升学与就业相关信息。</small></span>
+              <span class="student-topic-copy"><strong>推免条件咨询</strong><small>查询推免资格和流程。</small></span>
               <span class="student-topic-arrow" aria-hidden="true">›</span>
             </button>
-            <button type="button" data-query="如何核验这项竞赛是否在学院认定范围内？">
+            <button type="button" data-query="我参加的竞赛可以认定创新学分吗？">
               <span class="student-topic-icon"><img src="/src/student/assets/research.svg" alt="" /></span>
-              <span class="student-topic-copy"><strong>竞赛与科研信息</strong><small>查找竞赛认定要求和科研入门信息。</small></span>
+              <span class="student-topic-copy"><strong>竞赛认定</strong><small>查询竞赛级别和创新学分认定要求。</small></span>
               <span class="student-topic-arrow" aria-hidden="true">›</span>
             </button>
-            <button type="button" data-query="学院有哪些公开科研资源？">
+            <button type="button" data-query="学院有哪些可以参与科研实践的实验室？">
               <span class="student-topic-icon"><img src="/src/student/assets/resources.svg" alt="" /></span>
-              <span class="student-topic-copy"><strong>学院资源导航</strong><small>寻找学院官网、导师信息与实验室资源。</small></span>
+              <span class="student-topic-copy"><strong>学院资源导航</strong><small>查找实验室和科研实践的公开资料。</small></span>
               <span class="student-topic-arrow" aria-hidden="true">›</span>
             </button>
           </div>
@@ -150,6 +176,20 @@
         </div>
       </main>
     </div>
-    <script type="module" src="/src/student/demo-entry.ts"></script>
+    <script>
+      if (location.protocol === 'file:') {
+        document.querySelector('#student-startup-message').textContent =
+          '请在项目根目录运行 start_demo.bat，或在 frontend 目录运行 npm run dev，然后打开本地学生端。';
+        document.querySelector('#student-local-link').hidden = false;
+      }
+    </script>
+    <script type="module">
+      if (location.protocol !== 'file:') {
+        import('./src/student/demo-entry.ts').catch(() => {
+          document.querySelector('#student-startup-message').textContent =
+            '学生端加载失败，请确认前端服务已启动，然后刷新页面。';
+        });
+      }
+    </script>
   </body>
 </html>

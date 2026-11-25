@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4173",
+    "test:student": "node --test tests/student-api.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

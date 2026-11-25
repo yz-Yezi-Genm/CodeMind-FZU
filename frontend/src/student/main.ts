@@ -1,6 +1,7 @@
 import '../shared/styles.css';
 import './student.css';
 import { ApiError, ask, fetchHealth } from '../shared/api';
+import type { StudentAskResponse } from '../shared/api';
 import { escapeHtml, requireElement } from '../shared/dom';
 import type { AskResponse, Citation } from '../shared/types';
 
@@ -63,7 +64,7 @@ function renderAnswerMode(mode: AskResponse['answer_mode']): string {
   if (!mode) return '';
   const labels: Record<NonNullable<AskResponse['answer_mode']>, string> = {
     current_policy: '当前政策依据',
-    historical: '历史资料参考',
+    historical: '历史资料参考，请以当前年度官方通知为准。',
     procedure_reference: '办理流程参考',
     insufficient_data: '证据不足',
   };
@@ -82,7 +83,7 @@ function hasTestFixtureCitation(citations: Citation[]): boolean {
   return citations.some(isTestFixtureCitation);
 }
 
-function renderResult(query: string, response: AskResponse): void {
+function renderResult(query: string, response: StudentAskResponse): void {
   const labels: Record<AskResponse['status'], string> = {
     answered: '已回答',
     needs_clarification: '需要补充信息',
@@ -95,7 +96,7 @@ function renderResult(query: string, response: AskResponse): void {
     .map(({ message }) => `<li>${escapeHtml(message)}</li>`)
     .join('');
   const citations = response.citations.map(renderCitation).join('');
-  const answer = content || '目前没有足够的依据提供可靠回答。';
+  const isMockAnswer = response.status === 'answered' && response.warnings.some(item => item.code === 'MOCK_AGENT');
   const testFixtureNotice = hasTestFixtureCitation(response.citations)
     ? '<p class="student-test-fixture-notice">当前回答引用的是联调测试资料，不代表学校正式政策结论。</p>'
     : '';
@@ -105,12 +106,14 @@ function renderResult(query: string, response: AskResponse): void {
   turn.innerHTML = `
     <p class="student-question"><span class="student-sr-only">你：</span>${escapeHtml(query)}</p>
     <div class="student-answer">
-      <h2>${labels[response.status]}</h2>
-      ${renderAnswerMode(response.answer_mode)}
-      <p>${escapeHtml(answer)}</p>
+      <h2>${isMockAnswer ? '模拟回答' : labels[response.status]}</h2>
+      ${isMockAnswer ? '' : renderAnswerMode(response.answer_mode)}
+      ${content?.trim() ? `<p>${escapeHtml(content)}</p>` : ''}
       ${warnings ? `<ul class="student-warnings">${warnings}</ul>` : ''}
       ${testFixtureNotice}
-      ${citations || (response.status === 'answered' ? '<p class="hint">暂无引用来源。</p>' : '')}
+      ${citations
+        ? `<section class="student-sources" aria-label="引用来源"><h3>引用来源</h3>${citations}</section>`
+        : (response.status === 'answered' ? '<p class="hint">暂无引用来源。</p>' : '')}
       ${response.status === 'answered' ? `<div class="student-feedback" role="group" aria-label="回答反馈">
         <button type="button" aria-pressed="false">有帮助</button>
         <button type="button" aria-pressed="false">需改进</button>
@@ -132,6 +135,33 @@ function renderResult(query: string, response: AskResponse): void {
   result.append(turn);
 }
 
+function describeAskError(error: unknown): string {
+  if (!(error instanceof ApiError)) return '暂时无法处理问题，请稍后重试。';
+  if (error.status === 0 || error.status === 200) return error.message;
+
+  if (error.code === 'INVALID_REQUEST' || error.status === 400 || error.status === 422) {
+    return '问题格式有误，请检查后重新发送。';
+  }
+  if (error.code === 'RATE_LIMITED' || error.status === 429) {
+    return '请求过于频繁，请稍等一会儿再发送。';
+  }
+  if (error.code === 'MODEL_TIMEOUT' || error.status === 504) {
+    return '回答等待超时，请稍后重试。';
+  }
+  switch (error.code) {
+    case 'MODEL_UNAVAILABLE':
+      return '问答模型暂时不可用，请稍后重试。';
+    case 'KNOWLEDGE_BASE_UNAVAILABLE':
+      return '资料服务暂时不可用，请稍后重试。';
+    case 'SERVICE_NOT_CONFIGURED':
+      return '问答服务还未就绪，请稍后重试。';
+    default:
+      return error.status >= 500
+        ? '问答服务暂时遇到问题，请稍后重试。'
+        : '暂时无法提交问题，请检查后重试。';
+  }
+}
+
 async function handleAsk(): Promise<void> {
   if (send.disabled) return;
   const query = input.value.trim();
@@ -144,6 +174,7 @@ async function handleAsk(): Promise<void> {
   send.disabled = true;
   newChat.disabled = true;
   input.readOnly = true;
+  form.setAttribute('aria-busy', 'true');
   askStatus.textContent = '正在请求回答…';
 
   try {
@@ -156,13 +187,12 @@ async function handleAsk(): Promise<void> {
     input.placeholder = '继续提问，或补充当前问题的信息';
     askStatus.textContent = response.status === 'needs_clarification' ? '请补充信息后发送。' : '';
   } catch (error) {
-    const detail = error instanceof ApiError ? error.message : '处理响应时出错，请稍后重试。';
-    const code = error instanceof ApiError && error.status ? `（HTTP ${error.status}，${error.code}）` : '';
-    askStatus.textContent = `请求失败${code}：${detail}`;
+    askStatus.textContent = describeAskError(error);
   } finally {
     send.disabled = false;
     newChat.disabled = false;
     input.readOnly = false;
+    form.removeAttribute('aria-busy');
     input.focus();
   }
 }

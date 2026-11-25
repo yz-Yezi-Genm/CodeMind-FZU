@@ -34,6 +34,8 @@ npm run dev
 | 学生端 | <http://127.0.0.1:5173/> |
 | 后台管理端 | <http://127.0.0.1:5173/admin/index.html> |
 
+从文件管理器打开 `frontend/index.html` 时，页面会提供本地启动指引。启动 Vite 后，通过上表的 HTTP 地址加载样式和交互。
+
 学生端先显示演示登录页。可用测试用户名 `demo` 和数字密码 `123456` 进入现有问答工作台。输入内容仅用于前端格式校验。当前标签页会记住已进入的状态，打开 <http://127.0.0.1:5173/?preview=1> 可重新查看登录页。成功进入工作台后会清除 `preview` 参数，刷新时沿用当前标签页的登录状态。
 
 ## API 代理
@@ -52,6 +54,26 @@ npm run dev
 - **Mock 联调入口**：`python -m uvicorn backend.app.dev:app --reload --port 8000`，不需要密钥。
 - 前端无需区分两种入口，统一走 `/api/v1` 契约。
 - 后台管理端调用 `/api/v1/admin/...` 时，当前后端返回 404，管理页会显示“后台管理接口当前不可用”，属 Alpha 当前边界。
+
+### 学生端 Beta 第一阶段测试
+
+学生端按 V2.1-Final 校验问答响应。追问和下轮问题继续使用服务端会话 ID，刷新或点击「新建对话」会开始新的问答会话。登录状态仍在当前标签页内保存。
+
+使用 Node.js 22.18+ 在 `frontend/` 运行接口测试。浏览器回归从 Vite 的学生端入口开始，使用符合 V2.1-Final 的响应样例，无需启动后端或配置 Qwen 密钥。
+
+```powershell
+npm.cmd run test:student
+```
+
+另开终端在 `frontend/` 运行 `npm.cmd run dev`，再执行以下浏览器测试。
+
+```powershell
+npx.cmd --yes --package @playwright/cli playwright-cli -s=beta-student open http://127.0.0.1:5173/?preview=1 --browser=msedge
+npx.cmd --yes --package @playwright/cli playwright-cli -s=beta-student run-code --filename=tests/student-browser.js
+npx.cmd --yes --package @playwright/cli playwright-cli -s=beta-student close
+```
+
+测试样例覆盖 `400 INVALID_REQUEST` 和 `503 MODEL_UNAVAILABLE`。兼容 Alpha 内置 Mock Agent 带 `MOCK_AGENT` 标记、回答模式为空且无引用的回复，页面显示「模拟回答」。正式 Beta 响应仍按 V2.1-Final 校验。阶段二使用实际 FastAPI、真实 Qwen 和审核资料验证四场景及真实引用。
 
 ## 生产构建
 
