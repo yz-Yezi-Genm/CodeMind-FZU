@@ -4,7 +4,7 @@
   "storage_root": "repository root",
   "stage": "pending-review",
   "enabled_packages": 0,
-  "human_approved_packages": 0,
+  "human_approved_packages": 6,
   "packages": [
     {
       "key": "competition",
@@ -16,9 +16,9 @@
       "chunk_count": 224,
       "source_units": 224,
       "source_verification_status": "verified",
-      "timeliness_verification_status": "uncertain",
+      "timeliness_verification_status": "current",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "scholarship",
@@ -30,9 +30,9 @@
       "chunk_count": 59,
       "source_units": 59,
       "source_verification_status": "verified",
-      "timeliness_verification_status": "uncertain",
+      "timeliness_verification_status": "current",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "college-scholarship",
@@ -44,9 +44,9 @@
       "chunk_count": 33,
       "source_units": 33,
       "source_verification_status": "verified",
-      "timeliness_verification_status": "uncertain",
+      "timeliness_verification_status": "expired",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "xinghuo",
@@ -60,7 +60,7 @@
       "source_verification_status": "verified",
       "timeliness_verification_status": "expired",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "recommendation",
@@ -86,9 +86,9 @@
       "chunk_count": 86,
       "source_units": 86,
       "source_verification_status": "verified",
-      "timeliness_verification_status": "uncertain",
+      "timeliness_verification_status": "current",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "retest",
@@ -102,7 +102,7 @@
       "source_verification_status": "verified",
       "timeliness_verification_status": "expired",
       "retrieval_status": "blocked",
-      "human_approved": false
+      "human_approved": true
     },
     {
       "key": "qinghe",
@@ -118,5 +118,6 @@
       "retrieval_status": "blocked",
       "human_approved": false
     }
-  ]
+  ],
+  "human_approval_registry": "docs/assignment-03/beta/beta-human-approval-registry.json"
 }

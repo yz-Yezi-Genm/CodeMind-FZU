@@ -26,12 +26,19 @@ REVIEW = Path("knowledge_base/processing/policy-review/2026-11-23")
 OLD = Path("knowledge_base/processing/policy-review/2026-11-19")
 OUTPUT = Path("knowledge_base/processed/alpha/pending-review/beta-2026-11-23")
 DOCS = Path("docs/assignment-03/beta")
+APPROVAL_REGISTRY = DOCS / "beta-human-approval-registry.json"
 VERSION = "beta-review-2026-11-23-1"
 RECORDS = {**ALPHA_RECORDS, "innovation": "福大-2024-创新创业学分认定",
            "retest": "计算机学院-2026-推免复试参考", "qinghe": "计算机学院-2026-青禾计划"}
 DOMAINS = {"competition": ["S1"], "innovation": ["S1"], "scholarship": ["S2"],
            "college-scholarship": ["S2"], "xinghuo": ["S2"], "recommendation": ["S3"],
            "retest": ["S3"], "qinghe": ["S4"]}
+EXPECTED_REVIEW_DECISIONS = {
+    "competition": "approved_scoped", "scholarship": "approved_scoped",
+    "college-scholarship": "approved_scoped", "xinghuo": "approved_scoped",
+    "recommendation": "deferred", "innovation": "approved_scoped",
+    "retest": "approved_scoped", "qinghe": "not_migrated",
+}
 NOTES = {
     "competition": "2026-11-23真实通知正文、校教〔2026〕9号及三份附件入口已核对；本网络可读取，无需账号。三份DOCX与Alpha原件SHA-256相同，逐行保留合并标记及脚注。竞赛级别认定用于规定的学分/绩效用途，不能直接换成综测加分或奖学金等级。205数据行未获逐项人工签核；后续版本非全站穷尽核验。",
     "scholarship": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；待人工确认。校级通则不能替代院级/专项细则。",
@@ -52,6 +59,53 @@ def write(path, value):
     target = ROOT / path
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def load_human_approval_registry():
+    registry = read(APPROVAL_REGISTRY)
+    if (registry.get("schema_version") != 1
+        or registry.get("source_ledger") != (DOCS / "beta-human-review-ledger.md").as_posix()
+        or registry.get("package_count") != len(RECORDS)
+        or registry.get("retrieval_status") != "blocked"
+        or type(registry.get("enabled_packages")) is not int
+        or registry.get("enabled_packages") != 0):
+        raise ValueError("Approval registry header is invalid")
+    entries = registry.get("packages")
+    if not isinstance(entries, dict) or set(entries) != set(RECORDS):
+        raise ValueError("Approval registry must list each candidate exactly once")
+    approved_count = 0
+    for key, expected_decision in EXPECTED_REVIEW_DECISIONS.items():
+        entry = entries[key]
+        if not isinstance(entry, dict) or entry.get("decision") != expected_decision:
+            raise ValueError(f"Approval registry decision mismatch: {key}")
+        if (not isinstance(entry.get("checked_on"), str)
+            or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", entry["checked_on"])
+            or not isinstance(entry.get("check_method"), str) or not entry["check_method"].strip()
+            or not isinstance(entry.get("policy_status"), str) or not entry["policy_status"].strip()
+            or not isinstance(entry.get("verification_note"), str) or not entry["verification_note"].strip()
+            or not isinstance(entry.get("scope_limitations"), str) or not entry["scope_limitations"].strip()
+            or entry.get("timeliness_verification_status") not in {"current", "expired", "historical", "uncertain"}):
+            raise ValueError(f"Approval registry metadata is incomplete: {key}")
+        if expected_decision in {"approved_scoped", "deferred"}:
+            if (entry.get("reviewer") != "组长"
+                or not isinstance(entry.get("reviewed_on"), str)
+                or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", entry["reviewed_on"])):
+                raise ValueError(f"Approval registry reviewer/date is invalid: {key}")
+        elif entry.get("reviewer") is not None or entry.get("reviewed_on") is not None:
+            raise ValueError(f"Unmigrated legacy package cannot inherit a reviewer/date: {key}")
+        if expected_decision in {"deferred", "not_migrated"}:
+            if not isinstance(entry.get("decision_reason"), str) or not entry["decision_reason"].strip():
+                raise ValueError(f"Approval registry decision reason is required: {key}")
+        if "inclusion_reason" in entry and not isinstance(entry["inclusion_reason"], str):
+            raise ValueError(f"Approval registry inclusion_reason is invalid: {key}")
+        if "applicability_raw" in entry and not isinstance(entry["applicability_raw"], dict):
+            raise ValueError(f"Approval registry applicability_raw is invalid: {key}")
+        if expected_decision == "approved_scoped":
+            approved_count += 1
+    if (type(registry.get("human_approved_packages")) is not int
+        or registry["human_approved_packages"] != approved_count):
+        raise ValueError("Approval registry approved-package count is inconsistent")
+    return registry
 
 
 def digest(path):
@@ -84,15 +138,21 @@ def metadata_for(key, preview):
         data.update(title=doc["title"], document_type=doc["document_type"],
                     category_name=next(r["name"] for r in preview["knowledge_categories"] if r["id"] == doc["category_id"]),
                     business_direction_codes=[directions[r["direction_id"]] for r in preview["document_business_directions"] if r["document_id"] == doc["id"]])
-    expired = key in {"xinghuo", "recommendation", "retest", "qinghe"}
+    review = load_human_approval_registry()["packages"][key]
     data.update(version_no=VERSION, source_verification_status="verified", extraction_status="extracted",
-                retrieval_status="blocked", timeliness_verification_status="expired" if expired else "uncertain",
-                policy_status="本批次截止/首批安排已过，仅历史参考；待最终审核" if expired else "官方正文已核对；现行性/适用性待最终审核",
-                verification_note=NOTES[key], source_page_url=data["source_url"],
-                temporal_notes={"checked_on": "2026-11-23", "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-                                "human_approved": False, "baseline_version": version["version_no"],
-                                "beta_domains": DOMAINS[key], "scope_limitations": NOTES[key],
+                retrieval_status="blocked",
+                timeliness_verification_status=review["timeliness_verification_status"],
+                policy_status=review["policy_status"], verification_note=review["verification_note"],
+                source_page_url=data["source_url"],
+                temporal_notes={"checked_on": review["checked_on"], "check_method": review["check_method"],
+                                "human_approved": review["decision"] == "approved_scoped",
+                                "baseline_version": version["version_no"], "beta_domains": DOMAINS[key],
+                                "scope_limitations": review["scope_limitations"],
                                 "version_search_evidence": (REVIEW / "verification-evidence.json").as_posix()})
+    if "inclusion_reason" in review:
+        data["inclusion_reason"] = review["inclusion_reason"]
+    if "applicability_raw" in review:
+        data["applicability_raw"] = review["applicability_raw"]
     if key in {"qinghe", "retest"}:
         data["effective_on"] = None  # publication is not an independently specified effective date
         data["deadline_on"] = "2026-10-31" if key == "qinghe" else "2026-09-19"
@@ -113,8 +173,6 @@ def metadata_for(key, preview):
     if key == "innovation":
         data["effective_on"] = "2024-09-01"
         data["applicability_raw"] = {**data["applicability_raw"], "过渡说明": "第27条：2016办法待2020级毕业后自动废止，2022办法废止；具体年级和培养方案待人工确认"}
-    if key == "college-scholarship":
-        data["policy_status"] = "发布2026年/评奖2025年等区间存在歧义；不得推定现行"
     return DocumentMetadata.model_validate(data)
 
 
@@ -199,6 +257,7 @@ def expected_original_files(key, context):
 
 
 def build():
+    load_human_approval_registry()
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
     # Preflight before creating directories, rendering Markdown or overwriting
@@ -231,15 +290,20 @@ def build():
             "package": (OUTPUT / f"{key}.json").as_posix(), "chunk_count": len(package.chunks), "source_units": len(units),
             "source_verification_status": metadata.source_verification_status.value,
             "timeliness_verification_status": metadata.timeliness_verification_status.value,
-            "retrieval_status": "blocked", "human_approved": False})
+            "retrieval_status": "blocked", "human_approved": metadata.temporal_notes["human_approved"]})
     write(REVIEW / "chunk-source-map.json", mappings)
+    approved_count = sum(1 for row in summaries if row["human_approved"] is True)
     write(OUTPUT / "manifest.json", {"checked_on": "2026-11-23", "package_format": "backend.contracts.DocumentPackage",
-          "storage_root": "repository root", "stage": "pending-review", "enabled_packages": 0, "human_approved_packages": 0,
-          "packages": summaries})
+          "storage_root": "repository root", "stage": "pending-review",
+          "human_approval_registry": APPROVAL_REGISTRY.as_posix(),
+          "enabled_packages": 0, "human_approved_packages": approved_count, "packages": summaries})
     return summaries
 
 
 async def check():
+    registry = load_human_approval_registry()
+    approved_count = sum(1 for entry in registry["packages"].values()
+                         if entry["decision"] == "approved_scoped")
     sources = read(REVIEW / "source-units.json")
     verify_inputs(sources)
     preview = read(Path("docs/assignment-02/database-design/knowledge-base/入库预览_44条.json"))
@@ -247,17 +311,24 @@ async def check():
     manifest = read(OUTPUT / "manifest.json")
     if manifest.get("stage") != "pending-review":
         raise ValueError("Manifest stage must be pending-review")
-    for field in ("enabled_packages", "human_approved_packages"):
-        if type(manifest.get(field)) is not int or manifest[field] != 0:
-            raise ValueError(f"Manifest {field} must be integer zero")
+    if manifest.get("human_approval_registry") != APPROVAL_REGISTRY.as_posix():
+        raise ValueError("Manifest approval registry path mismatch")
+    if type(manifest.get("enabled_packages")) is not int or manifest["enabled_packages"] != 0:
+        raise ValueError("Manifest enabled_packages must be integer zero")
+    if (type(manifest.get("human_approved_packages")) is not int
+        or manifest["human_approved_packages"] != approved_count):
+        raise ValueError("Manifest human_approved_packages must equal approval registry count")
     rows = manifest.get("packages")
     if (not isinstance(rows, list) or len(rows) != len(RECORDS)
         or any(not isinstance(row, dict) or not isinstance(row.get("key"), str) for row in rows)
         or {row.get("key") for row in rows} != set(RECORDS)):
         raise ValueError("Manifest must list each of the eight candidates exactly once")
     for row in rows:
-        if row.get("retrieval_status") != "blocked" or row.get("human_approved") is not False:
-            raise ValueError("Manifest entries must remain blocked and human_approved=false")
+        expected_approved = registry["packages"][row["key"]]["decision"] == "approved_scoped"
+        if row.get("retrieval_status") != "blocked":
+            raise ValueError("Manifest candidate retrieval must remain blocked")
+        if type(row.get("human_approved")) is not bool or row["human_approved"] is not expected_approved:
+            raise ValueError("Manifest candidate status mismatch")
         if row.get("package") != (OUTPUT / f"{row['key']}.json").as_posix():
             raise ValueError("Manifest candidate package path inconsistent")
     mapping = read(REVIEW / "chunk-source-map.json")
@@ -270,8 +341,11 @@ async def check():
     for row in rows:
         package = DocumentPackage.model_validate(read(Path(row["package"])))
         temporal = package.metadata.temporal_notes or {}
-        if package.metadata.retrieval_status.value != "blocked" or temporal.get("human_approved") is not False:
-            raise ValueError("Beta candidates cannot approve/enable policies")
+        expected_approved = registry["packages"][row["key"]]["decision"] == "approved_scoped"
+        if package.metadata.retrieval_status.value != "blocked":
+            raise ValueError("Beta candidate must remain blocked regardless of human signoff")
+        if type(temporal.get("human_approved")) is not bool or temporal.get("human_approved") is not expected_approved:
+            raise ValueError("Candidate human approval metadata differs from registry")
         units = sources["documents"][row["key"]]
         metadata_fields = {
             "record_code": package.metadata.record_code,
@@ -391,7 +465,7 @@ async def check():
     # generated artifacts. Never regenerate/overwrite a failed baseline.
     reextraction = verify_reextraction(ROOT, sources)
     return {"packages": len(manifest["packages"]), "chunks": count, "original_mappings": len(mapping),
-            "enabled_packages": 0, "human_approved_packages": 0, "formal_hits_for_blocked_candidates": hits,
+            "enabled_packages": 0, "human_approved_packages": approved_count, "formal_hits_for_blocked_candidates": hits,
             "index_results": index_results, "indexed_chunks": sum(r["indexed_count"] for r in index_results),
             "blocked_metadata_lookups_returning_none": metadata_hidden,
             "blocked_chunk_lookups_returning_none": chunks_hidden,
