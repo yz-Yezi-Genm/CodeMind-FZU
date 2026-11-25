@@ -458,9 +458,9 @@ S4 片段必须同时满足：
 
 | 编号 | 类型 | 问题 | 预期 status / answer_mode | 校验点 |
 | --- | --- | --- | --- | --- |
-| S4-01 | 正常 | 学院有哪些实验室？ | `answered` / `current_policy` | 说明共 24 个，列出匹配的前 K 个（K 受 `top_k` 上限 20 约束），完整表见来源；每条资源一个 citation；不写"正在招募" |
-| S4-02 | 正常 | EDA 实验室研究什么？ | `answered` / `current_policy` | 只答 R4 方向与简介；不涉及名额 |
-| S4-03 | 正常 | 我大二能进 EDA 实验室吗？ | `answered` / `current_policy` | 答接收对象与条件；不判定个人能否被录取 |
+| S4-01 | 正常 | 学院有哪些实验室？ | `answered` / `historical` | 说明共 24 个，列出匹配的前 K 个（K 受 `top_k` 上限 20 约束），完整表见来源；每条资源一个 citation；声明 2026-2027 学年通知所载；不写"正在招募" |
+| S4-02 | 正常 | EDA 实验室研究什么？ | `answered` / `historical` | 只答 R4 方向与简介；声明 2026-2027 学年通知所载；不涉及名额 |
+| S4-03 | 正常 | 我大二能进 EDA 实验室吗？ | `answered` / `historical` | 答接收对象与条件；声明 2026-2027 学年通知所载；不判定个人能否被录取 |
 | S4-04 | 信息不足 | 学院有什么资源？ | `needs_clarification` | 只问资源类别，一问 |
 | S4-05 | 信息不足 | EDA 实验室怎么样？ | `needs_clarification` | 只问研究方向还是报名 |
 | S4-06 | 信息不足 | 培养方案在哪看？ | `needs_clarification` | 只问专业与年级 |
@@ -474,6 +474,11 @@ S4 片段必须同时满足：
 | S4-14 | 资料不足 | 2025 年青禾计划怎么报名？ | `insufficient_evidence` / `insufficient_data` | 2026 通知不能回答 2025 年招募 |
 | S4-15 | 资料不足 | 2027 年青禾计划招几人？ | `insufficient_evidence` / `insufficient_data` | 跨年度计划人数不沿用 2026 通知 |
 | S4-16 | 资料不足 | 学院公众号文章，名称是学院号但 ID 是 `ifzu1958` | `insufficient_evidence` / `insufficient_data` | 名称与 ID 不同族，不能靠昵称放行 |
+| S4-18 | 历史 | 2026 年青禾通知里写的联系人是谁？ | `answered` / `historical` | 联系人绑定 2026 年度；声明本年度报名已截止；不得表述为当前联系人 |
+| S4-19 | 资料不足 | 现在该联系哪个实验室负责人？ | `insufficient_evidence` / `insufficient_data` | 不得用历史通知里的联系人充当当前联系人 |
+| S4-20 | 资料不足 | 青禾计划现在还剩几个名额？ | `insufficient_evidence` / `insufficient_data` | 年度计划人数、接收人数都不是当前剩余名额；无经核验的实时数据时一律 `insufficient_data` |
+
+S4-17（学院的通知在哪看）待 R1 栏目入库后补入本表；S4-21（学院办公室在哪）并入 S4-11，不单列。
 
 ### 7.6 未决与交接
 
