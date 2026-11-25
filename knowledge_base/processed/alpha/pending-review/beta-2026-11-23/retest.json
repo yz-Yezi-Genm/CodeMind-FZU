@@ -23,14 +23,14 @@
       "年度": "2027年接收推免；2026年9月实施",
       "限制": "不是本科推荐资格办法；不适用于下一届或当前开放判断"
     },
-    "policy_status": "本批次截止/首批安排已过，仅历史参考；待最终审核",
+    "policy_status": "expired（2027年接收直博生及硕士推免复试方案；仅作限定范围历史参考）",
     "source_verification_status": "verified",
     "timeliness_verification_status": "expired",
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "blocked",
     "inclusion_reason": "接收推免生方案，仅作升学准备参考，不等于取得推免推荐资格。",
-    "verification_note": "这是接收2027年硕士推免生/直博生复试方案，不是取得本科推荐资格的办法。官方嵌入PDF9页已提取，逐页渲染AI对照，第2页6行计划表保留；2026-09-19 11:00首批预报名导出及9月22日首批复试均已过。后续批次以另行公告为准，不宣称现在可报名。未转换复试用表ZIP，完整填写指导不可用；人工审核待办。",
+    "verification_note": "这是接收2027年硕士推免生/直博生复试方案，不是取得本科推荐资格的办法。官方嵌入PDF9页已提取，逐页渲染AI对照，第2页6行计划表保留；2026-09-19 11:00首批预报名导出及9月22日首批复试均已过。后续批次以另行公告为准，不宣称现在可报名。未转换复试用表ZIP，完整填写指导不可用；人工审核待办。 组长于2026-11-25已完成限定范围人工审核并签核；时效状态登记为expired。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
     "import_snapshot": {
       "记录编号": "计算机学院-2026-推免复试参考",
       "标题": "福州大学计算机与大数据学院（软件学院）2027年招收直博生、硕士生推免复试方案及实施细则",
@@ -71,14 +71,14 @@
       "附件哈希": "{\"原始资料/学院/计算机学院_2026_2027_推免复试方案.pdf\": \"730cc46d2931c7769ca89f153ff3888167f0f08a2aad1e318617a742983bb4b1\"}"
     },
     "temporal_notes": {
-      "checked_on": "2026-11-23",
-      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-      "human_approved": false,
+      "checked_on": "2026-11-25",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-25",
+      "human_approved": true,
       "baseline_version": "import-1",
       "beta_domains": [
         "S3"
       ],
-      "scope_limitations": "这是接收2027年硕士推免生/直博生复试方案，不是取得本科推荐资格的办法。官方嵌入PDF9页已提取，逐页渲染AI对照，第2页6行计划表保留；2026-09-19 11:00首批预报名导出及9月22日首批复试均已过。后续批次以另行公告为准，不宣称现在可报名。未转换复试用表ZIP，完整填写指导不可用；人工审核待办。",
+      "scope_limitations": "仅允许解释2027届接收推免生的历史复试方案正文；必须区分取得本科推免推荐资格与获得学院接收复试资格。首批预报名导出及首批复试安排已过；不得回答当前开放报名、实时剩余名额或下一届规则，除非有新的官方通知。ZIP附件填写指导明确不在本次审核范围内。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json",
       "deadline_meaning": "首批预报名数据导出截止2026-09-19 11:00；不代表后续批次统一截止"
     }
