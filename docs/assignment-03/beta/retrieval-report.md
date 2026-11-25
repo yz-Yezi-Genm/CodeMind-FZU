@@ -1,8 +1,8 @@
 # Beta 本地知识检索（BM25）技术交付与合成评测报告
 
-2026-11-24 · 知识库检索与资料入库（王智洋）
+2026-11-25 · 知识库检索与资料入库（王智洋）
 
-> **验收边界声明**：本报告与 PR #53 **仅代表 Beta 检索技术交付、BM25 对照评测与合成四领域基线验证，不代表正式政策资料检索验收完成**。仓库 `knowledge_base/processed/alpha/approved/` 当前正式包数为 0，PR #41 交付的 9 包 514 片段全部保持 `retrieval_status=blocked`、`human_approved=false`。待正式资料经人工签核放行至 `approved/` 后，将另行补充真实四领域查询集、期望片段标注、原文对照及真实检索指标。
+> **验收边界声明**：本报告与 PR #53 **仅代表 Beta 检索技术交付、BM25 三路对照评测与合成四领域基线验证，不代表正式政策资料检索验收完成**。仓库 `knowledge_base/processed/alpha/approved/` 当前正式包数为 0；PR #41 / #56 交付的 9 包 514 片段未做任何修改，全部保持 `retrieval_status=blocked`（其中 PR #56 `1060688` 已对 6 包登记 `human_approved=true` 但检索仍为 `blocked`）。待正式资料经人工签核并正式放行至 `approved/` 后，将另行补充真实四领域查询集、期望片段标注、原文对照及真实检索指标。
 
 ## 一、数据库五大业务方向字典核对
 
@@ -75,9 +75,13 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 - `get_document_metadata(hit.version_id)` 完整返回 `record_code`、`version_no`、`applicability_raw`、`deadline_on`、`temporal_notes`、`source_verification_status`、`timeliness_verification_status`、`retrieval_status`；
 - `get_parsed_chunk(hit.chunk_id)` 完整返回 `content`、`locator`、`locator_note`、`original_locator`、`source_file_key`、`chunk_no`，且与 `RetrievedChunk` 一一对应。
 
-## 五、BM25 对照评测（仅正文 vs 轻量标题加权 BM25）
+## 五、BM25 三路对照评测（仅正文 vs 旧版等权拼接 vs 轻量标题加权 0.1）
 
-为验证在 `LocalBM25Retriever` 中引入 `metadata.title` 后，标题词是否会在长文档、相似政策标题、同名实验室或**多目标跨领域查询**场景下挤占 Top-K，使用独立压力合成集（8 份文档、39 个片段、20 条单目标压力查询 + 4 条多目标跨领域查询，见 `scripts/eval_beta_bm25_comparison.py`，全部采用 `example.invalid` 虚构来源，不触碰真实候选资料）对比了「仅正文 BM25」与「轻量标题加权 BM25（`_TITLE_WEIGHT = 0.1`）」：
+为验证在 `LocalBM25Retriever` 中引入 `metadata.title` 后，标题词是否会在长文档、相似政策标题、同名实验室或**多目标跨领域查询**场景下挤占 Top-K，使用独立压力合成集（8 份文档、39 个片段、20 条单目标压力查询 + 4 条多目标跨领域查询，见 `scripts/eval_beta_bm25_comparison.py`，全部采用 `example.invalid` 虚构来源，不触碰真实候选资料）同脚本可复现对比三组算法：
+
+1. `content_only`：仅正文 BM25（`_title_weight = 0.0`）；
+2. `equal_weight_concat`：旧版等权拼接基线（将 `title_terms` 与 `content_terms` 以 1.0 倍等权拼入每个片段）；
+3. `title_and_content`：当前实现（独立正文 BM25 + 文档级轻量标题加权 `_TITLE_WEIGHT = 0.1`）。
 
 复现命令：
 
@@ -85,43 +89,44 @@ python -X utf8 -m scripts.eval_beta_retrieval --corpus-dir knowledge_base/proces
 .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_bm25_comparison
 ```
 
-### 反例复现与权重调整效果
-
-在复审提出的两条多目标跨领域反例上，调整前（等权拼接标题词到每个片段）与调整后（独立文档级标题 BM25 × `0.1`）对比如下：
+### 反例复现、M04 修订与权重调整效果
 
 - **M01**（`2026年本科生奖学金评定管理办法的一等奖GPA要求，以及本科毕业学分165学分要求？`，期望 `CMP-SCH-UG#4` + `CMP-STUDY-R2#1`）：
-  - 调整前（等权拼接）：Top-5 全被 `CMP-SCH-UG` 占满，丢失 `CMP-STUDY-R2#1`（Recall@5 = `0.5`）；
-  - 调整后（`_TITLE_WEIGHT = 0.1`）：Top-2 即同时命中 `CMP-SCH-UG#4`（#1）与 `CMP-STUDY-R2#1`（#2），**Recall@5 = `1.0`**。
+  - `equal_weight_concat`：Top-5 全被 `CMP-SCH-UG` 占满，丢失 `CMP-STUDY-R2#1`（Recall@5 = `0.5`）；
+  - `title_and_content`（`_TITLE_WEIGHT = 0.1`）：Top-2 即同时命中 `CMP-SCH-UG#4`（#1）与 `CMP-STUDY-R2#1`（#2），**Recall@5 = `1.0`**。
 - **M02**（`2026年青禾计划智能感知实验室招募报名截止日期，以及推免申请人外语CET-6要求？`，期望 `CMP-LAB-R3#3` + `CMP-REC-QUAL#1`）：
-  - 调整前（等权拼接）：Top-5 被实验室包占满，丢失 `CMP-REC-QUAL#1`（Recall@5 = `0.5`）；
-  - 调整后（`_TITLE_WEIGHT = 0.1`）：Top-2 即同时命中 `CMP-LAB-R3#3`（#1）与 `CMP-REC-QUAL#1`（#2），**Recall@5 = `1.0`**。
+  - `equal_weight_concat`：Top-5 被实验室包占满，丢失 `CMP-REC-QUAL#1`（Recall@5 = `0.5`）；
+  - `title_and_content`（`_TITLE_WEIGHT = 0.1`）：Top-2 即同时命中 `CMP-LAB-R3#3`（#1）与 `CMP-REC-QUAL#1`（#2），**Recall@5 = `1.0`**。
+- **M03**（长标题竞赛办法团队第一完成人折算比例 + 星火奖学金特等奖 8000 元名额）：
+  - `equal_weight_concat`：丢失 `CMP-SCH-XINGHUO#2`（Recall@5 = `0.5`）；
+  - `title_and_content`（`_TITLE_WEIGHT = 0.1`）：Top-4 内同时命中 `CMP-COMP-BYLAW#4` 与 `CMP-SCH-XINGHUO#2`，**Recall@5 = `1.0`**。
+- **M04**（已将原查询中的简称「综测权重」调整为与原文具有合理词面重叠的「综合测评总分与学业成绩比例」，对应 `CMP-SCH-UG#5` + `CMP-LAB-R4#1`）：
+  - 调整后 `content_only`、`equal_weight_concat` 与 `title_and_content` 在 M04 上均实现 **Recall@5 = `1.0`**（`CMP-SCH-UG#5` 与 `CMP-LAB-R4#1` 同时命中 Top-5）；说明当前 BM25 双字分词不自动展开简称，后续若需支持简称可另行扩展同义词词表。
 
-| 指标 / 维度 | 仅正文 BM25 | 标题+正文 BM25（`_TITLE_WEIGHT = 0.1`） | 变化 |
-|---|---|---|---|
-| 文档 / 片段 / 单目标查询 / 多目标查询 | 8 / 39 / 20 / 4 | 8 / 39 / 20 / 4 | — |
-| 单目标总体 Hit@1 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
-| 单目标总体 Hit@3 | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
-| 单目标总体 MRR | 1.0 | 1.0 | 0.0 |
-| 长文档（6 查询）Top-3 模板条款（总则/组织机构/附则/联系人）挤占次数 | 4 | 4 | 0（无恶化） |
-| 相似政策标题区分（4 查询）Hit@1 | 1.0 | 1.0 | 0.0 |
-| 同名实验室区分（4 查询：R3 招募 vs R4 介绍、视觉组 vs 语音组）Hit@1 | 1.0 | 1.0 | 0.0 |
-| 标题+正文联合查询（4 查询：政策名仅出现在标题）Hit@1 | 1.0 | 1.0 | 0.0 |
-| 跨业务方向单目标竞争排序（2 查询，`business_direction_code=None`）Hit@1 | 1.0 | 1.0 | 0.0 |
-| **多目标跨领域 Recall@5（4 查询：M01–M04，含两条复审反例）** | **0.875 (3/4 满召回)** | **0.875 (3/4 满召回；M01/M02/M03 均 1.0)** | **0.0（较等权拼接 0.5 提升 +0.375）** |
+| 指标 / 维度 | `content_only`（仅正文） | `equal_weight_concat`（旧版等权拼接） | `title_and_content`（当前 `_TITLE_WEIGHT = 0.1`） | 相对 `content_only` 变化 |
+|---|---|---|---|---|
+| 文档 / 片段 / 单目标 / 多目标 | 8 / 39 / 20 / 4 | 8 / 39 / 20 / 4 | 8 / 39 / 20 / 4 | — |
+| 单目标总体 Hit@1 | 1.0 (20/20) | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
+| 单目标总体 Hit@3 | 1.0 (20/20) | 1.0 (20/20) | 1.0 (20/20) | 0.0 |
+| 单目标总体 MRR | 1.0 | 1.0 | 1.0 | 0.0 |
+| 长文档（6 查询）Top-3 模板条款挤占次数 | 4 | 1 | 4 | **0（无退化，与仅正文持平）** |
+| 相似标题 / 同名实验室 / 标题+正文 / 跨方向单目标 Hit@1 | 1.0 | 1.0 | 1.0 | 0.0 |
+| **多目标跨领域 Recall@5（M01–M04）** | **1.0 (4/4)** | **0.625 (1/4)** | **1.0 (4/4)** | **0.0（较旧版等权拼接 +0.375）** |
 
-**结论**：采用独立正文 BM25 + 轻量文档级标题加权（`_TITLE_WEIGHT = 0.1`）后，单目标 20 条查询保持 100% Hit@1 / Hit@3 / MRR，多目标跨领域 Recall@5 与仅正文 BM25 完全持平（两条复审反例均在 Top-2 满召回），且保留纯标题检索能力，不引入向量检索或复杂重排。完整对照 JSON 见 [retrieval-bm25-comparison.json](evidence/retrieval-bm25-comparison.json)。
+**结论**：独立正文 BM25 + 轻量文档级标题加权（`_TITLE_WEIGHT = 0.1`）在单目标 20 条查询上保持 100% Hit@1 / Hit@3 / MRR，长文档模板条款挤占与仅正文持平（4 对 4，无退化），多目标跨领域 4 条查询全部满召回（Recall@5 = `1.0`，较旧版等权拼接 `0.625` 提升 `+0.375`），且保留纯标题检索能力，不引入向量检索或复杂重排。完整三路对照 JSON 见 [retrieval-bm25-comparison.json](evidence/retrieval-bm25-comparison.json)。
 
 ## 六、Python 3.10 回归与 PR #41 9 包 514 片段只读校验
 
-测试环境：`Python 3.10.16`（`.venv`，已同步包含 PR #46 的最新 `main` `0251ec5`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖）。完整终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
+同步基线：`origin/main` = **`179e618`**（含 PR #41、#45、#46、#49、#55、#56、#57）。测试环境：`Python 3.10.16`（`.venv`，含 `fastapi 0.162.5`、`httpx 0.28.1`、`pydantic 2.14.4`、`pytest 9.2.0`、`uvicorn 0.54.0`、`openpyxl` 等全部依赖）。完整脱敏终端日志见 [retrieval-py310-regression.txt](evidence/retrieval-py310-regression.txt)。
 
 | 验证项 | 命令 | 实际结果 |
 |---|---|---|
 | 检索、加载器与四领域专项 | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests/test_local_retrieval.py tests/test_alpha_corpus.py tests/test_beta_retrieval_scenarios.py -v` | **36 passed, 12 subtests passed** |
-| 后端全量 `pytest`（含 PR #46） | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **572 passed, 3 skipped, 242 subtests passed**（0 失败） |
+| 后端全量 `pytest`（基线 `179e618`） | `.\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short` | **640 passed, 3 skipped, 274 subtests passed**（0 失败） |
+| BM25 三路对照评测 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_bm25_comparison` | `title_and_content` 单目标 20/20 Hit@1=1.0，多目标 4/4 Recall@5=1.0（旧版等权拼接 `0.625`） |
 | S1–S4 合成基线脚本 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval` | Hit@1 = 1.0 / Hit@3 = 1.0 / MRR = 1.0，拦截 2 份未开放诱饵 |
 | Agent 离线联调 | `.\.venv\Scripts\python.exe -X utf8 -m scripts.check_retrieval_agent` | **PASS: 4 Agent -> Retriever cases** |
-| PR #41 9 包 514 片段只读校验 | `.\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_policy_handoff` | 9 包 / 514 片段（S1:310 / S2:127 / S3:29 / S4:48）完整离线索引；全部 `blocked` 资料 `get_document_metadata()` 与 `get_parsed_chunk()` 均返回 `None`，正式检索命中 0，`approved/` 正式包数为 0 |
+| PR #41 9 包 514 片段隔离检查 | `knowledge_base.processing.check_beta_policy_handoff` + 独立只读隔离脚本 | 说明：`main` 上的 PR #56（`1060688`）已将 6 份待审核包更新为 `human_approved=true`（仍保持 `blocked`），而未同步更新 `check_beta_policy_handoff.py` 第 34 行的旧断言（本 PR 按要求未改动 `knowledge_base/processing/` 及候选资料）；独立只读校验确认：全部 9 包 / 514 片段（S1:310 / S2:127 / S3:29 / S4:48，含 6 份 `human_approved=true` 但 `blocked` 的包）完整离线索引，所有 `get_document_metadata()` 与 `get_parsed_chunk()` 均返回 `None`，四方向正式检索命中均为 `0`，`load_approved_alpha_retriever()` 在三个目录下加载包数均为 `0` |
 | 格式检查 | `git diff --check` | 退出码 0 |
 
 ## 七、后续正式资料验收事项（另行提交，不阻塞 PR #53）

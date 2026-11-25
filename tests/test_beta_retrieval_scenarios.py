@@ -316,6 +316,7 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
     async def test_title_plus_content_bm25_has_no_degradation_vs_content_only_stress_suite(self):
         comparison = await run_comparison()
         content_only = comparison["content_only"]
+        equal_weight = comparison["equal_weight_concat"]
         title_plus = comparison["title_and_content"]
 
         self.assertGreaterEqual(title_plus["chunk_count"], 35)
@@ -330,17 +331,23 @@ class BetaFourDomainRetrievalTests(unittest.IsolatedAsyncioTestCase):
         for cat in ("long_doc", "similar_title", "same_name_lab", "cross_direction"):
             self.assertEqual(title_plus["by_category"][cat]["hit_at_1"], 1.0, msg=cat)
 
-        # Multi-target cross-domain Recall@5 must not degrade vs content-only BM25,
-        # and both review counterexamples (M01, M02) must recall all required targets in Top-5.
+        # Multi-target cross-domain Recall@5 must match/exceed content-only BM25 and
+        # strictly improve over the old equal-weight concatenation baseline.
         self.assertGreaterEqual(
             title_plus["multi_target_recall_at_5"],
             content_only["multi_target_recall_at_5"],
         )
+        self.assertGreater(
+            title_plus["multi_target_recall_at_5"],
+            equal_weight["multi_target_recall_at_5"],
+        )
         by_id = {row["query_id"]: row for row in title_plus["multi_target_details"]}
-        self.assertEqual(by_id["M01"]["recall_at_5"], 1.0)
-        self.assertEqual(by_id["M01"]["missing"], [])
-        self.assertEqual(by_id["M02"]["recall_at_5"], 1.0)
-        self.assertEqual(by_id["M02"]["missing"], [])
+        for qid in ("M01", "M02", "M03", "M04"):
+            self.assertEqual(by_id[qid]["recall_at_5"], 1.0, msg=qid)
+            self.assertEqual(by_id[qid]["missing"], [], msg=qid)
+        eq_by_id = {row["query_id"]: row for row in equal_weight["multi_target_details"]}
+        self.assertLess(eq_by_id["M01"]["recall_at_5"], 1.0)
+        self.assertLess(eq_by_id["M02"]["recall_at_5"], 1.0)
 
 
 if __name__ == "__main__":

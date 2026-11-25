@@ -1,4 +1,5 @@
-﻿=== Environment ===
+﻿=== Environment & Baseline ===
+Synced origin/main SHA: 179e618
 Python 3.10.16
 fastapi            0.162.5
 httpx              0.28.1
@@ -59,17 +60,19 @@ tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_retri
 tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_s1_to_s4_evaluation_metrics_and_filtering PASSED [ 97%]
 tests/test_beta_retrieval_scenarios.py::BetaFourDomainRetrievalTests::test_title_plus_content_bm25_has_no_degradation_vs_content_only_stress_suite PASSED [100%]
 
-=================== 36 passed, 12 subtests passed in 5.31s ====================
+=================== 36 passed, 12 subtests passed in 5.79s ====================
 
-=== Command 2: Full backend pytest (tests/, synced with PR #46 main 0251ec5) ===
+=== Command 2: Full backend pytest (tests/, synced with origin/main 179e618) ===
 $ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
-.................................................................................................................... [ 20%]
-...................s.......................... [ 28%]
-........................................................................ [ 40%]
+......................................................................................................................................... [ 21%]
+.....s........................................................... [ 31%]
+........................................................................ [ 42%]
 ........................................................................ [ 53%]
-..............................s......................................... [ 65%]
-................................................................................................s................................. [ 88%]
-...................................................................                                                [100%]
+..........................................................s............. [ 65%]
+........................................................................ [ 76%]
+....................................................s..... [ 85%]
+............................................................... [ 95%]
+................................                    [100%]
 ============================== warnings summary ===============================
 .venv\lib\site-packages\fastapi\testclient.py:1
   <REPO>\.venv\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
@@ -77,10 +80,10 @@ $ .\.venv\Scripts\python.exe -X utf8 -m pytest tests -q -rs --tb=short
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
-SKIPPED [1] tests\test_agent_workflow_qwen.py:1634: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_agent_workflow_qwen.py:1888: Real Qwen acceptance requires explicit opt-in and approved packages
 SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
 SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
-572 passed, 3 skipped, 1 warning, 242 subtests passed in 47.99s
+640 passed, 3 skipped, 1 warning, 274 subtests passed in 64.82s (0:01:04)
 
 === Command 3: Beta S1-S4 evaluation script ===
 $ .\.venv\Scripts\python.exe -X utf8 -m scripts.eval_beta_retrieval
@@ -419,6 +422,29 @@ PASS: 4 Agent -> Retriever cases
 
 === Command 5: PR #41 9-package 514-chunk read-only handoff & blocked isolation check ===
 $ .\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_policy_handoff
+Traceback (most recent call last):
+  File "<PY310_HOME>\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "<PY310_HOME>\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 103, in <module>
+    main()
+  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 92, in main
+    print(json.dumps(run_check(), ensure_ascii=False, indent=2))
+  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 99, in run_check
+    return asyncio.run(check())
+  File "<PY310_HOME>\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "<PY310_HOME>\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 50, in check
+    for domain, key, path, package in selected_packages():
+  File "<REPO>\knowledge_base\processing\check_beta_policy_handoff.py", line 35, in selected_packages
+    raise ValueError(f"Handoff must remain unapproved and blocked: {key}")
+ValueError: Handoff must remain unapproved and blocked: competition
+
+=== Note on Command 5 (main 179e618) & Independent Read-Only 9-Package 514-Chunk Isolation Check ===
+Note: PR #56 (1060688) updated 6 pending-review packages to temporal_notes.human_approved=true while keeping retrieval_status=blocked, without updating knowledge_base/processing/check_beta_policy_handoff.py line 34. Per review instruction, PR #41/#56 files were NOT modified; independent read-only isolation verification across all 9 packages / 514 chunks follows:
 {
   "packages": 9,
   "chunks": 514,
@@ -428,9 +454,10 @@ $ .\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_pol
     "S3": 29,
     "S4": 48
   },
+  "scoped_human_approved_true_but_blocked": 6,
   "enabled_packages": 0,
-  "human_approved_packages": 0,
-  "approved_packages": 0,
+  "all_metadata_lookups_none": true,
+  "all_chunk_lookups_none": true,
   "formal_hits": {
     "COMPETITION_RESEARCH": 0,
     "POLICY_AFFAIRS": 0,
@@ -440,137 +467,23 @@ $ .\.venv\Scripts\python.exe -X utf8 -m knowledge_base.processing.check_beta_pol
   "loader_checks": [
     {
       "directory": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23",
-      "loaded_packages": 0,
+      "loaded": 0,
       "indexed_chunks": 0,
-      "skipped_packages": 8
+      "skipped": 8
     },
     {
       "directory": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23",
-      "loaded_packages": 0,
+      "loaded": 0,
       "indexed_chunks": 0,
-      "skipped_packages": 2
+      "skipped": 2
     },
     {
       "directory": "knowledge_base/processed/alpha/approved",
-      "loaded_packages": 0,
+      "loaded": 0,
       "indexed_chunks": 0,
-      "skipped_packages": 0
+      "skipped": 0
     }
-  ],
-  "index_results": [
-    {
-      "key": "competition",
-      "domain": "S1",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/competition.json",
-      "version_id": "92e414c2-6b8c-5f69-b073-05921b0faa55",
-      "chunks": 224,
-      "timeliness": "uncertain",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 224
-    },
-    {
-      "key": "innovation",
-      "domain": "S1",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/innovation.json",
-      "version_id": "e77bc47b-d65f-5056-aafd-56db7d294a10",
-      "chunks": 86,
-      "timeliness": "uncertain",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 86
-    },
-    {
-      "key": "scholarship",
-      "domain": "S2",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/scholarship.json",
-      "version_id": "c8f6bae5-c663-5a69-a2f8-df8642b62e05",
-      "chunks": 59,
-      "timeliness": "uncertain",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 59
-    },
-    {
-      "key": "college-scholarship",
-      "domain": "S2",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/college-scholarship.json",
-      "version_id": "d04c3928-f9e5-5c43-95d5-9e82958454b0",
-      "chunks": 33,
-      "timeliness": "uncertain",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 33
-    },
-    {
-      "key": "xinghuo",
-      "domain": "S2",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/xinghuo.json",
-      "version_id": "908442f5-eaed-59bf-a613-c79f143994c4",
-      "chunks": 35,
-      "timeliness": "expired",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 35
-    },
-    {
-      "key": "recommendation",
-      "domain": "S3",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/recommendation.json",
-      "version_id": "cfcfa918-e8f5-50a7-a1bb-fbff63862581",
-      "chunks": 20,
-      "timeliness": "expired",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 20
-    },
-    {
-      "key": "retest",
-      "domain": "S3",
-      "package": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/retest.json",
-      "version_id": "22d8e751-93e5-5f81-88b2-8de460f9b009",
-      "chunks": 9,
-      "timeliness": "expired",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 9
-    },
-    {
-      "key": "qinghe-r3",
-      "domain": "S4",
-      "package": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r3.json",
-      "version_id": "971a0297-6295-52d5-8efe-4cfd3e2f72db",
-      "chunks": 24,
-      "timeliness": "expired",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 24
-    },
-    {
-      "key": "qinghe-r4",
-      "domain": "S4",
-      "package": "knowledge_base/processed/alpha/pending-review/qinghe-b8-2026-11-23/qinghe-r4.json",
-      "version_id": "97e81dbb-1972-5798-90d6-fef650abd223",
-      "chunks": 24,
-      "timeliness": "historical",
-      "retrieval_status": "blocked",
-      "human_approved": false,
-      "metadata_lookup": null,
-      "hidden_chunk_lookups": 24
-    }
-  ],
-  "compatibility": {
-    "pr45_category_map": "matched",
-    "pr51_lookup_signatures": "matched"
-  }
+  ]
 }
 
 === Command 6: git diff --check ===

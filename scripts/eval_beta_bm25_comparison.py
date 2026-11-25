@@ -29,13 +29,48 @@ from backend.contracts import (
     ParsedFile,
     RetrievalRequest,
 )
-from backend.retrieval.local import LocalBM25Retriever
+from backend.retrieval.local import LocalBM25Retriever, _IndexedChunk, _IndexedVersion, _terms
 
 
 class _ContentOnlyBM25Retriever(LocalBM25Retriever):
     """Reference baseline using chunk.content BM25 only (title weight = 0.0)."""
 
     _title_weight: float = 0.0
+
+
+class _EqualWeightConcatBM25Retriever(LocalBM25Retriever):
+    """Previous baseline concatenating title_terms and content_terms at equal 1.0x weight."""
+
+    _title_weight: float = 0.0
+
+    async def index_document(self, package: DocumentPackage):
+        result = await super().index_document(package)
+        version = self._versions.get(result.version_id)
+        if version is not None:
+            title_terms = _terms(version.metadata.title)
+            rebuilt = []
+            for chunk in version.chunks:
+                combined_terms = [*title_terms, *_terms(chunk.parsed.content)]
+                rebuilt.append(
+                    _IndexedChunk(
+                        parsed=chunk.parsed,
+                        file_id=chunk.file_id,
+                        chunk_id=chunk.chunk_id,
+                        term_counts=Counter(combined_terms),
+                        length=len(combined_terms),
+                    )
+                )
+            self._put_version(
+                _IndexedVersion(
+                    metadata=version.metadata,
+                    document_id=version.document_id,
+                    version_id=version.version_id,
+                    chunks=tuple(rebuilt),
+                    title_term_counts=Counter(),
+                    title_length=0,
+                )
+            )
+        return result
 
 
 @dataclass(frozen=True)
@@ -284,10 +319,10 @@ MULTI_TARGET_QUERIES: tuple[MultiTargetQuery, ...] = (
     ),
     MultiTargetQuery(
         query_id="M04",
-        query="2026年计算机与大数据学院本科生奖学金评定管理办法的综测权重，以及智能感知实验室视觉组CVPR论文研究方向？",
+        query="2026年计算机与大数据学院本科生奖学金评定管理办法的综合测评总分与学业成绩比例，以及智能感知实验室视觉组CVPR论文研究方向？",
         expected_targets=(("CMP-SCH-UG", 5), ("CMP-LAB-R4", 1)),
         top_k=5,
-        note="双目标跨领域：10片段长文档 + 同名实验室 R4 研究方向",
+        note="双目标跨领域：10片段长文档综合测评总分条款 + 同名实验室 R4 研究方向",
     ),
 )
 
@@ -426,10 +461,12 @@ async def _evaluate_retriever(retriever: LocalBM25Retriever, packages: list[Docu
 async def run_comparison() -> dict[str, Any]:
     packages = build_stress_packages()
     content_only = await _evaluate_retriever(_ContentOnlyBM25Retriever(), packages)
+    equal_weight_concat = await _evaluate_retriever(_EqualWeightConcatBM25Retriever(), packages)
     title_and_content = await _evaluate_retriever(LocalBM25Retriever(), packages)
     return {
         "corpus_type": "synthetic_stress_comparison_fixture",
         "content_only": content_only,
+        "equal_weight_concat": equal_weight_concat,
         "title_and_content": title_and_content,
         "delta": {
             "hit_at_1": round(title_and_content["hit_at_1"] - content_only["hit_at_1"], 4),
@@ -438,6 +475,11 @@ async def run_comparison() -> dict[str, Any]:
             "multi_target_recall_at_5": round(
                 title_and_content["multi_target_recall_at_5"]
                 - content_only["multi_target_recall_at_5"],
+                4,
+            ),
+            "multi_target_recall_at_5_vs_equal_weight": round(
+                title_and_content["multi_target_recall_at_5"]
+                - equal_weight_concat["multi_target_recall_at_5"],
                 4,
             ),
             "long_doc_boilerplate_in_top3": (
