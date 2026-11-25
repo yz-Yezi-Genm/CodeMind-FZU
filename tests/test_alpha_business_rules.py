@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import date
+from decimal import Decimal
 
 import pytest
 
@@ -79,6 +80,28 @@ def _request(query: str, *, history: list[str] | None = None) -> AgentRequest:
         query=query,
         history=turns,
     )
+
+
+@pytest.mark.parametrize(("hours", "expected"), [
+    (0, 2), (1, 2), (29, 2), (30, 4), (31, 4), (59, 4), (60, 6), (61, 6),
+    (100, 6), (200, 6), ("29.999", 2), ("59.999", 4),
+])
+def test_volunteer_service_raw_score_boundaries(hours, expected):
+    assert business_rules.volunteer_service_raw_score(Decimal(hours)) == expected
+
+
+@pytest.mark.parametrize("hours", ["-1", "NaN", "Infinity"])
+def test_volunteer_service_rejects_invalid_hours(hours):
+    with pytest.raises(ValueError):
+        business_rules.volunteer_service_raw_score(Decimal(hours))
+
+
+def test_volunteer_service_clarifies_cohort_and_invalid_duration():
+    assert alpha_clarification_rule(_request("推免志愿服务计分怎么计算？")) == business_rules.QUESTION_VOLUNTEER_COHORT
+    for hours in ("-1小时", "30-60小时", "1小时30分钟"):
+        assert (alpha_clarification_rule(_request(f"2027届推免志愿服务{hours}算多少分？"))
+                == business_rules.QUESTION_VOLUNTEER_HOURS)
+    assert alpha_clarification_rule(_request("那30小时呢", history=["2027届推免志愿服务怎么计分？"])) is None
 
 
 def _chunk(

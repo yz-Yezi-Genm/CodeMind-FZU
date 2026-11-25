@@ -32,6 +32,8 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal
+from unicodedata import normalize
 from urllib.parse import urlsplit
 from uuid import UUID
 
@@ -149,6 +151,8 @@ QUESTION_SCHOLARSHIP_CATEGORY = (
 QUESTION_SCHOLARSHIP_DIMENSION = "你想了解申请条件、所需材料，还是评定时间？"
 QUESTION_DEPT_AWARD = "院级奖学金里你关注哪一类？学科竞赛类、学术类、学业类还是学生工作类？"
 QUESTION_RECOMMENDATION_OBJECT = "你想问的是校内推免资格怎么获得，还是学院接收推免的复试安排？"
+QUESTION_VOLUNTEER_COHORT = "请问你想查哪一届推免推荐资格方案的志愿服务计分？"
+QUESTION_VOLUNTEER_HOURS = "请提供一个非负的志愿服务时长（小时）。"
 QUESTION_PROFESSION = "你关注的是哪个专业？"
 QUESTION_DEGREE = "你关注的是学术型、专业型，还是直博？"
 QUESTION_GRADE = "你现在是大几？不同年级参考的年度通知不同。"
@@ -266,6 +270,25 @@ _SCHOLARSHIP_DIMENSION = re.compile(
 
 _RECOMMENDATION_REVIEW = re.compile(r"复试|面试|机试|材料|招生|名额|招多少|录取|直博|专业")
 _RECOMMENDATION_QUALIFICATION = re.compile(r"资格|排名|遴选|推荐办法|加分|加多少分|要求|条件|经历|名额分配")
+_VOLUNTEER = re.compile(r"志愿服务|志愿时长|志愿活动")
+_VOLUNTEER_SCORE = re.compile(r"原始分|计分|加分|算分|得分|评分|(?:[多少几]|[0-9])分|分数|怎么算|怎么给分")
+_VOLUNTEER_WEIGHT = re.compile(r"权重|占比|占(?:多少|几)|百分比|百分之零点三|0\.3\s*%|折算|总成绩|总评")
+_VOLUNTEER_OTHER_ISSUE = re.compile(
+    r"复试|报名|申请流程|怎么申请|申报|材料|证明|奖学金|创新学分|学分认定|是否符合|能否推免|能不能推免"
+)
+_VOLUNTEER_HOURS = re.compile(r"(?<![0-9A-Za-z.+\-−])(?<!\d,)([+\-−]?\d+(?:\.\d+)?)\s*(?:个\s*)?(?:小时|钟头)")
+_VOLUNTEER_HOURS_REPLY = re.compile(
+    rf"(?:那(?:么)?\s*)?{_VOLUNTEER_HOURS.pattern}(?:\s*(?:呢|(?:是|能加|可以加|算)?(?:多少|几)分))?[？?。！!]*"
+)
+_VOLUNTEER_COHORT_REPLY = re.compile(r"(?:20\d{2}年|20\d{2}届)(?:呢|[？?。！!])*\s*")
+_VOLUNTEER_SCORE_RECORD = "计算机学院-2027-推免资格推荐"
+_VOLUNTEER_SCORE_SOURCE = "https://ccds.fzu.edu.cn/info/1119/11932.htm"
+_VOLUNTEER_SCORE_ROW = re.compile(
+    r"志愿服务[^。；]*?0[-—–至]30小时[）)]?加原始分2分[；;，,]"
+    r"30[-—–至]60小时[）)]?加原始分4分[；;，,]"
+    r"60[-—–至]100小时及以上加原始分6分"
+)
+_VOLUNTEER_WEIGHT_TERM = re.compile(r"志愿服务成绩[×xX*]\s*0\.3%")
 _PLAN_QUESTION = re.compile(r"招多少|招生计划|招几人|多少人|名额")
 _REVIEW_DETAIL = re.compile(
     r"招多少|招生计划|招几人|多少人|名额|分组|材料投递|投递|调剂|录取|复试名单"
@@ -382,7 +405,14 @@ def alpha_clarification_rule(
 
     `today` 与证据判断共用同一个时间源，固定日期测试时追问口径不会漂移。
     """
+    request = contextual_volunteer_request(request) or request
     text = _user_text(request)
+    if selection := volunteer_scoring_request(request):
+        if selection.invalid_hours:
+            return QUESTION_VOLUNTEER_HOURS
+        if not _years(text) and not _has_time_intent(text):
+            return QUESTION_VOLUNTEER_COHORT
+        return None
     scenario, _ = _analyse(text, request.query)
     if scenario is None:
         return QUESTION_TOPIC
@@ -406,6 +436,90 @@ def alpha_evidence_check(request: AgentRequest, chunk: RetrievedChunk) -> bool:
 def _user_text(request: AgentRequest) -> str:
     previous = [turn.content for turn in request.history if turn.role == LLMRole.USER]
     return "\n".join([*previous, request.query]).strip()
+
+
+@dataclass(frozen=True)
+class VolunteerScoringRequest:
+    raw_score: bool
+    weight: bool
+    hours: tuple[Decimal, ...]
+    invalid_hours: bool
+
+
+def volunteer_scoring_request(request: AgentRequest) -> VolunteerScoringRequest | None:
+    query = normalize("NFKC", request.query)
+    if not _VOLUNTEER.search(query) or _VOLUNTEER_OTHER_ISSUE.search(query):
+        return None
+    weight = bool(_VOLUNTEER_WEIGHT.search(query))
+    hour_units = re.findall(r"小时|钟头", query)
+    raw_score = bool(hour_units or (not weight and _VOLUNTEER_SCORE.search(query))
+                     or (weight and re.search(r"原始分", query)))
+    if not (raw_score or weight):
+        return None
+    hours = tuple(Decimal(value.replace("−", "-")) for value in _VOLUNTEER_HOURS.findall(query))
+    invalid = (len(hours) != len(hour_units) or any(value < 0 for value in hours)
+               or bool(hour_units and re.search(r"分钟|小于|超过|[—~～至]|(?:小时|钟头)半", query)))
+    return VolunteerScoringRequest(raw_score, weight, hours, invalid)
+
+
+def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
+    """Resolve short hour/cohort replies using only the latest matching user topic."""
+    query = normalize("NFKC", request.query.strip())
+    current = volunteer_scoring_request(request)
+    hours_reply = _VOLUNTEER_HOURS_REPLY.fullmatch(query)
+    cohort_reply = _VOLUNTEER_COHORT_REPLY.fullmatch(query)
+    if not (current or hours_reply or cohort_reply):
+        return None
+    previous = None
+    retained_cohort = None
+    for turn in reversed(request.history):
+        if turn.role != LLMRole.USER:
+            continue
+        content = normalize("NFKC", turn.content.strip())
+        if _VOLUNTEER_HOURS_REPLY.fullmatch(content):
+            continue
+        if _VOLUNTEER_COHORT_REPLY.fullmatch(content):
+            if retained_cohort is None:
+                retained_cohort = turn
+            continue
+        if volunteer_scoring_request(request.model_copy(update={"query": turn.content})):
+            previous = turn
+        break
+    history = [previous] if previous is not None else []
+    if hours_reply and previous:
+        prefix = _YEAR.search(normalize("NFKC", retained_cohort.content))[0] + " " if retained_cohort else ""
+        return request.model_copy(update={"query": f"{prefix}推免志愿服务原始分：{query}", "history": [] if prefix else history})
+    if cohort_reply and previous:
+        subject = _YEAR.sub("", normalize("NFKC", previous.content))
+        return request.model_copy(update={"query": f"{query} {subject}", "history": []})
+    if current:
+        if previous and retained_cohort and not _has_time_intent(query):
+            query = f"{_YEAR.search(normalize('NFKC', retained_cohort.content))[0]} {query}"
+        return request.model_copy(update={"query": query, "history": [] if _has_time_intent(query) else history})
+    return None
+
+
+def volunteer_service_raw_score(hours: Decimal) -> int:
+    """Project interpretation for the 2027 recommendation plan, in hours."""
+    if not hours.is_finite() or hours < 0:
+        raise ValueError("Volunteer service hours must be finite and nonnegative")
+    if hours < 30:
+        return 2
+    if hours < 60:
+        return 4
+    return 6
+
+
+def volunteer_scoring_evidence(
+    record_code: str | None, chunk: RetrievedChunk, selection: VolunteerScoringRequest,
+) -> tuple[bool, bool]:
+    if record_code != _VOLUNTEER_SCORE_RECORD or chunk.source_url != _VOLUNTEER_SCORE_SOURCE:
+        return False, False
+    compact = re.sub(r"\s+", "", chunk.content)
+    return (
+        selection.raw_score and bool(_VOLUNTEER_SCORE_ROW.search(compact)),
+        selection.weight and bool(_VOLUNTEER_WEIGHT_TERM.search(compact)),
+    )
 
 
 def _has_time_intent(text: str) -> bool:
@@ -918,6 +1032,8 @@ def _assess(
     today: date,
 ) -> bool:
     try:
+        request = contextual_volunteer_request(request) or request
+        volunteer = volunteer_scoring_request(request)
         text = _user_text(request)
         facts = _document_facts(chunk, lookup)
         if not _basic_gates(chunk, today):
@@ -931,7 +1047,7 @@ def _assess(
             return False
         if _EXTERNAL_SCHOOL.search(text):
             return False
-        scenario, purpose = _analyse(text, request.query)
+        scenario, purpose = (RECOMMENDATION, None) if volunteer else _analyse(text, request.query)
         # 未识别场景不能绕过元数据与适用范围检查直接放行。
         if scenario is None:
             return False
@@ -962,6 +1078,9 @@ def _assess(
             return _check_competition(text, purpose, kind, request.query)
         if scenario == SCHOLARSHIP:
             return _check_scholarship(text, kind, today, request.query)
+        if volunteer:
+            return (not volunteer.invalid_hours and kind == _KIND_RECOMMENDATION_QUALIFICATION
+                    and any(volunteer_scoring_evidence(facts.record_code, chunk, volunteer)))
         return _check_recommendation(text, kind, request.query)
     except Exception:
         # 规则无法判断时按“无法确认适用性”处理，不能放行。

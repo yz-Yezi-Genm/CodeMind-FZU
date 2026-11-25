@@ -1565,6 +1565,125 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         }
         self.package.chunks[0].content = "【合成测试，非政策】2027届推免推荐资格按本通知核对材料与排名。"
 
+    def volunteer_scoring_package(self):
+        self.recommendation_package()
+        self.package.metadata.title = "合成测试：2027届本科推免资格推荐方案"
+        self.package.metadata.record_code = "计算机学院-2027-推免资格推荐"
+        self.package.metadata.source_url = "https://ccds.fzu.edu.cn/info/1119/11932.htm"
+        self.package.metadata.deadline_on = date(2026, 9, 9)
+        self.package.metadata.timeliness_verification_status = TimelinessVerificationStatus.EXPIRED
+        self.package.chunks[0].content = ("合成测试：参加志愿服务按时长加原始分，0-30小时加原始分2分；"
+                                          "30-60小时）加原始分4分，60-100小时及以上加原始分6分，不重复累加。")
+        for content in (
+            "合成测试：2027届推免综合测评总成绩含参加志愿服务成绩×0.3%。",
+            "合成测试：2027届推免推荐资格须提交资格申请表。",
+        ):
+            self.package.chunks.append(self.package.chunks[0].model_copy(update={
+                "chunk_no": len(self.package.chunks) + 1, "content": content,
+            }))
+
+    async def test_beta_volunteer_scoring_boundaries_and_weight_use_distinct_citations(self):
+        self.volunteer_scoring_package()
+        workflow = await self.workflow()
+        raw, weight, _ = [chunk.content for chunk in self.package.chunks]
+        for hours, score in ((0, 2), (1, 2), (29, 2), (30, 4), (31, 4), (59, 4),
+                             (60, 6), (61, 6), (100, 6), (200, 6)):
+            with self.subTest(hours=hours):
+                result = await workflow.run(self.request(f"2027届推免志愿服务{hours}小时算多少分？"))
+                self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
+                self.assertIn(f"{hours} 小时的原始分为 {score} 分", result.answer)
+                self.assertIn("组长确认的项目解释口径", result.answer)
+                self.assertNotIn("0.3%", result.answer)
+                self.assertEqual([citation.excerpt for citation in result.citations], [raw])
+        result = await workflow.run(self.request("2027届推免志愿服务在综合测评总成绩占比多少？"))
+        self.assertIn("换算为百分制后的志愿服务成绩", result.answer)
+        self.assertIn("0.3%", result.answer)
+        self.assertEqual([citation.excerpt for citation in result.citations], [weight])
+        result = await workflow.run(self.request("2027届推免志愿服务60小时的原始分和总评权重分别是多少？"))
+        self.assertIn("60 小时的原始分为 6 分", result.answer)
+        self.assertIn("0.3%", result.answer)
+        self.assertEqual([citation.excerpt for citation in result.citations], [raw, weight])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_volunteer_scoring_followups_over_http_keep_cohort_and_latest_hours(self):
+        self.volunteer_scoring_package()
+        workflow = await self.workflow()
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            first = (await client.post("/api/v1/ask", json={"query": "推免志愿服务怎么计分？"})).json()
+            self.assertEqual(first["clarifying_question"], alpha_business_rules.QUESTION_VOLUNTEER_COHORT)
+            session = first["conversation_id"]
+            for query, expected in (("2027届", "0 ≤ h < 30 计 2 分"),
+                                    ("那30小时呢", "30 小时的原始分为 4 分"),
+                                    ("那60小时呢", "60 小时的原始分为 6 分")):
+                with self.subTest(query=query):
+                    response = await client.post("/api/v1/ask", json={"query": query, "conversation_id": session})
+                    self.assertEqual(response.status_code, 200)
+                    result = response.json()
+                    self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
+                    self.assertIn(expected, result["answer"])
+                    self.assertEqual([citation["excerpt"] for citation in result["citations"]],
+                                     [self.package.chunks[0].content])
+            isolated = (await client.post("/api/v1/ask", json={"query": "那30小时呢"})).json()
+            self.assertEqual(isolated["status"], "needs_clarification")
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_volunteer_scoring_requires_source_and_requested_terms(self):
+        self.volunteer_scoring_package()
+        self.package.chunks = self.package.chunks[:1]
+        approved = await self.workflow()
+        raw_query = "2027届推免志愿服务29小时的原始分是多少？"
+        result = await approved.run(self.request(raw_query))
+        self.assertEqual(result.status, "answered")
+        result = await approved.run(self.request("2027届推免志愿服务29小时的原始分和总评权重分别是多少？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.package.metadata.source_url = "https://ccds.fzu.edu.cn/test/unrelated.htm"
+        unrelated = await self.workflow()
+        result = await unrelated.run(self.request(raw_query))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_volunteer_scoring_respects_evidence_and_non_scoring_questions(self):
+        self.volunteer_scoring_package()
+        approved = await self.workflow()
+        for question in ("2028届推免志愿服务30小时算多少分？", "最新推免志愿服务30小时算多少分？"):
+            result = await approved.run(self.request(question))
+            self.assertEqual(result.status, "insufficient_evidence")
+            self.assertEqual(result.citations, [])
+        switched = await approved.run(self.request("那30小时呢", ["2027届推免志愿服务计分？", "奖学金有哪些？"]))
+        self.assertEqual(switched.status, "needs_clarification")
+        self.assertEqual(self.observed, [])
+
+        # Unrelated requests still use the standard constrained generation path.
+        for question in ("2027届推免推荐资格申请流程是什么？", "2027届推免推荐资格要提交什么材料？"):
+            before = len(self.observed)
+            result = await approved.run(self.request(question, ["2027届志愿服务30小时加几分？"]))
+            self.assertEqual(result.status, "answered")
+            self.assertEqual(len(self.observed), before + 1)
+            self.assertNotIn("项目解释口径", result.answer)
+
+        source = (ROOT / "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/recommendation.json")
+        candidate = DocumentPackage.model_validate_json(source.read_bytes())
+        self.assertEqual(candidate.metadata.retrieval_status, "blocked")
+        self.assertIs(candidate.metadata.temporal_notes["human_approved"], False)
+        # Fixture files stay in the temporary test corpus.
+        from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
+        pending_dir = self.root / "blocked-fixture"
+        pending_dir.mkdir()
+        (pending_dir / source.name).write_bytes(source.read_bytes())
+        retriever, report = await load_approved_alpha_retriever(corpus_dir=pending_dir, file_root=self.root)
+        self.assertEqual(report.loaded_packages, ())
+        blocked = await create_alpha_workflow(file_root=self.root, retriever=retriever, llm_client=self.llm,
+                                              today=lambda: date(2026, 11, 20))
+        calls = len(self.observed)
+        result = await blocked.run(self.request("2027届推免志愿服务30小时算多少分？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), calls)
+
     async def test_formal_eligibility_overrides_preparation_wording_before_qwen(self):
         self.recommendation_package()
         workflow = await self.workflow()
