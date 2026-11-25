@@ -61,7 +61,7 @@ export type AskResponse = AskResponseBase & (
   | {
     status: 'answered';
     answer: string;
-    answer_mode: Exclude<AnswerMode, 'insufficient_data'>;
+    answer_mode: AnswerMode;
     clarifying_question: string | null;
   }
   | {

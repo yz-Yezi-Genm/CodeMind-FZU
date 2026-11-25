@@ -96,7 +96,7 @@ function renderResult(query: string, response: StudentAskResponse): void {
     .map(({ message }) => `<li>${escapeHtml(message)}</li>`)
     .join('');
   const citations = response.citations.map(renderCitation).join('');
-  const isMockAnswer = response.status === 'answered' && response.answer_mode === null;
+  const isMockAnswer = response.status === 'answered' && response.warnings.some(item => item.code === 'MOCK_AGENT');
   const testFixtureNotice = hasTestFixtureCitation(response.citations)
     ? '<p class="student-test-fixture-notice">当前回答引用的是联调测试资料，不代表学校正式政策结论。</p>'
     : '';
@@ -107,7 +107,7 @@ function renderResult(query: string, response: StudentAskResponse): void {
     <p class="student-question"><span class="student-sr-only">你：</span>${escapeHtml(query)}</p>
     <div class="student-answer">
       <h2>${isMockAnswer ? '模拟回答' : labels[response.status]}</h2>
-      ${renderAnswerMode(response.answer_mode)}
+      ${isMockAnswer ? '' : renderAnswerMode(response.answer_mode)}
       ${content?.trim() ? `<p>${escapeHtml(content)}</p>` : ''}
       ${warnings ? `<ul class="student-warnings">${warnings}</ul>` : ''}
       ${testFixtureNotice}

@@ -84,14 +84,21 @@ test('兼容 Alpha Mock 的空回答模式，同时拒绝缺少标记或混入�
   await assert.rejects(ask({ query }), { code: 'INVALID_RESPONSE' });
 });
 
-test('没有来源链接时保留引用正文和定位', async t => {
+test('拒绝缺失、null、空字符串或纯空白的引用来源', async t => {
   const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json(answer));
-  for (const link of [undefined, null, '']) {
+  for (const link of [undefined, null, '', '  ']) {
     fetch.mock.mockImplementation(async () => Response.json({
       ...answer, citations: [{ ...citation, source_url: link }],
     }));
-    const response = await ask({ query });
-    assert.deepEqual(response.citations, [{ ...citation, source_url: '' }]);
+    await assert.rejects(ask({ query }), { code: 'INVALID_RESPONSE' });
+  }
+});
+
+test('已回答可以使用公共契约中的四种回答模式', async t => {
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json(answer));
+  for (const mode of ['current_policy', 'historical', 'procedure_reference', 'insufficient_data']) {
+    fetch.mock.mockImplementation(async () => Response.json({ ...answer, answer_mode: mode }));
+    assert.equal((await ask({ query })).answer_mode, mode);
   }
 });
 
@@ -104,7 +111,7 @@ test('拒绝无效会话、错误的状态组合和畸形引用', async t => {
     { conversation_id: 'invalid' },
     { status: 'other' },
     { answer_mode: null },
-    { answer_mode: 'insufficient_data' },
+    { answer_mode: 'unknown_mode' },
     { status: 'needs_clarification', answer: null, answer_mode: null, clarifying_question: '追问' },
     { status: 'insufficient_evidence', answer_mode: 'insufficient_data', citations: [], answer: null },
     { citations: [{ ...citation, locator: [] }] },

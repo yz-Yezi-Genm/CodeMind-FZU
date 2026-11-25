@@ -28,7 +28,7 @@ async (page) => {
     answer: '请查阅所附资料了解历史年度的办理要求。',
     answer_mode: 'historical',
     clarifying_question: null,
-    citations: [citation, { ...citation, title: '只有原文的资料', source_url: null }],
+    citations: [citation, { ...citation, title: '仅用于联调的资料', source_url: 'https://example.invalid/policy' }],
     warnings: [{ code: 'HISTORICAL_REFERENCE', message: '当前资料仅用于历史年度参考。' }],
     created_at: timestamp,
   };
@@ -121,7 +121,7 @@ async (page) => {
   await linkedCitation.getByText(excerpt, { exact: true }).waitFor();
   const sourceLink = sources.getByRole('link', { name: '查看原始来源' });
   check(await sourceLink.getAttribute('href') === citation.source_url, '来源链接不等于接口返回值');
-  await sources.getByText('只有原文的资料', { exact: true }).click();
+  await sources.getByText('仅用于联调的资料', { exact: true }).click();
   check(await sourceLink.count() === 1 && !(await sources.textContent()).includes(citation.chunk_id), '生成了多余链接或暴露内部标识');
 
   respond = route => route.fulfill({ json: insufficient });
@@ -155,20 +155,30 @@ async (page) => {
   }
   respond = route => route.fulfill({ json: { ...answer, conversation_id: 'bad' } });
   check((await expectFailure()).includes('会话编号'), '无效会话响应没有明确提示');
+  respond = route => route.fulfill({ json: { ...answer, citations: [{ ...citation, source_url: null }] } });
+  check((await expectFailure()).includes('无效或空数据'), '缺少来源的引用未触发格式错误');
   respond = route => route.abort('internetdisconnected');
   check((await expectFailure()).includes('无法连接后端'), '断网提示不正确');
 
-  respond = route => route.fulfill({ json: answer });
+  respond = route => route.fulfill({ json: { ...answer, answer_mode: 'insufficient_data' } });
   await send.click();
-  await page.locator('.student-turn').nth(3).waitFor();
+  const recovered = page.locator('.student-turn').nth(3);
+  await recovered.getByRole('heading', { name: '已回答', exact: true }).waitFor();
+  await recovered.getByText('回答依据：证据不足', { exact: true }).waitFor();
   check(requests.at(-1).conversation_id === conversationId, '错误恢复丢失当前会话');
 
   await newChat.click();
   check(await page.locator('.student-turn').count() === 0, '新建对话没有清空记录');
+  respond = route => route.fulfill({ json: {
+    ...answer, answer_mode: 'current_policy', citations: [],
+    warnings: [{ code: 'MOCK_AGENT', message: '当前使用模拟 Agent。' }],
+  } });
   await input.fill('新问题');
   await send.click();
-  await page.locator('.student-turn').first().waitFor();
+  await page.getByRole('heading', { name: '模拟回答', exact: true }).waitFor();
+  check(await page.locator('.student-answer-mode').count() === 0, '模拟回答显示了正式政策依据');
   check(requests.at(-1).conversation_id === null, '新建对话沿用了旧 ID');
+  respond = route => route.fulfill({ json: answer });
   const workspaceModule = /\/src\/student\/main\.ts(?:\?.*)?$/;
   let loadWorkspace;
   const workspaceDelay = new Promise(resolve => { loadWorkspace = resolve; });

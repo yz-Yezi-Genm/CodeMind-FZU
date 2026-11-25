@@ -91,16 +91,15 @@ export async function fetchHealth(): Promise<HealthResponse> {
 
 function parseCitation(value: unknown): Citation | null {
   if (!isRecord(value) || !isUuid(value.document_id) || !isUuid(value.version_id) || !isUuid(value.chunk_id)
-    || !isText(value.title) || !isText(value.excerpt)
+    || !isText(value.title) || !isText(value.excerpt) || !isText(value.source_url)
     || !['pending', 'partial', 'verified', 'failed'].some(status => status === value.source_verification_status)
     || !['pending', 'current', 'historical', 'superseded', 'expired', 'uncertain'].some(status => status === value.timeliness_verification_status)
     || !['blocked', 'review_only', 'enabled'].some(status => status === value.retrieval_status)) {
     return null;
   }
-  const textFields = ['publisher', 'published_on', 'effective_on', 'locator', 'original_locator', 'source_url'];
+  const textFields = ['publisher', 'published_on', 'effective_on', 'locator', 'original_locator'];
   if (textFields.some(key => value[key] != null && typeof value[key] !== 'string')) return null;
-  // A missing link can be shown as citation text without generating a destination.
-  return { ...value, source_url: value.source_url ?? '' } as unknown as Citation;
+  return value as unknown as Citation;
 }
 
 function parseAskResponse(response: Record<string, unknown>): StudentAskResponse {
@@ -121,7 +120,8 @@ function parseAskResponse(response: Record<string, unknown>): StudentAskResponse
     && citations.length === 0 && response.warnings.some(item => item.code === 'MOCK_AGENT');
   const validStatus = (
     (response.status === 'answered' && isText(response.answer)
-      && (isAlphaMock || ['current_policy', 'historical', 'procedure_reference'].some(mode => mode === response.answer_mode)))
+      && (isAlphaMock || ['current_policy', 'historical', 'procedure_reference', 'insufficient_data']
+        .some(mode => mode === response.answer_mode)))
     || (response.status === 'needs_clarification' && response.answer === null && response.answer_mode === null
       && isText(response.clarifying_question) && citations.length === 0)
     || (response.status === 'insufficient_evidence' && response.answer_mode === 'insufficient_data'
