@@ -23,6 +23,7 @@
 - 同步 main `179e618`，包含 #46 AgentWorkflow 和 #49 运行稳定性；
 - 通过本机 uvicorn TCP HTTP 调用最终 `/api/v1/ask`；
 - 真实 `qwen-flash` 返回 `answer + used_evidence_ids` 受约束 JSON；
+- 单证据探针要求 `used_evidence_ids` 精确等于 `["E1"]`；
 - Agent 校验本次动态 evidence ID，并用真实检索片段构造 Citation；
 - 合成资料正向请求返回 200、answered、非空引用；
 - 缺少金额证据时返回 200、insufficient_evidence、空引用；

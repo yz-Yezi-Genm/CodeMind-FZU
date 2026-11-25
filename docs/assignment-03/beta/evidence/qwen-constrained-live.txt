@@ -1,20 +1,7 @@
-Real Qwen constrained JSON transport
-Date: 2026-11-23 (Asia/Shanghai)
-Command:
-  python -X utf8 -m scripts.check_beta_qwen_generation
-Environment:
-  Local backend/.env loaded by the caller; API key not printed.
-Model: qwen-flash
-Success: true
-Usage: prompt_tokens=122, completion_tokens=21, total_tokens=143
-Latency: 3988 ms
-Raw content:
-  {"answer":"奖学金申请需要提交申请表和成绩单。","used_evidence_ids":["E1"]}
-Parsed verification:
-  answer=奖学金申请需要提交申请表和成绩单。
-  used_evidence_ids=["E1"]
+Real Qwen single-evidence constrained JSON probe
+Date: 2026-11-25 (Asia/Shanghai)
+Scope: direct Qwen adapter probe only; not the final HTTP E2E acceptance.
+Assertion: used_evidence_ids must be exactly ["E1"]; an empty list is rejected.
 
-Interpretation:
-  The Qwen adapter successfully transported a V2.1 constrained JSON response
-  without parsing it or creating citations. Agent-side validation and citation
-  construction remain part of the Beta AgentWorkflow.
+Script output:
+{"success": true, "model": "qwen-flash", "usage": {"completion_tokens": 21, "prompt_tokens": 122, "total_tokens": 143}, "latency_ms": 4740, "raw_content": "{\"answer\":\"奖学金申请需要提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1\"]}", "parsed": {"answer": "奖学金申请需要提交申请表和成绩单。", "used_evidence_ids": ["E1"]}}

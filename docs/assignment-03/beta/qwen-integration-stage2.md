@@ -85,6 +85,8 @@ POST /api/v1/ask
 早期
 [qwen-constrained-live.txt](evidence/qwen-constrained-live.txt)
 是真实模型的独立适配器探针，不等同于本次最终 `/api/v1/ask` 全链路验收。
+该探针只有一条证据，因此要求 `used_evidence_ids` 精确等于 `["E1"]`；
+空列表或其他 ID 组合都会被判定失败。
 
 ## 5. 全量回归
 

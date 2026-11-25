@@ -61,9 +61,7 @@ async def main() -> None:
         or set(payload) != {"answer", "used_evidence_ids"}
         or not isinstance(payload["answer"], str)
         or not payload["answer"].strip()
-        or not isinstance(payload["used_evidence_ids"], list)
-        or any(not isinstance(item, str) for item in payload["used_evidence_ids"])
-        or any(item != "E1" for item in payload["used_evidence_ids"])
+        or payload["used_evidence_ids"] != ["E1"]
     ):
         raise ValueError("Qwen did not satisfy the constrained response contract")
     print(
