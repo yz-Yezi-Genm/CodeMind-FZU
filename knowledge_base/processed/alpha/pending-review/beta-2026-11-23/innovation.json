@@ -25,14 +25,14 @@
       "适用对象": "本科生",
       "过渡说明": "第27条：2016办法待2020级毕业后自动废止，2022办法废止；具体年级和培养方案待人工确认"
     },
-    "policy_status": "官方正文已核对；现行性/适用性待最终审核",
+    "policy_status": "current（校级通用办法；组长于2026-11-24限定范围人工审核通过，具体项目按目录和适用范围判断）",
     "source_verification_status": "verified",
-    "timeliness_verification_status": "uncertain",
+    "timeliness_verification_status": "current",
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "blocked",
     "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
-    "verification_note": "校教〔2024〕7号，正文第27条明确2024-09-01执行，2022〔1〕号废止，2016〔66〕号有2020级毕业后的过渡安排。正文第1—28条及表格按HTML合并标记保留；项目原始分、创新学分与综合素质测评分值不得混用。需结合入学年级、培养方案和认定目录；现行性待人工核实。",
+    "verification_note": "校教〔2024〕7号，正文第27条明确2024-09-01执行，2022〔1〕号废止，2016〔66〕号有2020级毕业后的过渡安排。正文第1—28条及表格按HTML合并标记保留；项目原始分、创新学分与综合素质测评分值不得混用。需结合入学年级、培养方案和认定目录；人工审核已完成；按scope_limitations限定适用。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
     "import_snapshot": {
       "记录编号": "福大-2024-创新创业学分认定",
       "标题": "福州大学本科生创新创业实践与素质拓展学分认定管理实施办法",
@@ -73,14 +73,14 @@
       "附件哈希": "{}"
     },
     "temporal_notes": {
-      "checked_on": "2026-11-23",
-      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-      "human_approved": false,
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "human_approved": true,
       "baseline_version": "import-1",
       "beta_domains": [
         "S1"
       ],
-      "scope_limitations": "校教〔2024〕7号，正文第27条明确2024-09-01执行，2022〔1〕号废止，2016〔66〕号有2020级毕业后的过渡安排。正文第1—28条及表格按HTML合并标记保留；项目原始分、创新学分与综合素质测评分值不得混用。需结合入学年级、培养方案和认定目录；现行性待人工核实。",
+      "scope_limitations": "仅限校级通用认定条件、原始分表、累计及重复获奖规则、团队前八名、2学分成绩记载和原则性办理流程。具体竞赛须另核适用目录与获奖时间；按入学年级、专业及培养方案判断适用。原始分、创新学分与综合素质测评分值不得互换；不得承诺认定成功或当前申报开放；不得擅自解释第22条专业技术证书“学分”与第11条的换算关系。缺少学院当期通知、专业适用依据或目录时，应追问或拒答。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json"
     }
   },

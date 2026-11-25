@@ -21,17 +21,17 @@
     "applicability_raw": {
       "学院": "福州大学计算机与大数据学院",
       "对象": "正式学籍、在读全日制本科生和研究生，各专项另有限制",
-      "年度歧义": "网页发布2026-04-13；首段2025年度；待学院确认，不自行纠正",
+      "年度歧义": "评选周期：2026年（经2026-04-30学院官方评审公示确认）；各专项业绩参考期间：按原文分别保留2025年度、2024-2025学年、上学年等口径，不自行归一。",
       "学业类": "原文10名本科生"
     },
-    "policy_status": "发布2026年/评奖2025年等区间存在歧义；不得推定现行",
+    "policy_status": "2026年评选周期已由后续官方评审公示确认；各专项业绩参考期间按原文分别保留。本资料仅作为2026评选周期历史资料（expired），不得推定现行或下一年度规则。",
     "source_verification_status": "verified",
-    "timeliness_verification_status": "uncertain",
+    "timeliness_verification_status": "expired",
     "extraction_status": "extracted",
     "v1_inclusion_status": "included",
     "retrieval_status": "blocked",
-    "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
-    "verification_note": "发布2026-04-13但正文及四份表头写2025年度；统计区间含2025.03—2026.02和2024—2025学年，不擅自改成2026评奖。奖项别称和适用本科/研究生条件需分别确认。ZIP沿用Alpha隐私检查且哈希固定；仍待学院确认及最终审核。",
+    "inclusion_reason": "组长已于2026-11-25人工审核通过限定范围历史资料；为保持分批审核与统一放行节奏，retrieval_status继续为blocked，暂不开放正式检索。",
+    "verification_note": "组长于2026-11-25人工审核通过限定范围历史资料：确认2026评选周期；各专项原文中的2025年度、2024-2025学年、上学年等业绩参考期间分别保留，不自行归一；采用类别设置表及后续2026官方公示中的奖项全称，引用具体条件时保留原文简称。仅可作为2026评选周期历史资料，不用于当前申请、下一年度规则或个人获奖资格承诺。官方交叉证据：2026-04-20星火奖教奖学金通知、2026-04-30学院评审公示。人工审核通过不代表正式检索放行。",
     "import_snapshot": {
       "记录编号": "计算机学院-2026-院级奖学金",
       "标题": "关于做好福州大学计算机与大数据学院各类院级奖学金评选工作的通知",
@@ -72,14 +72,14 @@
       "附件哈希": "{}"
     },
     "temporal_notes": {
-      "checked_on": "2026-11-23",
-      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
-      "human_approved": false,
+      "checked_on": "2026-11-25",
+      "check_method": "official cross-check against 2026-04-20 award notice and 2026-04-30 college result announcement; group-lead human signoff for historical scope",
+      "human_approved": true,
       "baseline_version": "import-1",
       "beta_domains": [
         "S2"
       ],
-      "scope_limitations": "发布2026-04-13但正文及四份表头写2025年度；统计区间含2025.03—2026.02和2024—2025学年，不擅自改成2026评奖。奖项别称和适用本科/研究生条件需分别确认。ZIP沿用Alpha隐私检查且哈希固定；仍待学院确认及最终审核。",
+      "scope_limitations": "组长于2026-11-25人工审核通过限定范围历史资料：仅限2026评选周期；各专项2025年度、2024-2025学年、上学年等业绩参考期间按原文分别保留；奖项全称按类别设置表及后续官方公示，具体条件引用保留原文简称。仅作历史查询，不用于当前申请、下一年度规则或个人获奖资格承诺。retrieval_status继续blocked，暂不开放正式检索。",
       "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json"
     }
   },

@@ -24,6 +24,10 @@ from backend.services.agent_generation import Evidence, generation_request, requ
 from backend.services.agent_policy_context import (
     PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
+from backend.services.alpha_business_rules import (
+    VolunteerScoreKind, VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
+    format_volunteer_hours, volunteer_scoring_request, volunteer_service_raw_score,
+)
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 from backend.services.resource_team_names import r3_team_names
 
@@ -105,7 +109,7 @@ class AgentWorkflow:
         self.today = today
 
     async def run(self, request: AgentRequest) -> AgentResult:
-        request = contextual_request(request)
+        request = contextual_volunteer_request(request) or contextual_request(request)
         remaining_query = separate_live_lab_quota(request)
         if remaining_query is None:
             return await self._run(request)
@@ -145,8 +149,9 @@ class AgentWorkflow:
                 clarifying_question=question.strip(),
             )
 
+        volunteer = volunteer_scoring_request(request)
         context = _user_context(request)
-        if self.evidence_check is None and (scope.historical or scope.asks_deadline or scope.needs_window
+        if self.evidence_check is None and (volunteer or scope.historical or scope.asks_deadline or scope.needs_window
                                             or _PERSONAL.search(context) or re.search(r"冲突|矛盾", context)):
             return _insufficient("APPLICABILITY_NOT_VERIFIED", "本次无法核验资料的适用范围、历史版本或办理期限。")
 
@@ -222,6 +227,8 @@ class AgentWorkflow:
             if closed_notices:
                 return self._answer_closed_recruitment(request, scope, closed_notices)
             return _insufficient("NO_ELIGIBLE_EVIDENCE", "未找到通过审核且符合本次问题适用范围和时间的资料，无法给出确定结论。")
+        if volunteer:
+            return self._answer_volunteer_scoring(request, volunteer, evidence)
         facts = requested_facts(scope.fact_question)
         if facts and not any(fact.search(item.chunk.content) for fact in facts for item in evidence):
             return _insufficient("REQUESTED_FACT_NOT_FOUND", "通过审核的资料未载明所询问的金额或截止时间，暂无法确认。")
@@ -283,6 +290,52 @@ class AgentWorkflow:
             answer_mode=mode,
             citations=citations,
             warnings=warnings,
+        )
+
+    def _answer_volunteer_scoring(
+        self, request: AgentRequest, scoring: VolunteerScoringRequest, evidence: list[Evidence],
+    ) -> AgentResult:
+        by_kind = {}
+        for item in evidence:
+            for kind in volunteer_scoring_evidence(item.metadata.record_code, item.chunk, scoring):
+                by_kind.setdefault(kind, item)
+        if not scoring.kinds or scoring.invalid_hours or not scoring.kinds <= by_kind.keys():
+            return _insufficient("VOLUNTEER_SCORING_NOT_VERIFIED", "缺少支持本次志愿服务计分问题的已审核资料。")
+        selected = []
+        for kind in VolunteerScoreKind:
+            item = by_kind.get(kind)
+            if item is not None and item not in selected:
+                selected.append(item)
+        if not self._evidence_unchanged(request, selected):
+            return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
+
+        answer = ["以下适用于 2027 届推免推荐资格方案。"]
+        warnings = []
+        if selected[0].mode == AnswerMode.HISTORICAL:
+            answer.append("本届方案为历史资料，当期办理已结束。")
+            warnings.append(WarningItem(code="HISTORICAL_POLICY", message="仅供 2027 届历史口径参考。"))
+        if VolunteerScoreKind.RAW in by_kind:
+            if scoring.raw_max:
+                scores = f"原始分最高档为 {volunteer_service_raw_score(60)} 分（60 小时及以上）"
+            elif scoring.hours:
+                scores = "；".join(
+                    f"{format_volunteer_hours(hours)} 小时的原始分为 {volunteer_service_raw_score(hours)} 分"
+                    for hours in scoring.hours
+                )
+            else:
+                scores = "0 ≤ h < 30 计 2 分，30 ≤ h < 60 计 4 分，h ≥ 60 计 6 分（h 的单位为小时）"
+            answer.append(f"按组长确认的项目解释口径，志愿服务{scores}。各档不重复累加。"
+                          "区间端点是项目解释，官方原文未明确采用左闭右开区间。")
+        if VolunteerScoreKind.PERCENT in by_kind:
+            answer.append("志愿服务百分制成绩 =（60 + 个人志愿服务原始分）÷"
+                          "（60 + 本专业推免入围学生的志愿服务最高原始分）× 100。"
+                          "计算具体成绩需要这两项原始分。")
+        if VolunteerScoreKind.WEIGHT in by_kind:
+            answer.append("0.3% 是换算为百分制后的志愿服务成绩计入综合测评总成绩的权重，"
+                          "不能直接用志愿服务原始分乘以 0.3% 得出总评贡献。")
+        return AgentResult(
+            status=AnswerStatus.ANSWERED, answer="\n\n".join(answer), answer_mode=selected[0].mode,
+            citations=[item.citation() for item in selected], warnings=warnings,
         )
 
     def _evidence_unchanged(self, request: AgentRequest, selected: list[Evidence]) -> bool:
