@@ -27,25 +27,44 @@ class BetaCandidateTests(unittest.TestCase):
 
     def test_manifest_header_tampering_is_rejected(self):
         cases = [("stage", "approved"), ("stage", None)]
-        cases += [(field, value) for field in ("enabled_packages", "human_approved_packages")
-                  for value in (1, -1, "0", False, None)]
+        cases += [("enabled_packages", value) for value in (1, -1, "0", False, None)]
+        cases += [("human_approved_packages", value) for value in (0, 5, 7, "6", False, None)]
+        cases += [("human_approval_registry", "elsewhere/registry.json")]
         for field, value in cases:
             with self.subTest(field=field, value=value):
                 self.assert_tampered_read_fails(build.OUTPUT / "manifest.json",
-                    lambda data: data.__setitem__(field, value), "Manifest (stage|.*integer zero)")
+                    lambda data: data.__setitem__(field, value),
+                    "Manifest (stage|enabled_packages|human_approved_packages|approval registry path)")
+
+    def test_human_approval_registry_is_complete_and_fail_closed(self):
+        registry = build.load_human_approval_registry()
+        self.assertEqual(set(registry["packages"]), set(build.RECORDS))
+        self.assertEqual(registry["human_approved_packages"], 6)
+        self.assertEqual(registry["packages"]["recommendation"]["decision"], "deferred")
+        self.assertEqual(registry["packages"]["qinghe"]["decision"], "not_migrated")
+        self.assertEqual(registry["retrieval_status"], "blocked")
+        self.assertEqual(registry["enabled_packages"], 0)
+        self.assert_tampered_read_fails(build.APPROVAL_REGISTRY,
+            lambda data: data["packages"]["competition"].__setitem__("decision", "deferred"),
+            "Approval registry decision mismatch")
 
     def test_manifest_entry_approval_tampering_is_rejected(self):
         cases = [("retrieval_status", "enabled"), ("retrieval_status", "review_only"),
-                 ("retrieval_status", None), ("human_approved", True), ("human_approved", "false"),
-                 ("human_approved", 0), ("human_approved", None)]
+                 ("retrieval_status", None), ("human_approved", False), ("human_approved", "true"),
+                 ("human_approved", 1), ("human_approved", None)]
         for field, value in cases:
             with self.subTest(field=field, value=value):
                 self.assert_tampered_read_fails(build.OUTPUT / "manifest.json",
-                    lambda data: data["packages"][0].__setitem__(field, value), "Manifest entries must remain")
+                    lambda data: data["packages"][0].__setitem__(field, value), "Manifest candidate")
+
+    def test_package_human_approval_metadata_must_match_registry(self):
+        self.assert_tampered_read_fails(build.OUTPUT / "competition.json",
+            lambda data: data["metadata"]["temporal_notes"].__setitem__("human_approved", False),
+            "Candidate human approval metadata differs from registry")
 
     def test_manifest_fields_must_match_package_metadata_and_counts(self):
         cases = [("record_code", "wrong-record"), ("source_verification_status", "pending"),
-                 ("timeliness_verification_status", "current"), ("domains", ["S4"]),
+                 ("timeliness_verification_status", "expired"), ("domains", ["S4"]),
                  ("chunk_count", 223), ("chunk_count", "224"), ("source_units", 1)]
         for field, value in cases:
             with self.subTest(field=field):
@@ -126,6 +145,8 @@ class BetaCandidateTests(unittest.TestCase):
         self.assertEqual(result["chunks"], result["original_mappings"])
         self.assertEqual(result["chunks"], 501)
         self.assertEqual(result["indexed_chunks"], 501)
+        self.assertEqual(result["human_approved_packages"], 6)
+        self.assertEqual(result["enabled_packages"], 0)
         self.assertEqual(result["blocked_metadata_lookups_returning_none"], 8)
         self.assertEqual(result["blocked_chunk_lookups_returning_none"], 501)
         for index in result["index_results"]:
@@ -376,15 +397,16 @@ class BetaCandidateTests(unittest.TestCase):
             original = next(v for v in preview["document_versions"] if v["record_code"] == row["record_code"])
             self.assertEqual(metadata["import_snapshot"], original["import_snapshot"])
 
-    def test_expired_cohorts_and_conflict_not_marked_current(self):
-        for name in ["recommendation", "retest", "xinghuo", "qinghe"]:
+    def test_expired_cohorts_and_scoped_signoffs_remain_blocked(self):
+        expected_approval = {"recommendation": False, "retest": True, "xinghuo": True, "qinghe": False}
+        for name, approved in expected_approval.items():
             m = build.read(build.OUTPUT / f"{name}.json")["metadata"]
             self.assertEqual(m["timeliness_verification_status"], "expired")
             self.assertEqual(m["retrieval_status"], "blocked")
-            self.assertFalse(m["temporal_notes"]["human_approved"])
+            self.assertIs(m["temporal_notes"]["human_approved"], approved)
         m = build.read(build.OUTPUT / "college-scholarship.json")["metadata"]
-        self.assertEqual(m["timeliness_verification_status"], "uncertain")
-        self.assertIn("歧义", m["policy_status"])
+        self.assertEqual(m["timeliness_verification_status"], "expired")
+        self.assertTrue(m["temporal_notes"]["human_approved"])
 
     def test_qinghe_cells_and_contact_fields_survive_markdown(self):
         audit = build.read(build.REVIEW / "qinghe-conversion-audit.json")
@@ -420,7 +442,7 @@ class BetaCandidateTests(unittest.TestCase):
                 value["metadata"]["retrieval_status"] = "enabled"
             return value
         with patch.object(build, "read", side_effect=altered_read):
-            with self.assertRaisesRegex(ValueError, "cannot approve/enable"):
+            with self.assertRaisesRegex(ValueError, "must remain blocked"):
                 asyncio.run(build.check())
 
     def test_mapping_tamper_is_rejected(self):
