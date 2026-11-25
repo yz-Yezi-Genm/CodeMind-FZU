@@ -33,6 +33,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from enum import Enum
 from unicodedata import normalize
 from urllib.parse import urlsplit
 from uuid import UUID
@@ -152,7 +153,8 @@ QUESTION_SCHOLARSHIP_DIMENSION = "你想了解申请条件、所需材料，还�
 QUESTION_DEPT_AWARD = "院级奖学金里你关注哪一类？学科竞赛类、学术类、学业类还是学生工作类？"
 QUESTION_RECOMMENDATION_OBJECT = "你想问的是校内推免资格怎么获得，还是学院接收推免的复试安排？"
 QUESTION_VOLUNTEER_COHORT = "请问你想查哪一届推免推荐资格方案的志愿服务计分？"
-QUESTION_VOLUNTEER_HOURS = "请提供一个非负的志愿服务时长（小时）。"
+QUESTION_VOLUNTEER_HOURS = "请提供准确的志愿服务时长（小时），例如 29.5 小时。"
+QUESTION_VOLUNTEER_SCORE_KIND = "你想查志愿服务原始分档、百分制成绩的换算公式，还是它在综合测评总成绩中的权重？"
 QUESTION_PROFESSION = "你关注的是哪个专业？"
 QUESTION_DEGREE = "你关注的是学术型、专业型，还是直博？"
 QUESTION_GRADE = "你现在是大几？不同年级参考的年度通知不同。"
@@ -271,16 +273,40 @@ _SCHOLARSHIP_DIMENSION = re.compile(
 _RECOMMENDATION_REVIEW = re.compile(r"复试|面试|机试|材料|招生|名额|招多少|录取|直博|专业")
 _RECOMMENDATION_QUALIFICATION = re.compile(r"资格|排名|遴选|推荐办法|加分|加多少分|要求|条件|经历|名额分配")
 _VOLUNTEER = re.compile(r"志愿服务|志愿时长|志愿活动")
-_VOLUNTEER_SCORE = re.compile(r"原始分|计分|加分|算分|得分|评分|(?:[多少几]|[0-9])分|分数|怎么算|怎么给分")
-_VOLUNTEER_WEIGHT = re.compile(r"权重|占比|占(?:多少|几)|百分比|百分之零点三|0\.3\s*%|折算|总成绩|总评")
+_VOLUNTEER_SCORE = re.compile(r"成绩|原始分|计分|加分|算分|得分|评分|(?:[多少几]|[0-9])分|分数|怎么算|怎么给分")
+_VOLUNTEER_RAW = re.compile(r"原始分|分档|时长计分|按时长")
+_VOLUNTEER_PERCENT = re.compile(r"百分制|基础分|(?:最高|最大)原始分|原始分最高|换算公式|归一化")
+_VOLUNTEER_WEIGHT = re.compile(r"权重|占比|占(?:多少|几)|百分比|百分之零点三|0\.3\s*%")
 _VOLUNTEER_OTHER_ISSUE = re.compile(
     r"复试|报名|申请流程|怎么申请|申报|材料|证明|奖学金|创新学分|学分认定|是否符合|能否推免|能不能推免"
 )
-_VOLUNTEER_HOURS = re.compile(r"(?<![0-9A-Za-z.+\-−])(?<!\d,)([+\-−]?\d+(?:\.\d+)?)\s*(?:个\s*)?(?:小时|钟头)")
+_HOUR_VALUE = r"[+\-−]?\d+(?:\.\d+)?"
+_HOUR_UNIT = r"(?:(?:个\s*)?(?:小时|钟头))"
+_INEXACT_HOUR_PREFIX = (
+    r"不到|不足|不满|未满|少于|低于|超过|超出|多于|大于(?:等于)?|小于(?:等于)?|高于|不超过|不低于|不少于|不多于"
+    r"|至少|至多|最多|最少|约(?:有|为)?|大约|大概|估计|近|差不多|将近|接近|大致|[<>≤≥]"
+)
+_INEXACT_HOUR_SUFFIX = r"以上|以下|以内|以外|左右|上下|多(?:一点|一些)?|余|出头|半|起|或更[多少]"
+_HOUR_RANGE = r"到|至|或(?:者)?|[-—–~～±]"
+_VOLUNTEER_HOURS = re.compile(
+    rf"(?<![0-9A-Za-z.+\-−])(?<!\d,)(?P<hours>{_HOUR_VALUE})\s*{_HOUR_UNIT}"
+)
+_INEXACT_VOLUNTEER_HOURS = re.compile(
+    rf"(?:{_INEXACT_HOUR_PREFIX})\s*{_HOUR_VALUE}"
+    rf"|{_HOUR_VALUE}\s*(?:{_HOUR_UNIT}\s*)?(?:{_HOUR_RANGE})\s*{_HOUR_VALUE}"
+    rf"|{_HOUR_UNIT}\s*(?:{_INEXACT_HOUR_SUFFIX})"
+    r"|分钟|刻钟"
+)
 _VOLUNTEER_HOURS_REPLY = re.compile(
-    rf"(?:那(?:么)?\s*)?{_VOLUNTEER_HOURS.pattern}(?:\s*(?:呢|(?:是|能加|可以加|算)?(?:多少|几)分))?[？?。！!]*"
+    rf"(?:那(?:么)?\s*)?(?:(?:{_INEXACT_HOUR_PREFIX})\s*)?{_HOUR_VALUE}\s*"
+    rf"(?:{_HOUR_UNIT}\s*)?(?:(?:{_HOUR_RANGE})\s*{_HOUR_VALUE}\s*)?{_HOUR_UNIT}"
+    rf"(?:\s*(?:{_INEXACT_HOUR_SUFFIX}))?(?:\s*(?:呢|(?:是|能加|可以加|算)?(?:多少|几)分))?[？?。！!]*"
 )
 _VOLUNTEER_COHORT_REPLY = re.compile(r"(?:20\d{2}年|20\d{2}届)(?:呢|[？?。！!])*\s*")
+_VOLUNTEER_KIND_REPLY = re.compile(
+    r"(?:我想(?:问|查|看)|想(?:问|查|看)|查|看)?\s*"
+    r"(原始分(?:档|数)?|百分制(?:成绩|换算(?:公式)?)?|(?:总评|综合测评)?(?:权重|占比))[？?。！!]*"
+)
 _VOLUNTEER_SCORE_RECORD = "计算机学院-2027-推免资格推荐"
 _VOLUNTEER_SCORE_SOURCE = "https://ccds.fzu.edu.cn/info/1119/11932.htm"
 _VOLUNTEER_SCORE_ROW = re.compile(
@@ -289,6 +315,10 @@ _VOLUNTEER_SCORE_ROW = re.compile(
     r"60[-—–至]100小时及以上加原始分6分"
 )
 _VOLUNTEER_WEIGHT_TERM = re.compile(r"志愿服务成绩[×xX*]\s*0\.3%")
+_VOLUNTEER_PERCENT_FORMULA = re.compile(
+    r"参加志愿服务成绩=\(基础分60\+被推荐学生参加志愿服务(?:成绩|原始分)\)"
+    r"/\(基础分60\+本专业推免入围学生参加志愿服务(?:成绩|原始分)最高值\)[×xX*]100(?![\d.])"
+)
 _PLAN_QUESTION = re.compile(r"招多少|招生计划|招几人|多少人|名额")
 _REVIEW_DETAIL = re.compile(
     r"招多少|招生计划|招几人|多少人|名额|分组|材料投递|投递|调剂|录取|复试名单"
@@ -410,6 +440,8 @@ def alpha_clarification_rule(
     if selection := volunteer_scoring_request(request):
         if selection.invalid_hours:
             return QUESTION_VOLUNTEER_HOURS
+        if not selection.kinds:
+            return QUESTION_VOLUNTEER_SCORE_KIND
         if not _years(text) and not _has_time_intent(text):
             return QUESTION_VOLUNTEER_COHORT
         return None
@@ -438,10 +470,15 @@ def _user_text(request: AgentRequest) -> str:
     return "\n".join([*previous, request.query]).strip()
 
 
+class VolunteerScoreKind(Enum):
+    RAW = "原始分"
+    PERCENT = "百分制成绩"
+    WEIGHT = "总评权重"
+
+
 @dataclass(frozen=True)
 class VolunteerScoringRequest:
-    raw_score: bool
-    weight: bool
+    kinds: frozenset[VolunteerScoreKind]
     hours: tuple[Decimal, ...]
     invalid_hours: bool
 
@@ -450,16 +487,26 @@ def volunteer_scoring_request(request: AgentRequest) -> VolunteerScoringRequest 
     query = normalize("NFKC", request.query)
     if not _VOLUNTEER.search(query) or _VOLUNTEER_OTHER_ISSUE.search(query):
         return None
-    weight = bool(_VOLUNTEER_WEIGHT.search(query))
     hour_units = re.findall(r"小时|钟头", query)
-    raw_score = bool(hour_units or (not weight and _VOLUNTEER_SCORE.search(query))
-                     or (weight and re.search(r"原始分", query)))
-    if not (raw_score or weight):
+    kinds = {kind for kind, cue in (
+        (VolunteerScoreKind.RAW, _VOLUNTEER_RAW),
+        (VolunteerScoreKind.PERCENT, _VOLUNTEER_PERCENT),
+        (VolunteerScoreKind.WEIGHT, _VOLUNTEER_WEIGHT),
+    ) if cue.search(query)}
+    # Mentions of raw scores as inputs to the formula do not ask for the raw tier.
+    if VolunteerScoreKind.PERCENT in kinds and not (
+        re.search(r"原始分档|原始分(?:分别|是|有|为)?多少|原始分[和与、]\s*(?:百分制|总评|权重)"
+                  r"|百分制(?:成绩)?[和与、]\s*原始分", query)
+    ):
+        kinds.discard(VolunteerScoreKind.RAW)
+    if hour_units and not kinds and "成绩" not in query and "折算" not in query:
+        kinds.add(VolunteerScoreKind.RAW)
+    if not (kinds or hour_units or _VOLUNTEER_SCORE.search(query) or "折算" in query):
         return None
     hours = tuple(Decimal(value.replace("−", "-")) for value in _VOLUNTEER_HOURS.findall(query))
     invalid = (len(hours) != len(hour_units) or any(value < 0 for value in hours)
-               or bool(hour_units and re.search(r"分钟|小于|超过|[—~～至]|(?:小时|钟头)半", query)))
-    return VolunteerScoringRequest(raw_score, weight, hours, invalid)
+               or bool(hour_units and _INEXACT_VOLUNTEER_HOURS.search(query)))
+    return VolunteerScoringRequest(frozenset(kinds), hours, invalid)
 
 
 def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
@@ -468,35 +515,64 @@ def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
     current = volunteer_scoring_request(request)
     hours_reply = _VOLUNTEER_HOURS_REPLY.fullmatch(query)
     cohort_reply = _VOLUNTEER_COHORT_REPLY.fullmatch(query)
-    if not (current or hours_reply or cohort_reply):
+    kind_reply = _VOLUNTEER_KIND_REPLY.fullmatch(query)
+    if not (current or hours_reply or cohort_reply or kind_reply):
         return None
     previous = None
+    previous_scoring = None
     retained_cohort = None
+    retained_kind = None
+    retained_hours = None
     for turn in reversed(request.history):
         if turn.role != LLMRole.USER:
             continue
         content = normalize("NFKC", turn.content.strip())
         if _VOLUNTEER_HOURS_REPLY.fullmatch(content):
+            if retained_hours is None:
+                retained_hours = content
             continue
         if _VOLUNTEER_COHORT_REPLY.fullmatch(content):
             if retained_cohort is None:
-                retained_cohort = turn
+                retained_cohort = _YEAR.search(content)[0]
             continue
-        if volunteer_scoring_request(request.model_copy(update={"query": turn.content})):
+        if concept := _VOLUNTEER_KIND_REPLY.fullmatch(content):
+            if retained_kind is None:
+                retained_kind = concept[1]
+            continue
+        previous_scoring = volunteer_scoring_request(request.model_copy(update={"query": turn.content}))
+        if previous_scoring:
             previous = turn
         break
-    history = [previous] if previous is not None else []
-    if hours_reply and previous:
-        prefix = _YEAR.search(normalize("NFKC", retained_cohort.content))[0] + " " if retained_cohort else ""
-        return request.model_copy(update={"query": f"{prefix}推免志愿服务原始分：{query}", "history": [] if prefix else history})
-    if cohort_reply and previous:
+    if previous_scoring is None:
+        return request.model_copy(update={"query": query, "history": []}) if current else None
+    history = [previous]
+    if hours_reply:
+        kinds = "和".join(kind.value for kind in VolunteerScoreKind if kind in previous_scoring.kinds)
+        topic = retained_kind or kinds or "成绩"
+        return request.model_copy(update={
+            "query": f"{retained_cohort or ''}推免志愿服务{topic}：{query}",
+            "history": [] if retained_cohort else history,
+        })
+    if kind_reply:
+        original = normalize("NFKC", previous.content)
+        # Keep an uncorrected range intact so it can never become a single endpoint.
+        if previous_scoring.invalid_hours and not retained_hours:
+            return request.model_copy(update={"query": f"{retained_cohort or ''}{original}", "history": []})
+        hours = retained_hours or "、".join(match[0] for match in _VOLUNTEER_HOURS.finditer(original))
+        return request.model_copy(update={
+            "query": f"{retained_cohort or ''}推免志愿服务{kind_reply[1]} {hours}".strip(),
+            "history": [] if retained_cohort else history,
+        })
+    if cohort_reply:
         subject = _YEAR.sub("", normalize("NFKC", previous.content))
+        if retained_kind:
+            if retained_hours or not previous_scoring.invalid_hours:
+                hours = retained_hours or "、".join(match[0] for match in _VOLUNTEER_HOURS.finditer(subject))
+                subject = f"推免志愿服务{retained_kind} {hours}"
         return request.model_copy(update={"query": f"{query} {subject}", "history": []})
-    if current:
-        if previous and retained_cohort and not _has_time_intent(query):
-            query = f"{_YEAR.search(normalize('NFKC', retained_cohort.content))[0]} {query}"
-        return request.model_copy(update={"query": query, "history": [] if _has_time_intent(query) else history})
-    return None
+    if retained_cohort and not _has_time_intent(query):
+        query = f"{retained_cohort} {query}"
+    return request.model_copy(update={"query": query, "history": [] if _has_time_intent(query) else history})
 
 
 def volunteer_service_raw_score(hours: Decimal) -> int:
@@ -512,14 +588,15 @@ def volunteer_service_raw_score(hours: Decimal) -> int:
 
 def volunteer_scoring_evidence(
     record_code: str | None, chunk: RetrievedChunk, selection: VolunteerScoringRequest,
-) -> tuple[bool, bool]:
+) -> set[VolunteerScoreKind]:
     if record_code != _VOLUNTEER_SCORE_RECORD or chunk.source_url != _VOLUNTEER_SCORE_SOURCE:
-        return False, False
-    compact = re.sub(r"\s+", "", chunk.content)
-    return (
-        selection.raw_score and bool(_VOLUNTEER_SCORE_ROW.search(compact)),
-        selection.weight and bool(_VOLUNTEER_WEIGHT_TERM.search(compact)),
-    )
+        return set()
+    compact = re.sub(r"\s+", "", normalize("NFKC", chunk.content))
+    return {kind for kind, clause in (
+        (VolunteerScoreKind.RAW, _VOLUNTEER_SCORE_ROW),
+        (VolunteerScoreKind.PERCENT, _VOLUNTEER_PERCENT_FORMULA),
+        (VolunteerScoreKind.WEIGHT, _VOLUNTEER_WEIGHT_TERM),
+    ) if kind in selection.kinds and clause.search(compact)}
 
 
 def _has_time_intent(text: str) -> bool:

@@ -25,7 +25,7 @@ from backend.services.agent_policy_context import (
     PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
 from backend.services.alpha_business_rules import (
-    VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
+    VolunteerScoreKind, VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
     volunteer_scoring_request, volunteer_service_raw_score,
 )
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
@@ -295,16 +295,17 @@ class AgentWorkflow:
     def _answer_volunteer_scoring(
         self, request: AgentRequest, scoring: VolunteerScoringRequest, evidence: list[Evidence],
     ) -> AgentResult:
-        raw, weight = None, None
+        by_kind = {}
         for item in evidence:
-            supports_raw, supports_weight = volunteer_scoring_evidence(item.metadata.record_code, item.chunk, scoring)
-            if supports_raw and raw is None:
-                raw = item
-            if supports_weight and weight is None:
-                weight = item
-        if scoring.invalid_hours or (scoring.raw_score and raw is None) or (scoring.weight and weight is None):
-            return _insufficient("VOLUNTEER_SCORING_NOT_VERIFIED", "缺少支持本次志愿服务原始分或权重问题的已审核资料。")
-        selected = [item for item in (raw, weight if weight != raw else None) if item is not None]
+            for kind in volunteer_scoring_evidence(item.metadata.record_code, item.chunk, scoring):
+                by_kind.setdefault(kind, item)
+        if not scoring.kinds or scoring.invalid_hours or not scoring.kinds <= by_kind.keys():
+            return _insufficient("VOLUNTEER_SCORING_NOT_VERIFIED", "缺少支持本次志愿服务计分问题的已审核资料。")
+        selected = []
+        for kind in VolunteerScoreKind:
+            item = by_kind.get(kind)
+            if item is not None and item not in selected:
+                selected.append(item)
         if not self._evidence_unchanged(request, selected):
             return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
 
@@ -313,14 +314,18 @@ class AgentWorkflow:
         if selected[0].mode == AnswerMode.HISTORICAL:
             answer.append("本届方案为历史资料，当期办理已结束。")
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message="仅供 2027 届历史口径参考。"))
-        if raw is not None:
+        if VolunteerScoreKind.RAW in by_kind:
             scores = (
                 "；".join(f"{hours:f} 小时的原始分为 {volunteer_service_raw_score(hours)} 分" for hours in scoring.hours)
                 if scoring.hours else "0 ≤ h < 30 计 2 分，30 ≤ h < 60 计 4 分，h ≥ 60 计 6 分（h 的单位为小时）"
             )
             answer.append(f"按组长确认的项目解释口径，志愿服务{scores}。各档不重复累加。"
                           "区间端点是项目解释，官方原文未明确采用左闭右开区间。")
-        if weight is not None:
+        if VolunteerScoreKind.PERCENT in by_kind:
+            answer.append("志愿服务百分制成绩 =（60 + 个人志愿服务原始分）÷"
+                          "（60 + 本专业推免入围学生的志愿服务最高原始分）× 100。"
+                          "计算具体成绩需要这两项原始分。")
+        if VolunteerScoreKind.WEIGHT in by_kind:
             answer.append("0.3% 是换算为百分制后的志愿服务成绩计入综合测评总成绩的权重，"
                           "不能直接用志愿服务原始分乘以 0.3% 得出总评贡献。")
         return AgentResult(

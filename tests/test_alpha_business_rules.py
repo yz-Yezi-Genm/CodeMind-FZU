@@ -84,7 +84,7 @@ def _request(query: str, *, history: list[str] | None = None) -> AgentRequest:
 
 @pytest.mark.parametrize(("hours", "expected"), [
     (0, 2), (1, 2), (29, 2), (30, 4), (31, 4), (59, 4), (60, 6), (61, 6),
-    (100, 6), (200, 6), ("29.999", 2), ("59.999", 4),
+    (100, 6), (200, 6), ("29.5", 2), ("59.5", 4), ("60.5", 6),
 ])
 def test_volunteer_service_raw_score_boundaries(hours, expected):
     assert business_rules.volunteer_service_raw_score(Decimal(hours)) == expected
@@ -97,11 +97,17 @@ def test_volunteer_service_rejects_invalid_hours(hours):
 
 
 def test_volunteer_service_clarifies_cohort_and_invalid_duration():
-    assert alpha_clarification_rule(_request("推免志愿服务计分怎么计算？")) == business_rules.QUESTION_VOLUNTEER_COHORT
-    for hours in ("-1小时", "30-60小时", "1小时30分钟"):
-        assert (alpha_clarification_rule(_request(f"2027届推免志愿服务{hours}算多少分？"))
-                == business_rules.QUESTION_VOLUNTEER_HOURS)
-    assert alpha_clarification_rule(_request("那30小时呢", history=["2027届推免志愿服务怎么计分？"])) is None
+    assert alpha_clarification_rule(_request("推免志愿服务原始分怎么计算？")) == business_rules.QUESTION_VOLUNTEER_COHORT
+    assert alpha_clarification_rule(_request("2027届推免志愿服务成绩怎么算？")) == business_rules.QUESTION_VOLUNTEER_SCORE_KIND
+    assert alpha_clarification_rule(_request("那30小时呢", history=["2027届推免志愿服务原始分怎么算？"])) is None
+
+
+@pytest.mark.parametrize("hours", [
+    "30到60小时", "30小时到60小时", "不到30小时", "30小时以上", "30小时以内", "30小时左右",
+    "约29.5小时", "30—60小时", "30-60小时", "30±2小时", "30或60小时", "大于等于30小时", "1小时30分钟", "-1小时",
+])
+def test_volunteer_service_asks_for_exact_hours(hours):
+    assert alpha_clarification_rule(_request(f"2027届推免志愿服务{hours}算多少分？")) == business_rules.QUESTION_VOLUNTEER_HOURS
 
 
 def _chunk(
