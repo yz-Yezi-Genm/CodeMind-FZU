@@ -1,46 +1,120 @@
-# Beta 第二阶段：真实 Qwen 与 Agent 联调
+# Beta 第二阶段：真实 Qwen 与最终 AgentWorkflow 联调
 
-日期：2026-11-23  
-分支：`feat/beta-runtime-qwen-integration`  
-依赖：第一阶段 `feat/beta-runtime-stability`
+日期：2026-11-25
+分支：`feat/beta-runtime-qwen-integration`
+同步基线：`origin/main` `179e618`
 
 ## 1. 阶段边界
 
-第一阶段负责 FastAPI、Runtime、QwenClient 和离线契约测试。
+第一阶段 FastAPI、Runtime、QwenClient、会话和统一异常处理已通过 PR #49
+合并。#46 已合入 main，提供 V2.1 受约束生成、动态 evidence ID、答案校验、
+历史政策处理及 Citation 构造。
 
-第二阶段只记录真实 Qwen 调用、受约束 JSON 输出以及吴诗莹 Beta AgentWorkflow 的最终联调。本阶段不修改公共 DTO、Protocol、Retriever 或业务规则。
+第二阶段只增加真实模型技术联调、隔离合成资料和证据记录，不修改公共 DTO、
+Protocol、AgentWorkflow、Retriever 或业务规则。
 
-## 2. 当前已完成
+## 2. 真实链路
 
-真实 `qwen-flash` 已完成一次受约束 JSON 请求：
+固定 main `179e618` 后，通过本机 uvicorn TCP HTTP 执行：
 
-```json
-{"answer":"奖学金申请需要提交申请表和成绩单。","used_evidence_ids":["E1"]}
+```text
+POST /api/v1/ask
+  -> FastAPI
+  -> ConversationAgentService
+  -> AgentWorkflow
+  -> LocalBM25Retriever
+  -> 正式业务规则
+  -> 真实 qwen-flash
+  -> V2.1 JSON 与 evidence ID 校验
+  -> RetrievedChunk 构造 Citation
+  -> AskResponse
 ```
 
-适配器完整返回 JSON 内容、模型名称和 usage；模型内容和 Agent 内部 JSON 校验边界保持不变。记录见
-[qwen-constrained-live.txt](evidence/qwen-constrained-live.txt)。
+联调资料固定为
+`tests/fixtures/beta_live_approved/`。该目录明确标注为合成数据，来源域名为
+保留测试域名 `example.invalid`，不属于正式 `approved/` 知识库。
 
-当前 `main` 的 FastAPI + Runtime + 真实 Qwen 也完成了一次合成资料 HTTP 冒烟，返回
-`200 / answered / 非空引用`。记录见
-[runtime-http-smoke.txt](evidence/runtime-http-smoke.txt)。
+正向请求：
 
-该 HTTP 冒烟使用当前 Alpha 证据摘录协议，不等同于 V2.1 受约束自然语言生成验收。
+```json
+{"query":"2026年优秀学生综合奖学金申请需要提交什么材料？"}
+```
 
-## 3. 合并条件
+结果：
 
-第二阶段不得在以下条件完成前合并：
+- HTTP 200，`status=answered`，`answer_mode=current_policy`；
+- 真实模型返回受约束 JSON，使用本次请求生成的随机 evidence ID；
+- Citation 的 `chunk_id`、`excerpt`、来源和审核状态来自同一次真实检索；
+- `X-Request-ID` 与响应 `request_id` 一致。
 
-1. 吴诗莹 Beta Agent 分支完成 V2.1 `answer + used_evidence_ids` 解析与 Citation 构造；
-2. Agent 集成分支合入 `main` 或与第二阶段建立明确依赖；
-3. 真实 Qwen 经最终 `/api/v1/ask` 返回受约束自然语言答案；
-4. Agent 拒绝未知、重复、跨请求 evidence ID；
-5. Citation 来自本次真实检索片段；
-6. MockTransport、直接 Qwen、FastAPI HTTP、正式资料验收分别记录；
-7. 使用正式人工审核资料完成一次四领域或对应场景的正向验收，或明确记录正式资料缺失导致的安全拒答。
+模型原始内容：
 
-## 4. 当前阻塞
+```json
+{"answer":"根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。","used_evidence_ids":["E1-<本次随机命名空间>"]}
+```
 
-- Beta AgentWorkflow 尚未合入 `main`。
-- 正式 `knowledge_base/processed/alpha/approved/` 暂无项目负责人人工签核资料包。
-- 因此第二阶段目前保持 Draft，不能把当前 HTTP 冒烟写成 V2.1 完整链路通过。
+完整脱敏记录见 [runtime-http-smoke.txt](evidence/runtime-http-smoke.txt)。
+
+## 3. 安全拒答
+
+- 合成资料未载明奖学金金额时，`POST /api/v1/ask` 返回 HTTP 200、
+  `insufficient_evidence`、空引用，warning 为 `REQUESTED_FACT_NOT_FOUND`。
+- 正式 `knowledge_base/processed/alpha/approved/` 尚未放行资料时，运行时启动
+  失败关闭，问答返回 HTTP 503、`KNOWLEDGE_BASE_UNAVAILABLE`，不会调用 Qwen
+  或返回 Mock 答案。
+
+## 4. MockTransport 边界验证
+
+以下结果全部来自 Mock Qwen 或离线测试，不代表真实模型返回：
+
+- 未知、重复、跨轮 evidence ID 被拒绝；
+- 有效 ID 搭配编造答案被拒绝；
+- 自由文本或不符合 JSON envelope 的输出不能绕过证据校验；
+- 非法或空模型 envelope 返回 HTTP 503 `MODEL_UNAVAILABLE`；
+- 限流保持 HTTP 429 `RATE_LIMITED`；
+- 超时返回 HTTP 504 `MODEL_TIMEOUT`，连接失败返回 HTTP 503；
+- 工作流总超时会取消底层模型调用。
+
+定向结果：`10 passed, 1 warning, 30 subtests passed`。记录见
+[qwen-negative-mock.txt](evidence/qwen-negative-mock.txt)。
+
+最新 main `179e618` 的 Agent、业务规则、Retriever 与 HTTP 专项集成结果为
+`Ran 48 tests, OK`，记录见
+[upstream-integration.txt](evidence/upstream-integration.txt)。
+
+早期
+[qwen-constrained-live.txt](evidence/qwen-constrained-live.txt)
+是真实模型的独立适配器探针，不等同于本次最终 `/api/v1/ask` 全链路验收。
+
+## 5. 全量回归
+
+```text
+Python 3.14.4:
+632 passed, 3 skipped, 1 warning, 274 subtests passed
+
+Python 3.10.11:
+632 passed, 3 skipped, 1 warning, 274 subtests passed
+```
+
+跳过项：
+
+1. 1 项需显式启用的真实 Qwen 正式资料验收；
+2. 1 项 `RUN_LIVE_QWEN_TESTS=1` 的正式资料 E2E；
+3. 1 项当前 Windows 账户无符号链接权限。
+
+本轮真实 Qwen 技术联调由独立脚本执行，不与上述跳过项混淆。完整输出见：
+
+- [stage2-pytest-py314.txt](evidence/stage2-pytest-py314.txt)
+- [stage2-pytest-py310.txt](evidence/stage2-pytest-py310.txt)
+
+## 6. 资料与模型边界
+
+| 类型 | 本次用途 | 结果 |
+| --- | --- | --- |
+| 合成资料 | 技术联调 | 真实链路正向通过 |
+| 正式资料 | 人工审核状态检查 | 未放行，503 安全拒答 |
+| Mock Qwen | 边界与异常 | 10 项定向测试通过 |
+| 真实 Qwen | 正向生成 | qwen-flash 通过 |
+
+正式人工审核资料放行后，再补一次真实政策问答验收，不需要等待该事项才能
+完成当前技术联调。

@@ -17,41 +17,44 @@ from backend.services.qwen_client import create_qwen_client_from_env
 async def main() -> None:
     client = create_qwen_client_from_env()
     started = time.monotonic()
-    result = await client.generate(
-        LLMGenerateRequest(
-            messages=[
-                LLMMessage(
-                    role=LLMRole.SYSTEM,
-                    content=(
-                        "你是受证据约束的校园信息助手。"
-                        "只输出一个 JSON 对象，不使用 Markdown 代码围栏。"
-                        '格式必须是 {"answer":"自然语言回答",'
-                        '"used_evidence_ids":["E1"]}。'
-                        "只能使用本次提供的 evidence_id；证据不足时输出"
-                        '{"answer":"现有证据不足以回答。",'
-                        '"used_evidence_ids":[]}。'
+    try:
+        result = await client.generate(
+            LLMGenerateRequest(
+                messages=[
+                    LLMMessage(
+                        role=LLMRole.SYSTEM,
+                        content=(
+                            "你是受证据约束的校园信息助手。"
+                            "只输出一个 JSON 对象，不使用 Markdown 代码围栏。"
+                            '格式必须是 {"answer":"自然语言回答",'
+                            '"used_evidence_ids":["E1"]}。'
+                            "只能使用本次提供的 evidence_id；证据不足时输出"
+                            '{"answer":"现有证据不足以回答。",'
+                            '"used_evidence_ids":[]}。'
+                        ),
                     ),
-                ),
-                LLMMessage(
-                    role=LLMRole.USER,
-                    content=json.dumps(
-                        {
-                            "question": "奖学金申请需要提交什么？",
-                            "evidence": [
-                                {
-                                    "evidence_id": "E1",
-                                    "text": "申请奖学金需提交申请表和成绩单。",
-                                }
-                            ],
-                        },
-                        ensure_ascii=False,
+                    LLMMessage(
+                        role=LLMRole.USER,
+                        content=json.dumps(
+                            {
+                                "question": "奖学金申请需要提交什么？",
+                                "evidence": [
+                                    {
+                                        "evidence_id": "E1",
+                                        "text": "申请奖学金需提交申请表和成绩单。",
+                                    }
+                                ],
+                            },
+                            ensure_ascii=False,
+                        ),
                     ),
-                ),
-            ],
-            temperature=0,
-            max_tokens=256,
+                ],
+                temperature=0,
+                max_tokens=256,
+            )
         )
-    )
+    finally:
+        await client.aclose()
     payload = json.loads(result.content)
     if (
         not isinstance(payload, dict)

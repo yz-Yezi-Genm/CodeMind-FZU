@@ -1,41 +1,83 @@
-Beta real FastAPI and Qwen HTTP smoke
-Date: 2026-11-23 (Asia/Shanghai)
-Branch: feat/beta-runtime-stability
-Data: tests/fixtures/alpha_approved (synthetic example.invalid only)
-Model: real qwen-flash
-
-GET /api/v1/health
-HTTP/1.1 200 OK
-x-request-id: ca41ab93-f21c-4861-a4f9-f3077aa266b8
-{"status":"ok","service":"codemind-fzu-api","version":"0.1.0",
- "timestamp":"2026-11-23T10:50:54.600098Z"}
-
-POST /api/v1/ask
-Request:
-  {"query":"2026年校级优秀学生综合奖学金申请需要什么条件？"}
-HTTP/1.1 200 OK
-x-request-id: c07090f3-7a82-4ec2-9cbf-720a1064555c
+Approved corpus rejected loaded=0 skipped=0 detail=
+Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
 {
-  "request_id": "c07090f3-7a82-4ec2-9cbf-720a1064555c",
-  "conversation_id": "50836e5a-14d1-4971-b8d5-a40e3eaf09a0",
-  "status": "answered",
-  "answer": "已核验资料中与本问题相关的原文如下：\n[1] 2026年奖学金申请需提交申请表和成绩单。",
-  "answer_mode": "current_policy",
-  "clarifying_question": null,
-  "citations": [{
-    "document_id": "8d02cf63-8489-5ff2-865c-47b9afaa57cd",
-    "version_id": "605ebbe0-ee72-5aaf-942a-9a82c2c54f5b",
-    "chunk_id": "5c9318b1-ee71-5ea5-98fb-e79c5ef0b075",
-    "title": "2026年本科生奖学金评定管理办法（测试夹具）",
-    "source_url": "https://example.invalid/test-policy",
-    "excerpt": "2026年奖学金申请需提交申请表和成绩单。"
-  }],
-  "warnings": [{"code":"ALPHA_EXTRACTIVE_ANSWER"}],
-  "created_at": "2026-11-23T10:50:47.310666Z"
+  "time_asia_shanghai": "2026-11-25T18:20:19.389457+08:00",
+  "scope": "Real Qwen HTTP -> current AgentWorkflow -> FastAPI; synthetic example.invalid corpus only",
+  "model": "qwen-flash",
+  "synthetic": {
+    "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
+    "http_status": 200,
+    "request_id": "730dd660-21b3-406a-99a0-1ae9f58430a4",
+    "transport": "uvicorn TCP HTTP",
+    "x_request_id": "730dd660-21b3-406a-99a0-1ae9f58430a4",
+    "status": "answered",
+    "answer": "根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。",
+    "answer_mode": "current_policy",
+    "citations": [
+      {
+        "document_id": "1473a9cc-56e4-567f-981d-098e33596630",
+        "version_id": "a6397eac-7fd4-5b72-827d-63b75cc2a0c8",
+        "chunk_id": "9ef3e2cd-8429-5aa4-9e02-3f737e7498ac",
+        "title": "合成联调：2026年本科生奖学金评定管理办法",
+        "publisher": "合成联调测试单位",
+        "source_url": "https://example.invalid/beta-live/scholarship",
+        "published_on": "2026-01-01",
+        "effective_on": "2026-01-01",
+        "locator": "第1行",
+        "original_locator": null,
+        "excerpt": "2026年优秀学生综合奖学金申请需提交申请表和成绩单。",
+        "source_verification_status": "verified",
+        "timeliness_verification_status": "current",
+        "retrieval_status": "enabled"
+      }
+    ],
+    "warnings": [],
+    "elapsed_ms": 6303,
+    "retrieval": {
+      "loaded_packages": 1,
+      "skipped_packages": [],
+      "indexed_chunks": 1,
+      "hit_count": 1,
+      "hit_excerpts": [
+        "2026年优秀学生综合奖学金申请需提交申请表和成绩单。"
+      ]
+    },
+    "model_response": {
+      "model": "qwen-flash",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 383,
+        "total_tokens": 447
+      },
+      "raw_content": "{\"answer\":\"根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1-e4524f76ed0e427295d22123ebe85fd8\"]}"
+    }
+  },
+  "synthetic_insufficient_evidence": {
+    "query": "2026年优秀学生综合奖学金金额是多少？",
+    "http_status": 200,
+    "request_id": "0a9da3c7-a336-49c3-bbb5-fa54b7e277c2",
+    "transport": "uvicorn TCP HTTP",
+    "x_request_id": "0a9da3c7-a336-49c3-bbb5-fa54b7e277c2",
+    "status": "insufficient_evidence",
+    "answer_mode": "insufficient_data",
+    "citations": [],
+    "warnings": [
+      {
+        "code": "REQUESTED_FACT_NOT_FOUND",
+        "message": "通过审核的资料未载明所询问的金额或截止时间，暂无法确认。"
+      }
+    ]
+  },
+  "formal_unreleased": {
+    "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
+    "http_status": 503,
+    "request_id": "da686044-0995-46ee-bc82-228c20988588",
+    "transport": "uvicorn TCP HTTP",
+    "x_request_id": "da686044-0995-46ee-bc82-228c20988588",
+    "error": {
+      "code": "KNOWLEDGE_BASE_UNAVAILABLE",
+      "message": "没有通过人工审核且完整建立索引的正式政策资料包。",
+      "retryable": true
+    }
+  }
 }
-
-Interpretation:
-  Real FastAPI, real approved loader, current AgentWorkflow, real Qwen and
-  Citation verification executed. The current main Agent still uses the Alpha
-  extractive response contract. V2.1 constrained generation awaits the Beta
-  AgentWorkflow merge.

@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "title": "合成联调：2026年本科生奖学金评定管理办法",
+    "document_type": "管理办法",
+    "category_name": "综评与奖学金",
+    "business_direction_codes": [
+      "POLICY_AFFAIRS"
+    ],
+    "record_code": "SYNTH-2026-本科奖学金",
+    "version_no": "synthetic-v1",
+    "publisher": "合成联调测试单位",
+    "source_url": "https://example.invalid/beta-live/scholarship",
+    "published_on": "2026-01-01",
+    "effective_on": "2026-01-01",
+    "policy_status": "合成测试，非正式政策",
+    "source_verification_status": "verified",
+    "timeliness_verification_status": "current",
+    "extraction_status": "extracted",
+    "v1_inclusion_status": "included",
+    "retrieval_status": "enabled",
+    "temporal_notes": {
+      "human_approved": true
+    },
+    "verification_note": "仅用于 Beta Stage 2 真实 Qwen 技术联调，不是正式政策资料。",
+    "applicability_raw": {
+      "适用年度": "2026年",
+      "适用对象": "本科生"
+    }
+  },
+  "files": [
+    {
+      "file_role": "extracted",
+      "storage_key": "tests/fixtures/beta_live_approved/policy.md",
+      "original_name": "policy.md",
+      "media_type": "text/markdown",
+      "processing_status": "extracted"
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_no": 1,
+      "content": "2026年优秀学生综合奖学金申请需提交申请表和成绩单。",
+      "locator": "第1行",
+      "source_file_key": "tests/fixtures/beta_live_approved/policy.md",
+      "index_status": "pending"
+    }
+  ]
+}
