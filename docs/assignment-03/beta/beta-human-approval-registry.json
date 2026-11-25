@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-25",
+  "source_ledger": "docs/assignment-03/beta/beta-human-review-ledger.md",
+  "package_count": 8,
+  "human_approved_packages": 6,
+  "enabled_packages": 0,
+  "retrieval_status": "blocked",
+  "release_policy": "本登记仅镜像限定范围人工签核；human_approved=true不代表正式检索放行。所有候选包在另行授权、独立技术验收与正式放行前必须保持retrieval_status=blocked。",
+  "packages": {
+    "competition": {
+      "decision": "approved_scoped",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-24",
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "timeliness_verification_status": "current",
+      "policy_status": "current（2026版目录；组长于2026-11-24限定范围人工审核通过）",
+      "verification_note": "2026-11-23真实通知正文、校教〔2026〕9号及三份附件入口已核对；本网络可读取，无需账号。三份DOCX与Alpha原件SHA-256相同，逐行保留合并标记及脚注。竞赛级别认定用于规定的学分/绩效用途，不能直接换成综测加分或奖学金等级。205数据行未获逐项人工签核；后续版本非全站穷尽核验。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
+      "scope_limitations": "仅按2026版目录查询赛事名称、认定级别、附件及序号；结合具体赛段、奖项、时间、团队身份，必要时与第02份学分办法联合解释。不得将竞赛级别直接替代赛段/获奖等级、综测加分或奖学金等级；不得无依据追溯适用于2026-03-06以前的证书；目录未列不直接断言不认定；保留体育专项规则和高水平运动员限制；教师绩效条文不得用于学生。跨年度个人认定及计算机学院具体过渡口径尚未核实，遇此类问题应追问或拒绝确定结论。"
+    },
+    "scholarship": {
+      "decision": "approved_scoped",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-24",
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "timeliness_verification_status": "current",
+      "policy_status": "current（组长于2026-11-24限定范围人工审核通过；仅按校级通则明确条款回答）",
+      "verification_note": "2026办法第1—15条已重新提取，金额、比例、排除条件原文保留。第十四条公布施行并废止2024〔37〕号；学工部当前规章制度列表仍有2026办法。有限检索未构成官方现行性证明；人工审核已完成；按scope_limitations限定适用。校级通则不能替代院级/专项细则。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
+      "scope_limitations": "仅限福大学〔2026〕23号校级本科生奖学金通则明确条款：通用参评条件、综合奖学金金额和综测排名门槛、实验班与非实验班评定比例、单项奖学金条件及金额上限、一般评审公示异议流程。不得承诺个人获奖，不以GPA排名替代综测排名，不把排名门槛解释为实际获奖比例；不据此判断实时名额或申请开放；校级通则不能替代国家、院级或社会专项细则。具体适用仍按办法原文及对应专项/当期通知核验。"
+    },
+    "college-scholarship": {
+      "decision": "approved_scoped",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-25",
+      "checked_on": "2026-11-25",
+      "check_method": "official cross-check against 2026-04-20 award notice and 2026-04-30 college result announcement; group-lead human signoff for historical scope",
+      "timeliness_verification_status": "expired",
+      "policy_status": "2026年评选周期已由后续官方评审公示确认；各专项业绩参考期间按原文分别保留。本资料仅作为2026评选周期历史资料（expired），不得推定现行或下一年度规则。",
+      "inclusion_reason": "组长已于2026-11-25人工审核通过限定范围历史资料；为保持分批审核与统一放行节奏，retrieval_status继续为blocked，暂不开放正式检索。",
+      "applicability_raw": {
+        "学院": "福州大学计算机与大数据学院",
+        "对象": "正式学籍、在读全日制本科生和研究生，各专项另有限制",
+        "年度歧义": "评选周期：2026年（经2026-04-30学院官方评审公示确认）；各专项业绩参考期间：按原文分别保留2025年度、2024-2025学年、上学年等口径，不自行归一。",
+        "学业类": "原文10名本科生"
+      },
+      "verification_note": "组长于2026-11-25人工审核通过限定范围历史资料：确认2026评选周期；各专项原文中的2025年度、2024-2025学年、上学年等业绩参考期间分别保留，不自行归一；采用类别设置表及后续2026官方公示中的奖项全称，引用具体条件保留原文简称。仅可作为2026评选周期历史资料，不用于当前申请、下一年度规则或个人获奖资格承诺。官方交叉证据：2026-04-20星火奖教奖学金通知、2026-04-30学院评审公示。人工审核通过不代表正式检索放行。",
+      "scope_limitations": "组长于2026-11-25人工审核通过限定范围历史资料：仅限2026评选周期；各专项2025年度、2024-2025学年、上学年等业绩参考期间按原文分别保留；奖项全称按类别设置表及后续官方公示，具体条件引用保留原文简称。仅作历史查询，不用于当前申请、下一年度规则或个人获奖资格承诺。retrieval_status继续blocked，暂不开放正式检索。"
+    },
+    "xinghuo": {
+      "decision": "approved_scoped",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-25",
+      "checked_on": "2026-11-25",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-25",
+      "timeliness_verification_status": "expired",
+      "policy_status": "expired（2026年星火奖教奖学金通知；组长限定范围历史审核通过）",
+      "verification_note": "通知发布2026-04-20，2026沿用2025细则，2026-04-26前报送，申请期已过。学生30人/4000元等条款与教师16人/5000元分开；正文保留章节上下文，学生问答不得用教师条件。RAR沿用全量隐私审计；旧DOC未新增为正式政策正文，学生表格填写指导不在本次审核范围内。 组长于2026-11-25已完成限定范围人工审核并签核；时效状态登记为expired。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
+      "scope_limitations": "仅作为2026年度历史规则参考，限于通知正文已核实的2026年条款；教师奖教金与学生奖学金严格隔离，学生问答不得引用教师资格、人数、金额或材料。不得用于当前或2027年度申请资格、开放状态、剩余名额或个人获奖承诺；不得推断学生项目团队独立奖项、学生专用申请表、参评年度统计口径或未载明的类别名额；2026推荐名单公示不等于捐赠方最终获奖审批。RAR中的教师表格不作为学生填写指导。"
+    },
+    "recommendation": {
+      "decision": "deferred",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-25",
+      "checked_on": "2026-11-23",
+      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
+      "timeliness_verification_status": "expired",
+      "policy_status": "本批次截止/首批安排已过，仅历史参考；待最终审核",
+      "verification_note": "2027届本科推免推荐资格方案；2026-09-09 21:00截止，已过期。新下载4页PDF与Alpha原件同哈希，沿用第4页按行保留表头/个人集体列的版式对照。不得当作下一届现行方案；志愿服务30/60小时重叠边界仍待官方解释及人工签核。",
+      "scope_limitations": "2027届本科推荐资格方案；2026-09-09 21:00截止，已过期。新下载4页PDF与Alpha原件同哈希，沿用第4页按行保留表头/个人集体列的版式对照。不得当作下一届现行方案；志愿服务30/60小时重叠边界仍待官方解释及人工签核。",
+      "decision_reason": "组长已确认项目解释口径，但确定性计分实现、0/30/60/100及以上边界回归、多轮拒答与不误拦测试尚未完成，故整体签核暂缓。"
+    },
+    "innovation": {
+      "decision": "approved_scoped",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-24",
+      "checked_on": "2026-11-24",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-24",
+      "timeliness_verification_status": "current",
+      "policy_status": "current（校级通用办法；组长于2026-11-24限定范围人工审核通过，具体项目按目录和适用范围判断）",
+      "verification_note": "校教〔2024〕7号，正文第27条明确2024-09-01执行，2022〔1〕号废止，2016〔66〕号有2020级毕业后的过渡安排。正文第1—28条及表格按HTML合并标记保留；项目原始分、创新学分与综合素质测评分值不得混用。需结合入学年级、培养方案和认定目录；人工审核已完成；按scope_limitations限定适用。 组长于2026-11-24已完成限定范围人工审核并签核；时效状态登记为current。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
+      "scope_limitations": "仅限校级通用认定条件、原始分表、累计及重复获奖规则、团队前八名、2学分成绩记载和原则性办理流程。具体竞赛须另核适用目录与获奖时间；按入学年级、专业及培养方案判断适用。原始分、创新学分与综合素质测评分值不得互换；不得承诺认定成功或当前申报开放；不得擅自解释第22条专业技术证书“学分”与第11条的换算关系。缺少学院当期通知、专业适用依据或目录时，应追问或拒答。"
+    },
+    "retest": {
+      "decision": "approved_scoped",
+      "reviewer": "组长",
+      "reviewed_on": "2026-11-25",
+      "checked_on": "2026-11-25",
+      "check_method": "official source/snapshot and content review; group-lead scoped human signoff 2026-11-25",
+      "timeliness_verification_status": "expired",
+      "policy_status": "expired（2027年接收直博生及硕士推免复试方案；仅作限定范围历史参考）",
+      "verification_note": "这是接收2027年硕士推免生/直博生复试方案，不是取得本科推荐资格的办法。官方嵌入PDF9页已提取，逐页渲染AI对照，第2页6行计划表保留；2026-09-19 11:00首批预报名导出及9月22日首批复试均已过。后续批次以另行公告为准，不宣称现在可报名。未转换复试用表ZIP，完整填写指导不在本次审核范围内。 组长于2026-11-25已完成限定范围人工审核并签核；时效状态登记为expired。本次人工签核不等于正式检索放行，retrieval_status继续保持blocked。",
+      "scope_limitations": "仅允许解释2027届接收推免生的历史复试方案正文；必须区分取得本科推免推荐资格与获得学院接收复试资格。首批预报名导出及首批复试安排已过；不得回答当前开放报名、实时剩余名额或下一届规则，除非有新的官方通知。ZIP附件填写指导明确不在本次审核范围内。"
+    },
+    "qinghe": {
+      "decision": "not_migrated",
+      "reviewer": null,
+      "reviewed_on": null,
+      "checked_on": "2026-11-23",
+      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
+      "timeliness_verification_status": "expired",
+      "policy_status": "本批次截止/首批安排已过，仅历史参考；待最终审核",
+      "verification_note": "2026—2027学年学院本科生青禾计划；2026-10-31前发送报名表电子版至各实验室邮箱，之后材料初选/面试或笔试。XLSX24条记录、226非空单元格全量转换；2空工作表登记，标题合并不填充为行属性。研究方向、条件、人数和官方公开联系渠道保留原值，人数非实时空缺、联系方式未测可达；报名已过期，不推广到下一批。空白报名表仅作原件关联，不采集学生申请资料。",
+      "scope_limitations": "2026—2027学年学院本科生青禾计划；2026-10-31前发送报名表电子版至各实验室邮箱，之后材料初选/面试或笔试。XLSX24条记录、226非空单元格全量转换；2空工作表登记，标题合并不填充为行属性。研究方向、条件、人数和官方公开联系渠道保留原值，人数非实时空缺、联系方式未测可达；报名已过期，不推广到下一批。空白报名表仅作原件关联，不采集学生申请资料。",
+      "decision_reason": "此旧35片段混合包仅为追溯/重提取基线；本轮交接已由R3/R4两个独立包替代，不能把R3/R4签核自动迁移到旧混合包。"
+    }
+  }
+}

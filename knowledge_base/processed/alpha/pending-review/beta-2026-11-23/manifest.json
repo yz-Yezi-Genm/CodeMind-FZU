@@ -4,7 +4,7 @@
   "storage_root": "repository root",
   "stage": "pending-review",
   "enabled_packages": 0,
-  "human_approved_packages": 0,
+  "human_approved_packages": 6,
   "packages": [
     {
       "key": "competition",
@@ -118,5 +118,6 @@
       "retrieval_status": "blocked",
       "human_approved": false
     }
-  ]
+  ],
+  "human_approval_registry": "docs/assignment-03/beta/beta-human-approval-registry.json"
 }
