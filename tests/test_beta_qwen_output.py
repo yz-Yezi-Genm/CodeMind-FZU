@@ -197,5 +197,44 @@ class VerifyAnswerContentFidelityTests(unittest.TestCase):
         self.assertEqual(len(selected), 1)
 
 
+E3_CONTENT = "奖学金申请截止日期为2026年3月15日。"
+E4_CONTENT = "奖学金申请截止日期为2026年3月15日，请在此之前提交材料。"
+
+
+def _evidence_map_with_date() -> dict[str, Evidence]:
+    return {**_evidence_map(), "E3": _evidence(3, E3_CONTENT), "E4": _evidence(4, E4_CONTENT)}
+
+
+class VerifyAnswerDateFactTests(unittest.TestCase):
+    """verify_answer() 的日期事实覆盖校验（V2.1 §11.4，本轮补充）。"""
+
+    def test_requested_deadline_must_be_covered_by_selected_evidence(self):
+        # 问题明确询问截止时间，但所选证据 E1 不含日期信息 → 应拒绝
+        from backend.services.agent_generation import requested_facts
+        facts = requested_facts("截止时间是什么时候？")
+        self.assertTrue(facts, "应识别出日期事实")
+        content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["E1"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map_with_date(), facts=facts)
+
+    def test_requested_deadline_covered_by_evidence_passes(self):
+        # 问题询问截止时间，所选证据 E3 含日期 → 应通过
+        from backend.services.agent_generation import requested_facts
+        facts = requested_facts("申请截止日期是？")
+        self.assertTrue(facts, "应识别出日期事实")
+        content = json.dumps({"answer": E3_CONTENT, "used_evidence_ids": ["E3"]}, ensure_ascii=False)
+        _, selected, _ = verify_answer(content, _evidence_map_with_date(), facts=facts)
+        self.assertEqual(len(selected), 1)
+
+    def test_date_in_answer_must_match_selected_evidence(self):
+        # 日期信息出现在答案中，但必须来自所选证据（答案与证据一致性已由 startswith 校验）
+        from backend.services.agent_generation import requested_facts
+        facts = requested_facts("什么时候截止？")
+        # 答案 E4 含日期，与证据 E4 逐字一致 → 通过
+        content = json.dumps({"answer": E4_CONTENT, "used_evidence_ids": ["E4"]}, ensure_ascii=False)
+        _, selected, _ = verify_answer(content, _evidence_map_with_date(), facts=facts)
+        self.assertEqual(len(selected), 1)
+
+
 if __name__ == "__main__":
     unittest.main()
