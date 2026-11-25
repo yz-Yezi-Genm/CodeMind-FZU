@@ -1611,6 +1611,10 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("百分制成绩 =", result.answer)
         self.assertIn("0.3%", result.answer)
         self.assertEqual([citation.excerpt for citation in result.citations], [raw, formula, weight])
+        result = await workflow.run(self.request("2027届推免志愿服务原始分以及百分制成绩分别怎么算？"))
+        self.assertIn("0 ≤ h < 30 计 2 分", result.answer)
+        self.assertIn("百分制成绩 =", result.answer)
+        self.assertEqual([citation.excerpt for citation in result.citations], [raw, formula])
         self.assertEqual(self.observed, [])
 
     async def test_beta_volunteer_scoring_followups_over_http_keep_cohort_and_latest_hours(self):
@@ -1648,6 +1652,41 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertIn("29.5 小时的原始分为 2 分", corrected["answer"])
             isolated = (await client.post("/api/v1/ask", json={"query": "那30小时呢"})).json()
             self.assertEqual(isolated["status"], "needs_clarification")
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_volunteer_scoring_duration_units_and_uncertainty_over_http(self):
+        self.volunteer_scoring_package()
+        workflow = await self.workflow()
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        subject = "2027届推免志愿服务"
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            for duration in ("30小时及以上", "30小时或以上", "30小时及以下", "30小时或以下",
+                             "不到30分钟", "30分钟左右", "30到60分钟", "几分钟"):
+                with self.subTest(duration=duration):
+                    first = (await client.post("/api/v1/ask", json={"query": f"{subject}原始分怎么算？"})).json()
+                    session = first["conversation_id"]
+                    with patch.object(workflow.retriever, "retrieve", wraps=workflow.retriever.retrieve) as retrieve:
+                        for payload in ({"query": f"{subject}{duration}算多少分？"},
+                                        {"query": f"那{duration}呢", "conversation_id": session}):
+                            response = await client.post("/api/v1/ask", json=payload)
+                            self.assertEqual(response.status_code, 200)
+                            result = response.json()
+                            self.assertEqual(result["status"], "needs_clarification")
+                            self.assertEqual(result["clarifying_question"], alpha_business_rules.QUESTION_VOLUNTEER_HOURS)
+                            self.assertIsNone(result["answer"])
+                            self.assertEqual(result["citations"], [])
+                        retrieve.assert_not_awaited()
+                    for query in ("30分钟", "那半小时呢"):
+                        response = await client.post("/api/v1/ask", json={"query": query, "conversation_id": session})
+                        self.assertEqual(response.status_code, 200)
+                        result = response.json()
+                        self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
+                        self.assertIn("0.5 小时的原始分为 2 分", result["answer"])
+                        self.assertEqual([citation["excerpt"] for citation in result["citations"]],
+                                         [self.package.chunks[0].content])
+            single = (await client.post("/api/v1/ask", json={"query": f"{subject}30分钟多少分？"})).json()
+            self.assertIn("0.5 小时的原始分为 2 分", single["answer"])
         self.assertEqual(self.observed, [])
 
     async def test_beta_volunteer_scoring_clarifies_concept_and_keeps_the_user_choice_over_http(self):

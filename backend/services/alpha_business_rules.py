@@ -32,8 +32,9 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from enum import Enum
+from fractions import Fraction
 from unicodedata import normalize
 from urllib.parse import urlsplit
 from uuid import UUID
@@ -153,7 +154,7 @@ QUESTION_SCHOLARSHIP_DIMENSION = "你想了解申请条件、所需材料，还�
 QUESTION_DEPT_AWARD = "院级奖学金里你关注哪一类？学科竞赛类、学术类、学业类还是学生工作类？"
 QUESTION_RECOMMENDATION_OBJECT = "你想问的是校内推免资格怎么获得，还是学院接收推免的复试安排？"
 QUESTION_VOLUNTEER_COHORT = "请问你想查哪一届推免推荐资格方案的志愿服务计分？"
-QUESTION_VOLUNTEER_HOURS = "请提供准确的志愿服务时长（小时），例如 29.5 小时。"
+QUESTION_VOLUNTEER_HOURS = "请提供准确的志愿服务时长，例如 29.5 小时或 30 分钟。"
 QUESTION_VOLUNTEER_SCORE_KIND = "你想查志愿服务原始分档、百分制成绩的换算公式，还是它在综合测评总成绩中的权重？"
 QUESTION_PROFESSION = "你关注的是哪个专业？"
 QUESTION_DEGREE = "你关注的是学术型、专业型，还是直博？"
@@ -276,31 +277,50 @@ _VOLUNTEER = re.compile(r"志愿服务|志愿时长|志愿活动")
 _VOLUNTEER_SCORE = re.compile(r"成绩|原始分|计分|加分|算分|得分|评分|(?:[多少几]|[0-9])分|分数|怎么算|怎么给分")
 _VOLUNTEER_RAW = re.compile(r"原始分|分档|时长计分|按时长")
 _VOLUNTEER_PERCENT = re.compile(r"百分制|基础分|(?:最高|最大)原始分|原始分最高|换算公式|归一化")
+_SCORE_CONNECTOR = r"\s*(?:以及|和|与|及|还有|、)\s*"
+_VOLUNTEER_RAW_WITH_PERCENT = re.compile(
+    rf"原始分档|原始分(?:分别|是|有|为)?多少|原始分{_SCORE_CONNECTOR}(?:百分制|总评|权重)"
+    rf"|百分制(?:成绩)?{_SCORE_CONNECTOR}原始分"
+)
 _VOLUNTEER_WEIGHT = re.compile(r"权重|占比|占(?:多少|几)|百分比|百分之零点三|0\.3\s*%")
 _VOLUNTEER_OTHER_ISSUE = re.compile(
     r"复试|报名|申请流程|怎么申请|申报|材料|证明|奖学金|创新学分|学分认定|是否符合|能否推免|能不能推免"
 )
 _HOUR_VALUE = r"[+\-−]?\d+(?:\.\d+)?"
-_HOUR_UNIT = r"(?:(?:个\s*)?(?:小时|钟头))"
+_HOUR_UNIT = r"(?:小时|钟头)"
+_DURATION_UNIT = r"(?:小时|钟头|分钟|刻钟)"
+_DURATION_ENDPOINT = rf"(?:{_HOUR_VALUE}|[零〇一二两三四五六七八九十百千万半点几数]+|若干)"
+_DURATION_NUMBER_BOUNDARY = r"(?<![0-9A-Za-z.+\-−零〇一二两三四五六七八九十百千万点个])(?<!\d,)"
+_DURATION_COUNT = re.compile(rf"{_DURATION_UNIT}|秒(?:钟)?")
+_DURATION_PART = re.compile(rf"({_HOUR_VALUE}|半)\s*(?:个\s*)?({_DURATION_UNIT})")
+_DURATION_IN_HOURS = {"小时": Fraction(1), "钟头": Fraction(1), "分钟": Fraction(1, 60), "刻钟": Fraction(1, 4)}
 _INEXACT_HOUR_PREFIX = (
     r"不到|不足|不满|未满|少于|低于|超过|超出|多于|大于(?:等于)?|小于(?:等于)?|高于|不超过|不低于|不少于|不多于"
     r"|至少|至多|最多|最少|约(?:有|为)?|大约|大概|估计|近|差不多|将近|接近|大致|[<>≤≥]"
 )
-_INEXACT_HOUR_SUFFIX = r"以上|以下|以内|以外|左右|上下|多(?:一点|一些)?|余|出头|半|起|或更[多少]"
-_HOUR_RANGE = r"到|至|或(?:者)?|[-—–~～±]"
-_VOLUNTEER_HOURS = re.compile(
-    rf"(?<![0-9A-Za-z.+\-−])(?<!\d,)(?P<hours>{_HOUR_VALUE})\s*{_HOUR_UNIT}"
+_INEXACT_HOUR_SUFFIX = r"(?:及|或)?\s*以[上下内外]|左右|上下|多(?:一点|一些)?(?![少长大久])|余|出头|起|或更[多少]"
+_HOUR_RANGE = r"(?:到|至|或(?:者)?|[-—–~～±])"
+_DURATION_TERM = rf"{_DURATION_ENDPOINT}\s*(?:个\s*)?{_DURATION_UNIT}"
+_DURATION_RANGE = (
+    rf"(?:{_DURATION_TERM}\s*{_HOUR_RANGE}\s*{_DURATION_ENDPOINT}(?:\s*{_DURATION_UNIT})?"
+    rf"|{_DURATION_ENDPOINT}\s*{_HOUR_RANGE}\s*{_DURATION_TERM})"
+)
+_VOLUNTEER_DURATION = re.compile(
+    rf"{_DURATION_NUMBER_BOUNDARY}(?:"
+    rf"{_HOUR_VALUE}\s*(?:个\s*)?{_HOUR_UNIT}(?:\s*(?:{_HOUR_VALUE}\s*分钟|半))?"
+    rf"|(?:{_HOUR_VALUE}|半)\s*(?:个\s*)?{_DURATION_UNIT})"
 )
 _INEXACT_VOLUNTEER_HOURS = re.compile(
-    rf"(?:{_INEXACT_HOUR_PREFIX})\s*{_HOUR_VALUE}"
-    rf"|{_HOUR_VALUE}\s*(?:{_HOUR_UNIT}\s*)?(?:{_HOUR_RANGE})\s*{_HOUR_VALUE}"
-    rf"|{_HOUR_UNIT}\s*(?:{_INEXACT_HOUR_SUFFIX})"
-    r"|分钟|刻钟"
+    rf"(?:{_INEXACT_HOUR_PREFIX})\s*{_DURATION_TERM}"
+    rf"|{_DURATION_RANGE}"
+    rf"|{_DURATION_UNIT}(?:\s*半)?\s*(?:\(\s*)?(?:{_INEXACT_HOUR_SUFFIX})"
+    rf"|(?:{_HOUR_VALUE}|[零〇一二两三四五六七八九十百千万]+)\s*(?:个\s*)?半\s*{_HOUR_UNIT}"
 )
 _VOLUNTEER_HOURS_REPLY = re.compile(
-    rf"(?:那(?:么)?\s*)?(?:(?:{_INEXACT_HOUR_PREFIX})\s*)?{_HOUR_VALUE}\s*"
-    rf"(?:{_HOUR_UNIT}\s*)?(?:(?:{_HOUR_RANGE})\s*{_HOUR_VALUE}\s*)?{_HOUR_UNIT}"
-    rf"(?:\s*(?:{_INEXACT_HOUR_SUFFIX}))?(?:\s*(?:呢|(?:是|能加|可以加|算)?(?:多少|几)分))?[？?。！!]*"
+    rf"(?:那(?:么)?[，,]?\s*)?(?:(?:{_INEXACT_HOUR_PREFIX})\s*)?"
+    rf"(?:{_DURATION_RANGE}|{_DURATION_TERM}(?:\s*(?:{_HOUR_VALUE}\s*分钟|半))?)"
+    rf"(?:\s*(?:\(\s*)?(?:{_INEXACT_HOUR_SUFFIX})\)?)?"
+    r"(?:\s*(?:呢|(?:是|能加|可以加|算|计)?(?:多少|几)分))?[？?。！!]*"
 )
 _VOLUNTEER_COHORT_REPLY = re.compile(r"(?:20\d{2}年|20\d{2}届)(?:呢|[？?。！!])*\s*")
 _VOLUNTEER_KIND_REPLY = re.compile(
@@ -479,7 +499,7 @@ class VolunteerScoreKind(Enum):
 @dataclass(frozen=True)
 class VolunteerScoringRequest:
     kinds: frozenset[VolunteerScoreKind]
-    hours: tuple[Decimal, ...]
+    hours: tuple[Fraction, ...]
     invalid_hours: bool
 
 
@@ -487,26 +507,33 @@ def volunteer_scoring_request(request: AgentRequest) -> VolunteerScoringRequest 
     query = normalize("NFKC", request.query)
     if not _VOLUNTEER.search(query) or _VOLUNTEER_OTHER_ISSUE.search(query):
         return None
-    hour_units = re.findall(r"小时|钟头", query)
+    duration_units = _DURATION_COUNT.findall(query)
     kinds = {kind for kind, cue in (
         (VolunteerScoreKind.RAW, _VOLUNTEER_RAW),
         (VolunteerScoreKind.PERCENT, _VOLUNTEER_PERCENT),
         (VolunteerScoreKind.WEIGHT, _VOLUNTEER_WEIGHT),
     ) if cue.search(query)}
     # Mentions of raw scores as inputs to the formula do not ask for the raw tier.
-    if VolunteerScoreKind.PERCENT in kinds and not (
-        re.search(r"原始分档|原始分(?:分别|是|有|为)?多少|原始分[和与、]\s*(?:百分制|总评|权重)"
-                  r"|百分制(?:成绩)?[和与、]\s*原始分", query)
-    ):
+    if VolunteerScoreKind.PERCENT in kinds and not _VOLUNTEER_RAW_WITH_PERCENT.search(query):
         kinds.discard(VolunteerScoreKind.RAW)
-    if hour_units and not kinds and "成绩" not in query and "折算" not in query:
+    if duration_units and not kinds and "成绩" not in query and "折算" not in query:
         kinds.add(VolunteerScoreKind.RAW)
-    if not (kinds or hour_units or _VOLUNTEER_SCORE.search(query) or "折算" in query):
+    if not (kinds or duration_units or _VOLUNTEER_SCORE.search(query) or "折算" in query):
         return None
-    hours = tuple(Decimal(value.replace("−", "-")) for value in _VOLUNTEER_HOURS.findall(query))
-    invalid = (len(hours) != len(hour_units) or any(value < 0 for value in hours)
-               or bool(hour_units and _INEXACT_VOLUNTEER_HOURS.search(query)))
-    return VolunteerScoringRequest(frozenset(kinds), hours, invalid)
+    durations = _VOLUNTEER_DURATION.findall(query)
+    if duration_units and (sum(len(_DURATION_COUNT.findall(value)) for value in durations) != len(duration_units)
+                           or _INEXACT_VOLUNTEER_HOURS.search(query)):
+        return VolunteerScoringRequest(frozenset(kinds), (), invalid_hours=True)
+    hours = []
+    for duration in durations:
+        parts = [
+            (Fraction(1, 2) if value == "半" else Fraction(value.replace("−", "-"))) * _DURATION_IN_HOURS[unit]
+            for value, unit in _DURATION_PART.findall(duration)
+        ]
+        if any(part < 0 for part in parts):
+            return VolunteerScoringRequest(frozenset(kinds), (), invalid_hours=True)
+        hours.append(sum(parts, Fraction(1, 2) if duration.endswith("半") else Fraction(0)))
+    return VolunteerScoringRequest(frozenset(kinds), tuple(hours), invalid_hours=False)
 
 
 def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
@@ -558,7 +585,7 @@ def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
         # Keep an uncorrected range intact so it can never become a single endpoint.
         if previous_scoring.invalid_hours and not retained_hours:
             return request.model_copy(update={"query": f"{retained_cohort or ''}{original}", "history": []})
-        hours = retained_hours or "、".join(match[0] for match in _VOLUNTEER_HOURS.finditer(original))
+        hours = retained_hours or "、".join(_VOLUNTEER_DURATION.findall(original))
         return request.model_copy(update={
             "query": f"{retained_cohort or ''}推免志愿服务{kind_reply[1]} {hours}".strip(),
             "history": [] if retained_cohort else history,
@@ -567,7 +594,7 @@ def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
         subject = _YEAR.sub("", normalize("NFKC", previous.content))
         if retained_kind:
             if retained_hours or not previous_scoring.invalid_hours:
-                hours = retained_hours or "、".join(match[0] for match in _VOLUNTEER_HOURS.finditer(subject))
+                hours = retained_hours or "、".join(_VOLUNTEER_DURATION.findall(subject))
                 subject = f"推免志愿服务{retained_kind} {hours}"
         return request.model_copy(update={"query": f"{query} {subject}", "history": []})
     if retained_cohort and not _has_time_intent(query):
@@ -575,15 +602,23 @@ def contextual_volunteer_request(request: AgentRequest) -> AgentRequest | None:
     return request.model_copy(update={"query": query, "history": [] if _has_time_intent(query) else history})
 
 
-def volunteer_service_raw_score(hours: Decimal) -> int:
+def volunteer_service_raw_score(hours: Decimal | Fraction) -> int:
     """Project interpretation for the 2027 recommendation plan, in hours."""
-    if not hours.is_finite() or hours < 0:
+    if (isinstance(hours, Decimal) and not hours.is_finite()) or hours < 0:
         raise ValueError("Volunteer service hours must be finite and nonnegative")
     if hours < 30:
         return 2
     if hours < 60:
         return 4
     return 6
+
+
+def format_volunteer_hours(hours: Fraction) -> str:
+    """Display an exact decimal where possible, otherwise retain the fraction."""
+    with localcontext() as context:
+        context.prec = len(str(hours.numerator)) + hours.denominator.bit_length()
+        decimal = Decimal(hours.numerator) / Decimal(hours.denominator)
+    return f"{decimal:f}" if Fraction(decimal) == hours else str(hours)
 
 
 def volunteer_scoring_evidence(

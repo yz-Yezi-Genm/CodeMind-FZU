@@ -6,6 +6,7 @@ import json
 import uuid
 from datetime import date
 from decimal import Decimal
+from fractions import Fraction
 
 import pytest
 
@@ -104,10 +105,31 @@ def test_volunteer_service_clarifies_cohort_and_invalid_duration():
 
 @pytest.mark.parametrize("hours", [
     "30到60小时", "30小时到60小时", "不到30小时", "30小时以上", "30小时以内", "30小时左右",
-    "约29.5小时", "30—60小时", "30-60小时", "30±2小时", "30或60小时", "大于等于30小时", "1小时30分钟", "-1小时",
+    "30小时及以上", "30小时或以上", "30小时及以下", "30小时或以下",
+    "约29.5小时", "30—60小时", "30-60小时", "30±2小时", "30或60小时", "大于等于30小时", "-1小时",
+    "约30分钟", "30分钟左右", "不到30分钟", "30到60分钟", "几分钟", "超过半小时", "二个 半小时",
 ])
 def test_volunteer_service_asks_for_exact_hours(hours):
     assert alpha_clarification_rule(_request(f"2027届推免志愿服务{hours}算多少分？")) == business_rules.QUESTION_VOLUNTEER_HOURS
+
+
+@pytest.mark.parametrize(("duration", "hours", "points"), [
+    ("30分钟", Fraction(1, 2), 2), ("半小时", Fraction(1, 2), 2),
+    ("1小时30分钟", Fraction(3, 2), 2), ("1小时 半", Fraction(3, 2), 2),
+    ("1799分钟", Fraction(1799, 60), 2), ("1800分钟", Fraction(30), 4),
+    ("3599分钟", Fraction(3599, 60), 4), ("3600分钟", Fraction(60), 6),
+])
+def test_volunteer_service_converts_exact_durations(duration, hours, points):
+    selection = business_rules.volunteer_scoring_request(_request(f"2027届推免志愿服务{duration}算多少分？"))
+    assert not selection.invalid_hours
+    assert selection.hours == (hours,)
+    assert business_rules.volunteer_service_raw_score(selection.hours[0]) == points
+
+
+@pytest.mark.parametrize("concepts", ["原始分以及百分制成绩", "百分制成绩及原始分", "原始分、百分制成绩"])
+def test_volunteer_service_recognizes_joint_score_concepts(concepts):
+    selection = business_rules.volunteer_scoring_request(_request(f"2027届推免志愿服务{concepts}分别怎么算？"))
+    assert selection.kinds == {business_rules.VolunteerScoreKind.RAW, business_rules.VolunteerScoreKind.PERCENT}
 
 
 def _chunk(
