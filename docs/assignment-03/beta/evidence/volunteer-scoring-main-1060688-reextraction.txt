@@ -1,0 +1,34 @@
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ RawReextractionTests.test_failed_preflight_does_not_create_output_directory _
+knowledge_base\processing\test_beta_reextraction.py:141: in test_failed_preflight_does_not_create_output_directory
+    build.build()
+knowledge_base\processing\build_beta_policy_review.py:260: in build
+    load_human_approval_registry()
+knowledge_base\processing\build_beta_policy_review.py:65: in load_human_approval_registry
+    registry = read(APPROVAL_REGISTRY)
+D:\se_teamalpha\python-3.10.11\tools\lib\unittest\mock.py:1114: in __call__
+    return self._mock_call(*args, **kwargs)
+D:\se_teamalpha\python-3.10.11\tools\lib\unittest\mock.py:1118: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+D:\se_teamalpha\python-3.10.11\tools\lib\unittest\mock.py:1179: in _execute_mock_call
+    result = effect(*args, **kwargs)
+knowledge_base\processing\test_beta_reextraction.py:137: in read_candidate
+    raise AssertionError("Build read configuration after a failed source preflight")
+E   AssertionError: Build read configuration after a failed source preflight
+_ RawReextractionTests.test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original _
+knowledge_base\processing\test_beta_reextraction.py:98: in test_regenerated_forged_outputs_cannot_mask_unchanged_xlsx_original
+    build.build()
+knowledge_base\processing\build_beta_policy_review.py:260: in build
+    load_human_approval_registry()
+knowledge_base\processing\build_beta_policy_review.py:65: in load_human_approval_registry
+    registry = read(APPROVAL_REGISTRY)
+knowledge_base\processing\build_beta_policy_review.py:55: in read
+    return json.loads((ROOT / path).read_text(encoding="utf-8-sig"))
+D:\se_teamalpha\python-3.10.11\tools\lib\pathlib.py:1134: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+D:\se_teamalpha\python-3.10.11\tools\lib\pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\shing\\AppData\\Local\\Temp\\tmp7285n7a4\\docs\\assignment-03\\beta\\beta-human-approval-registry.json'
+2 failed, 7 deselected in 3.12s

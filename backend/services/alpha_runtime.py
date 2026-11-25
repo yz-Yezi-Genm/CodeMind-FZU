@@ -391,12 +391,14 @@ async def build_alpha_runtime(
         )
         if llm_client is None:
             qwen_settings = QwenSettings.from_env()
+            # This is a configured theoretical budget. AgentWorkflow's
+            # asyncio.wait_for() remains the actual stage wall-clock deadline.
             if (
                 qwen_settings.maximum_call_budget_seconds
                 > workflow_timeout_seconds
             ):
                 raise LLMConfigurationError(
-                    "Qwen 超时与重试预算超过 AgentWorkflow 单阶段超时，"
+                    "Qwen 理论超时与重试预算超过 AgentWorkflow 单阶段超时，"
                     "请减少重试次数或缩短单次超时。"
                 )
             client = QwenLLMClient(qwen_settings)

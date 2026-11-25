@@ -105,7 +105,7 @@ class LLMResponseError(ServiceError):
         super().__init__(
             message,
             code="MODEL_UNAVAILABLE",
-            http_status=502,
+            http_status=503,
             retryable=False,
         )
 

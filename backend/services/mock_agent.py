@@ -55,7 +55,8 @@ class MockAgentService:
                 "当前 API 已成功调用模拟 Agent 并返回结果。"
                 "这不是经过核验的真实政策答案。"
             ),
-            answer_mode=None,
+            # Synthetic mode for UI contract exercise; not a verified policy answer.
+            answer_mode=AnswerMode.CURRENT_POLICY,
             clarifying_question=None,
             citations=[],
             warnings=[

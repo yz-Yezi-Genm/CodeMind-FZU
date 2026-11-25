@@ -17,6 +17,7 @@ from backend.contracts.models import (
     AgentRequest,
     AgentResult,
     AnswerStatus,
+    AnswerMode,
     ConversationTurn,
     LLMGenerateRequest,
     LLMResult,
@@ -42,6 +43,7 @@ class CapturingAgentService:
         self.request = request
         return AgentResult(
             status=AnswerStatus.ANSWERED,
+            answer_mode=AnswerMode.CURRENT_POLICY,
             answer="契约联调成功。",
         )
 
@@ -81,6 +83,7 @@ class RecordingConversationAgent:
         )
         return AgentResult(
             status=AnswerStatus.ANSWERED,
+            answer_mode=AnswerMode.CURRENT_POLICY,
             answer=f"已处理：{request.query}",
         )
 
@@ -100,6 +103,7 @@ class BlockingConversationAgent(RecordingConversationAgent):
             await self.allow_second.wait()
             return AgentResult(
                 status=AnswerStatus.ANSWERED,
+                answer_mode=AnswerMode.CURRENT_POLICY,
                 answer=f"已处理：{request.query}",
             )
         return await super().run(request)
@@ -112,12 +116,8 @@ class EvidenceSelectingRuntimeLLM:
         return LLMResult(
             content=json.dumps(
                 {
-                    "evidence": [
-                        {
-                            "chunk_id": first["chunk_id"],
-                            "quote": first["content"],
-                        }
-                    ]
+                    "answer": first["content"],
+                    "used_evidence_ids": [first["evidence_id"]]
                 },
                 ensure_ascii=False,
             ),
@@ -459,6 +459,7 @@ class ConversationRuntimeTests(unittest.IsolatedAsyncioTestCase):
                     raise RuntimeError("temporary failure")
                 return AgentResult(
                     status=AnswerStatus.ANSWERED,
+                    answer_mode=AnswerMode.CURRENT_POLICY,
                     answer="重试成功",
                 )
 

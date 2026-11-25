@@ -1,0 +1,483 @@
+{
+  "metadata": {
+    "title": "关于2026-2027学年“青禾计划”本科生进实验室报名的通知",
+    "document_type": "年度通知",
+    "category_name": "科研实践与实验室",
+    "business_direction_codes": [
+      "COLLEGE_RESOURCES"
+    ],
+    "record_code": "计算机学院-2026-青禾计划",
+    "version_no": "beta-review-2026-11-23-1",
+    "publisher": "福州大学计算机与大数据学院（软件学院）",
+    "responsible_department": "学生工作/本科生培养",
+    "document_number": null,
+    "source_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+    "source_page_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+    "published_on": "2026-10-16",
+    "issued_on": null,
+    "effective_on": null,
+    "deadline_on": "2026-10-31",
+    "document_written_on": null,
+    "applicability_raw": {
+      "对象": "计算机与大数据学院（软件学院）全体本科生；另看各实验室接收条件",
+      "批次": "2026—2027学年青禾计划；报名期已过",
+      "资源状态": "发布时计划与联系渠道，非实时招生名额"
+    },
+    "policy_status": "本批次截止/首批安排已过，仅历史参考；待最终审核",
+    "source_verification_status": "verified",
+    "timeliness_verification_status": "expired",
+    "extraction_status": "extracted",
+    "v1_inclusion_status": "included",
+    "retrieval_status": "blocked",
+    "inclusion_reason": "资料与首版四方向相关；纳入登记范围，可靠回答资格仍待逐项审核。",
+    "verification_note": "2026—2027学年学院本科生青禾计划；2026-10-31前发送报名表电子版至各实验室邮箱，之后材料初选/面试或笔试。XLSX24条记录、226非空单元格全量转换；2空工作表登记，标题合并不填充为行属性。研究方向、条件、人数和官方公开联系渠道保留原值，人数非实时空缺、联系方式未测可达；报名已过期，不推广到下一批。空白报名表仅作原件关联，不采集学生申请资料。",
+    "import_snapshot": {
+      "记录编号": "计算机学院-2026-青禾计划",
+      "标题": "关于2026-2027学年“青禾计划”本科生进实验室报名的通知",
+      "发布单位": "福州大学计算机与大数据学院（软件学院）",
+      "负责部门": "学生工作/本科生培养",
+      "文号": "",
+      "资料类型": "年度通知",
+      "发布日期": "2026-10-16",
+      "生效日期": "2026-10-16",
+      "适用年级": "全体本科生",
+      "适用专业": "计算机与大数据学院/软件学院",
+      "适用对象": "本科生",
+      "状态": "截止日前有效",
+      "来源网址": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "原始文件": "原始资料/学院/计算机学院_2026_2027_青禾计划_进实验室报名通知.html",
+      "附件路径": "原始资料/学院/计算机学院_2026_2027_青禾计划_实验室需求一览表.xlsx；原始资料/学院/计算机学院_2026_2027_青禾计划_报名表.docx",
+      "最后核验日期": "2026-10-18",
+      "内容哈希": "F1FFC1F59940800F1A432EF3601324EBC74AF4B3D5331E5C529D186E01BB2C7B",
+      "截止日期": "",
+      "文件成文日期": "",
+      "核验状态": "本地文件与来源登记已核查；政策时效待逐条联网复核",
+      "核验说明": "",
+      "检索用途": "默认候选，使用前须按状态和适用范围筛选",
+      "附件来源": "",
+      "来源页面": "",
+      "来源页面发布日期": "",
+      "整理文件": "整理资料/学院/计算机学院_2026_2027_青禾计划_进实验室报名通知.md",
+      "正文文件": "正文资料/学院/计算机学院_2026_2027_青禾计划_进实验室报名通知.md",
+      "正文提取状态": "已提取正文，待人工语义复核",
+      "附件处理状态": "网页有2个附件入口；附件完整性需逐项核对；DOCX段落及表格已提取；合并单元格、脚注及版式待复核；Excel/旧版DOC/压缩包等附件已保存，内容未结构化提取",
+      "本地核查日期": "2026-10-21",
+      "初次核查整理稿状态": "摘要或简要说明",
+      "关联资料": "",
+      "印发日期": "",
+      "主题分类": "科研实践与实验室",
+      "原登记内容哈希": "",
+      "哈希更正说明": "",
+      "附件哈希": "{\"原始资料/学院/计算机学院_2026_2027_青禾计划_实验室需求一览表.xlsx\": \"233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed\", \"原始资料/学院/计算机学院_2026_2027_青禾计划_报名表.docx\": \"1b13c52218225fd2398101b97da56a1214f03abcab42d92773d48fddb26aed85\"}"
+    },
+    "temporal_notes": {
+      "checked_on": "2026-11-23",
+      "check_method": "official snapshot/hash/structure comparison; AI review, not human signoff",
+      "human_approved": false,
+      "baseline_version": "import-1",
+      "beta_domains": [
+        "S4"
+      ],
+      "scope_limitations": "2026—2027学年学院本科生青禾计划；2026-10-31前发送报名表电子版至各实验室邮箱，之后材料初选/面试或笔试。XLSX24条记录、226非空单元格全量转换；2空工作表登记，标题合并不填充为行属性。研究方向、条件、人数和官方公开联系渠道保留原值，人数非实时空缺、联系方式未测可达；报名已过期，不推广到下一批。空白报名表仅作原件关联，不采集学生申请资料。",
+      "version_search_evidence": "knowledge_base/processing/policy-review/2026-11-23/verification-evidence.json",
+      "deadline_meaning": "原文10月31日前；未给时刻",
+      "business_scope_adjustment": {
+        "original_business_direction_codes": [
+          "COMPETITION_RESEARCH",
+          "COLLEGE_RESOURCES"
+        ],
+        "reason": "Beta审核要求：青禾计划仅用于S4学院资源导航，不进入S1竞赛认定。"
+      }
+    }
+  },
+  "files": [
+    {
+      "file_role": "extracted",
+      "storage_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_name": "qinghe.md",
+      "media_type": "text/markdown",
+      "sha256": "5702f7b94d91339b5ab52558978db4f95ebcbab0ce0dd2fa492b151e372b3750",
+      "source_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "processing_status": "extracted"
+    },
+    {
+      "file_role": "attachment",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_name": "计算机与大数据学院（软件学院）本科生进实验室需求一览表.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "sha256": "233ec737ae79b7b366202816211fb6ee5575b75fe241f9ef88a8d79fc0bc3fed",
+      "source_url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18557344",
+      "processing_status": "saved"
+    },
+    {
+      "file_role": "attachment",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-registration.docx",
+      "original_name": "计算机与大数据学院（软件学院）本科生进实验室报名表 .docx",
+      "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sha256": "1b13c52218225fd2398101b97da56a1214f03abcab42d92773d48fddb26aed85",
+      "source_url": "https://ccds.fzu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1776636274&wbfileid=18557343",
+      "processing_status": "saved"
+    },
+    {
+      "file_role": "original",
+      "storage_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_name": "qinghe.html",
+      "media_type": "text/html",
+      "sha256": "2e309abaf05184e86ffc39c6759a40d10480a66ee3241916972af8dfa46ca94c",
+      "source_url": "https://ccds.fzu.edu.cn/info/1160/12008.htm",
+      "processing_status": "saved"
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_no": 1,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0001\n\n各位同学：",
+      "locator": "L1-L3 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0001",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 1, \"line_end\": 3, \"char_start\": 0, \"char_end\": 55, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0001\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[1]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 2,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0002\n\n经前期准备和各实验室需求申报，现面向我院全体本科生正式启动2026-2027学年本科生进实验室工作，具体工作安排如下：",
+      "locator": "L5-L7 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0002",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 5, \"line_end\": 7, \"char_start\": 57, \"char_end\": 166, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0002\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[2]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 3,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0003\n\n1、报名对象：我院全体本科生",
+      "locator": "L9-L11 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0003",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 9, \"line_end\": 11, \"char_start\": 168, \"char_end\": 232, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0003\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[3]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 4,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0004\n\n2、报名方式：根据《本科生进实验室需求一览表》（附件1），结合自身规划，于10月31日前将报名表电子版（附件2）发送至各实验室联系邮箱（详见附件1）。",
+      "locator": "L13-L15 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0004",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 13, \"line_end\": 15, \"char_start\": 234, \"char_end\": 359, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0004\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[4]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 5,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0005\n\n3、选拔方式：",
+      "locator": "L17-L19 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0005",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 17, \"line_end\": 19, \"char_start\": 361, \"char_end\": 418, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0005\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[5]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 6,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0006\n\n报名流程完成后，各实验室将根据报名材料进行初选并组织面试或笔试，通过后即可进入该实验室进行学习。",
+      "locator": "L21-L23 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0006",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 21, \"line_end\": 23, \"char_start\": 420, \"char_end\": 518, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0006\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[6]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 7,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0007\n\n如有疑问，请联系各实验室，联系方式详见附件1。",
+      "locator": "L25-L27 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0007",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 25, \"line_end\": 27, \"char_start\": 520, \"char_end\": 593, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0007\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[7]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 8,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0008\n\n联系人：朱万青 18396148510",
+      "locator": "L29-L31 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0008",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 29, \"line_end\": 31, \"char_start\": 595, \"char_end\": 664, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0008\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[8]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 9,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0009\n\n计算机与大数据学院（软件学院）",
+      "locator": "L33-L35 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0009",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 33, \"line_end\": 35, \"char_start\": 666, \"char_end\": 731, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0009\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[9]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 10,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0010\n\n2026年10月16日",
+      "locator": "L37-L39 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0010",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 37, \"line_end\": 39, \"char_start\": 733, \"char_end\": 794, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 |  | 来源单元0010\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe.html",
+      "original_locator": "/html/body/div[6]/div[2]/form/div/div[2]/div/div/p[10]",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 11,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 原表标题与字段 | 来源单元0011\n\n计算机与大数据学院（软件学院）本科生进实验室需求一览表\n\n原表字段：序号；实验室名称；实验室简介（100字左右）；实验室地点；联系人；联系电话或邮箱；计划接收人数\n接收条件；考核方式；科研成果与学生典型事迹\n（可附上网页链接）",
+      "locator": "L41-L47 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 原表标题与字段 | 来源单元0011",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 41, \"line_end\": 47, \"char_start\": 796, \"char_end\": 966, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 原表标题与字段 | 来源单元0011\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A1:I2",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 12,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室01：福州大学超算团队 | 来源单元0012\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A3）：\n1\n\n实验室名称（B3）：\n福州大学超算团队\n\n实验室简介（100字左右）（C3）：\n福州大学超级计算团队旨在培养面向未来的超级计算拔尖创新人才。秉承“师生共建、产学协同”理论，近几年以来，屡创佳绩：\n（1）连续六年闯入世界大学生超算竞赛（ASC）全球总决赛，并获得一等奖；（2）2018年，全国并行应用大赛（PAC）银奖和国家工程实验室特别奖；（3）2019年首届数字中国创新大赛总决赛一等奖和最佳商业价值奖；（4）2021年获ACM中国国际并行计算挑战赛（IPCC）三等奖。实验室每年遴选组队参加全国并行应用大赛PAC和世界大学生超算ASC竞赛、IPCC挑战赛。\n\n实验室地点（D3）：\n福州大学国家大学科技园2号楼B口4层南405\n\n联系人（E3）：\n廖祥文\n吴运兵\n\n联系电话或邮箱（F3）：\n吴运兵（13859028940）\n28806938@qq.com\n\n原WPS富文本超链接（F3）：mailto:28806938@qq.com\n\n计划接收人数 接收条件（G3）：\n接收10人左右，为每名入选学生提供工位和PC机。要求：态度积极、基础扎实，原则上要求绩点前30%。\n\n考核方式（H3）：\n考核方案采用面试和基础考试等，侧重考查参与态度、基础知识、学习成绩等\n\n科研成果与学生典型事迹 （可附上网页链接）（I3）：\n福州大学超算团队的媒体宣传与报道\n1、 学习强国（视频）https://article.xuexi.cn/articles/index.html?share_to=wx_single&study_style_id=video_default&source=share&art_id=2408458832829729620&item_id=2408458832829729620&cdn=https%3A%2F%2Fregion-fujian-resource\n2、 新福建（视频）https://share.fjdaily.com/displayTemplate/news/newsDetail/3370/3478783.html?isShare=true&advColumnId=0\n3、 福建省人民政府转载网页：2025-05-25\nhttps://www.fujian.gov.cn/xwdt/mszx/202505/t20250525_6917805.htm\n4、 福建日报网页：2025-05-25\nhttps://fjrb.fjdaily.com/pc/con/202505/25/content_452666.html\n5、 学习强国福建学习平台转载网页：2025-05-25\nhttps://www.xuexi.cn/local/normalTemplate.html?itemId=1606547488427475680\n6、 福州晚报网页：2025-05-16\nhttps://mag.fznews.com.cn/fzwb/2025/20250516/20250516_A02/20250516_A02_2.htm\n\n原WPS富文本超链接（I3）：https://article.xuexi.cn/articles/index.html?share_to=wx_single&study_style_id=video_default&source=share&art_id=2408458832829729620&item_id=2408458832829729620&cdn=https%3A%2F%2Fregion-fujian-resource\n\n原WPS富文本超链接（I3）：https://share.fjdaily.com/displayTemplate/news/newsDetail/3370/3478783.html?isShare=true&advColumnId=0\n\n原WPS富文本超链接（I3）：https://www.fujian.gov.cn/xwdt/mszx/202505/t20250525_6917805.htm\n\n原WPS富文本超链接（I3）：https://fjrb.fjdaily.com/pc/con/202505/25/content_452666.html\n\n原WPS富文本超链接（I3）：https://www.xuexi.cn/local/normalTemplate.html?itemId=1606547488427475680\n\n原WPS富文本超链接（I3）：https://mag.fznews.com.cn/fzwb/2025/20250516/20250516_A02/20250516_A02_2.htm",
+      "locator": "L49-L105 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室01：福州大学超算团队 | 来源单元0012",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 49, \"line_end\": 105, \"char_start\": 968, \"char_end\": 3124, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室01：福州大学超算团队 | 来源单元0012\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A3:I3",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 13,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室02：网络流量分析与异常检测课题组 | 来源单元0013\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A4）：\n2\n\n实验室名称（B4）：\n网络流量分析与异常检测课题组\n\n实验室简介（100字左右）（C4）：\n课题组研究领域涉及网络流量异常检测、安全大数据分析、机器学习算法、智能计算、优化算法设计等。近期主要研究内容涉及基于图表示的恶意流量检测、加密流量多模态分类、基于联邦学习与域泛化分布式入侵检测、多维特征融合的集成学习网络异常流量检测、半监督异常流量检测、SDN环境下DDoS检测等工作。\n\n实验室地点（D4）：\n福州大学计算机与大数据学院2#302\n\n联系人（E4）：\n张浩\n\n联系电话或邮箱（F4）：\n13720825396\nzhanghao@fzu.edu.cn\n\n原WPS富文本超链接（F4）：mailto:zhanghao@fzu.edu.cn\n\n计划接收人数 接收条件（G4）：\n4人左右。要求：勤奋好学，具有一定的计算机网络和网络安全基础。\n\n考核方式（H4）：\n考核方式采用面试结合学业成绩。\n\n科研成果与学生典型事迹 （可附上网页链接）（I4）：\n详见指导教师主页https://ccds.fzu.edu.cn/info/1203/5012.htm\n\n原WPS富文本超链接（I4）：https://ccds.fzu.edu.cn/info/1203/5012.htm",
+      "locator": "L107-L141 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室02：网络流量分析与异常检测课题组 | 来源单元0013",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 107, \"line_end\": 141, \"char_start\": 3126, \"char_end\": 3867, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室02：网络流量分析与异常检测课题组 | 来源单元0013\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A4:I4",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 14,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室03：人工智能自主创新实验室 | 来源单元0014\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A5）：\n3\n\n实验室名称（B5）：\n人工智能自主创新实验室\n\n实验室简介（100字左右）（C5）：\n福州大学网络信息安全与计算机技术国家级实验教学中心旨在培养具有创新实验和国产化自主研发能力的人工智能创新人才。实验室涉及：华为昇腾AI，信创研发、人工智能创新竞赛、人工智能算法实践等研究内容。\n\n实验室地点（D5）：\n福州大学计算机与大数据学院3#506\n\n联系人（E5）：\n陈飞\n\n联系电话或邮箱（F5）：\n380509981@qq.com\n\n原单元格超链接（F5）：mailto:380509981@qq.com\n\n计划接收人数 接收条件（G5）：\n接收10人左右，为每名入选学生提供工位。要求：态度积极、基础扎实，热爱创新实践。\n\n考核方式（H5）：\n考核方式采用面试结合学业成绩。\n\n科研成果与学生典型事迹 （可附上网页链接）（I5）：\n详见指导教师主页：\nhttps://ccds.fzu.edu.cn/info/1202/10637.htm\nhttps://csip.fzu.edu.cn/?page_id=787\nhttps://ccds.fzu.edu.cn/info/1210/7096.htm \nhttps://ccds.fzu.edu.cn/info/1210/11962.htm\nhttps://ccds.fzu.edu.cn/info/1205/11963.htm\nhttps://ccds.fzu.edu.cn/info/1205/7115.htm\nhttps://ccds.fzu.edu.cn/info/1205/7116.htm\nhttps://ccds.fzu.edu.cn/info/1205/7113.htm\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1202/10637.htm\n\n原WPS富文本超链接（I5）：https://csip.fzu.edu.cn/?page_id=787\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1210/7096.htm\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1210/11962.htm\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1205/11963.htm\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1205/7115.htm\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1205/7116.htm\n\n原WPS富文本超链接（I5）：https://ccds.fzu.edu.cn/info/1205/7113.htm",
+      "locator": "L143-L198 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室03：人工智能自主创新实验室 | 来源单元0014",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 143, \"line_end\": 198, \"char_start\": 3869, \"char_end\": 5256, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室03：人工智能自主创新实验室 | 来源单元0014\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A5:I5",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 15,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室04：福州大学图机器学习课题组 | 来源单元0015\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A6）：\n4\n\n实验室名称（B6）：\n福州大学图机器学习课题组 \n\n实验室简介（100字左右）（C6）：\n研究方向为数据挖掘和智能信息处理、机器学习、灰色方法和算法设计与分析、医工交叉研究。\n\n实验室地点（D6）：\n福州大学计算机与大数据学院2#402\n\n联系人（E6）：\n吴伶\n\n联系电话或邮箱（F6）：\nwuling1985@fzu.edu.cn\n\n原单元格超链接（F6）：mailto:wuling1985@fzu.edu.cn\n\n计划接收人数 接收条件（G6）：\n4人左右。要求：勤奋好学，具有一定的数据挖掘基础、复杂网络分析、深度学习基础。\n\n考核方式（H6）：\n考核方式采用面试结合学业成绩。\n\n科研成果与学生典型事迹 （可附上网页链接）（I6）：\n详见教师主页：https://ccds.fzu.edu.cn/szdw/szxx.htm\n\n原WPS富文本超链接（I6）：https://ccds.fzu.edu.cn/szdw/szxx.htm",
+      "locator": "L200-L233 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室04：福州大学图机器学习课题组 | 来源单元0015",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 200, \"line_end\": 233, \"char_start\": 5258, \"char_end\": 5881, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室04：福州大学图机器学习课题组 | 来源单元0015\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A6:I6",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 16,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室05：福州大学认知系统与信息处理实验室EIC小组 | 来源单元0016\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A7）：\n5\n\n实验室名称（B7）：\n福州大学认知系统与信息处理实验室EIC小组\n\n实验室简介（100字左右）（C7）：\n主要研究多模态深度学习、多智能体系统开发\n\n实验室地点（D7）：\n计算机与大数据学院2#404\n\n联系人（E7）：\n廖龙龙\n\n联系电话或邮箱（F7）：\nt20104@fzu.edu.cn\n\n原单元格超链接（F7）：mailto:t20104@fzu.edu.cn\n\n计划接收人数 接收条件（G7）：\n3-4人，提供token和共享工位。要求: 具有强烈的自愿提升科研能力(保研)或工程开发能力(就业)的愿景和动力\n\n考核方式（H7）：\n面试(侧重学习态度及其目标规划)\n\n科研成果与学生典型事迹 （可附上网页链接）（I7）：\n见教师主页：https://ccds.fzu.edu.cn/info/1207/8330.htm\n\n原WPS富文本超链接（I7）：https://ccds.fzu.edu.cn/info/1207/8330.htm",
+      "locator": "L235-L268 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室05：福州大学认知系统与信息处理实验室EIC小组 | 来源单元0016",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 235, \"line_end\": 268, \"char_start\": 5883, \"char_end\": 6517, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室05：福州大学认知系统与信息处理实验室EIC小组 | 来源单元0016\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A7:I7",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 17,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室06：IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室) | 来源单元0017\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A8）：\n6\n\n实验室名称（B8）：\nIDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室)\n\n实验室简介（100字左右）（C8）：\nIDEA实验室主要研究方向包括智慧医疗、数据挖掘、人工智能、大语言模型、多模态融合、推荐系统及其相关领域。实验室氛围积极上进，致力于发表高水平学术论文。\n\n实验室地点（D8）：\n福州大学计算机与大数据学院4#125\n\n联系人（E8）：\n檀彦超\n\n联系电话或邮箱（F8）：\nyctan@fzu.edu.cn\n\n原单元格超链接（F8）：mailto:yctan@fzu.edu.cn\n\n计划接收人数 接收条件（G8）：\n3-4人，为每名入选学生提供工位。要求：态度积极上进，有一定主观能动性，且具有良好编程能力和英语能力。\n\n考核方式（H8）：\n考核方式采用面试结合学业成绩。\n\n科研成果与学生典型事迹 （可附上网页链接）（I8）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/8959.htm\n\n原WPS富文本超链接（I8）：https://ccds.fzu.edu.cn/info/1207/8959.htm",
+      "locator": "L270-L303 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室06：IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室) | 来源单元0017",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 270, \"line_end\": 303, \"char_start\": 6519, \"char_end\": 7292, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室06：IDEA实验室(Intelligent Data and knowlEdge fusion lAb, 智能数据与知识融合实验室) | 来源单元0017\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A8:I8",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 18,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室07：福州大学数据挖掘课题组 | 来源单元0018\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A9）：\n7\n\n实验室名称（B9）：\n福州大学数据挖掘课题组\n\n实验室简介（100字左右）（C9）：\n主要研究时空数据挖掘、图神经网络、视觉语言模型、强化学习等在遥感、建筑、城市计算、海洋大气中的科学应用\n\n实验室地点（D9）：\n福州大学计算机与大数据学院4#129\n\n联系人（E9）：\n王正鸿\n\n联系电话或邮箱（F9）：\nwzh@fzu.edu.cn\n\n原单元格超链接（F9）：mailto:wzh@fzu.edu.cn\n\n计划接收人数 接收条件（G9）：\n10人左右，要求：勤奋好学，主动积极\n\n考核方式（H9）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I9）：\n见教师主页：https://ccds.fzu.edu.cn/info/1203/11293.htm",
+      "locator": "L305-L336 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室07：福州大学数据挖掘课题组 | 来源单元0018",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 305, \"line_end\": 336, \"char_start\": 7294, \"char_end\": 7827, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室07：福州大学数据挖掘课题组 | 来源单元0018\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A9:I9",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 19,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室08：空间数据挖掘与信息共享教育部重点实验室 | 来源单元0019\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A10）：\n8\n\n实验室名称（B10）：\n空间数据挖掘与信息共享教育部重点实验室\n\n实验室简介（100字左右）（C10）：\n空间数据挖掘与信息共享教育部重点实验室主要围绕环境与自然资源遥感、地理信息建模与分析技术、网络地理信息共享服务技术、时空数据挖掘与决策理论方法等四个研究方向。本组主要研究方向为城市/矿区遥感生态评价、人类活动/人类健康与生态关系、灾害风险（极端气候、地质灾害、火灾、景观）评估分析、数值模拟与预测等。\n\n实验室地点（D10）：\n福州大学国家大学科技园8号楼\n\n联系人（E10）：\n林梦婧\n\n联系电话或邮箱（F10）：\n15396009699\n\n计划接收人数 接收条件（G10）：\n计划接收人数：4\n主要条件：掌握Python、R语言等计算机语言并有能力进行深度学习等相关内容的数值模拟、数据分析。对灾害风险、生态评价、人地关系有一定兴趣的学生。\n\n考核方式（H10）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I10）：\n林梦婧，女，数字中国研究院（福建）副教授，硕士生导师，2024年获得中国科学院大学博士学位。曾前往剑桥大学、加州大学伯克利分校、香港中文大学、台湾东吴大学、厦门大学等多所国内外知名高校交流学习，获包括宝钢教育奖等国内外奖项三十余项。主要从事韧性城市、人地关系等研究。近5年主持课题/省部级子课题5项，参与课题与工作项目近30项，多次在国内外大型会议担任分会场召集人、进行口头汇报及海报展示，发表期刊论文20余篇，发明专利三项",
+      "locator": "L338-L368 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室08：空间数据挖掘与信息共享教育部重点实验室 | 来源单元0019",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 338, \"line_end\": 368, \"char_start\": 7829, \"char_end\": 8671, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室08：空间数据挖掘与信息共享教育部重点实验室 | 来源单元0019\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A10:I10",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 20,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室09：数据智能与交叉信息课题组 | 来源单元0020\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A11）：\n9\n\n实验室名称（B11）：\n数据智能与交叉信息课题组\n\n实验室简介（100字左右）（C11）：\n聚焦数据挖掘、时空智能、交叉信息研究，导师为 2025 年国家海外引才专项引进的丹麦奥尔堡大学博士，深耕科研一线，提供系统科研训练与一对一指导，凭海外经历在外语学习、留学申请上给予指导。欢迎自驱力极强、有志深造的本科生加入。\n\n实验室地点（D11）：\n3号楼101\n\n联系人（E11）：\n赖志宸\n\n联系电话或邮箱（F11）：\nlzc@fzu.edu.cn\n\n原单元格超链接（F11）：http://lzc@fzu.edu.cn\n\n计划接收人数 接收条件（G11）：\n2-5人，绩点排名前30% 或 具有突出竞赛成果，有保研或留学意向优先。\n\n考核方式（H11）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I11）：\n课题组负责人主页： https://www.zhichenlai.com/。曾指导浙江大学、悉尼科技大学和电子科技大学研究生在NeurIPS、IJCAI、CIKM和PR等期刊会议发表论文。\n\n原WPS富文本超链接（I11）：https://www.zhichenlai.com/",
+      "locator": "L370-L403 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室09：数据智能与交叉信息课题组 | 来源单元0020",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 370, \"line_end\": 403, \"char_start\": 8673, \"char_end\": 9375, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室09：数据智能与交叉信息课题组 | 来源单元0020\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A11:I11",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 21,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室10：福州大学-数字媒体实验室（Digital Media Lab，DML) | 来源单元0021\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A12）：\n10\n\n实验室名称（B12）：\n福州大学-数字媒体实验室（Digital Media Lab，DML)\n\n实验室简介（100字左右）（C12）：\nDML数字媒体实验室聚焦数字图像视频处理基本机理研究，长期致力于数字图像智能处理、视频分析与理解、语义分割处理、多模态信息处理等数字媒体处理领域的算法与机理研究。\n\n实验室地点（D12）：\n科技园\n\n联系人（E12）：\n程日\n\n联系电话或邮箱（F12）：\nrcheng@fzu.edu.cn\n\n原单元格超链接（F12）：http://rcheng@fzu.edu.cn\n\n计划接收人数 接收条件（G12）：\n3人，可稳定投入科研时间，能够定期参加组会。\n\n考核方式（H12）：\n前期进行科研基础训练；在掌握基础科研知识后，根据个人情况安排参与科研课题或项目研究。\n\n科研成果与学生典型事迹 （可附上网页链接）（I12）：\nhttps://richeng-web.github.io/\n\n原单元格超链接（I12）：https://richeng-web.github.io/",
+      "locator": "L405-L438 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室10：福州大学-数字媒体实验室（Digital Media Lab，DML) | 来源单元0021",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 405, \"line_end\": 438, \"char_start\": 9377, \"char_end\": 10059, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室10：福州大学-数字媒体实验室（Digital Media Lab，DML) | 来源单元0021\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A12:I12",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 22,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室11：复杂网络大数据分析实验室 | 来源单元0022\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A13）：\n11\n\n实验室名称（B13）：\n复杂网络大数据分析实验室\n\n实验室简介（100字左右）（C13）：\n实验室主要研究方向包括复杂网络分析，隐私保护图学习、分布式图计算、医疗数据分析等。实验室配有由教授、副教授、博士生和硕士生组成的科研梯队，以及高性能CPU服务器集群和GPU服务器，能够为网络大数据分析挖掘的科研提供良好的学术指导和实验环境。实验室实行2+2的实习规划，即两个学期的专业知识补强+两个学期的论文、项目或竞赛实践。实习期间，将针对具体课题组建由研究生和本科生组成的研究小组，定期展开讨论。\n\n实验室地点（D13）：\n计算机与大数据学院2号楼402\n\n联系人（E13）：\n郭昆\n\n联系电话或邮箱（F13）：\ngukn123@163.com\n\n计划接收人数 接收条件（G13）：\n5\n\n考核方式（H13）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I13）：\n近年来，在科研方面，在TBD、TCSS、TNSE、计算机学报、软件学报、通信学报、IJCAI、ICNP、ChineseCSCW等国内外知名学术期刊和会议上发表多篇论文，多次获得Best Paper Award和Best Student Award等奖励。在产学合作方面，与亿力科技、实达迪美等企业合作进行大数据技术在电力、保险、能源等行业的应用研究，研究成果投入企业实际应用，获得国家发明专利10余项，软件著作权6项。其中，“基于云架构的能源监测与分析平台的研制及产业化”获得CCF科技进步杰出奖。在学科竞赛方面，组织指导学生参加多届CCF大数据与计算智能大赛（CCF BDCI），多次获得全国二等奖和优胜奖。\n参与实验室实习的本科同学能够在大四前参与发表学术论文（如：https://ccds.fzu.edu.cn/info/1120/9428.htm）、获得竞赛奖励（如：https://ccds.fzu.edu.cn/info/1120/1866.htm），或在产学合作项目（如：https://ccds.fzu.edu.cn/info/1120/8396.htm）中得到锻炼，丰富个人履历。2025、2026届本科毕业生中有多位在实验室实习（https://ccds.fzu.edu.cn/info/1161/10750.htm）。",
+      "locator": "L440-L470 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室11：复杂网络大数据分析实验室 | 来源单元0022",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 440, \"line_end\": 470, \"char_start\": 10061, \"char_end\": 11221, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室11：复杂网络大数据分析实验室 | 来源单元0022\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A13:I13",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 23,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室12：“AI+复杂工业系统”创新实验室 | 来源单元0023\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A14）：\n12\n\n实验室名称（B14）：\n“AI+复杂工业系统”创新实验室\n\n实验室简介（100字左右）（C14）：\n围绕航空发动机高空环境模拟系统、大型能源动力系统等复杂工业系统，开展信号处理、主动抗扰与智能控制、多智能体协同控制、故障诊断与容错控制、系统安全性与韧性、计算流体力学与深度学习建模、工业大模型应用与AI辅助决策等方向的研究，涵盖理论与算法研究、软硬件系统开发及产品研制等。实验室拥有航空发动机环境模拟试验数字孪生与硬件在环融合测试平台，可支持科研训练、工程应用研究及课程实验等活动。\n\n实验室地点（D14）：\n计算机与大数据学院3号楼104\n\n联系人（E14）：\n张和洪\n张百一\n\n联系电话或邮箱（F14）：\n13625095094\n1204713191@qq.com\n\n 18810721611\nzhangbaiyi@fzu.edu.cn \n\n原WPS富文本超链接（F14）：mailto:1204713191@qq.com\n\n原WPS富文本超链接（F14）：mailto:zhangbaiyi@fzu.edu.cn\n\n计划接收人数 接收条件（G14）：\n招收3-5名\n\n考核方式（H14）：\n面试结合学业成绩\n\n科研成果与学生典型事迹 （可附上网页链接）（I14）：\n所带学生获2024中国国际大学生创新大赛金奖、第十八届“挑战杯”全国大学生课外学术科技作品竞赛二等奖、美国大学生数学建模竞赛、全国大学生电子设计竞赛等赛事奖项。\n多名学生毕业后，通过推免或统招升入北京大学、厦门大学、福州大学等国内外知名高校继续深造，或在中国移动福建省分公司等知名企业就业。\n主页：https://ccds.fzu.edu.cn/info/1206/9081.htm\nhttps://ccds.fzu.edu.cn/info/1203/11303.htm\n\n原WPS富文本超链接（I14）：https://ccds.fzu.edu.cn/info/1206/9081.htm\n\n原WPS富文本超链接（I14）：https://ccds.fzu.edu.cn/info/1203/11303.htm",
+      "locator": "L472-L517 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室12：“AI+复杂工业系统”创新实验室 | 来源单元0023",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 472, \"line_end\": 517, \"char_start\": 11223, \"char_end\": 12323, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室12：“AI+复杂工业系统”创新实验室 | 来源单元0023\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A14:I14",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 24,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室13：多模态智能感知计算研究课题组 | 来源单元0024\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A15）：\n13\n\n实验室名称（B15）：\n多模态智能感知计算研究课题组\n\n实验室简介（100字左右）（C15）：\n1、智能影像分析及其在遥感和医学领域的应用；2、语音增强分析及应用；3、智能文档分析及应用。小组与省立医院、厦门亿联公司等均有良好的合作关系，可支持学生结合具体应用场景开展理论学习、关键技术研究\n\n实验室地点（D15）：\n计算机与大数据学院2号楼509\n\n联系人（E15）：\n翁谦\n林嘉雯\n\n联系电话或邮箱（F15）：\n13960903417\nfzuwq@qq.com\n\n原WPS富文本超链接（F15）：mailto:fzuwq@qq.com\n\n计划接收人数 接收条件（G15）：\n招收3-5名\n\n考核方式（H15）：\n面试结合学业成绩，希望学生能勇于尝试挑战，对AI应用有一定基础，对AI方向有深入思考和学习欲望\n\n科研成果与学生典型事迹 （可附上网页链接）（I15）：\n所带学生多次获人工智能竞赛省级奖项，指导2022,2023级本科生以第一作者在CCF-C类会议发表论文，或联合申请专利\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/5194.htm\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/5195.htm\n\n原WPS富文本超链接（I15）：https://ccds.fzu.edu.cn/info/1207/5194.htm\n\n原WPS富文本超链接（I15）：https://ccds.fzu.edu.cn/info/1207/5195.htm",
+      "locator": "L519-L558 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室13：多模态智能感知计算研究课题组 | 来源单元0024",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 519, \"line_end\": 558, \"char_start\": 12325, \"char_end\": 13195, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室13：多模态智能感知计算研究课题组 | 来源单元0024\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A15:I15",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 25,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室14：EDA创新实验室 | 来源单元0025\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A16）：\n14\n\n实验室名称（B16）：\nEDA创新实验室\n\n实验室简介（100字左右）（C16）：\nEDA创新实验室主要从事集成电路物理设计、印刷电路板(PCB)的自动化设计(EDA)算法和工具研究开发，与上海立芯、华为等企业积极开展产学研合作。相关基础知识主要涉及：离散数学、数据结构与算法。\n\n\n实验室地点（D16）：\n计算机与大数据学院3号楼209\n\n联系人（E16）：\n陈家瑞\n\n联系电话或邮箱（F16）：\n18960870800\n21399095@qq.com\n\n原WPS富文本超链接（F16）：mailto:21399095@qq.com\n\n计划接收人数 接收条件（G16）：\n招收3-5名\n\n考核方式（H16）：\n考核方式采用面试结合学业成绩。\n\n科研成果与学生典型事迹 （可附上网页链接）（I16）：\n实验室多次在国际计算机辅助设计会议（ICCAD）CAD竞赛、EDA精英挑战赛等获奖。\n详见教师主页： https://ccds.fzu.edu.cn/info/1203/11959.htm\n\n原WPS富文本超链接（I16）：https://ccds.fzu.edu.cn/info/1203/11959.htm",
+      "locator": "L560-L596 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室14：EDA创新实验室 | 来源单元0025",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 560, \"line_end\": 596, \"char_start\": 13197, \"char_end\": 13903, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室14：EDA创新实验室 | 来源单元0025\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A16:I16",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 26,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室15：EDA创新实验室 | 来源单元0026\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A17）：\n15\n\n实验室名称（B17）：\nEDA创新实验室\n\n实验室简介（100字左右）（C17）：\n实验室面向集成电路电子设计自动化（EDA）前沿技术，重点开展芯片物理设计、智能优化算法及人工智能赋能EDA等方向研究。实验室注重科研创新与人才培养相结合，积极推进产学研协同，在高水平论文、发明专利及国内外EDA设计竞赛等方面取得了系列成果，致力于培养具有创新能力的集成电路EDA人才。\n\n实验室地点（D17）：\n计算机与大数据学院2号楼301\n\n联系人（E17）：\n刘耿耿\n\n联系电话或邮箱（F17）：\nchenzhisheng@fzu.edu.cn\n\n原单元格超链接（F17）：mailto:chenzhisheng@fzu.edu.cn\n\n计划接收人数 接收条件（G17）：\n招收6-8人\n\n考核方式（H17）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I17）：\n详见教师主页： https://ccds.fzu.edu.cn/info/1202/9820.htm https://ccds.fzu.edu.cn/info/1204/11596.htm\n\n原WPS富文本超链接（I17）：https://ccds.fzu.edu.cn/info/1202/9820.htm\n\n原WPS富文本超链接（I17）：https://ccds.fzu.edu.cn/info/1204/11596.htm",
+      "locator": "L598-L633 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室15：EDA创新实验室 | 来源单元0026",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 598, \"line_end\": 633, \"char_start\": 13905, \"char_end\": 14703, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室15：EDA创新实验室 | 来源单元0026\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A17:I17",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 27,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室16：高效学习与智能计算实验室 | 来源单元0027\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A18）：\n16\n\n实验室名称（B18）：\n高效学习与智能计算实验室\n\n实验室简介（100字左右）（C18）：\n实验室面向大模型时代人工智能高效学习的前沿技术与应用需求，聚焦有限数据与计算资源条件下的模型学习与适配，重点开展大模型领域适配与高效微调、视觉与多模态高效学习、智能优化算法及其应用等方向研究。实验室注重科研创新与人才培养相结合，推动基础理论、关键技术与应用实践协同发展，积极推进产学研合作，致力于提升智能系统的学习效率、泛化能力与领域适应性，培养具有扎实理论基础、科研创新能力和工程实践能力的人工智能人才。\n\n实验室地点（D18）：\n计算机与大数据学院4号楼126\n\n联系人（E18）：\n陈光永\n\n联系电话或邮箱（F18）：\ngychen@fzu.edu.cn\n\n原单元格超链接（F18）：mailto:gychen@fzu.edu.cn\n\n计划接收人数 接收条件（G18）：\n招收2-5人\n\n考核方式（H18）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I18）：\n详见教师主页： https://ccds.fzu.edu.cn/info/1202/8884.htm\n\n原WPS富文本超链接（I18）：https://ccds.fzu.edu.cn/info/1202/8884.htm",
+      "locator": "L635-L668 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室16：高效学习与智能计算实验室 | 来源单元0027",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 635, \"line_end\": 668, \"char_start\": 14705, \"char_end\": 15455, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室16：高效学习与智能计算实验室 | 来源单元0027\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A18:I18",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 28,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室17：知识推理课题组 | 来源单元0028\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A19）：\n17\n\n实验室名称（B19）：\n知识推理课题组\n\n实验室简介（100字左右）（C19）：\n聚焦人工智能与大数据智能计算领域，主要研究知识图谱、大语言模型、数据挖掘及智能信息处理等。围绕知识获取、知识推理和智能应用等问题，面向医疗、智能服务等实际需求，开展基础理论、核心算法及应用研究\n\n实验室地点（D19）：\n计算机与大数据学院2号楼409\n\n联系人（E19）：\n杨锦发\n\n联系电话或邮箱（F19）：\njinfayang@fzu.edu.cn\n\n原单元格超链接（F19）：mailto:jinfayang@fzu.edu.cn\n\n计划接收人数 接收条件（G19）：\n招收2-5人\n\n考核方式（H19）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I19）：\n详见教师主页： https://ccds.fzu.edu.cn/info/1202/8884.htm\n\n原WPS富文本超链接（I19）：https://ccds.fzu.edu.cn/info/1202/8884.htm",
+      "locator": "L670-L703 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室17：知识推理课题组 | 来源单元0028",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 670, \"line_end\": 703, \"char_start\": 15457, \"char_end\": 16096, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室17：知识推理课题组 | 来源单元0028\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A19:I19",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 29,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室18：空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组） | 来源单元0029\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A20）：\n18\n\n实验室名称（B20）：\n空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组）\n\n实验室简介（100字左右）（C20）：\n课题组面向“AI+地理空间智能”开展研究，就是让AI更好地理解“在哪里、发生了什么、为什么发生、接下来会怎样”。我们从旅游出行、城市运行、港口航运等真实场景出发，结合地图、新闻、社交媒体和交通数据，开展时空数据挖掘、知识图谱、大模型应用与社会现象模拟等研究。\n\n实验室地点（D20）：\n晋江楼18层\n\n联系人（E20）：\n高嘉良\n\n联系电话或邮箱（F20）：\n13051426299；gaojl@fzu.edu.cn\n\n原WPS富文本超链接（F20）：mailto:gaojl@fzu.edu.cn\n\n计划接收人数 接收条件（G20）：\n招收2-3人；爱生活、爱观察、爱思考、肯动手的同学优先\n\n考核方式（H20）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I20）：\n课题组学生团队参加第四届“数智港航”数据创新应用大赛，获得一等奖、二等奖、三等奖各1项；已有同学参与论文撰写、国家发明专利申请和原型系统开发。欢迎希望提升保研竞争力、竞赛能力和实践能力的本科生加入。详见教师主页：http://adcfj.cn/sirc/door/team/TeacherList/Detail?personId=1273\n\n原WPS富文本超链接（I20）：http://adcfj.cn/sirc/door/team/TeacherList/Detail?personId=1273",
+      "locator": "L705-L738 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室18：空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组） | 来源单元0029",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 705, \"line_end\": 738, \"char_start\": 16098, \"char_end\": 16969, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室18：空间数据挖掘与信息共享教育部重点实验室（高嘉良课题组） | 来源单元0029\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A20:I20",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 30,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室19：工业智能课题组 | 来源单元0030\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A21）：\n19\n\n实验室名称（B21）：\n工业智能课题组\n\n实验室简介（100字左右）（C21）：\n聚焦工业互联网应用领域的技术攻关，重点围绕工业数据中台构建、工业智能体研发、代码审计与脆弱性分析关键方向，推动工业智能技术与生产、研发、销售、服务全流程的深度融合。项目与材料制造、文创设计、跨境电商领域龙头企业深度合作，成果落地。\n\n实验室地点（D21）：\n计算机与大数据学院2号楼303\n\n联系人（E21）：\n郑相涵\n\n联系电话或邮箱（F21）：\n15080025921\nxianghan.zheng@fzu.edu.cn\n\n原WPS富文本超链接（F21）：mailto:xianghan.zheng@fzu.edu.cn\n\n计划接收人数 接收条件（G21）：\n招收2-5人；勤奋好学、肯动手，有保研/考研意向优先\n\n考核方式（H21）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I21）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1206/8258.htm\n\n原WPS富文本超链接（I21）：https://ccds.fzu.edu.cn/info/1206/8258.htm",
+      "locator": "L740-L774 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室19：工业智能课题组 | 来源单元0030",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 740, \"line_end\": 774, \"char_start\": 16971, \"char_end\": 17673, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室19：工业智能课题组 | 来源单元0030\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A21:I21",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 31,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室20：网络空间安全实验室 | 来源单元0031\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A22）：\n20\n\n实验室名称（B22）：\n网络空间安全实验室\n\n实验室简介（100字左右）（C22）：\n网络空间安全实验室聚焦人工智能安全、大模型与智能体安全、攻防对抗、数据与系统安全等前沿方向，面向网络空间领域的现实安全威胁开展基础研究与应用技术攻关。实验室以理论研究、原型开发、实证验证为核心，围绕大模型越狱对抗、Agent 智能体安全、对抗样本、投毒攻击、隐私保护、漏洞挖掘等关键科学问题开展研究。\n\n实验室地点（D22）：\n计算机与大数据学院2号楼401\n\n联系人（E22）：\n印佳丽\n\n联系电话或邮箱（F22）：\njlyin@fzu.edu.cn\n\n原单元格超链接（F22）：mailto:jlyin@fzu.edu.cn\n\n计划接收人数 接收条件（G22）：\n招收2-5人\n\n考核方式（H22）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I22）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1202/8451.htm\n\n原WPS富文本超链接（I22）：https://ccds.fzu.edu.cn/info/1202/8451.htm",
+      "locator": "L776-L809 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室20：网络空间安全实验室 | 来源单元0031",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 776, \"line_end\": 809, \"char_start\": 17675, \"char_end\": 18363, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室20：网络空间安全实验室 | 来源单元0031\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A22:I22",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 32,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室21：大模型轻量化与自动机器学习课题组 | 来源单元0032\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A23）：\n21\n\n实验室名称（B23）：\n大模型轻量化与自动机器学习课题组\n\n实验室简介（100字左右）（C23）：\n课题组目前主要围绕自动机器学习、大模型轻量化开展以下几个方向研究：(1)自动机器学习：自动机器学习主要分为搜索空间设计、黑盒优化以及精度估计，研究自动化机器学习的算法以及在不同领域的应用。(2)深度学习模型设计以及模型轻量化：探索新的深度学习算法和网络结构，利用神经网络结构搜索、剪枝、量化、蒸馏技术实现模型轻量化部署。(3)大模型与自动机器学习结合：研究利用神经网络结构搜索的相关技术对大模型结构进行探索，以及大模型驱动的高自主化神经网络结构搜索的研究。\n\n实验室地点（D23）：\n福州大学计算机与大数据学院4#130\n\n联系人（E23）：\n周勤勤\n\n联系电话或邮箱（F23）：\nqinqinzhou@fzu.edu.cn\n\n原单元格超链接（F23）：http://qinqinzhou@fzu.edu.cn\n\n计划接收人数 接收条件（G23）：\n3-5人左右，可提供工位，要求：有一定的目标，有稳定的时间能投入到科研中，具备良好的沟通表达能力以及编程和英语读写能力。\n\n考核方式（H23）：\n面试结合学业成绩\n\n科研成果与学生典型事迹 （可附上网页链接）（I23）：\n详见教师主页：https://ccds.fzu.edu.cn/info/1207/11299.htm",
+      "locator": "L811-L842 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室21：大模型轻量化与自动机器学习课题组 | 来源单元0032",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 811, \"line_end\": 842, \"char_start\": 18365, \"char_end\": 19159, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室21：大模型轻量化与自动机器学习课题组 | 来源单元0032\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A23:I23",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 33,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室22：ROIS 团队 | 来源单元0033\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A24）：\n22\n\n实验室名称（B24）：\nROIS 团队\n\n实验室简介（100字左右）（C24）：\nROIS，全称为Researcher Of Information Security，是福州大学数学与计算机科学学院信息安全专业学生于2013年9月发起组建、依托网络系统信息安全福建省高校重点实验室的兴趣团队。实验室以安全领域为核心，主要研究网络与系统安全、信息安全攻防、漏洞挖掘与利用、数据安全与隐私保护、安全智能等方向，注重“以研促学、以赛促练”，定期开展技术分享、安全竞赛训练与项目实践，并积极以团队名义参与世界各地的信息安全类赛事，致力于培养具有扎实安全基础、创新实践能力和团队协作精神的信息安全人才。\n\n实验室地点（D24）：\n计算机与大数据学院2号楼405\n\n联系人（E24）：\n何萧玲\n\n联系电话或邮箱（F24）：\ncontact@rois.team\n\n原单元格超链接（F24）：mailto:contact@rois.team\n\n计划接收人数 接收条件（G24）：\n2 人左右。\n\n考核方式（H24）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I24）：\n详见战队官网：https://www.rois.team/\n\n原WPS富文本超链接（I24）：https://www.rois.team/",
+      "locator": "L844-L877 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室22：ROIS 团队 | 来源单元0033",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 844, \"line_end\": 877, \"char_start\": 19161, \"char_end\": 19912, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室22：ROIS 团队 | 来源单元0033\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A24:I24",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 34,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室23：医学影像人工智能实验室 | 来源单元0034\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A25）：\n23\n\n实验室名称（B25）：\n医学影像人工智能实验室\n\n实验室简介（100字左右）（C25）：\n实验室依托福州大学医工交叉研究院，聚焦医学影像人工智能、肿瘤精准放疗及新型医学成像，开展图像重建、自动分割、影像合成与智能诊疗研究。与福建省肿瘤医院、福建省立医院等建立合作，具备多中心临床数据和高性能计算条件，为学生提供算法研究与临床应用相结合的科研训练。\n\n实验室地点（D25）：\n科技园7号楼5楼\n\n联系人（E25）：\n吴相君\n\n联系电话或邮箱（F25）：\n13387112138/xiangjunwu@fzu.edu.cn\n\n计划接收人数 接收条件（G25）：\n6\n\n考核方式（H25）：\n面试\n\n科研成果与学生典型事迹 （可附上网页链接）（I25）：\n团队围绕鼻咽癌靶区自动分割、磁共振影像合成、放疗并发症风险预测及磁粒子成像重建等方向开展研究，形成了算法开发、软件集成与临床验证相结合的研究基础。研发的鼻咽癌MR自动分割算法已集成至软件，并在福建省肿瘤医院放疗科供医生试用；围绕多中心鼻咽癌MRI三维靶区分割及转移淋巴结标注差异处理，已申请两项发明专利。团队联合培养来自福州大学、福建医科大学及天津大学福州学院的博士、硕士研究生、本科生，依托真实临床问题开展多学科协作，培养学生在医学数据处理、深度学习建模、实验分析与软件开发等方面的综合能力。",
+      "locator": "L879-L908 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室23：医学影像人工智能实验室 | 来源单元0034",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 879, \"line_end\": 908, \"char_start\": 19914, \"char_end\": 20689, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室23：医学影像人工智能实验室 | 来源单元0034\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A25:I25",
+      "index_status": "pending"
+    },
+    {
+      "chunk_no": 35,
+      "content": "## 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室24：EDA | 来源单元0035\n\n适用批次：2026—2027学年青禾计划；学院本科生，另须符合本行接收条件。通知要求2026年10月31日前报名，已过期；表中人数为当时计划，非实时空缺。联系方式为该官方附件发布时的联系渠道，未验证目前可达。报名流程须结合通知，不凭本表推断。\n\n序号（A26）：\n24\n\n实验室名称（B26）：\nEDA\n\n实验室简介（100字左右）（C26）：\nEDA研究方向，发表SCI、EI论文多篇。学生获openDACS 开源 EDA 与芯片大赛开源新秀奖、中国研究生创“芯”大赛 · EDA 精英挑战赛一等奖、海峡两岸信息服务创新大赛暨福建省计算机软件设计大赛最佳创新奖、一等奖、二等奖，本科生srtp验收优秀等。\n\n实验室地点（D26）：\n无\n\n联系人（E26）：\n邓新国\n\n联系电话或邮箱（F26）：\n309568144@qq.com\n\n原单元格超链接（F26）：http://309568144@qq.com\n\n计划接收人数 接收条件（G26）：\n2\n对EDA感兴趣\n\n考核方式（H26）：\n无\n\n科研成果与学生典型事迹 （可附上网页链接）（I26）：\nhttps://ccds.fzu.edu.cn/info/1203/5006.htm\n\n原单元格超链接（I26）：https://ccds.fzu.edu.cn/info/1203/5006.htm",
+      "locator": "L910-L944 | 关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室24：EDA | 来源单元0035",
+      "locator_note": "{\"coordinate_system\": \"decoded_text_lf_bom_removed\", \"line_start\": 910, \"line_end\": 944, \"char_start\": 20691, \"char_end\": 21325, \"heading_path\": [{\"level\": 2, \"title\": \"关于2026-2027学年“青禾计划”本科生进实验室报名的通知 | 实验室24：EDA | 来源单元0035\"}], \"note\": \"本输入文件定位；不是官方原件页码。字符区间左闭右开，行号从1开始。\"}",
+      "source_file_key": "knowledge_base/processed/alpha/pending-review/beta-2026-11-23/texts/qinghe.md",
+      "original_file_key": "knowledge_base/processing/policy-review/2026-11-23/qinghe-labs.xlsx",
+      "original_locator": "Sheet1!A26:I26",
+      "index_status": "pending"
+    }
+  ]
+}
