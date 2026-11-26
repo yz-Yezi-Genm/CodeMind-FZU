@@ -1,0 +1,15 @@
+Beta Qwen live-entry guards
+Date: 2026-11-26 (Asia/Shanghai)
+Scope: no --live supplied; application configuration is not read and no paid API request is sent
+
+Command: python -X utf8 -m scripts.check_beta_qwen_generation
+Exit: 2
+usage: python.exe -m scripts.check_beta_qwen_generation [-h] [--live]
+                                                        [--env-file ENV_FILE]
+python.exe -m scripts.check_beta_qwen_generation: error: Add --live to explicitly run the paid probe; no request was sent
+
+Command: python -X utf8 -m scripts.check_beta_qwen_e2e
+Exit: 2
+usage: python.exe -m scripts.check_beta_qwen_e2e [-h] [--live]
+                                                 [--env-file ENV_FILE]
+python.exe -m scripts.check_beta_qwen_e2e: error: Add --live to explicitly run the paid E2E check; no request was sent

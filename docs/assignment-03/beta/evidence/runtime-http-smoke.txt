@@ -1,0 +1,83 @@
+Approved corpus rejected loaded=0 skipped=0 detail=
+Alpha runtime startup unavailable code=KNOWLEDGE_BASE_UNAVAILABLE
+{
+  "time_asia_shanghai": "2026-11-25T23:03:24.114413+08:00",
+  "scope": "Real Qwen HTTP -> current AgentWorkflow -> FastAPI; synthetic example.invalid corpus only",
+  "model": "qwen-flash",
+  "synthetic": {
+    "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
+    "http_status": 200,
+    "request_id": "45864dfb-419c-4dac-9e75-e3bd74b77916",
+    "transport": "uvicorn TCP HTTP",
+    "x_request_id": "45864dfb-419c-4dac-9e75-e3bd74b77916",
+    "status": "answered",
+    "answer": "根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。",
+    "answer_mode": "current_policy",
+    "citations": [
+      {
+        "document_id": "1473a9cc-56e4-567f-981d-098e33596630",
+        "version_id": "a6397eac-7fd4-5b72-827d-63b75cc2a0c8",
+        "chunk_id": "9ef3e2cd-8429-5aa4-9e02-3f737e7498ac",
+        "title": "合成联调：2026年本科生奖学金评定管理办法",
+        "publisher": "合成联调测试单位",
+        "source_url": "https://example.invalid/beta-live/scholarship",
+        "published_on": "2026-01-01",
+        "effective_on": "2026-01-01",
+        "locator": "第1行",
+        "original_locator": null,
+        "excerpt": "2026年优秀学生综合奖学金申请需提交申请表和成绩单。",
+        "source_verification_status": "verified",
+        "timeliness_verification_status": "current",
+        "retrieval_status": "enabled"
+      }
+    ],
+    "warnings": [],
+    "elapsed_ms": 6307,
+    "retrieval": {
+      "loaded_packages": 1,
+      "skipped_packages": [],
+      "indexed_chunks": 1,
+      "hit_count": 1,
+      "hit_excerpts": [
+        "2026年优秀学生综合奖学金申请需提交申请表和成绩单。"
+      ]
+    },
+    "model_response": {
+      "model": "qwen-flash",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 383,
+        "total_tokens": 447
+      },
+      "raw_content": "{\"answer\":\"根据已核验资料，2026年优秀学生综合奖学金申请需提交申请表和成绩单。\",\"used_evidence_ids\":[\"E1-100a4cf68466432380cbac64d52533fe\"]}"
+    }
+  },
+  "synthetic_insufficient_evidence": {
+    "query": "2026年优秀学生综合奖学金金额是多少？",
+    "http_status": 200,
+    "request_id": "2f1f50bd-b6b9-4366-97b3-5478dacffc85",
+    "transport": "uvicorn TCP HTTP",
+    "x_request_id": "2f1f50bd-b6b9-4366-97b3-5478dacffc85",
+    "status": "insufficient_evidence",
+    "answer_mode": "insufficient_data",
+    "citations": [],
+    "warnings": [
+      {
+        "code": "REQUESTED_FACT_NOT_FOUND",
+        "message": "通过审核的资料未载明所询问的金额或截止时间，暂无法确认。"
+      }
+    ]
+  },
+  "formal_unreleased": {
+    "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
+    "http_status": 503,
+    "request_id": "57eff773-5b59-458f-9022-e8065bd5d600",
+    "transport": "uvicorn TCP HTTP",
+    "x_request_id": "57eff773-5b59-458f-9022-e8065bd5d600",
+    "error": {
+      "code": "KNOWLEDGE_BASE_UNAVAILABLE",
+      "message": "没有通过人工审核且完整建立索引的正式政策资料包。",
+      "retryable": true
+    }
+  }
+}
