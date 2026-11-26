@@ -52,4 +52,4 @@ tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_date_in_answer_m
 tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_requested_deadline_covered_by_evidence_passes PASSED [ 97%]
 tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_requested_deadline_must_be_covered_by_selected_evidence PASSED [100%]
 
-==================== 39 passed, 5 subtests passed in 0.91s ====================
+==================== 39 passed, 5 subtests passed in 0.96s ====================

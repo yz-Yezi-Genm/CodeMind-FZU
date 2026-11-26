@@ -46,4 +46,4 @@ tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_exte
 SKIPPED [1] tests\test_agent_workflow_qwen.py:1888: Real Qwen acceptance requires explicit opt-in and approved packages
 SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
 SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
-679 passed, 3 skipped, 2 warnings, 279 subtests passed in 80.64s (0:01:20)
+679 passed, 3 skipped, 2 warnings, 279 subtests passed in 84.96s (0:01:24)
