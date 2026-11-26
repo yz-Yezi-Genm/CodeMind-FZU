@@ -15,7 +15,6 @@ from datetime import datetime, timedelta, timezone
 import httpx
 import uvicorn
 
-from backend.app.alpha import create_alpha_app
 from backend.app.config import AppSettings
 from backend.contracts.models import LLMGenerateRequest, LLMResult, RetrievalRequest
 from backend.services.alpha_runtime import build_alpha_retriever, build_alpha_runtime
@@ -23,7 +22,7 @@ from backend.services.qwen_client import create_qwen_client_from_env
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SYNTHETIC_CORPUS = ROOT / "tests/fixtures/beta_live_approved"
+SYNTHETIC_CORPUS = ROOT / "tests/fixtures/beta_live_synthetic"
 FORMAL_CORPUS = ROOT / "knowledge_base/processed/alpha/approved"
 POSITIVE_QUERY = "2026年优秀学生综合奖学金申请需要提交什么材料？"
 REFUSAL_QUERY = "2026年优秀学生综合奖学金金额是多少？"
@@ -134,6 +133,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(
             "Add --live to explicitly run the paid E2E check; no request was sent"
         )
+    from backend.app.alpha import create_alpha_app
+
     if args.env_file is not None:
         from dotenv import load_dotenv
 

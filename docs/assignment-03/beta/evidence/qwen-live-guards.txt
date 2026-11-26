@@ -1,6 +1,6 @@
 Beta Qwen live-entry guards
-Date: 2026-11-25 (Asia/Shanghai)
-Scope: no --live supplied; no paid API request expected
+Date: 2026-11-26 (Asia/Shanghai)
+Scope: no --live supplied; application configuration is not read and no paid API request is sent
 
 Command: python -X utf8 -m scripts.check_beta_qwen_generation
 Exit: 2

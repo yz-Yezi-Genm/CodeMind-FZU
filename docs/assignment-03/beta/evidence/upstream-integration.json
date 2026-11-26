@@ -1,10 +1,10 @@
 {
-  "time_asia_shanghai": "2026-11-25T23:06:25.636807+08:00",
-  "agent_commit": "41be3ca42b98be4b29efafb875b881f072b0d3c4",
+  "time_asia_shanghai": "2026-11-26T15:45:15.333018+08:00",
+  "agent_commit": "2ad8b373ded9ded5fcf0c5e8baaae054e1dabbfb",
   "agent_worktree_changes_included": true,
   "main_commit": "a27c13d82c0059dd9dec71882e23b77ff50419ae",
   "agent_source_state": {
-    "base_commit": "41be3ca42b98be4b29efafb875b881f072b0d3c4",
+    "base_commit": "2ad8b373ded9ded5fcf0c5e8baaae054e1dabbfb",
     "source_sha256_lf": {
       "backend/__init__.py": "845da59f5760bf8179adad042a26eb8865c357b20d8b774809352368b8185e62",
       "backend/app/__init__.py": "45390889d8a4a81a685fa8f8fb38422e5f6ff8840d7df1405f088ab5347ae8e2",
@@ -53,7 +53,7 @@
       "knowledge_base/processing/test_qinghe_b8.py": "46f54a30f910f4017f9b7ea92cd2916b724ab15a2f7b253a4564bf0ce8677b00",
       "knowledge_base/processing/test_qinghe_conversion.py": "8f1de88677ceed0bdecd5dfae4c3488d186cfeaf265390387e812fb3da0acb83",
       "scripts/check_beta_blocked_isolation.py": "9d31b711481d6ab8b2a8f0f85187d881d9bb5a0cb2659e0c4f94d2528e2b960e",
-      "scripts/check_beta_qwen_e2e.py": "a49ce4455afbed2c0bd9faf03f2fb7b92ea1f8695bdba932cb809acb922048dc",
+      "scripts/check_beta_qwen_e2e.py": "738e55cd8872351a6f738b979fccf1ad85c2eb137ff34c1d6db7598882b5b77c",
       "scripts/check_beta_qwen_generation.py": "ffbe6bc425eafa9ea860501d1310f137dec95ea792c775a6693a99f6bb82e11d",
       "scripts/check_document_processing.py": "de3832c09805e38d5be3deb1d781d7294c86095c790a01f6329fef36b3111049",
       "scripts/check_qwen_live.py": "fb02b4039202ddbe29e2675e9a7f3fe55de03e14242483b3cd95037257bfa0a9",
@@ -77,7 +77,7 @@
       "tests/test_alpha_e2e.py": "22804fe8900de56e109baa6c662c7d65512362d90f8c86264227008792073759",
       "tests/test_api_validation.py": "441c4e2c4514a1b74ea2543cfd2196f4a492d45034d7c37fac828997756babdc",
       "tests/test_backend_runtime.py": "05f78e2271707a5f92a6182fa0760faf497ac3f350024f1984fd81691cc480c3",
-      "tests/test_beta_live_script_guards.py": "0544419b018cbb64e1216f1f6b6dbebdf8c50dd32527183557a698abb2133e8f",
+      "tests/test_beta_live_script_guards.py": "705e3e73f303f947771a0d0df79ed6e56c06ba72a8c9bdec84520380b19bbf62",
       "tests/test_beta_response_contract_validation.py": "11039126067ee5249f527a8bb1de133c617483bfc7697da027c344b95fc791b3",
       "tests/test_beta_retrieval_scenarios.py": "8b66cb5fb960f64f2694c11ac27123a15d594ce0672c6a57d8c5757894484ba1",
       "tests/test_beta_script_lifecycle.py": "02c3fff56fb6b51c56b0dcc193f15a670126721f40bd4f4605598937b6592aa6",

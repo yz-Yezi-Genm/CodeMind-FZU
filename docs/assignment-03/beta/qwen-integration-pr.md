@@ -10,24 +10,29 @@
 
 - `scripts/check_beta_qwen_generation.py`
 - `scripts/check_beta_qwen_e2e.py`
-- `tests/fixtures/beta_live_approved/`
+- `tests/fixtures/beta_live_synthetic/`
+- `tests/test_beta_live_script_guards.py`
 - `docs/assignment-03/beta/qwen-integration-stage2.md`
 - `docs/assignment-03/beta/evidence/qwen-constrained-live.txt`
 - `docs/assignment-03/beta/evidence/runtime-http-smoke.txt`
 - `docs/assignment-03/beta/evidence/qwen-negative-mock.txt`
+- `docs/assignment-03/beta/evidence/qwen-live-guards.txt`
+- `docs/assignment-03/beta/evidence/stage2-frontend-check.txt`
 - `docs/assignment-03/beta/evidence/stage2-pytest-py310.txt`
 - `docs/assignment-03/beta/evidence/stage2-pytest-py314.txt`
 
 ## 完成功能
 
-- 同步 main `179e618`，包含 #46 AgentWorkflow 和 #49 运行稳定性；
-- 两个真实模型入口均要求显式 `--live`；未授权时不读取密钥、不调用模型；
+- 同步 main `a27c13d`，包含 #46 AgentWorkflow、#49 运行稳定性和 #54 学生端接入；
+- 两个真实模型入口均要求显式 `--live`；未授权时不读取配置、不导入应用入口、不调用模型；
 - 通过本机 uvicorn TCP HTTP 调用最终 `/api/v1/ask`；
 - 真实 `qwen-flash` 返回 `answer + used_evidence_ids` 受约束 JSON；
 - 单证据探针要求 `used_evidence_ids` 精确等于 `["E1"]`；
 - Agent 校验本次动态 evidence ID，并用真实检索片段构造 Citation；
 - 合成资料正向请求返回 200、answered、非空引用；
 - 对正常回答的 `answer_mode`、Citation 原文和 `X-Request-ID` 做实际断言；
+- 合成目录改名为 `beta_live_synthetic`，并验证重命名后可通过加载器和检索；
+- README 明确 `human_approved=true` 仅为合成测试字段，不代表真实签核；
 - 缺少金额证据时返回 200、insufficient_evidence、空引用；
 - 对待拒答的 `answer_mode` 和 `REQUESTED_FACT_NOT_FOUND` 做实际断言；
 - 正式 approved 资料未放行时返回 503、KNOWLEDGE_BASE_UNAVAILABLE；
@@ -38,15 +43,15 @@
 
 - 第一阶段：PR #49，已合并
 - Agent：PR #46，已合并
-- 最新 main：`179e618`
+- 最新 main：`a27c13d`
 - 正式资料：项目负责人最终人工审核
 
 ## 测试
 
 ```text
-Python 3.14.4: 642 passed, 3 skipped, 1 warning, 274 subtests passed
-Python 3.10.11: 642 passed, 3 skipped, 1 warning, 274 subtests passed
-Mock Transport 与 live guard 定向: 12 passed, 1 warning, 30 subtests passed
+Python 3.14.4: 643 passed, 3 skipped, 1 warning, 274 subtests passed
+Python 3.10.11: 643 passed, 3 skipped, 1 warning, 274 subtests passed
+Mock Transport 与 live guard 定向: 13 passed, 1 warning, 30 subtests passed
 上游专项: Ran 48 tests, OK
 真实 Qwen HTTP 联调: HTTP 200, answered, non-empty citation
 前端学生 API 测试: 9 passed

@@ -1,6 +1,6 @@
 # Beta 第二阶段：真实 Qwen 与最终 AgentWorkflow 联调
 
-日期：2026-11-25
+日期：2026-11-26
 分支：`feat/beta-runtime-qwen-integration`
 同步基线：`origin/main` `a27c13d`
 
@@ -31,8 +31,11 @@ POST /api/v1/ask
 ```
 
 联调资料固定为
-`tests/fixtures/beta_live_approved/`。该目录明确标注为合成数据，来源域名为
+`tests/fixtures/beta_live_synthetic/`。该目录明确标注为合成数据，来源域名为
 保留测试域名 `example.invalid`，不属于正式 `approved/` 知识库。
+其中 `temporal_notes.human_approved=true` 仅用于覆盖现有加载器和 Agent
+审核门禁，是合成测试字段，不代表真实人工签核，正式审核机制未被放宽。
+重命名后已通过真实审核加载器、索引与 BM25 检索测试。
 
 正向请求：
 
@@ -76,13 +79,16 @@ POST /api/v1/ask
 - 有效 ID 搭配编造答案被拒绝；
 - 自由文本或不符合 JSON envelope 的输出不能绕过证据校验；
 - 两个真实模型入口在未提供 `--live` 时于读取配置前退出；
+- `create_alpha_app` 延迟到 `--live` 检查后导入，避免默认构造应用；
 - 非法或空模型 envelope 返回 HTTP 503 `MODEL_UNAVAILABLE`；
 - 限流保持 HTTP 429 `RATE_LIMITED`；
 - 超时返回 HTTP 504 `MODEL_TIMEOUT`，连接失败返回 HTTP 503；
 - 工作流总超时会取消底层模型调用。
 
-定向结果：`12 passed, 1 warning, 30 subtests passed`。记录见
+定向结果：`13 passed, 1 warning, 30 subtests passed`。记录见
 [qwen-negative-mock.txt](evidence/qwen-negative-mock.txt)。
+两个入口的直接无授权退出结果见
+[qwen-live-guards.txt](evidence/qwen-live-guards.txt)。
 
 最新 main `a27c13d` 的 Agent、业务规则、Retriever 与 HTTP 专项集成结果为
 `Ran 48 tests, OK`，记录见
@@ -98,10 +104,10 @@ POST /api/v1/ask
 
 ```text
 Python 3.14.4:
-642 passed, 3 skipped, 1 warning, 274 subtests passed
+643 passed, 3 skipped, 1 warning, 274 subtests passed
 
 Python 3.10.11:
-642 passed, 3 skipped, 1 warning, 274 subtests passed
+643 passed, 3 skipped, 1 warning, 274 subtests passed
 ```
 
 跳过项：
@@ -124,7 +130,7 @@ Python 3.10.11:
 | --- | --- | --- |
 | 合成资料 | 技术联调 | 真实链路正向通过 |
 | 正式资料 | 人工审核状态检查 | 未放行，503 安全拒答 |
-| Mock Qwen | 边界与异常 | 10 项定向测试通过 |
+| Mock Qwen / Live Guard | 边界、异常与授权保护 | 13 项定向测试通过 |
 | 真实 Qwen | 正向生成 | qwen-flash 通过 |
 
 正式人工审核资料放行后，再补一次真实政策问答验收，不需要等待该事项才能

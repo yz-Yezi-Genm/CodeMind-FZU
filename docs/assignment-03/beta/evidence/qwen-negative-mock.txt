@@ -1,5 +1,5 @@
 Beta MockTransport and live-script guard evidence
-Date: 2026-11-25 (Asia/Shanghai)
+Date: 2026-11-26 (Asia/Shanghai)
 Python: 3.14.4
 Scope: mock Qwen / offline guards only; no real API request
 Command:
@@ -23,24 +23,25 @@ Verbose result:
 platform win32 -- Python 3.14.4, pytest-9.2.0, pluggy-1.7.0 -- <repo>\.venv\Scripts\python.exe
 rootdir: <repo>
 plugins: anyio-4.16.0
-collecting ... collected 12 items
+collecting ... collected 13 items
 
-tests/test_beta_live_script_guards.py::BetaLiveScriptGuardTests::test_e2e_requires_live_before_reading_configuration PASSED [  8%]
-tests/test_beta_live_script_guards.py::BetaLiveScriptGuardTests::test_generation_requires_live_before_reading_configuration PASSED [ 16%]
+tests/test_beta_live_script_guards.py::BetaLiveScriptGuardTests::test_e2e_requires_live_before_reading_configuration PASSED [  7%]
+tests/test_beta_live_script_guards.py::BetaLiveScriptGuardTests::test_generation_requires_live_before_reading_configuration PASSED [ 15%]
+tests/test_beta_live_script_guards.py::BetaLiveSyntheticCorpusTests::test_renamed_synthetic_corpus_loads_and_retrieves PASSED [ 23%]
 tests/test_agent_workflow.py::AgentWorkflowTests::test_bad_or_fabricated_model_outputs_are_rejected
-tests/test_agent_workflow.py::AgentWorkflowTests::test_bad_or_fabricated_model_outputs_are_rejected PASSED [ 25%]
-tests/test_agent_workflow.py::AgentWorkflowTests::test_conflicting_duplicate_id_is_rejected PASSED [ 33%]
-tests/test_agent_workflow.py::AgentWorkflowTests::test_model_cannot_select_filtered_or_previous_round_evidence PASSED [ 41%]
+tests/test_agent_workflow.py::AgentWorkflowTests::test_bad_or_fabricated_model_outputs_are_rejected PASSED [ 30%]
+tests/test_agent_workflow.py::AgentWorkflowTests::test_conflicting_duplicate_id_is_rejected PASSED [ 38%]
+tests/test_agent_workflow.py::AgentWorkflowTests::test_model_cannot_select_filtered_or_previous_round_evidence PASSED [ 46%]
 tests/test_agent_workflow.py::AgentWorkflowTests::test_valid_id_cannot_attach_fabricated_policy_claims
-tests/test_agent_workflow.py::AgentWorkflowTests::test_valid_id_cannot_attach_fabricated_policy_claims PASSED [ 50%]
-tests/test_agent_workflow.py::AgentWorkflowTests::test_duplicate_ids_and_unused_citations_are_rejected PASSED [ 58%]
+tests/test_agent_workflow.py::AgentWorkflowTests::test_valid_id_cannot_attach_fabricated_policy_claims PASSED [ 53%]
+tests/test_agent_workflow.py::AgentWorkflowTests::test_duplicate_ids_and_unused_citations_are_rejected PASSED [ 61%]
 tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_model_failures_keep_backend_error_codes_instead_of_business_status
-tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_model_failures_keep_backend_error_codes_instead_of_business_status PASSED [ 66%]
-tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_qwen_free_text_cannot_bypass_workflow_evidence_verification PASSED [ 75%]
+tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_model_failures_keep_backend_error_codes_instead_of_business_status PASSED [ 69%]
+tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_qwen_free_text_cannot_bypass_workflow_evidence_verification PASSED [ 76%]
 tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_invalid_provider_envelope_is_503_with_cors_and_request_id
-tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_invalid_provider_envelope_is_503_with_cors_and_request_id PASSED [ 83%]
+tests/test_agent_workflow_qwen.py::AgentWorkflowQwenTests::test_invalid_provider_envelope_is_503_with_cors_and_request_id PASSED [ 84%]
 tests/test_agent_workflow_qwen.py::LocalRetrieverQwenIntegrationTests::test_adapter_timeout_and_connection_error_keep_backend_mapping
-tests/test_agent_workflow_qwen.py::LocalRetrieverQwenIntegrationTests::test_adapter_timeout_and_connection_error_keep_backend_mapping PASSED [ 91%]
+tests/test_agent_workflow_qwen.py::LocalRetrieverQwenIntegrationTests::test_adapter_timeout_and_connection_error_keep_backend_mapping PASSED [ 92%]
 tests/test_agent_workflow_qwen.py::LocalRetrieverQwenIntegrationTests::test_workflow_total_timeout_cancels_real_adapter_request PASSED [100%]
 
 ============================== warnings summary ===============================
@@ -49,4 +50,4 @@ tests/test_agent_workflow_qwen.py::LocalRetrieverQwenIntegrationTests::test_work
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-============== 12 passed, 1 warning, 30 subtests passed in 1.31s ==============
+============== 13 passed, 1 warning, 30 subtests passed in 3.15s ==============
