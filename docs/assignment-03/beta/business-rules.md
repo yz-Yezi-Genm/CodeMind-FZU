@@ -468,7 +468,7 @@ S4 片段必须同时满足：
 | S4-08 | 历史 | 这个实验室现在还招吗？ | `answered` / `historical` | 只答本年度已截止；不得说正在招募 |
 | S4-09 | 资料不足 | 这个实验室现在还招几个？ | `insufficient_evidence` / `insufficient_data` | 过期通知不能当当前名额 |
 | S4-10 | 资料不足 | 某实验室（库内无资料）研究什么？ | `insufficient_evidence` / `insufficient_data` | 不编造方向、联系人 |
-| S4-11 | 资料不足 | 学院办公室电话是多少？ | `insufficient_evidence` / `insufficient_data` | 无官方出处就不答；有官方页面才答 |
+| S4-11 | 资料不足 | 学院办公室电话或办公地点在哪？ | `insufficient_evidence` / `insufficient_data` | 无官方出处就不答；有官方页面才答；不得用实验室联系人、教师邮箱或实验室地点顶替 |
 | S4-12 | 资料不足 | 只有历史实验室介绍，问现在招人吗 | `insufficient_evidence` / `insufficient_data` | R4 介绍不能回答 R3 招募 |
 | S4-13 | 正常 | 2026 年青禾计划怎么报名？ | `answered` / `historical` | R3 通知年度为 2026，同年度可答报名流程；声明本年度已截止 |
 | S4-14 | 资料不足 | 2025 年青禾计划怎么报名？ | `insufficient_evidence` / `insufficient_data` | 2026 通知不能回答 2025 年招募 |
