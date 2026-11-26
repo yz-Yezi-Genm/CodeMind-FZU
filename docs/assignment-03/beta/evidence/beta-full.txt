@@ -1,28 +1,39 @@
+# Beta 全量测试记录
+# 环境：Python 3.10.11 / Windows 11 / pytest 9.2.0
+# 命令：python -m pytest tests/ -q -rs
+# main 基线：a27c13d
+# 路径脱敏：<REPO> / <PYTHON_HOME> / <USER_HOME> / <WORKBUDDY_HOME>
+#
+# 已知警告（2 项，均为既有遗留，不影响测试通过）：
+# 1. StarletteDeprecationWarning：fastapi.testclient 提示 httpx 用法弃用，属依赖层提示。
+# 2. PytestUnhandledThreadExceptionWarning / UnicodeDecodeError：
+#    test_alpha_corpus.py 的 subprocess.run(["cmd","/c","mklink"], text=True) 未指定
+#    encoding，Windows cmd 输出 GBK 被按 UTF-8 解码失败。由王智洋维护，不在本 PR 范围。
+# ---------------------------------------------------------------------------
 ......................................................................................................................................... [ 20%]
-.....s........................................................... [ 30%]
+.....s........................................................... [ 29%]
 ........................................................................ [ 40%]
-........................................................................ [ 51%]
-..........................................................s............. [ 62%]
-................................................................... [ 72%]
-..................................................................... [ 82%]
-....................s........................................ [ 91%]
-..........................................................                                                         [100%]
+........................................................................ [ 50%]
+..........................................................s............. [ 61%]
+................................................................... [ 71%]
+................................................................................................s................................. [ 90%]
+...................................................................                                                [100%]
 ============================== warnings summary ===============================
 ..\..\..\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\testclient.py:1
-  C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  <PYTHON_HOME>\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
     from starlette.testclient import TestClient as TestClient  # noqa
 
 tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_external_directory_is_rejected
-  C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\threadexception.py:54: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-23 (_readerthread)
+  <PYTHON_HOME>\lib\site-packages\_pytest\threadexception.py:54: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-23 (_readerthread)
   
   Traceback (most recent call last):
-    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1016, in _bootstrap_inner
+    File "<PYTHON_HOME>\lib\threading.py", line 1016, in _bootstrap_inner
       self.run()
-    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\threading.py", line 953, in run
+    File "<PYTHON_HOME>\lib\threading.py", line 953, in run
       self._target(*self._args, **self._kwargs)
-    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\subprocess.py", line 1515, in _readerthread
+    File "<PYTHON_HOME>\lib\subprocess.py", line 1515, in _readerthread
       buffer.append(fh.read())
-    File "C:\Users\m1781\AppData\Local\Programs\Python\Python310\lib\codecs.py", line 322, in decode
+    File "<PYTHON_HOME>\lib\codecs.py", line 322, in decode
       (result, consumed) = self._buffer_decode(data, self.errors, final)
   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb4 in position 135: invalid start byte
   
@@ -35,4 +46,4 @@ tests/test_alpha_corpus.py::AlphaCorpusLoaderTests::test_corpus_dir_link_to_exte
 SKIPPED [1] tests\test_agent_workflow_qwen.py:1888: Real Qwen acceptance requires explicit opt-in and approved packages
 SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
 SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
-670 passed, 3 skipped, 2 warnings, 279 subtests passed in 88.15s (0:01:28)
+679 passed, 3 skipped, 2 warnings, 279 subtests passed in 80.64s (0:01:20)

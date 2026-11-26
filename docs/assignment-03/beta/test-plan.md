@@ -4,7 +4,7 @@
 > 阶段：Beta 冲刺（2026-11-23 至 2026-12-06）
 > 规范基线：《CodeMind-FZU Beta 接口规范 V2.1-Final》
 > 分支：`test/beta-e2e`
-> 状态：**第二阶段模块联调**（#45/#46/#49/#51/#55/#56/#57 已合并）
+> 状态：**第二阶段模块联调**（#45/#46/#49/#51/#53/#54/#55/#56/#57 已合并）
 
 ---
 
@@ -15,7 +15,7 @@
 | 阶段 | 内容 | 当前状态 |
 | --- | --- | --- |
 | 第一阶段：测试准备 | 场景整理、Fixture、契约测试、Qwen 非法输出测试 | ✅ 完成（契约测试 + verify_answer 黑盒测试 + 本计划） |
-| 第二阶段：模块联调 | 随成员合并逐步接入，记录失败案例反馈 | ✅ 进行中（#45/#46/#49/#51/#55 已合并，可独立联调） |
+| 第二阶段：模块联调 | 随成员合并逐步接入，记录失败案例反馈 | ✅ 进行中（#45/#46/#49/#51/#53/#54/#55/#56/#57 已合并，可独立联调） |
 | 第三阶段：最终 E2E 验收 | 真实资料 + 真实 Qwen + 完整链路 + 最终报告 | ⏳ 待正式资料签核 + 真实 Qwen |
 
 **关键原则**：
@@ -25,7 +25,7 @@
 
 ---
 
-## 二、模块状态与资料现状（同步最新 main `0251ec5`）
+## 二、模块状态与资料现状（同步最新 main `a27c13d`）
 
 ### 2.1 已合并模块
 
@@ -35,11 +35,14 @@
 | #46 | AgentWorkflow 历史政策处理 + 证据校验 | ✅ 已合并（`verify_answer` 生产实现就绪） |
 | #49 | Beta Runtime + Qwen 适配器（stage 1） | ✅ 已合并 |
 | #51 | Retriever Protocol 三方法正式纳入 | ✅ 已合并 |
+| #53 | title+content BM25 索引 + Beta S1-S4 评测基线 | ✅ 已合并 |
+| #54 | 学生端 Beta 第一阶段问答交互与 API 封装 | ✅ 已合并 |
 | #55 | 公共响应契约（AgentResult / AskResponse shape 强制） | ✅ 已合并 |
 | #56 | 候选资料范围受限人工签核（保持检索 blocked） | ✅ 已合并 |
 | #57 | 2027 届推免志愿服务原始分口径 | ✅ 已合并 |
 
-> 未合并：#53（复审整改中）。
+> 公共契约（#55）、检索（#51/#53）、Agent（#46）、Runtime（#49）、业务规则（#45）
+> 均已合并；候选资料仍全部 blocked（详见 2.2）。
 
 ### 2.2 正式候选资料（#41，审核状态由 #56 更新）
 
@@ -173,10 +176,10 @@
 | Q-5 | 缺 `used_evidence_ids` | 拒绝 |
 | Q-6 | 引用不存在的 evidence_id | 拒绝 |
 | Q-7 | 引用不属于本次证据集合的 evidence_id | 拒绝 |
-| Q-8 | 引用另一请求的 evidence_id（跨请求） | 拒绝 |
+| Q-8 | 引用外来 evidence_id（单元层按未知 ID 拒绝） | 拒绝 |
 | Q-9 | 模型自行生成 Citation / 来源 URL / 额外字段 | 拒绝 |
 | Q-10 | 答案改写原文 / 含证据无法支持的额外文本 | 拒绝 |
-| Q-11 | 请求金额/日期事实未被所选证据覆盖 | 拒绝 |
+| Q-11 | 请求金额/日期事实未被所选证据覆盖（含日期不一致） | 拒绝 |
 
 **核心原则**：Citation 必须由 Agent 根据真实 RetrievedChunk 构造，不直接信任 Qwen
 返回的引用；证据 ID 合法 ≠ 答案正确，须检查答案与原文一致。
@@ -184,9 +187,15 @@
 > **实现状态（更新）**：#46 已合并，生产 `verify_answer()`（
 > `backend/services/agent_generation.py`）已实现全部上述校验。本计划的
 > `tests/test_beta_qwen_output.py` 已从「参考校验函数」改为**直接对生产
-> `verify_answer()` 做独立黑盒测试**（17 用例），覆盖格式/ID/答案一致性/事实覆盖。
-> 吴诗莹的 `test_agent_workflow.py` 通过 workflow 集成层覆盖了跨请求证据隔离
-> （`test_model_cannot_select_filtered_or_previous_round_evidence`）等，不重复。
+> `verify_answer()` 做独立黑盒测试**（21 用例），覆盖格式/ID/答案一致性/事实覆盖。
+>
+> **单元测试 vs 集成测试边界（重要）**：
+> - Q-8 的单元测试 `test_foreign_evidence_id_rejected_as_unknown` 只验证
+>   「不属于本请求 evidence 集合的 ID 按未知 ID 拒绝」——因为 `verify_answer()`
+>   本身只持有本请求的 evidence 映射，**无法**在单元层验证跨请求生命周期隔离。
+> - **真正的跨请求隔离**（模型不能引用上一轮或其他请求的证据）由 AgentWorkflow
+>   集成测试覆盖：`test_agent_workflow.py::test_model_cannot_select_filtered_or_previous_round_evidence`。
+>   本计划不把单元测试描述成跨请求隔离验收。
 
 ---
 
@@ -244,19 +253,16 @@
 ### 已完成（第一阶段 + 第二阶段进行中）
 
 - [x] `tests/test_beta_contracts.py`：V2.1 契约测试（AnswerMode/AgentResult/Retriever 实现类/状态枚举）
-- [x] `tests/test_beta_qwen_output.py`：生产 `verify_answer()` 独立黑盒测试（17 用例）
-- [x] 同步最新 main（`0251ec5`），#45/#46/#49/#51/#55 已合并
+- [x] `tests/test_beta_qwen_output.py`：生产 `verify_answer()` 独立黑盒测试（21 用例）
+- [x] 同步最新 main（`a27c13d`），#45/#46/#49/#51/#53/#54/#55/#56/#57 已合并
 - [x] test-plan.md 更新资料路径、模块状态、S4 新增边界用例
 
-### 待办（第三阶段 + 后续 PR）
+### 待办（第三阶段）
 
-- [ ] S1-S4 真实资料 + 真实 Qwen 完整 E2E（待资料签核）
-- [ ] 正式资料签核后，将 blocked 候选资料转 enabled 的正向验收
+- [ ] S1-S4 真实资料 + 真实 Qwen 完整 E2E（待 #41 候选资料正式开放检索）
+- [ ] 正式资料 blocked → enabled 的正向验收（6 包已签核但未放行）
 - [ ] 团队分类口径（业务方向代码）确认后，补多业务方向检索测试
 - [ ] 最终 E2E 验收报告
-
-> #46 合并后，另开测试 PR 将 Qwen 校验测试接入实际生产实现（本 PR 已用生产
-> `verify_answer` 完成独立黑盒测试，后续核对吴诗莹覆盖、补真正缺失边界，不重复）。
 
 ---
 

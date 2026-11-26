@@ -1,48 +1,55 @@
+# Beta 专项测试记录（契约测试 + 生产 verify_answer 黑盒测试）
+# 环境：Python 3.10.11 / Windows 11 / pytest 9.2.0
+# 命令：python -m pytest tests/test_beta_contracts.py tests/test_beta_qwen_output.py -v
+# main 基线：a27c13d
+# 路径脱敏：<REPO> / <PYTHON_HOME> / <USER_HOME> / <WORKBUDDY_HOME>
+# ---------------------------------------------------------------------------
 ============================= test session starts =============================
-platform win32 -- Python 3.10.11, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\m1781\AppData\Local\Programs\Python\Python310\python.exe
+platform win32 -- Python 3.10.11, pytest-9.2.0, pluggy-1.7.0 -- <PYTHON_HOME>\python.exe
 cachedir: .pytest_cache
-rootdir: C:\Users\m1781\WorkBuddy\2026-11-17-21-57-05\codemind-fzu-full
+rootdir: <REPO>
 plugins: anyio-4.16.0
-collecting ... collected 38 items
+collecting ... collected 39 items
 
 tests/test_beta_contracts.py::AnswerModeContractTests::test_answer_mode_has_exactly_four_beta_values PASSED [  2%]
 tests/test_beta_contracts.py::AnswerModeContractTests::test_historical_and_procedure_reference_values PASSED [  5%]
 tests/test_beta_contracts.py::AgentResultShapeContractTests::test_answered_requires_nonempty_answer PASSED [  7%]
 tests/test_beta_contracts.py::AgentResultShapeContractTests::test_insufficient_evidence_requires_insufficient_data_mode PASSED [ 10%]
-tests/test_beta_contracts.py::AgentResultShapeContractTests::test_needs_clarification_shape PASSED [ 13%]
+tests/test_beta_contracts.py::AgentResultShapeContractTests::test_needs_clarification_shape PASSED [ 12%]
 tests/test_beta_contracts.py::TimelinessEnumContractTests::test_forbidden_states_are_defined_and_distinct PASSED [ 15%]
-tests/test_beta_contracts.py::TimelinessEnumContractTests::test_historical_modes_are_defined PASSED [ 18%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_blocked_version_returns_none_for_chunk PASSED [ 21%]
+tests/test_beta_contracts.py::TimelinessEnumContractTests::test_historical_modes_are_defined PASSED [ 17%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_blocked_version_returns_none_for_chunk PASSED [ 20%]
 tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_blocked_version_returns_none_for_metadata PASSED [ 23%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_document_metadata_returns_correct_metadata PASSED [ 26%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_document_metadata_returns_correct_metadata PASSED [ 25%]
 tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_document_metadata_returns_deep_copy PASSED [ 28%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_parsed_chunk_returns_correct_chunk PASSED [ 31%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_parsed_chunk_returns_deep_copy PASSED [ 34%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_local_bm25_retriever_has_three_methods PASSED [ 36%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_unknown_chunk_returns_none PASSED [ 39%]
-tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_unknown_version_returns_none PASSED [ 42%]
-tests/test_beta_contracts.py::RetrievalStatusContractTests::test_retrieval_status_values PASSED [ 44%]
-tests/test_beta_contracts.py::RetrievalStatusContractTests::test_source_verification_values PASSED [ 47%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_blank_answer_rejected PASSED [ 50%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_duplicate_json_key_rejected PASSED [ 52%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_empty_used_evidence_ids_rejected PASSED [ 55%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_parsed_chunk_returns_correct_chunk PASSED [ 30%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_get_parsed_chunk_returns_deep_copy PASSED [ 33%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_local_bm25_retriever_has_three_methods PASSED [ 35%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_unknown_chunk_returns_none PASSED [ 38%]
+tests/test_beta_contracts.py::LocalBM25RetrieverApiTests::test_unknown_version_returns_none PASSED [ 41%]
+tests/test_beta_contracts.py::RetrievalStatusContractTests::test_retrieval_status_values PASSED [ 43%]
+tests/test_beta_contracts.py::RetrievalStatusContractTests::test_source_verification_values PASSED [ 46%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_blank_answer_rejected PASSED [ 48%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_duplicate_json_key_rejected PASSED [ 51%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_empty_used_evidence_ids_rejected PASSED [ 53%]
 tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_invalid_json_rejected 
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_invalid_json_rejected PASSED [ 57%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_missing_answer_rejected PASSED [ 60%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_missing_used_evidence_ids_rejected PASSED [ 63%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_valid_output_passes PASSED [ 65%]
-tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_wrong_shape_rejected PASSED [ 68%]
-tests/test_beta_qwen_output.py::VerifyAnswerEvidenceIdSafetyTests::test_cross_request_evidence_id_rejected PASSED [ 71%]
-tests/test_beta_qwen_output.py::VerifyAnswerEvidenceIdSafetyTests::test_duplicate_evidence_id_rejected PASSED [ 73%]
-tests/test_beta_qwen_output.py::VerifyAnswerEvidenceIdSafetyTests::test_unknown_evidence_id_rejected PASSED [ 76%]
-tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_answer_rewritten_from_evidence_rejected PASSED [ 78%]
-tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_answer_with_unsupported_extra_text_rejected PASSED [ 81%]
-tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_multiple_evidence_joined_by_newline_passes PASSED [ 84%]
-tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_partial_answer_allowed PASSED [ 86%]
-tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_requested_amount_covered_by_evidence_passes PASSED [ 89%]
-tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_requested_amount_must_be_covered_by_selected_evidence PASSED [ 92%]
-tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_date_in_answer_must_match_selected_evidence PASSED [ 94%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_invalid_json_rejected PASSED [ 56%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_missing_answer_rejected PASSED [ 58%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_missing_used_evidence_ids_rejected PASSED [ 61%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_valid_output_passes PASSED [ 64%]
+tests/test_beta_qwen_output.py::VerifyAnswerFormatTests::test_wrong_shape_rejected PASSED [ 66%]
+tests/test_beta_qwen_output.py::VerifyAnswerEvidenceIdSafetyTests::test_duplicate_evidence_id_rejected PASSED [ 69%]
+tests/test_beta_qwen_output.py::VerifyAnswerEvidenceIdSafetyTests::test_foreign_evidence_id_rejected_as_unknown PASSED [ 71%]
+tests/test_beta_qwen_output.py::VerifyAnswerEvidenceIdSafetyTests::test_unknown_evidence_id_rejected PASSED [ 74%]
+tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_answer_rewritten_from_evidence_rejected PASSED [ 76%]
+tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_answer_with_unsupported_extra_text_rejected PASSED [ 79%]
+tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_multiple_evidence_joined_by_newline_passes PASSED [ 82%]
+tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_partial_answer_allowed PASSED [ 84%]
+tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_requested_amount_covered_by_evidence_passes PASSED [ 87%]
+tests/test_beta_qwen_output.py::VerifyAnswerContentFidelityTests::test_requested_amount_must_be_covered_by_selected_evidence PASSED [ 89%]
+tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_date_in_answer_differs_from_evidence_is_rejected PASSED [ 92%]
+tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_date_in_answer_matching_evidence_passes PASSED [ 94%]
 tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_requested_deadline_covered_by_evidence_passes PASSED [ 97%]
 tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_requested_deadline_must_be_covered_by_selected_evidence PASSED [100%]
 
-==================== 38 passed, 5 subtests passed in 0.94s ====================
+==================== 39 passed, 5 subtests passed in 0.91s ====================

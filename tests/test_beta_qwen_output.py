@@ -137,8 +137,14 @@ class VerifyAnswerEvidenceIdSafetyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify_answer(content, _evidence_map())
 
-    def test_cross_request_evidence_id_rejected(self):
-        # 另一请求的 evidence 集合是 {F1}，本请求的 evidence 集合是 {E1, E2}
+    def test_foreign_evidence_id_rejected_as_unknown(self):
+        # 单元层校验：引用一个不属于本请求 evidence 集合的 ID（此处用 F1 代表
+        # 另一请求的 ID），verify_answer 只能把它当作「未知 ID」拒绝，因为函数
+        # 本身只持有本请求的 evidence 映射。
+        # 说明：**真正的跨请求生命周期隔离**（模型不能引用上一轮/其他请求的证据）
+        # 由 AgentWorkflow 集成测试覆盖
+        # (test_agent_workflow.py::test_model_cannot_select_filtered_or_previous_round_evidence)，
+        # 本单元测试不宣称覆盖跨请求隔离。
         content = json.dumps({"answer": E1_CONTENT, "used_evidence_ids": ["F1"]}, ensure_ascii=False)
         with self.assertRaises(ValueError):
             verify_answer(content, _evidence_map())  # 本请求集合没有 F1
@@ -226,11 +232,22 @@ class VerifyAnswerDateFactTests(unittest.TestCase):
         _, selected, _ = verify_answer(content, _evidence_map_with_date(), facts=facts)
         self.assertEqual(len(selected), 1)
 
-    def test_date_in_answer_must_match_selected_evidence(self):
-        # 日期信息出现在答案中，但必须来自所选证据（答案与证据一致性已由 startswith 校验）
+    def test_date_in_answer_differs_from_evidence_is_rejected(self):
+        # 答案中的日期与所选证据不一致（证据是 2026年3月15日，答案改成 2026年5月20日），
+        # 答案与证据逐字一致性校验应拒绝。
         from backend.services.agent_generation import requested_facts
         facts = requested_facts("什么时候截止？")
-        # 答案 E4 含日期，与证据 E4 逐字一致 → 通过
+        self.assertTrue(facts, "应识别出日期事实")
+        mismatched_answer = "奖学金申请截止日期为2026年5月20日，请在此之前提交材料。"
+        self.assertNotIn("2026年5月20日", E4_CONTENT)  # 确认日期确实不同
+        content = json.dumps({"answer": mismatched_answer, "used_evidence_ids": ["E4"]}, ensure_ascii=False)
+        with self.assertRaises(ValueError):
+            verify_answer(content, _evidence_map_with_date(), facts=facts)
+
+    def test_date_in_answer_matching_evidence_passes(self):
+        # 对照组：答案日期与证据完全一致 → 通过
+        from backend.services.agent_generation import requested_facts
+        facts = requested_facts("什么时候截止？")
         content = json.dumps({"answer": E4_CONTENT, "used_evidence_ids": ["E4"]}, ensure_ascii=False)
         _, selected, _ = verify_answer(content, _evidence_map_with_date(), facts=facts)
         self.assertEqual(len(selected), 1)
