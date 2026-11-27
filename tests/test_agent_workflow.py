@@ -10,7 +10,7 @@ from backend.contracts.models import (
     AgentRequest, AgentResult, AnswerStatus, ChunkIndexStatus, ConversationTurn, LLMResult,
     RetrievedChunk, RetrievalStatus, SourceVerificationStatus, TimelinessVerificationStatus,
 )
-from backend.services.agent_policy_context import contextual_request
+from backend.services.agent_policy_context import PolicyScope, contextual_request
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError
 from examples.agent_workflow_demo import demo_chunk, demo_metadata, demo_parsed_chunk
@@ -65,6 +65,33 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         result = await self.service.run(self.request("怎么办？"))
         self.assertEqual(result.status, "needs_clarification")
         self.assertIn("事项", result.clarifying_question)
+
+    def test_public_lab_history_scope_only_applies_to_neutral_list_or_research(self):
+        for query, expected in (
+            ("学院有哪些实验室？", True),
+            ("EDA 实验室研究什么？", True),
+            ("2024年度的EDA实验室研究方向是什么？", False),
+            ("现有实验室名单", False),
+            ("学院现在有哪些实验室？", False),
+            ("EDA实验室目前是否招募成员？", False),
+            ("EDA实验室研究什么，联系方式是什么？", False),
+            ("实验室当前有哪些招募要求和截止日期？", False),
+            ("实验室还剩几个名额？", False),
+            ("学院优秀学生综合奖学金有哪些？", False),
+        ):
+            with self.subTest(query=query):
+                scope = PolicyScope.from_request(self.request(query), self.service.today())
+                self.assertEqual(scope.infer_public_history, expected)
+
+    async def test_public_lab_history_clarifies_when_retriever_has_only_ranked_lookup(self):
+        service = AgentWorkflow(self.retriever, self.llm, evidence_check=lambda *_: True)
+        self.retriever.retrieve.return_value = []
+        result = await service.run(self.request("EDA实验室研究什么？"))
+        self.assertEqual(result.status, "needs_clarification")
+        self.assertIn("年度", result.clarifying_question)
+        self.assertIsNone(result.answer)
+        self.assertEqual(result.citations, [])
+        self.llm.generate.assert_not_awaited()
 
     async def test_grade_is_not_academic_year(self):
         result = await self.service.run(self.request("我是2024级，奖学金怎么申请？"))

@@ -19,7 +19,7 @@ from backend.app.main import create_app
 from backend.app.config import AppSettings
 from backend.contracts.models import (
     AgentRequest, DocumentPackage, FileProcessingStatus, RetrievalRequest, RetrievalStatus,
-    TimelinessVerificationStatus,
+    SourceVerificationStatus, TimelinessVerificationStatus,
 )
 from backend.retrieval.alpha_corpus import load_approved_alpha_retriever
 from backend.retrieval.local import LocalBM25Retriever
@@ -958,6 +958,149 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         result = await workflow.run(self.request("EDA 实验室主要研究什么？"))
         self.assertEqual(result.status, "insufficient_evidence")
         self.assertEqual(len(self.observed), 1)
+
+    def public_lab_package(self, code, lab, *, year=None, source="edition", status=TimelinessVerificationStatus.HISTORICAL):
+        package = self.package.model_copy(deep=True)
+        metadata = package.metadata
+        metadata.record_code = f"SYNTH-LAB-{code}"
+        metadata.title = f"合成测试：{f'{year}年' if year else ''}学院实验室研究方向与公开介绍"
+        metadata.document_type = "历史公开资源介绍"
+        metadata.category_name = "研究方向与公开介绍"
+        metadata.business_direction_codes = [alpha_business_rules.RESOURCE_DIRECTION_CODE]
+        metadata.source_url = f"https://ccds.fzu.edu.cn/test/{source}.htm"
+        metadata.timeliness_verification_status = status
+        metadata.applicability_raw = None
+        package.chunks[0].content = f"实验室名称（B3）：\n{lab}\n\n合成测试：研究方向为版本 {code} 的内容。"
+        return package
+
+    async def test_beta_s4_single_public_historical_batch_over_http(self):
+        eda = self.public_lab_package("eda", "EDA创新实验室", year=2026)
+        unrelated = self.public_lab_package("ai", "人工智能自主创新实验室", year=2025, source="old-ai")
+        not_approved = self.public_lab_package("pending", "EDA实验室", year=2024, source="pending")
+        not_approved.metadata.temporal_notes["human_approved"] = False
+        unverified = self.public_lab_package("unverified", "EDA实验室", year=2024, source="unverified")
+        unverified.metadata.source_verification_status = SourceVerificationStatus.PENDING
+        unverified.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        workflow = await self.workflow(eda)
+        for package in (unrelated, not_approved, unverified):
+            await workflow.retriever.index_document(package)
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            response = await client.post("/api/v1/ask", json={"query": "EDA 实验室研究什么？"})
+            self.assertEqual(response.status_code, 200)
+            result = response.json()
+            self.assertEqual((result["status"], result["answer_mode"]), ("answered", "historical"))
+            self.assertTrue(result["answer"].startswith("以下为2026年历史资料"))
+            self.assertIn("不代表当前状态", result["answer"])
+            self.assertEqual([citation["excerpt"] for citation in result["citations"]], [eda.chunks[0].content])
+            self.assertEqual([item["content"] for item in self.observed[-1]], [eda.chunks[0].content])
+
+        # The same index is ambiguous for an academy-wide list, where both labs are relevant.
+        result = await workflow.run(self.request("学院有哪些实验室？"))
+        self.assertEqual(result.status, "needs_clarification")
+        self.assertIn("年度", result.clarifying_question)
+        self.assertEqual(len(self.observed), 1)
+        unrelated.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await workflow.retriever.index_document(unrelated)
+        result = await workflow.run(self.request("学院有哪些实验室？"))
+        self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
+        self.assertTrue(result.answer.startswith("以下为2026年历史资料"))
+        self.assertIn("不代表当前状态", result.answer)
+        self.assertEqual([citation.excerpt for citation in result.citations], [eda.chunks[0].content])
+
+    async def test_beta_s4_public_history_uses_complete_index_and_preserves_year_followup(self):
+        newer = self.public_lab_package("new", "EDA实验室", year=2026, source="new")
+        older = self.public_lab_package("old", "EDA实验室", year=2024, source="old")
+        workflow = await self.workflow(newer)
+        workflow.top_k = 1
+        await workflow.retriever.index_document(older)
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            response = await client.post("/api/v1/ask", json={"query": "EDA实验室研究什么？"})
+            result = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(result["status"], "needs_clarification")
+            self.assertIn("年度", result["clarifying_question"])
+            self.assertIsNone(result["answer"])
+            self.assertEqual(result["citations"], [])
+            self.assertEqual(self.observed, [])
+            with patch.object(workflow.retriever, "retrieve", return_value=[]) as retrieve:
+                reply = await client.post("/api/v1/ask", json={
+                    "query": "2024年", "conversation_id": result["conversation_id"],
+                })
+                retrieve.assert_awaited_once()
+            self.assertEqual(reply.status_code, 200)
+            chosen = reply.json()
+            self.assertEqual((chosen["status"], chosen["answer_mode"]), ("answered", "historical"))
+            self.assertEqual([item["excerpt"] for item in chosen["citations"]], [older.chunks[0].content])
+            self.assertEqual([item["content"] for item in self.observed[-1]], [older.chunks[0].content])
+
+    async def test_beta_s4_public_history_clarifies_when_batch_metadata_is_incomplete(self):
+        original = self.public_lab_package("known", "EDA实验室", year=2026)
+        workflow = await self.workflow(original)
+        for package in (
+            self.public_lab_package("undated", "EDA实验室"),
+            self.public_lab_package("same-year-other-batch", "EDA实验室", year=2026, source="second-batch"),
+        ):
+            with self.subTest(record=package.metadata.record_code):
+                await workflow.retriever.index_document(package)
+                result = await workflow.run(self.request("EDA实验室研究什么？"))
+                self.assertEqual(result.status, "needs_clarification")
+                self.assertEqual(result.citations, [])
+                self.assertIn("年度", result.clarifying_question)
+                package.metadata.retrieval_status = RetrievalStatus.BLOCKED
+                await workflow.retriever.index_document(package)
+        self.assertEqual(self.observed, [])
+
+    async def test_beta_s4_public_history_prefers_relevant_current_information(self):
+        archive = self.public_lab_package("archive", "EDA实验室", year=2024)
+        current = self.public_lab_package("current", "EDA实验室", status=TimelinessVerificationStatus.CURRENT)
+        workflow = await self.workflow(archive)
+        await workflow.retriever.index_document(current)
+        for query, mode, package in (
+            ("EDA实验室研究什么？", "current_policy", current),
+            ("2024年EDA实验室研究什么？", "historical", archive),
+            ("2026年EDA实验室研究什么？", "insufficient_data", None),
+        ):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual(result.answer_mode, mode)
+                self.assertEqual([citation.excerpt for citation in result.citations],
+                                 [package.chunks[0].content] if package else [])
+
+    async def test_beta_s4_public_history_refuses_current_and_operational_questions(self):
+        eda = self.public_lab_package("archive", "EDA实验室", year=2024, status=TimelinessVerificationStatus.EXPIRED)
+        workflow = await self.workflow(eda)
+        for query in ("EDA实验室目前研究什么？", "学院目前有哪些实验室？", "EDA实验室联系人现在有效吗？",
+                      "EDA实验室现在还招吗？", "EDA实验室最新招募条件和截止日期？", "EDA实验室现在还剩几个名额？",
+                      "2025年EDA实验室研究什么？", "EDA实验室研究什么？还有几个名额？"):
+            with self.subTest(query=query):
+                result = await workflow.run(self.request(query))
+                self.assertEqual((result.status, result.answer_mode), ("insufficient_evidence", "insufficient_data"))
+                self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+        result = await workflow.run(self.request("2024年EDA实验室研究什么？"))
+        self.assertEqual(result.answer_mode, "historical")
+        self.assertEqual(result.citations[0].excerpt, eda.chunks[0].content)
+
+    async def test_beta_s4_public_history_rechecks_batch_after_generation(self):
+        eda = self.public_lab_package("first", "EDA实验室", year=2025)
+        newer = self.public_lab_package("added", "EDA实验室", year=2026, source="added")
+        workflow = await self.workflow(eda)
+        generate = workflow.llm_client.generate
+
+        async def add_batch(prompt):
+            result = await generate(prompt)
+            await workflow.retriever.index_document(newer)
+            return result
+
+        with patch.object(workflow.llm_client, "generate", side_effect=add_batch):
+            result = await workflow.run(self.request("EDA实验室研究什么？"))
+        self.assertEqual(result.status, "insufficient_evidence")
+        self.assertEqual(result.warnings[0].code, "EVIDENCE_APPROVAL_CHANGED")
+        self.assertEqual(result.citations, [])
 
     async def test_beta_s4_public_contact_without_applicability_requires_direct_college_page(self):
         direction = alpha_business_rules.RESOURCE_DIRECTION_CODE

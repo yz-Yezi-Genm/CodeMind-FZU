@@ -56,6 +56,24 @@ _R3_CATEGORY = "实验室与科研团队"
 _R4_CATEGORY = "研究方向与公开介绍"
 _R6_CATEGORY = "学院公开信息与联系方式"
 _PUBLIC_INTRO = re.compile(r"研究(?:方向|什么|内容|哪些)|做什么|成果|简介")
+_PUBLIC_LAB_LIST = re.compile(
+    r"(?:计算机与大数据学院(?:（软件学院）)?|计算机学院|软件学院|本学院|学院)?"
+    r"(?:里|内)?(?:当时|以前|往年|现在|目前|当前|最新|现有)?"
+    r"(?:(?:都)?(?:有)?(?:哪些|什么)实验室|(?:的)?实验室(?:名单|名录|一览|列表|目录))"
+)
+_PUBLIC_LAB_RESEARCH = re.compile(
+    r"(?:的|主要)?(?:当时|以前|现在|目前|当前)?(?:主要)?"
+    r"(?:研究什么|研究哪些(?:内容|方向)|(?:的)?研究(?:方向|内容)(?:介绍|是什么|有哪些)?"
+    r"|(?:是)?做什么研究(?:的)?)"
+)
+_PUBLIC_LAB_UNSAFE = re.compile(
+    r"联络|联系|电话|邮箱|地址|地点|负责人|导师|招|报名|截止|申请|录取|名额|资格|条件|要求|有效|开放"
+)
+_PUBLIC_LAB_TIME = re.compile(r"现有|现阶段|如今|当下|本届|这届|\d{4}\s*[-/.年]\s*\d|第[一二三四五六七八九十\d]+批")
+_GENERIC_LAB_NAMES = {"学院实验室", "本学院实验室", "本校实验室", "学校实验室"}
+_LAB_HEADING = re.compile(r"^#{1,6}\s*R[34]·实验室序号\d+·([^\n]+)", re.M)
+_LAB_NAME_FIELD = re.compile(r"^实验室名称(?:[（(][^）)\n]+[）)])?[：:][ \t]*\n?([^\n]+)", re.M)
+_LIST_HEADING = re.compile(r"(?:实验室(?:名单|名录|一览|列表|目录|需求一览表)|有哪些实验室)")
 _PUBLIC_CONTACT = re.compile(r"(?:学院|办公室|办公).*(?:电话|办公地点|地址|邮箱|联系方式)")
 _PERSONAL_RESOURCE = re.compile(r"能不能|能否|可否|是否适用|是否符合|资格|我.{0,16}(?:能|可以|适用|符合)|报名|招募|名额|办理条件")
 _LAB_NAME = (
@@ -341,6 +359,51 @@ def _explicit_periods(text: str) -> set[PolicyPeriod]:
 
 
 @dataclass(frozen=True)
+class PublicLabQuestion:
+    subject: str | None
+
+    @classmethod
+    def parse(cls, query: str) -> PublicLabQuestion | None:
+        if _topics(query) != {3} or _PUBLIC_LAB_UNSAFE.search(query):
+            return None
+        text = re.sub(rf"(?:{_PERIOD.pattern})度?(?:的)?", "", query).strip().rstrip("？?。！!").strip()
+        text = re.sub(r"^(?:请问(?:一下)?|想了解|想问|请介绍(?:一下)?|介绍一下)[，,：:\s]*", "", text)
+        if _PUBLIC_LAB_LIST.fullmatch(text):
+            return cls(None)
+        match = _LAB_SUBJECT.match(text)
+        if match and _PUBLIC_LAB_RESEARCH.fullmatch(text[match.end():].strip()):
+            subject = _lab_key(match["name"])
+            if subject not in _GENERIC_LAB_NAMES:
+                return cls(subject)
+        return None
+
+    def includes(self, metadata: DocumentMetadata, content: str) -> bool | None:
+        """Match a declared resource identity, or report that it cannot be resolved."""
+        category = metadata.category_name.strip()
+        if _COLLEGE_RESOURCES not in metadata.business_direction_codes or (
+            category != _R4_CATEGORY and (self.subject is not None or category != _R3_CATEGORY)
+        ):
+            return False
+        labels = _LAB_NAME_FIELD.findall(content) or _LAB_HEADING.findall(content)
+        if not labels:
+            labels = [
+                match["name"] for text in (content.partition("\n")[0], metadata.title)
+                if (match := _LAB_SUBJECT.search(text))
+            ]
+        names = {_lab_key(label) for label in labels} - _GENERIC_LAB_NAMES
+        if self.subject is None:
+            if names or _LIST_HEADING.search(metadata.title) or _LIST_HEADING.search(content.partition("\n")[0]):
+                return True
+            return None
+        if not names:
+            return None
+        # An acronym may be written as "EDA 实验室" in the
+        # question and "EDA创新实验室" or "EDA" in the source.
+        acronym = re.fullmatch(r"([a-z][a-z0-9_-]*)实验室", self.subject)
+        return self.subject in names or bool(acronym and names & {acronym[1], f"{acronym[1]}创新实验室"})
+
+
+@dataclass(frozen=True)
 class PolicyScope:
     today: date
     periods: frozenset[PolicyPeriod]
@@ -349,6 +412,8 @@ class PolicyScope:
     needs_window: bool
     asks_deadline: bool
     fact_question: str
+    public_lab: PublicLabQuestion | None = None
+    infer_public_history: bool = False
 
     @property
     def future(self) -> bool:
@@ -378,15 +443,21 @@ class PolicyScope:
                 start = academic_start - (term == "上学年")
                 periods.add(PolicyPeriod(start, start + 1))
         current = bool(_CURRENT.search(text) or re.search(r"今年|本年度|本学年|本学期|这学期", text))
+        historical = bool(_HISTORY.search(text) or re.search(r"当年|上学期", text) or any(p.ended(today) for p in periods))
+        public_lab = PublicLabQuestion.parse(fact_question)
+        if public_lab is not None:
+            current |= bool(re.search(r"现有|现阶段|如今|当下", text))
         return cls(
             today, frozenset(periods),
-            bool(_HISTORY.search(text) or re.search(r"当年|上学期", text) or any(p.ended(today) for p in periods)),
+            historical,
             current, bool(_WINDOW.search(fact_question) or _LAB_STATUS.fullmatch(fact_question.strip())),
-            bool(_DEADLINE.search(fact_question)), fact_question,
+            bool(_DEADLINE.search(fact_question)), fact_question, public_lab,
+            bool(public_lab and not (periods or relative or current or historical or _PUBLIC_LAB_TIME.search(text)
+                                     or re.search(r"当时|以前|往年|现有|本届|这届", text))),
         )
 
-    def evidence_mode(self, metadata: DocumentMetadata) -> tuple[AnswerMode, str | None] | None:
-        return self._evidence_mode(metadata, closing_recruitment=False)
+    def evidence_mode(self, metadata: DocumentMetadata, *, inspect_public_history: bool = False) -> tuple[AnswerMode, str | None] | None:
+        return self._evidence_mode(metadata, closing_recruitment=False, inspect_public_history=inspect_public_history)
 
     def expired_team_registration_mode(self, metadata: DocumentMetadata) -> tuple[AnswerMode, str | None] | None:
         """Permit a historical process answer for an explicitly named team."""
@@ -448,27 +519,40 @@ class PolicyScope:
             deadlines.add(f"{year}年{month_day}" if year else month_day)
         return next(iter(deadlines)) if len(deadlines) == 1 else None
 
-    def _allows_public_resource_without_applicability(self, metadata: DocumentMetadata) -> bool:
+    def _allows_public_resource_without_applicability(
+        self, metadata: DocumentMetadata, *, inspect_public_history: bool,
+    ) -> bool:
         if self.needs_window:
             return False
         if _is_college_resource(metadata, _R4_CATEGORY):
-            return bool(_PUBLIC_INTRO.search(self.fact_question))
+            return bool(_PUBLIC_INTRO.search(self.fact_question)
+                        or (self.public_lab is not None and self.public_lab.subject is None
+                            and (inspect_public_history or self.periods)))
         return (_is_college_resource(metadata, _R6_CATEGORY)
                 and bool(_PUBLIC_CONTACT.search(self.fact_question))
                 and _is_college_contact_page(metadata.source_url))
 
     def _evidence_mode(
-        self, metadata: DocumentMetadata, *, closing_recruitment: bool,
+        self, metadata: DocumentMetadata, *, closing_recruitment: bool, inspect_public_history: bool = False,
     ) -> tuple[AnswerMode, str | None] | None:
         applicability = metadata.applicability_raw or {}
         if (_PERSONAL_RESOURCE.search(self.fact_question)
                 and (_is_college_resource(metadata, _R4_CATEGORY) or _is_college_resource(metadata, _R6_CATEGORY))):
             return None
         if not any(value and str(value).strip() for value in applicability.values()):
-            if metadata.applicability_raw is not None or not self._allows_public_resource_without_applicability(metadata):
+            if metadata.applicability_raw is not None or not self._allows_public_resource_without_applicability(
+                metadata, inspect_public_history=inspect_public_history,
+            ):
                 return None
-        if any("歧义" in key and str(value).strip().lower() not in {"", "无", "否", "none", "-", "false"}
-               for key, value in applicability.items()):
+        ambiguous = any("歧义" in key and str(value).strip().lower() not in {"", "无", "否", "none", "-", "false"}
+                        for key, value in applicability.items())
+        public_history = (
+            inspect_public_history and self.infer_public_history and self.public_lab is not None
+            and (_is_college_resource(metadata, _R4_CATEGORY)
+                 or (self.public_lab.subject is None and _is_college_resource(metadata, _R3_CATEGORY)))
+            and metadata.timeliness_verification_status in {Timeliness.HISTORICAL, Timeliness.EXPIRED}
+        )
+        if ambiguous and not public_history:
             return None
 
         declared = set()
@@ -477,10 +561,13 @@ class PolicyScope:
                 value = str(facts.get(key) or "").strip()
                 declared.update(_explicit_periods(value + "年" if value.isdecimal() else value))
         document_periods = declared or _explicit_periods(metadata.title)
+        if public_history and (ambiguous or len(document_periods) != 1):
+            # The inventory must account for undated/ambiguous approved material.
+            return AnswerMode.HISTORICAL, None
         if len(document_periods) > 1:
             return None
         period = next(iter(document_periods), None)
-        if self.future and period is None:
+        if period is None and (self.future or (self.periods and self.public_lab is not None)):
             return None
         if self.periods and period and not all(p.matches(period) for p in self.periods):
             return None
@@ -493,7 +580,9 @@ class PolicyScope:
         if status in _ARCHIVED or ended:
             # An explicit historical question or matching year is required, even
             # when an elapsed deadline has yet to be reflected in the status.
-            if not closing_recruitment and (self.current or self.needs_window or not (self.historical or self.periods)):
+            if not (closing_recruitment or public_history) and (
+                self.current or self.needs_window or not (self.historical or self.periods)
+            ):
                 return None
             if not period or (self.asks_deadline and not deadline):
                 return None
