@@ -1,7 +1,7 @@
 # Beta 专项测试记录（契约测试 + 生产 verify_answer 黑盒测试）
 # 环境：Python 3.10.11 / Windows 11 / pytest 9.2.0
 # 命令：python -m pytest tests/test_beta_contracts.py tests/test_beta_qwen_output.py -v
-# main 基线：a27c13d
+# main 基线：23f372a（含 #50 真实 Qwen 集成）
 # 路径脱敏：<REPO> / <PYTHON_HOME> / <USER_HOME> / <WORKBUDDY_HOME>
 # ---------------------------------------------------------------------------
 ============================= test session starts =============================
@@ -52,4 +52,4 @@ tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_date_in_answer_m
 tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_requested_deadline_covered_by_evidence_passes PASSED [ 97%]
 tests/test_beta_qwen_output.py::VerifyAnswerDateFactTests::test_requested_deadline_must_be_covered_by_selected_evidence PASSED [100%]
 
-==================== 39 passed, 5 subtests passed in 0.96s ====================
+==================== 39 passed, 5 subtests passed in 0.95s ====================
