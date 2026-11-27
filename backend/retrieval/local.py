@@ -72,7 +72,7 @@ def _is_human_approved(metadata: DocumentMetadata) -> bool:
 
 
 def _normalize_substring(text: str) -> str:
-    return unicodedata.normalize("NFKC", text).casefold()
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", text).casefold())
 
 
 def _metadata_sort_key(version: _IndexedVersion) -> tuple[int, int, str, str]:
@@ -158,17 +158,25 @@ class LocalBM25Retriever:
         business_direction_code: str | None = None,
         category_name: str | None = None,
     ) -> list[DocumentMetadata]:
-        """List detached metadata for enabled, human-approved versions.
+        """List detached metadata for enabled, human-approved indexed versions.
 
-        Results are deduplicated by ``version_id`` and deterministically ordered
-        by ``published_on`` descending (undated last), then ``record_code`` and
-        ``version_no`` ascending. When ``subject`` is provided, it matches as a
-        normalized substring against both the document title and indexed chunk
-        contents without alias expansion.
+        Granularity & caller boundary:
+        - Deduplication is at the ``version_id`` level (``(record_code, version_no)``),
+          NOT the business historical-batch level. Multiple ``version_no`` under the
+          same ``record_code``, or same-year splits across multiple packages (e.g.
+          R3 + R4), are returned as separate entries; callers determining batch
+          counts must aggregate by ``record_code`` / distinct period in business logic.
+        - ``subject`` performs NFKC, case, and whitespace-normalized substring
+          matching across the document title and indexed chunk contents without
+          alias expansion. Callers that need exhaustive cross-year or alias checks
+          should omit ``subject`` and enumerate by ``business_direction_code`` and
+          ``category_name`` instead of relying on a single substring hit.
+        - Ordering is deterministic: ``published_on`` descending (undated last),
+          then ``record_code`` and ``version_no`` ascending.
         """
         needle: str | None = None
         if subject is not None:
-            needle = _normalize_substring(subject).strip()
+            needle = _normalize_substring(subject)
             if not needle:
                 return []
 
