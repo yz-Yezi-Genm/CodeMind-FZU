@@ -1,12 +1,14 @@
 """Read the local index exhaustively for Agent's public-lab batch check."""
 from __future__ import annotations
 
+import re
 from collections.abc import Iterator
 
 from backend.contracts.models import RetrievalStatus, RetrievedChunk
 from backend.contracts.protocols import Retriever
 from backend.retrieval.local import LocalBM25Retriever
 from backend.services.agent_generation import Evidence
+from backend.services.agent_policy_context import _LAB_NAME_FIELD, _LAB_SUBJECT, _lab_key, public_lab_batch_number
 
 
 def public_lab_index(retriever: Retriever) -> Iterator[RetrievedChunk] | None:
@@ -31,12 +33,12 @@ def public_lab_index(retriever: Retriever) -> Iterator[RetrievedChunk] | None:
         for version in versions
         if version.metadata.retrieval_status == RetrievalStatus.ENABLED
         and "COLLEGE_RESOURCES" in version.metadata.business_direction_codes
-        and version.metadata.category_name in {"实验室与科研团队", "研究方向与公开介绍"}
+        and version.metadata.category_name.strip() == "研究方向与公开介绍"
         for chunk in version.chunks
     )
 
 
-def public_lab_batch(item: Evidence) -> tuple[str, str] | None:
+def public_lab_batch(item: Evidence) -> tuple[str, str, int | None] | None:
     if not item.period:
         return None
     declared = {
@@ -47,7 +49,43 @@ def public_lab_batch(item: Evidence) -> tuple[str, str] | None:
     }
     if len(declared) > 1:
         return None
-    if declared:
-        return item.period, next(iter(declared))
-    # The two views of one official attachment may share its source page.
-    return item.period, item.metadata.source_page_url or item.metadata.source_url
+    label = next(iter(declared), item.metadata.title)
+    source = item.metadata.source_page_url or item.metadata.source_url
+    number = public_lab_batch_number(label)
+    return item.period, f"{source} {label}" if declared and number is None else source, number
+
+
+_ROSTER_SEQUENCE = re.compile(
+    r"^#{1,6}\s*R4·实验室序号(\d+)·|^序号(?:[（(][^）)\n]+[）)])?[：:][ \t]*\n?[ \t]*(\d+)[ \t]*$", re.M,
+)
+_ROSTER_NAME = re.compile(r"""[\w \u00a0+·（）()“”「」'"’&,，\-—]{1,150}""")
+
+
+def public_lab_directory(evidence: list[Evidence]) -> list[tuple[int | None, str, Evidence]]:
+    """Keep one public name per original row. Never return the rest of the chunk."""
+    rows = {}
+    unnumbered = {}
+    for item in evidence:
+        content = item.chunk.content
+        labels = _LAB_NAME_FIELD.findall(content)
+        if not labels:
+            match = _LAB_SUBJECT.match(content.partition("\n")[0])
+            labels = [match["name"]] if match else []
+        if len(labels) != 1:
+            continue
+        name = labels[0].strip()
+        if not _ROSTER_NAME.fullmatch(name) or re.search(r"电话|邮箱|报名|招募|接收|名额|截止|\d{7,}", name):
+            continue
+        sequences = {int(heading or field) for heading, field in _ROSTER_SEQUENCE.findall(content)}
+        if len(sequences) > 1:
+            continue
+        if sequences:
+            rows.setdefault(next(iter(sequences)), (name, item))
+        else:
+            unnumbered.setdefault(_lab_key(name), (name, item))
+    numbered_names = {_lab_key(name) for name, _ in rows.values()}
+    return [
+        (number, name, item) for number, (name, item) in sorted(rows.items())
+    ] + [
+        (None, name, item) for key, (name, item) in unnumbered.items() if key not in numbered_names
+    ]

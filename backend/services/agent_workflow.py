@@ -24,10 +24,10 @@ from backend.services.agent_generation import Evidence, generation_request, requ
 from backend.services.agent_policy_context import (
     PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
-from backend.services.agent_public_lab_history import public_lab_batch, public_lab_index
+from backend.services.agent_public_lab_history import public_lab_batch, public_lab_directory, public_lab_index
 from backend.services.alpha_business_rules import (
     VolunteerScoreKind, VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
-    format_volunteer_hours, volunteer_scoring_request, volunteer_service_raw_score,
+    format_volunteer_hours, is_lab_admission_question, volunteer_scoring_request, volunteer_service_raw_score,
 )
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError, ServiceError
 from backend.services.resource_team_names import r3_team_names
@@ -144,7 +144,13 @@ class AgentWorkflow:
             logger.warning("Clarification rule failed; request_id=%s", request.request_id)
             return _insufficient("CLARIFICATION_RULE_FAILED", "必要信息检查暂时不可用，本次不生成政策答案。")
         scope = PolicyScope.from_request(request, self.today())
-        if not question and scope.historical and not scope.periods and not scope.current:
+        directory = scope.public_lab is not None and scope.public_lab.subject is None
+        check_public_index = bool(directory or (
+            allow_public_history and scope.public_lab is not None
+            and (scope.infer_public_history or scope.periods or scope.public_batch_number)
+        ))
+        if (not question and scope.historical and not scope.periods and not scope.current
+                and not is_lab_admission_question(scope.fact_question)):
             question = "请问你想查哪一年或哪一学年的历史资料？"
         if question:
             return AgentResult(
@@ -200,6 +206,8 @@ class AgentWorkflow:
                         raise ValueError("Conflicting duplicate chunk identity")
                     continue
                 seen[chunk.chunk_id] = chunk
+                if check_public_index:
+                    continue
                 eligible = self._eligible(request, chunk, scope)
                 if eligible is None:
                     continue
@@ -227,16 +235,19 @@ class AgentWorkflow:
             return _insufficient("INVALID_RETRIEVAL_RESULT", "检索结果不符合公共契约或存在片段冲突，本次不生成政策答案。")
 
         public_batch = None
-        if (not evidence and allow_public_history and scope.public_lab is not None and self.evidence_check is not None
-                and (scope.infer_public_history or (scope.periods and not scope.current))):
-            public_evidence = self._public_lab_evidence(request, scope, seen)
+        if check_public_index:
+            if self.evidence_check is None:
+                return _insufficient("APPLICABILITY_NOT_VERIFIED", "本次无法核验实验室资料的适用范围。")
+            public_evidence = self._public_lab_evidence(request, scope, seen, allow_history=allow_public_history)
             if public_evidence is None:
                 return AgentResult(
                     status=AnswerStatus.NEEDS_CLARIFICATION,
-                    clarifying_question="你想查哪一年度或哪一批次的实验室资料？",
+                    clarifying_question="你想查哪一年度的实验室资料？同年度多批时，请补充资料标注的批次，例如「第一批」。",
                 )
             if public_evidence:
-                if scope.infer_public_history and public_evidence[0].mode == AnswerMode.HISTORICAL:
+                if directory:
+                    return self._answer_public_lab_directory(public_evidence)
+                if public_evidence[0].mode == AnswerMode.HISTORICAL or scope.periods or scope.public_batch_number:
                     public_batch = public_lab_batch(public_evidence[0])
                 for item in public_evidence[:self.top_k]:
                     if evidence_chars + len(item.chunk.content) > self.max_evidence_chars:
@@ -302,9 +313,9 @@ class AgentWorkflow:
                 note = "所引通知对应年度的报名已截止。"
             message = f"以下为{periods}历史资料。{note}请勿用于当前办理。"
             if scope.public_lab is not None:
+                if public_batch is not None and public_batch[2] is not None:
+                    periods += f"第{public_batch[2]}批"
                 message = f"以下为{periods}历史资料所反映的实验室情况，不代表当前状态。"
-                if scope.public_lab.subject is None:
-                    message += "以下列出本次引用覆盖的记录。"
             answer = f"{message}\n\n{answer}"
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message=message))
         elif any(item.mode == AnswerMode.PROCEDURE_REFERENCE for item in selected):
@@ -365,8 +376,29 @@ class AgentWorkflow:
             citations=[item.citation() for item in selected], warnings=warnings,
         )
 
+    def _answer_public_lab_directory(self, evidence: list[Evidence]) -> AgentResult:
+        directory = public_lab_directory(evidence)
+        if not directory:
+            return _insufficient("NO_ELIGIBLE_EVIDENCE", "暂无可核验的实验室名称。")
+        names, citations = [], []
+        for number, name, item in directory[:self.top_k]:
+            names.append(f"- {name}" + (f"（原表序号 {number}）" if number else ""))
+            citations.append(item.citation().model_copy(update={"excerpt": name}))
+        message = f"已核验 {len(directory)} 条实验室记录，以下列出 {len(names)} 条。"
+        warnings = []
+        if evidence[0].mode == AnswerMode.HISTORICAL:
+            batch = public_lab_batch(evidence[0])
+            suffix = f"第{batch[2]}批" if batch and batch[2] is not None else ""
+            historical = f"以下为{evidence[0].period}{suffix}历史名录，不代表当前状态。"
+            message = historical + message
+            warnings.append(WarningItem(code="HISTORICAL_POLICY", message=historical))
+        return AgentResult(
+            status=AnswerStatus.ANSWERED, answer="\n\n".join((message, "\n".join(names))),
+            answer_mode=evidence[0].mode, citations=citations, warnings=warnings,
+        )
+
     def _public_lab_evidence(
-        self, request: AgentRequest, scope: PolicyScope, ranked: dict[UUID, RetrievedChunk],
+        self, request: AgentRequest, scope: PolicyScope, ranked: dict[UUID, RetrievedChunk], *, allow_history: bool = True,
     ) -> list[Evidence] | None:
         """Return eligible evidence, or None when the related batch cannot be resolved."""
         try:
@@ -378,7 +410,10 @@ class AgentWorkflow:
             versions = {}
             for snapshot in indexed:
                 chunk = ranked.get(snapshot.chunk_id, snapshot)
-                item = self._eligible(request, chunk, scope, inspect_public_history=scope.infer_public_history)
+                item = self._eligible(
+                    request, chunk, scope,
+                    inspect_public_history=allow_history and (scope.infer_public_history or bool(scope.periods)),
+                )
                 if item is None:
                     continue
                 related = scope.public_lab.includes(item.metadata, item.chunk.content)
@@ -387,32 +422,40 @@ class AgentWorkflow:
                     continue
                 if not related:
                     continue
-                if item.mode != AnswerMode.HISTORICAL:
-                    current.append(item)
-                    continue
+                batch = public_lab_batch(item)
+                if scope.public_batch_number is not None:
+                    if batch is None or batch[2] is None:
+                        unknown = True
+                        continue
+                    if batch[2] != scope.public_batch_number:
+                        continue
                 if versions.setdefault(item.chunk.document_id, item.chunk.version_id) != item.chunk.version_id:
                     unknown = True
-                historical.append(item)
-            if current:
+                (historical if item.mode == AnswerMode.HISTORICAL else current).append(item)
+            if current and not (scope.periods or scope.public_batch_number):
                 if len({item.chunk.version_id for item in current}) != len({item.chunk.document_id for item in current}):
                     return None
+                if scope.public_lab.subject is None and len({
+                    item.metadata.source_page_url or item.metadata.source_url for item in current
+                }) > 1:
+                    return None
                 return sorted(current, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
-            batches = {public_lab_batch(item) for item in historical}
-            if unknown or (scope.infer_public_history and (None in batches or len(batches) > 1)):
+            batches = {public_lab_batch(item) for item in current + historical}
+            if unknown or None in batches or len(batches) > 1:
                 return None
-            return sorted(historical, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
+            return sorted(current or historical, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
         except Exception:
             logger.warning("Public lab batch lookup failed; request_id=%s", request.request_id)
             return None
 
     def _evidence_unchanged(
-        self, request: AgentRequest, selected: list[Evidence], *, public_batch: tuple[str, str] | None = None,
+        self, request: AgentRequest, selected: list[Evidence], *, public_batch: tuple[str, str, int | None] | None = None,
     ) -> bool:
         fresh_scope = PolicyScope.from_request(request, self.today())
         try:
             if public_batch is not None:
                 refreshed = self._public_lab_evidence(request, fresh_scope, {item.chunk.chunk_id: item.chunk for item in selected})
-                return bool(refreshed and refreshed[0].mode == AnswerMode.HISTORICAL
+                return bool(refreshed and refreshed[0].mode == selected[0].mode
                             and public_lab_batch(refreshed[0]) == public_batch
                             and all(item in refreshed for item in selected))
             return all(self._eligible(request, item.chunk, fresh_scope) == item for item in selected)
@@ -487,7 +530,8 @@ class AgentWorkflow:
         if scope_result is None or (metadata.applicability_raw is None and self.evidence_check is None):
             return None
         if (not inspect_public_history and scope.public_lab is not None
-                and (scope.infer_public_history or scope.periods or scope_result[0] == AnswerMode.HISTORICAL)
+                and (scope.public_lab.subject is None or scope.infer_public_history or scope.periods
+                     or scope_result[0] == AnswerMode.HISTORICAL)
                 and scope.public_lab.includes(metadata, chunk.content) is not True):
             return None
         if self.evidence_check is not None:

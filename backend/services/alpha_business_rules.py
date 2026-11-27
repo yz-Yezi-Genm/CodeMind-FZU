@@ -197,8 +197,13 @@ _LAB_JOIN = re.compile(
     r"报名|怎么进|如何进|进入|能进|能不能进|可以进|进实验室|招|接收|加入|申请|名额|条件"
     r"|联系人|地点|地址|联系方式|电话|邮箱"
 )
+_LAB_ADMISSION = re.compile(
+    r"(?:能(?:不能|否)?|可(?:不可以|以|否)|是否)(?:够)?(?:进|加入|被接收)"
+    r"|(?:接收|招募|招新|申请|报名|入组|加入)(?:对象|要求|条件|资格)|接收哪些|接收什么"
+    r"|我[^？?，,。]{0,20}(?:能|可|是否)[^？?，,。]{0,8}报名"
+)
 _LAB_CONTACT = re.compile(r"联系方式|联系电话|电话|邮箱|联系人|地址|地点")
-_LAB_LIST = re.compile(r"有哪些实验室|实验室(?:名单|一览|列表|目录)|学院.*实验室|哪些实验室")
+_LAB_LIST = re.compile(r"有哪些实验室|实验室(?:名单|名录|一览|列表|目录)|学院.*实验室|哪些实验室")
 _COMPETITION_REGISTRATION = re.compile(r"报名|参赛")
 _STUDY_QUESTION = re.compile(r"培养方案|课程|选课|辅修|通识|学位要求|修多少")
 _PLAN_MAJOR = re.compile(r"计算机专业|软件专业|计算机类|软件类|人工智能专业|大数据专业|信息安全专业")
@@ -730,6 +735,11 @@ def _detect(text: str) -> tuple[str | None, str | None]:
     if resource:
         return RESOURCES, None
     return None, None
+
+
+def is_lab_admission_question(text: str) -> bool:
+    return bool(_LAB_ADMISSION.search(text) and _detect(text)[0] == RESOURCES
+                and (_LAB_QUESTION.search(text) or r3_team_names(text)))
 
 
 def _analyse(
@@ -1449,6 +1459,20 @@ def _check_resources(
         years = _query_years(temporal_text, today)
         if years and (doc_year is None or doc_year not in years):
             return False
+        if _LAB_ADMISSION.search(current := request.query or text):
+            expired = facts.deadline is not None and today > facts.deadline
+            historical_notice = chunk.timeliness_verification_status in {
+                TimelinessVerificationStatus.HISTORICAL, TimelinessVerificationStatus.EXPIRED,
+                TimelinessVerificationStatus.SUPERSEDED,
+            } or expired
+            if historical_notice:
+                if not years or _CURRENT_INTENT.search(temporal_text) or re.search(r"如今|当下|现阶段|仍然|仍可", temporal_text):
+                    return False
+                app = facts.applicability or {}
+                if not (_first_value(app, _GRADE_KEYS) and _first_value(app, _MAJOR_KEYS)):
+                    return False
+                if _PERSONAL.search(current) and not (_grade_level(text, today) and _PROFESSION.search(text)):
+                    return False
         # 过期通知可以回答“本年度已截止”和当时的计划人数，但不能回答当前名额。
         if _current_quota_question(temporal_text):
             if (

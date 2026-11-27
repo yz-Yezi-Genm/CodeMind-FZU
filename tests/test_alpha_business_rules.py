@@ -1609,14 +1609,15 @@ def test_s4_topic_switch_does_not_inherit_lab() -> None:
 
 
 def test_s4_lab_recruitment_requires_applicability() -> None:
+    current = LAB_NOTICE.model_copy(update={"timeliness_verification_status": TimelinessVerificationStatus.CURRENT})
     meta_ok = _resource_meta(
-        LAB_NOTICE,
+        current,
         category="实验室与科研团队",
         applicability={"适用年级": "全体本科生", "适用专业": "计算机科学与技术", "适用对象": "全体本科生"},
-        deadline=date(2026, 10, 31),
+        deadline=date(2026, 12, 1),
     )
-    check = _check_for((LAB_NOTICE, meta_ok))
-    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is True
+    check = _check_for((current, meta_ok))
+    assert check(_request("我大二能进EDA实验室吗？"), current) is True
 
     meta_missing = _resource_meta(
         LAB_NOTICE,
@@ -1636,7 +1637,24 @@ def test_s4_lab_grade_missing_field_is_rejected() -> None:
         deadline=date(2026, 10, 31),
     )
     check = _check_for((LAB_NOTICE, meta))
-    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is False
+    assert check(_request("2026年我大二计算机科学与技术专业能进EDA实验室吗？"), LAB_NOTICE) is False
+
+
+@pytest.mark.parametrize(("question", "expected"), [
+    ("我大二能进 EDA 实验室吗？", False),
+    ("2026年我大二软件工程专业能进 EDA 实验室吗？", True),
+    ("2026年我大一软件工程专业能进 EDA 实验室吗？", False),
+    ("2026年我大二金融专业能进 EDA 实验室吗？", False),
+    ("2026年我大二能进 EDA 实验室吗？", False),
+    ("2025年我大二软件工程专业能进 EDA 实验室吗？", False),
+    ("2026年现在我大二软件工程专业能进 EDA 实验室吗？", False),
+])
+def test_s4_admission_history_requires_an_explicit_year_and_matching_applicability(question, expected):
+    metadata = _resource_meta(
+        LAB_NOTICE, category="实验室与科研团队",
+        applicability={"适用年级": "大二", "适用专业": "软件工程"}, deadline=date(2026, 10, 31),
+    )
+    assert _check_for((LAB_NOTICE, metadata))(_request(question), LAB_NOTICE) is expected
 
 
 def test_s4_lab_intro_cannot_answer_recruitment() -> None:
@@ -2008,7 +2026,7 @@ def test_s4_legacy_applicability_keys_still_work() -> None:
         deadline=date(2026, 10, 31),
     )
     check = _check_for((LAB_NOTICE, meta))
-    assert check(_request("我大二能进EDA实验室吗？"), LAB_NOTICE) is True
+    assert check(_request("2026年我大二计算机科学与技术专业能进EDA实验室吗？"), LAB_NOTICE) is True
 
 
 # --------------------------------------------------------------------------- 历史政策与现行政策
