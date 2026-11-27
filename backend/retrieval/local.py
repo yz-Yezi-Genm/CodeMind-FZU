@@ -64,6 +64,24 @@ def _check_storage_key(key: str) -> None:
         raise ValueError("storage_key 必须是根目录内使用 / 分隔的相对路径")
 
 
+def _is_human_approved(metadata: DocumentMetadata) -> bool:
+    return (
+        isinstance(metadata.temporal_notes, dict)
+        and metadata.temporal_notes.get("human_approved") is True
+    )
+
+
+def _normalize_substring(text: str) -> str:
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", text).casefold())
+
+
+def _metadata_sort_key(version: _IndexedVersion) -> tuple[int, int, str, str]:
+    published_on = version.metadata.published_on
+    if published_on is None:
+        return (1, 0, version.metadata.record_code, version.metadata.version_no)
+    return (0, -published_on.toordinal(), version.metadata.record_code, version.metadata.version_no)
+
+
 @dataclass(frozen=True)
 class _IndexedChunk:
     parsed: ParsedChunk
@@ -133,6 +151,104 @@ class LocalBM25Retriever:
         if version is None or version.metadata.retrieval_status != RetrievalStatus.ENABLED:
             return None
         return chunk.parsed.model_copy(deep=True)
+
+    def list_document_metadata(
+        self,
+        subject: str | None = None,
+        business_direction_code: str | None = None,
+        category_name: str | None = None,
+    ) -> list[DocumentMetadata]:
+        """List detached metadata for enabled, human-approved indexed versions.
+
+        Granularity & caller boundary:
+        - Deduplication is at the ``version_id`` level (``(record_code, version_no)``),
+          NOT the business historical-batch level. Multiple ``version_no`` under the
+          same ``record_code``, or same-year splits across multiple packages (e.g.
+          R3 + R4), are returned as separate entries; callers determining batch
+          counts must aggregate by ``record_code`` / distinct period in business logic.
+        - ``subject`` performs NFKC, case, and whitespace-normalized substring
+          matching across the document title and indexed chunk contents without
+          alias expansion. Callers that need exhaustive cross-year or alias checks
+          should omit ``subject`` and enumerate by ``business_direction_code`` and
+          ``category_name`` instead of relying on a single substring hit.
+        - Ordering is deterministic: ``published_on`` descending (undated last),
+          then ``record_code`` and ``version_no`` ascending.
+        """
+        needle: str | None = None
+        if subject is not None:
+            needle = _normalize_substring(subject)
+            if not needle:
+                return []
+
+        matched: list[_IndexedVersion] = []
+        for version in self._versions.values():
+            metadata = version.metadata
+            if metadata.retrieval_status != RetrievalStatus.ENABLED:
+                continue
+            if not _is_human_approved(metadata):
+                continue
+            if not version.chunks:
+                continue
+            if category_name is not None and category_name != metadata.category_name:
+                continue
+            if (
+                business_direction_code is not None
+                and business_direction_code not in metadata.business_direction_codes
+            ):
+                continue
+            if needle is not None:
+                title_hit = needle in _normalize_substring(metadata.title)
+                if not title_hit and not any(
+                    needle in _normalize_substring(chunk.parsed.content)
+                    for chunk in version.chunks
+                ):
+                    continue
+            matched.append(version)
+
+        matched.sort(key=_metadata_sort_key)
+        return [version.metadata.model_copy(deep=True) for version in matched]
+
+    def list_parsed_chunks(
+        self,
+        version_id: UUID | None = None,
+        *,
+        record_code: str | None = None,
+        version_no: str | None = None,
+    ) -> list[ParsedChunk]:
+        """List detached indexed ParsedChunk copies for an enabled, human-approved version.
+
+        Callers may identify the version either by ``version_id`` (e.g. from a
+        ``RetrievedChunk``) or by ``record_code`` + ``version_no`` (e.g. from a
+        ``DocumentMetadata`` returned by ``list_document_metadata``).
+        """
+        if version_id is not None:
+            if record_code is not None or version_no is not None:
+                raise ValueError("version_id 与 record_code/version_no 不能同时传入")
+            target_version_id = version_id
+        else:
+            if (
+                not isinstance(record_code, str)
+                or not record_code.strip()
+                or not isinstance(version_no, str)
+                or not version_no.strip()
+            ):
+                raise ValueError("必须提供 version_id，或同时提供非空的 record_code 和 version_no")
+            _, target_version_id = _document_and_version_ids(
+                record_code.strip(), version_no.strip()
+            )
+
+        version = self._versions.get(target_version_id)
+        if (
+            version is None
+            or version.metadata.retrieval_status != RetrievalStatus.ENABLED
+            or not _is_human_approved(version.metadata)
+        ):
+            return []
+        ordered = sorted(
+            version.chunks,
+            key=lambda item: (item.parsed.source_file_key, item.parsed.chunk_no),
+        )
+        return [chunk.parsed.model_copy(deep=True) for chunk in ordered]
 
     def _file_warnings(self, files: Iterable[ParsedFile]) -> list[WarningItem]:
         root = self._file_root
