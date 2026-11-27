@@ -1085,6 +1085,25 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.answer_mode, "historical")
         self.assertEqual(result.citations[0].excerpt, eda.chunks[0].content)
 
+    async def test_beta_s4_personal_admission_cannot_use_public_history_over_http(self):
+        eda = self.public_lab_package("archive", "EDA实验室", year=2024)
+        workflow = await self.workflow(eda)
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            intro = await client.post("/api/v1/ask", json={"query": "EDA 实验室研究什么？"})
+            self.assertEqual(intro.status_code, 200)
+            self.assertEqual(intro.json()["answer_mode"], "historical")
+            self.assertEqual([item["excerpt"] for item in intro.json()["citations"]], [eda.chunks[0].content])
+
+            with patch.object(workflow, "_public_lab_evidence", wraps=workflow._public_lab_evidence) as fallback:
+                admission = await client.post("/api/v1/ask", json={"query": "我大二能进 EDA 实验室吗？"})
+                fallback.assert_not_called()
+            self.assertEqual(admission.status_code, 200)
+            result = admission.json()
+            self.assertEqual((result["status"], result["answer_mode"]), ("insufficient_evidence", "insufficient_data"))
+            self.assertEqual(result["citations"], [])
+        self.assertEqual(len(self.observed), 1)
+
     async def test_beta_s4_public_history_rechecks_batch_after_generation(self):
         eda = self.public_lab_package("first", "EDA实验室", year=2025)
         newer = self.public_lab_package("added", "EDA实验室", year=2026, source="added")

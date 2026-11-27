@@ -70,6 +70,7 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         for query, expected in (
             ("学院有哪些实验室？", True),
             ("EDA 实验室研究什么？", True),
+            ("我大二能进 EDA 实验室吗？", False),
             ("2024年度的EDA实验室研究方向是什么？", False),
             ("现有实验室名单", False),
             ("学院现在有哪些实验室？", False),
