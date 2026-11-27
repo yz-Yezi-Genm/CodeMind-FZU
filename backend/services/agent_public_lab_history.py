@@ -2,43 +2,65 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
+from dataclasses import dataclass
+from inspect import iscoroutinefunction
 
-from backend.contracts.models import RetrievalStatus, RetrievedChunk
+from backend.contracts.models import DocumentMetadata, ParsedChunk, RetrievedChunk
 from backend.contracts.protocols import Retriever
-from backend.retrieval.local import LocalBM25Retriever
+from backend.retrieval.local import local_index_chunk_ids
 from backend.services.agent_generation import Evidence
 from backend.services.agent_policy_context import _LAB_NAME_FIELD, _LAB_SUBJECT, _lab_key, public_lab_batch_number
 
 
 def public_lab_index(retriever: Retriever) -> Iterator[RetrievedChunk] | None:
     """Inventory the live index without relying on BM25's truncated hit list."""
-    if type(retriever) is not LocalBM25Retriever:
+    list_metadata = getattr(retriever, "list_document_metadata", None)
+    list_chunks = getattr(retriever, "list_parsed_chunks", None)
+    if any(not callable(method) or iscoroutinefunction(method) for method in (list_metadata, list_chunks)):
         return None
-    # Retriever's public contract only exposes ranked search and point lookups.
-    # This read-only adapter is deliberately limited to the local implementation.
-    versions = tuple(retriever._versions.values())
-    return (
-        RetrievedChunk(
-            chunk_id=chunk.chunk_id, document_id=version.document_id, version_id=version.version_id,
-            file_id=chunk.file_id, content=chunk.parsed.content, title=version.metadata.title,
-            publisher=version.metadata.publisher, source_url=version.metadata.source_url,
-            published_on=version.metadata.published_on, effective_on=version.metadata.effective_on,
-            locator=chunk.parsed.locator, original_locator=chunk.parsed.original_locator,
-            score=0.0, retrieval_method="bm25",
-            source_verification_status=version.metadata.source_verification_status,
-            timeliness_verification_status=version.metadata.timeliness_verification_status,
-            retrieval_status=version.metadata.retrieval_status,
-        )
-        for version in versions
-        if version.metadata.retrieval_status == RetrievalStatus.ENABLED
-        and "COLLEGE_RESOURCES" in version.metadata.business_direction_codes
-        and version.metadata.category_name.strip() == "研究方向与公开介绍"
-        for chunk in version.chunks
-    )
+    return _enumerate_public_lab_index(retriever, list_metadata, list_chunks)
 
 
-def public_lab_batch(item: Evidence) -> tuple[str, str, int | None] | None:
+def _enumerate_public_lab_index(
+    retriever: Retriever,
+    list_metadata: Callable[..., list[DocumentMetadata]],
+    list_chunks: Callable[..., list[ParsedChunk]],
+) -> Iterator[RetrievedChunk]:
+    versions = list_metadata(business_direction_code="COLLEGE_RESOURCES", category_name="研究方向与公开介绍")
+    for metadata in versions:
+        chunks = list_chunks(record_code=metadata.record_code, version_no=metadata.version_no)
+        if not chunks:
+            raise ValueError("The enumerated version is no longer available")
+        for parsed in chunks:
+            document_id, version_id, file_id, chunk_id = local_index_chunk_ids(metadata, parsed)
+            # The optional enumeration returns DTOs without UUIDs. Confirm the
+            # local IDs against point lookups before using them in citations.
+            if retriever.get_document_metadata(version_id) != metadata or retriever.get_parsed_chunk(chunk_id) != parsed:
+                raise ValueError("The enumerated index is inconsistent with its point lookups")
+            yield RetrievedChunk(
+                chunk_id=chunk_id, document_id=document_id, version_id=version_id,
+                file_id=file_id, content=parsed.content, title=metadata.title,
+                publisher=metadata.publisher, source_url=metadata.source_url,
+                published_on=metadata.published_on, effective_on=metadata.effective_on,
+                locator=parsed.locator, original_locator=parsed.original_locator,
+                score=0.0, retrieval_method="bm25",
+                source_verification_status=metadata.source_verification_status,
+                timeliness_verification_status=metadata.timeliness_verification_status,
+                retrieval_status=metadata.retrieval_status,
+            )
+
+
+@dataclass(frozen=True)
+class PublicLabBatch:
+    period: str
+    record_code: str
+    version_no: str
+    source: str
+    number: int | None
+
+
+def public_lab_batch(item: Evidence) -> PublicLabBatch | None:
     if not item.period:
         return None
     declared = {
@@ -49,16 +71,23 @@ def public_lab_batch(item: Evidence) -> tuple[str, str, int | None] | None:
     }
     if len(declared) > 1:
         return None
-    label = next(iter(declared), item.metadata.title)
-    source = item.metadata.source_page_url or item.metadata.source_url
-    number = public_lab_batch_number(label)
-    return item.period, f"{source} {label}" if declared and number is None else source, number
+    return PublicLabBatch(
+        period=item.period,
+        record_code=item.metadata.record_code,
+        version_no=item.metadata.version_no,
+        source=item.metadata.source_page_url or item.metadata.source_url,
+        number=public_lab_batch_number(next(iter(declared), item.metadata.title)),
+    )
 
 
 _ROSTER_SEQUENCE = re.compile(
     r"^#{1,6}\s*R4·实验室序号(\d+)·|^序号(?:[（(][^）)\n]+[）)])?[：:][ \t]*\n?[ \t]*(\d+)[ \t]*$", re.M,
 )
 _ROSTER_NAME = re.compile(r"""[\w \u00a0+·（）()“”「」'"’&,，\-—]{1,150}""")
+
+
+class PublicLabDirectoryConflict(ValueError):
+    """The original row identity does not agree across directory excerpts."""
 
 
 def public_lab_directory(evidence: list[Evidence]) -> list[tuple[int | None, str, Evidence]]:
@@ -74,18 +103,23 @@ def public_lab_directory(evidence: list[Evidence]) -> list[tuple[int | None, str
         if len(labels) != 1:
             continue
         name = labels[0].strip()
-        if not _ROSTER_NAME.fullmatch(name) or re.search(r"电话|邮箱|报名|招募|接收|名额|截止|\d{7,}", name):
-            continue
         sequences = {int(heading or field) for heading, field in _ROSTER_SEQUENCE.findall(content)}
         if len(sequences) > 1:
-            continue
+            raise PublicLabDirectoryConflict("An excerpt has conflicting original row numbers")
         if sequences:
-            rows.setdefault(next(iter(sequences)), (name, item))
+            sequence = next(iter(sequences))
+            previous_name, _ = rows.setdefault(sequence, (name, item))
+            if _lab_key(previous_name) != _lab_key(name):
+                raise PublicLabDirectoryConflict("The same original row has different lab names")
         else:
             unnumbered.setdefault(_lab_key(name), (name, item))
     numbered_names = {_lab_key(name) for name, _ in rows.values()}
-    return [
+    entries = [
         (number, name, item) for number, (name, item) in sorted(rows.items())
     ] + [
         (None, name, item) for key, (name, item) in unnumbered.items() if key not in numbered_names
+    ]
+    return [
+        (number, name, item) for number, name, item in entries
+        if _ROSTER_NAME.fullmatch(name) and not re.search(r"电话|邮箱|报名|招募|接收|名额|截止|\d{7,}", name)
     ]

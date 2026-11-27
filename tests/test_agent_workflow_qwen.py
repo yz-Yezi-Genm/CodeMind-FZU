@@ -10,7 +10,7 @@ from importlib.util import find_spec
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import AsyncMock, patch
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import httpx
 from fastapi.testclient import TestClient
@@ -1055,6 +1055,41 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 await workflow.retriever.index_document(package)
         self.assertEqual(self.observed, [])
 
+    async def test_beta_s4_enumeration_keeps_same_url_records_and_versions_distinct(self):
+        original = self.public_lab_package("original", "EDA实验室", year=2026, source="shared")
+        original.metadata.temporal_notes["资料批次"] = "第一批"
+        workflow = await self.workflow(original)
+        workflow.top_k = 1
+        retriever = workflow.retriever
+        query = "2026年第一批 EDA实验室研究什么？"
+        for record_code, version_no in (
+            ("SYNTH-LAB-other", original.metadata.version_no),
+            (original.metadata.record_code, "second-version"),
+        ):
+            with self.subTest(record=record_code, version=version_no):
+                other = original.model_copy(deep=True)
+                other.metadata.record_code = record_code
+                other.metadata.version_no = version_no
+                other.chunks[0].content += "\n合成测试：另一份记录。"
+                await retriever.index_document(other)
+                with patch.object(retriever, "list_document_metadata", wraps=retriever.list_document_metadata) as metadata, \
+                     patch.object(retriever, "list_parsed_chunks", wraps=retriever.list_parsed_chunks) as chunks:
+                    result = await workflow.run(self.request(query))
+                    metadata.assert_called_once_with(
+                        business_direction_code="COLLEGE_RESOURCES", category_name="研究方向与公开介绍",
+                    )
+                    self.assertEqual(chunks.call_count, 2)
+                    chunks.assert_any_call(record_code=record_code, version_no=version_no)
+                self.assertEqual(result.status, "needs_clarification")
+                self.assertEqual(result.citations, [])
+                self.assertEqual(self.observed, [])
+                other.metadata.retrieval_status = RetrievalStatus.BLOCKED
+                await retriever.index_document(other)
+
+        result = await workflow.run(self.request(query))
+        self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
+        self.assertEqual(retriever.get_parsed_chunk(result.citations[0].chunk_id), original.chunks[0])
+
     async def test_beta_s4_directory_projects_and_deduplicates_original_rows_over_http(self):
         intro = self.public_lab_package("intro", "EDA实验室", year=2026)
         recruitment = self.public_lab_package("recruitment", "EDA实验室", year=2026)
@@ -1089,12 +1124,28 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         listed = result["answer"].split("\n\n")[1].splitlines()
         self.assertEqual(listed, [f"- {name}（原表序号 {index}）" for index, name in enumerate(names[:20], 1)])
         self.assertEqual([item["excerpt"] for item in result["citations"]], names[:20])
+        for citation in result["citations"]:
+            parsed = workflow.retriever.get_parsed_chunk(UUID(citation["chunk_id"]))
+            self.assertIn(citation["excerpt"], parsed.content)
+            self.assertEqual(citation["original_locator"], parsed.original_locator)
         self.assertEqual(
             [item["original_locator"] for item in result["citations"]],
             [item.original_locator for item in intro.chunks[:20]],
         )
         for private in ("13800000000", "test@example.invalid", "接收条件", "计划名额", "报名流程", "研究方向："):
             self.assertNotIn(private, result["answer"])
+        self.assertEqual(self.observed, [])
+
+        # The conflicting row is outside the requested display limit.
+        workflow.top_k = 1
+        intro.chunks.append(intro.chunks[23].model_copy(update={
+            "chunk_no": 26, "content": intro.chunks[23].content.replace(names[23], "另一名称实验室"),
+        }))
+        await workflow.retriever.index_document(intro)
+        result = await workflow.run(self.request("学院有哪些实验室？"))
+        self.assertEqual((result.status, result.answer_mode), ("insufficient_evidence", "insufficient_data"))
+        self.assertEqual(result.warnings[0].code, "PUBLIC_LAB_DIRECTORY_CONFLICT")
+        self.assertEqual(result.citations, [])
         self.assertEqual(self.observed, [])
 
         # Even an enabled R4 package that failed the actual source rule cannot be listed.
@@ -1223,7 +1274,7 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_beta_s4_public_history_rechecks_batch_after_generation(self):
         eda = self.public_lab_package("first", "EDA实验室", year=2025)
-        newer = self.public_lab_package("added", "EDA实验室", year=2025, source="added")
+        newer = self.public_lab_package("added", "EDA实验室", year=2025)
         workflow = await self.workflow(eda)
         generate = workflow.llm_client.generate
 

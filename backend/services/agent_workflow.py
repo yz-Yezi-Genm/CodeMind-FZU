@@ -24,7 +24,9 @@ from backend.services.agent_generation import Evidence, generation_request, requ
 from backend.services.agent_policy_context import (
     PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
-from backend.services.agent_public_lab_history import public_lab_batch, public_lab_directory, public_lab_index
+from backend.services.agent_public_lab_history import (
+    PublicLabBatch, PublicLabDirectoryConflict, public_lab_batch, public_lab_directory, public_lab_index,
+)
 from backend.services.alpha_business_rules import (
     VolunteerScoreKind, VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
     format_volunteer_hours, is_lab_admission_question, volunteer_scoring_request, volunteer_service_raw_score,
@@ -313,8 +315,8 @@ class AgentWorkflow:
                 note = "所引通知对应年度的报名已截止。"
             message = f"以下为{periods}历史资料。{note}请勿用于当前办理。"
             if scope.public_lab is not None:
-                if public_batch is not None and public_batch[2] is not None:
-                    periods += f"第{public_batch[2]}批"
+                if public_batch is not None and public_batch.number is not None:
+                    periods += f"第{public_batch.number}批"
                 message = f"以下为{periods}历史资料所反映的实验室情况，不代表当前状态。"
             answer = f"{message}\n\n{answer}"
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message=message))
@@ -377,7 +379,10 @@ class AgentWorkflow:
         )
 
     def _answer_public_lab_directory(self, evidence: list[Evidence]) -> AgentResult:
-        directory = public_lab_directory(evidence)
+        try:
+            directory = public_lab_directory(evidence)
+        except PublicLabDirectoryConflict:
+            return _insufficient("PUBLIC_LAB_DIRECTORY_CONFLICT", "同一原表记录的序号或实验室名称不一致，需核对资料后再回答。")
         if not directory:
             return _insufficient("NO_ELIGIBLE_EVIDENCE", "暂无可核验的实验室名称。")
         names, citations = [], []
@@ -388,7 +393,7 @@ class AgentWorkflow:
         warnings = []
         if evidence[0].mode == AnswerMode.HISTORICAL:
             batch = public_lab_batch(evidence[0])
-            suffix = f"第{batch[2]}批" if batch and batch[2] is not None else ""
+            suffix = f"第{batch.number}批" if batch and batch.number is not None else ""
             historical = f"以下为{evidence[0].period}{suffix}历史名录，不代表当前状态。"
             message = historical + message
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message=historical))
@@ -409,7 +414,8 @@ class AgentWorkflow:
             unknown = False
             versions = {}
             for snapshot in indexed:
-                chunk = ranked.get(snapshot.chunk_id, snapshot)
+                hit = ranked.get(snapshot.chunk_id)
+                chunk = snapshot.model_copy(update={"score": hit.score}) if hit else snapshot
                 item = self._eligible(
                     request, chunk, scope,
                     inspect_public_history=allow_history and (scope.infer_public_history or bool(scope.periods)),
@@ -424,20 +430,19 @@ class AgentWorkflow:
                     continue
                 batch = public_lab_batch(item)
                 if scope.public_batch_number is not None:
-                    if batch is None or batch[2] is None:
+                    if batch is None or batch.number is None:
                         unknown = True
                         continue
-                    if batch[2] != scope.public_batch_number:
+                    if batch.number != scope.public_batch_number:
                         continue
-                if versions.setdefault(item.chunk.document_id, item.chunk.version_id) != item.chunk.version_id:
+                if versions.setdefault(item.metadata.record_code, item.metadata.version_no) != item.metadata.version_no:
                     unknown = True
                 (historical if item.mode == AnswerMode.HISTORICAL else current).append(item)
             if current and not (scope.periods or scope.public_batch_number):
-                if len({item.chunk.version_id for item in current}) != len({item.chunk.document_id for item in current}):
+                records = {(item.metadata.record_code, item.metadata.version_no) for item in current}
+                if len(records) != len({record_code for record_code, _ in records}):
                     return None
-                if scope.public_lab.subject is None and len({
-                    item.metadata.source_page_url or item.metadata.source_url for item in current
-                }) > 1:
+                if scope.public_lab.subject is None and len(records) > 1:
                     return None
                 return sorted(current, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
             batches = {public_lab_batch(item) for item in current + historical}
@@ -449,7 +454,7 @@ class AgentWorkflow:
             return None
 
     def _evidence_unchanged(
-        self, request: AgentRequest, selected: list[Evidence], *, public_batch: tuple[str, str, int | None] | None = None,
+        self, request: AgentRequest, selected: list[Evidence], *, public_batch: PublicLabBatch | None = None,
     ) -> bool:
         fresh_scope = PolicyScope.from_request(request, self.today())
         try:
