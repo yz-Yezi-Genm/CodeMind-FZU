@@ -1,7 +1,9 @@
 import unittest
+from datetime import date
 from hashlib import sha256
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
 from pydantic import ValidationError
 
@@ -477,3 +479,536 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(hits), 2)
         self.assertIn("申请表", hits[0].content)
         self.assertGreater(hits[0].score, hits[1].score)
+
+    async def test_list_document_metadata_gates_filters_sort_and_detachment(self):
+        # Approved enabled documents with varied dates and record_codes.
+        pkg_2025 = sample(
+            "S4-QINGHE-2025",
+            title="2025年青禾计划实验室招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 10),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_2025.chunks = [
+            ParsedChunk(
+                chunk_no=1,
+                content="EDA实验室（序号14）联系人：张老师。",
+                source_file_key="text.md",
+                locator="第 14 项",
+            ),
+            ParsedChunk(
+                chunk_no=2,
+                content="智能感知实验室联系人：陈老师。",
+                source_file_key="text.md",
+                locator="第 18 项",
+            ),
+        ]
+
+        pkg_2026_b = sample(
+            "S4-QINGHE-2026-B",
+            title="2026年青禾计划实验室招募通知（补充批）",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 12),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_2026_b.chunks = [
+            ParsedChunk(
+                chunk_no=1,
+                content="ROIS团队招新说明，联系人：李老师。",
+                source_file_key="text.md",
+                locator="第 1 项",
+            ),
+        ]
+
+        pkg_2026_a = sample(
+            "S4-QINGHE-2026-A",
+            title="2026年青禾计划实验室招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 12),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_2026_a.chunks = [
+            ParsedChunk(
+                chunk_no=1,
+                content="EDA实验室（序号15）联系人：王老师。",
+                source_file_key="text.md",
+                locator="第 15 项",
+            ),
+        ]
+
+        pkg_undated = sample(
+            "S4-QINGHE-UNDATED",
+            title="青禾计划历史归档说明",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=None,
+            temporal_notes={"human_approved": True},
+        )
+
+        # Gate exclusions: unapproved, non-boolean approval, blocked with human_approved=True,
+        # review_only with human_approved=True, and 0-chunk partial package.
+        pkg_unapproved = sample(
+            "S4-UNAPPROVED",
+            title="2026年青禾计划未签核通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 10, 1),
+            temporal_notes={"human_approved": False},
+        )
+        pkg_string_approved = sample(
+            "S4-STR-APPROVED",
+            title="2026年青禾计划字符串签核通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 10, 2),
+            temporal_notes={"human_approved": "true"},
+        )
+        pkg_no_notes = sample(
+            "S4-NO-NOTES",
+            title="2026年青禾计划无签核字段通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 10, 3),
+        )
+        pkg_blocked = sample(
+            "S4-BLOCKED",
+            title="2026年青禾计划阻断通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 10, 4),
+            retrieval_status=RetrievalStatus.BLOCKED,
+            temporal_notes={"human_approved": True},
+        )
+        pkg_review_only = sample(
+            "S4-REVIEW-ONLY",
+            title="2026年青禾计划仅审核通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 10, 5),
+            retrieval_status=RetrievalStatus.REVIEW_ONLY,
+            temporal_notes={"human_approved": True},
+        )
+        pkg_empty_chunks = sample(
+            "S4-EMPTY-CHUNKS",
+            title="2026年青禾计划无可用片段通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 10, 6),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_empty_chunks.chunks = [
+            ParsedChunk(
+                chunk_no=1,
+                content="禁用片段。",
+                source_file_key="text.md",
+                index_status=ChunkIndexStatus.DISABLED,
+            ),
+        ]
+
+        # Another business direction / category for filter checks.
+        pkg_other_dir = sample(
+            "S1-SCHOLAR-2026",
+            title="2026年本科生奖学金评定通知",
+            category_name="综评与奖学金",
+            business_direction_codes=["POLICY_AFFAIRS"],
+            published_on=date(2026, 5, 1),
+            temporal_notes={"human_approved": True},
+        )
+
+        for pkg in (
+            pkg_2025, pkg_2026_b, pkg_2026_a, pkg_undated,
+            pkg_unapproved, pkg_string_approved, pkg_no_notes,
+            pkg_blocked, pkg_review_only, pkg_empty_chunks, pkg_other_dir,
+        ):
+            await self.indexer.index_document(pkg)
+        # Re-indexing same version_id must remain deduplicated.
+        await self.indexer.index_document(pkg_2026_a)
+
+        # Full list: only 5 approved+enabled+non-empty versions, sorted by published_on DESC then record_code ASC.
+        all_metas = self.store.list_document_metadata()
+        self.assertEqual(
+            [m.record_code for m in all_metas],
+            [
+                "S4-QINGHE-2026-A",
+                "S4-QINGHE-2026-B",
+                "S1-SCHOLAR-2026",
+                "S4-QINGHE-2025",
+                "S4-QINGHE-UNDATED",
+            ],
+        )
+
+        # Subject matching title ("青禾计划") + direction/category filters.
+        qinghe = self.store.list_document_metadata(
+            subject="青禾计划",
+            business_direction_code="COLLEGE_RESOURCES",
+            category_name="实验室与科研团队",
+        )
+        self.assertEqual(
+            [m.record_code for m in qinghe],
+            ["S4-QINGHE-2026-A", "S4-QINGHE-2026-B", "S4-QINGHE-2025", "S4-QINGHE-UNDATED"],
+        )
+
+        # Subject matching chunk content only (case-insensitive NFKC substring, no alias).
+        eda = self.store.list_document_metadata(subject="eda实验室")
+        self.assertEqual([m.record_code for m in eda], ["S4-QINGHE-2026-A", "S4-QINGHE-2025"])
+
+        # Single-batch subject vs zero-match vs blank subject.
+        self.assertEqual(
+            [m.record_code for m in self.store.list_document_metadata(subject="智能感知实验室")],
+            ["S4-QINGHE-2025"],
+        )
+        self.assertEqual(self.store.list_document_metadata(subject="不存在的实验室"), [])
+        self.assertEqual(self.store.list_document_metadata(subject="   "), [])
+
+        # Detachment: mutating returned metadata must not affect stored snapshot.
+        eda[0].title = "被篡改标题"
+        self.assertEqual(
+            self.store.list_document_metadata(subject="EDA实验室")[0].title,
+            "2026年青禾计划实验室招募通知",
+        )
+
+        # Withdrawal immediately hides version from list_document_metadata and list_parsed_chunks.
+        revoked = pkg_2026_a.model_copy(deep=True)
+        revoked.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await self.indexer.index_document(revoked)
+        self.assertEqual(
+            [m.record_code for m in self.store.list_document_metadata(subject="EDA实验室")],
+            ["S4-QINGHE-2025"],
+        )
+        self.assertEqual(
+            self.store.list_parsed_chunks(
+                record_code=pkg_2026_a.metadata.record_code,
+                version_no=pkg_2026_a.metadata.version_no,
+            ),
+            [],
+        )
+
+    async def test_list_parsed_chunks_by_version_id_and_record_key(self):
+        pkg_2025 = sample(
+            "S4-EDA-2025",
+            title="2025年青禾计划实验室招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 10),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_2025.chunks = [
+            ParsedChunk(
+                chunk_no=2,
+                content="EDA实验室（序号14）联系人：张老师（2025）。",
+                source_file_key="text.md",
+                locator="第 14 项",
+            ),
+            ParsedChunk(
+                chunk_no=1,
+                content="2025年青禾计划总说明。",
+                source_file_key="text.md",
+                locator="总则",
+            ),
+            ParsedChunk(
+                chunk_no=3,
+                content="禁用片段不应返回。",
+                source_file_key="text.md",
+                index_status=ChunkIndexStatus.DISABLED,
+            ),
+        ]
+
+        pkg_2026 = sample(
+            "S4-EDA-2026",
+            title="2026年青禾计划实验室招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 10),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_2026.chunks = [
+            ParsedChunk(
+                chunk_no=1,
+                content="EDA实验室（序号15）联系人：王老师（2026）。",
+                source_file_key="text.md",
+                locator="第 15 项",
+            ),
+        ]
+
+        pkg_unapproved = sample(
+            "S4-UNAPPROVED-CHUNKS",
+            title="2026年未签核招募",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            temporal_notes={"human_approved": False},
+        )
+
+        res_2025 = await self.indexer.index_document(pkg_2025)
+        await self.indexer.index_document(pkg_2026)
+        res_unapproved = await self.indexer.index_document(pkg_unapproved)
+
+        # Lookup by version_id returns indexed chunks sorted by (source_file_key, chunk_no), excluding DISABLED.
+        chunks_by_id = self.store.list_parsed_chunks(res_2025.version_id)
+        self.assertEqual([c.chunk_no for c in chunks_by_id], [1, 2])
+        self.assertTrue(all(c.index_status != ChunkIndexStatus.DISABLED for c in chunks_by_id))
+
+        # S4-01/02 flow: even if retrieve(top_k=1) only returns one batch, list_document_metadata
+        # enumerates all batches and list_parsed_chunks(record_code=..., version_no=...) fetches
+        # each batch's chunks for cross-year contact comparison.
+        top1 = await self.retriever.retrieve(RetrievalRequest(query="EDA实验室", top_k=1))
+        self.assertEqual(len(top1), 1)
+
+        batches = self.store.list_document_metadata(
+            subject="EDA实验室",
+            business_direction_code="COLLEGE_RESOURCES",
+            category_name="实验室与科研团队",
+        )
+        self.assertEqual([m.record_code for m in batches], ["S4-EDA-2026", "S4-EDA-2025"])
+
+        contacts_by_batch = {
+            meta.record_code: [
+                c.content
+                for c in self.store.list_parsed_chunks(
+                    record_code=meta.record_code,
+                    version_no=meta.version_no,
+                )
+                if "EDA实验室" in c.content
+            ]
+            for meta in batches
+        }
+        self.assertIn("王老师（2026）", contacts_by_batch["S4-EDA-2026"][0])
+        self.assertIn("张老师（2025）", contacts_by_batch["S4-EDA-2025"][0])
+
+        # Detachment check on returned chunks.
+        chunks_by_id[0].content = "被篡改内容"
+        self.assertEqual(
+            self.store.list_parsed_chunks(res_2025.version_id)[0].content,
+            "2025年青禾计划总说明。",
+        )
+
+        # Unknown / unapproved versions return [].
+        self.assertEqual(self.store.list_parsed_chunks(uuid4()), [])
+        self.assertEqual(self.store.list_parsed_chunks(res_unapproved.version_id), [])
+        self.assertEqual(
+            self.store.list_parsed_chunks(record_code="UNKNOWN", version_no="v1"),
+            [],
+        )
+
+        # Invalid argument combinations raise ValueError.
+        with self.assertRaises(ValueError):
+            self.store.list_parsed_chunks()
+        with self.assertRaises(ValueError):
+            self.store.list_parsed_chunks(
+                res_2025.version_id, record_code="S4-EDA-2025", version_no="v1"
+            )
+        with self.assertRaises(ValueError):
+            self.store.list_parsed_chunks(record_code="S4-EDA-2025")
+
+    async def test_list_document_metadata_version_vs_record_granularity(self):
+        # Same record_code with two version_no values must both be returned at
+        # version granularity, while business callers can collapse by record_code.
+        pkg_v1 = sample(
+            "S4-QINGHE-R3-2025",
+            version_no="v1",
+            title="2025年青禾计划实验室招募通知（初版）",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 10),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_v1.chunks = [
+            ParsedChunk(chunk_no=1, content="v1 正文：联系人张老师。", source_file_key="text.md")
+        ]
+
+        pkg_v2 = sample(
+            "S4-QINGHE-R3-2025",
+            version_no="v2",
+            title="2025年青禾计划实验室招募通知（修订版）",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 10),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_v2.chunks = [
+            ParsedChunk(chunk_no=1, content="v2 正文：联系人更新为李老师。", source_file_key="text.md")
+        ]
+
+        # Same year split across R4 package is also a separate record_code.
+        pkg_r4 = sample(
+            "S4-QINGHE-R4-2025",
+            version_no="v1",
+            title="2025年青禾计划实验室研究方向介绍",
+            category_name="研究方向与公开介绍",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 10),
+            temporal_notes={"human_approved": True},
+        )
+
+        for pkg in (pkg_v2, pkg_v1, pkg_r4):
+            await self.indexer.index_document(pkg)
+
+        r3_versions = self.store.list_document_metadata(
+            business_direction_code="COLLEGE_RESOURCES",
+            category_name="实验室与科研团队",
+        )
+        # Interface returns version-level entries sorted by version_no on ties.
+        self.assertEqual(
+            [(m.record_code, m.version_no) for m in r3_versions],
+            [("S4-QINGHE-R3-2025", "v1"), ("S4-QINGHE-R3-2025", "v2")],
+        )
+        # Collapsing by record_code yields 1 logical record, not 2 historical batches.
+        self.assertEqual({m.record_code for m in r3_versions}, {"S4-QINGHE-R3-2025"})
+
+        # list_parsed_chunks distinguishes v1 vs v2 under the same record_code.
+        v1_chunks = self.store.list_parsed_chunks(record_code="S4-QINGHE-R3-2025", version_no="v1")
+        v2_chunks = self.store.list_parsed_chunks(record_code="S4-QINGHE-R3-2025", version_no="v2")
+        self.assertIn("张老师", v1_chunks[0].content)
+        self.assertIn("李老师", v2_chunks[0].content)
+
+    async def test_list_document_metadata_full_enumeration_without_subject(self):
+        pkg_r3_2025 = sample(
+            "S4-LAB-R3-2025",
+            title="2025年实验室招募",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 1),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_r3_2026 = sample(
+            "S4-LAB-R3-2026",
+            title="2026年实验室招募",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 1),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_r4_2026 = sample(
+            "S4-LAB-R4-2026",
+            title="2026年研究方向介绍",
+            category_name="研究方向与公开介绍",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 2),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_blocked = sample(
+            "S4-LAB-R3-BLOCKED",
+            title="2026年未放行实验室招募",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 3),
+            retrieval_status=RetrievalStatus.BLOCKED,
+            temporal_notes={"human_approved": True},
+        )
+        pkg_other_dir = sample(
+            "S1-POLICY-2026",
+            title="2026年本科奖学金",
+            category_name="综评与奖学金",
+            business_direction_codes=["POLICY_AFFAIRS"],
+            published_on=date(2026, 9, 4),
+            temporal_notes={"human_approved": True},
+        )
+        for pkg in (pkg_r3_2025, pkg_r3_2026, pkg_r4_2026, pkg_blocked, pkg_other_dir):
+            await self.indexer.index_document(pkg)
+
+        # Enumerate all COLLEGE_RESOURCES without subject or category_name.
+        all_college = self.store.list_document_metadata(
+            business_direction_code="COLLEGE_RESOURCES",
+        )
+        self.assertEqual(
+            [m.record_code for m in all_college],
+            ["S4-LAB-R4-2026", "S4-LAB-R3-2026", "S4-LAB-R3-2025"],
+        )
+
+        # Enumerate COLLEGE_RESOURCES + R3 category only, without subject.
+        r3_only = self.store.list_document_metadata(
+            business_direction_code="COLLEGE_RESOURCES",
+            category_name="实验室与科研团队",
+        )
+        self.assertEqual(
+            [m.record_code for m in r3_only],
+            ["S4-LAB-R3-2026", "S4-LAB-R3-2025"],
+        )
+
+        # Empty list vs missing optional extension semantics.
+        self.assertEqual(
+            self.store.list_document_metadata(
+                business_direction_code="COLLEGE_RESOURCES",
+                category_name="不存在的类别",
+            ),
+            [],
+        )
+        self.assertIsNotNone(getattr(self.store, "list_document_metadata", None))
+        self.assertIsNone(getattr(object(), "list_document_metadata", None))
+
+    async def test_list_document_metadata_subject_normalization_and_no_alias_boundary(self):
+        pkg_space = sample(
+            "S4-ROIS-2025",
+            title="2025年 ROIS 团队招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 5),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_fullwidth = sample(
+            "S4-ROIS-2026",
+            title="2026年ＲＯＩＳ团队招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 5),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_ideographic_space = sample(
+            "S4-EDA-SPACE-2026",
+            title="2026年青禾计划招募",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2026, 9, 6),
+            temporal_notes={"human_approved": True},
+        )
+        pkg_ideographic_space.chunks = [
+            ParsedChunk(
+                chunk_no=1,
+                content="序号15：ＥＤＡ　实验室招收本科生。",
+                source_file_key="text.md",
+            )
+        ]
+        pkg_alias_name = sample(
+            "S4-ALIAS-2025",
+            title="2025年信息安全研究组招募通知",
+            category_name="实验室与科研团队",
+            business_direction_codes=["COLLEGE_RESOURCES"],
+            published_on=date(2025, 9, 1),
+            temporal_notes={"human_approved": True},
+        )
+        for pkg in (pkg_space, pkg_fullwidth, pkg_ideographic_space, pkg_alias_name):
+            await self.indexer.index_document(pkg)
+
+        # Whitespace, full-width/half-width, and case differences must not miss batches.
+        for query in ("ROIS团队", "rois 团队", "ROIS  团队", "ＲＯＩＳ　团队"):
+            with self.subTest(subject=query):
+                matched = self.store.list_document_metadata(subject=query)
+                self.assertEqual(
+                    [m.record_code for m in matched],
+                    ["S4-ROIS-2026", "S4-ROIS-2025"],
+                )
+
+        # Full-width + ideographic space in chunk content matches compact ASCII query.
+        self.assertEqual(
+            [m.record_code for m in self.store.list_document_metadata(subject="eda实验室")],
+            ["S4-EDA-SPACE-2026"],
+        )
+
+        # No alias expansion in retrieval layer: "ROIS团队" does not match "信息安全研究组";
+        # callers needing alias matching must enumerate without subject.
+        self.assertNotIn(
+            "S4-ALIAS-2025",
+            [m.record_code for m in self.store.list_document_metadata(subject="ROIS团队")],
+        )
+        self.assertIn(
+            "S4-ALIAS-2025",
+            [
+                m.record_code
+                for m in self.store.list_document_metadata(
+                    business_direction_code="COLLEGE_RESOURCES",
+                    category_name="实验室与科研团队",
+                )
+            ],
+        )
