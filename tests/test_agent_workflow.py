@@ -10,7 +10,7 @@ from backend.contracts.models import (
     AgentRequest, AgentResult, AnswerStatus, ChunkIndexStatus, ConversationTurn, LLMResult,
     RetrievedChunk, RetrievalStatus, SourceVerificationStatus, TimelinessVerificationStatus,
 )
-from backend.services.agent_policy_context import contextual_request
+from backend.services.agent_policy_context import PolicyScope, contextual_request
 from backend.services.agent_workflow import AgentWorkflow
 from backend.services.errors import LLMTimeoutError, LLMUnavailableError
 from examples.agent_workflow_demo import demo_chunk, demo_metadata, demo_parsed_chunk
@@ -65,6 +65,67 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         result = await self.service.run(self.request("怎么办？"))
         self.assertEqual(result.status, "needs_clarification")
         self.assertIn("事项", result.clarifying_question)
+
+    def test_public_lab_history_scope_only_applies_to_neutral_list_or_research(self):
+        for query, expected in (
+            ("学院有哪些实验室？", True),
+            ("EDA 实验室研究什么？", True),
+            ("我大二能进 EDA 实验室吗？", False),
+            ("2024年度的EDA实验室研究方向是什么？", False),
+            ("现有实验室名单", False),
+            ("学院现在有哪些实验室？", False),
+            ("EDA实验室目前是否招募成员？", False),
+            ("EDA实验室研究什么，联系方式是什么？", False),
+            ("实验室当前有哪些招募要求和截止日期？", False),
+            ("实验室还剩几个名额？", False),
+            ("学院优秀学生综合奖学金有哪些？", False),
+        ):
+            with self.subTest(query=query):
+                scope = PolicyScope.from_request(self.request(query), self.service.today())
+                self.assertEqual(scope.infer_public_history, expected)
+
+    async def test_public_lab_history_reports_insufficient_evidence_without_enumeration(self):
+        service = AgentWorkflow(self.retriever, self.llm, evidence_check=lambda *_: True)
+        self.retriever.retrieve.return_value = []
+        for missing in ("list_document_metadata", "list_parsed_chunks"):
+            with self.subTest(missing=missing):
+                self.retriever.list_document_metadata = Mock(return_value=[])
+                self.retriever.list_parsed_chunks = Mock(return_value=[])
+                setattr(self.retriever, missing, None)
+                result = await service.run(self.request("EDA实验室研究什么？"))
+                self.assertEqual((result.status, result.answer_mode), ("insufficient_evidence", "insufficient_data"))
+                self.assertEqual(result.warnings[0].code, "PUBLIC_LAB_INDEX_UNAVAILABLE")
+                self.assertIsNone(result.clarifying_question)
+                self.assertEqual(result.citations, [])
+        self.llm.generate.assert_not_awaited()
+
+    def test_contact_followup_inherits_one_lab_and_uses_the_current_turn_time(self):
+        for prior, query, subject, current, periods in (
+            ("2024年 EDA 实验室研究什么？", "那联系人是谁？", "eda实验室", False, set()),
+            ("2024年 EDA 实验室研究什么？", "那现在该联系谁？", "eda实验室", True, set()),
+            ("ＥＤＡ 实验室目前研究什么？", "那2025年联系人是谁？", "eda实验室", False, {2025}),
+            ("人工智能自主创新实验室研究什么？", "这个实验室的邮箱呢？", "人工智能自主创新实验室", False, set()),
+        ):
+            with self.subTest(prior=prior, query=query):
+                request = contextual_request(self.request(query, [ConversationTurn(role="user", content=prior)]))
+                scope = PolicyScope.from_request(request, self.service.today())
+                self.assertIsNotNone(scope.lab_contact)
+                self.assertEqual(scope.lab_contact.subject, subject)
+                self.assertEqual(scope.current, current)
+                self.assertEqual({period.start for period in scope.periods}, periods)
+
+    def test_contact_followup_does_not_choose_between_labs_or_reuse_an_old_topic(self):
+        for later in ("EDA 实验室和数据智能实验室研究什么？", "学院有哪些实验室？",
+                      "奖学金怎么申请？", "今天食堂有什么菜？"):
+            with self.subTest(later=later):
+                request = contextual_request(self.request("那联系人是谁？", [
+                    ConversationTurn(role="user", content="EDA 实验室研究什么？"),
+                    ConversationTurn(role="user", content=later),
+                    ConversationTurn(role="assistant", content="你可以问人工智能实验室。"),
+                ]))
+                scope = PolicyScope.from_request(request, self.service.today())
+                self.assertIsNone(scope.lab_contact)
+                self.assertEqual(request.query, "那联系人是谁？")
 
     async def test_grade_is_not_academic_year(self):
         result = await self.service.run(self.request("我是2024级，奖学金怎么申请？"))
@@ -398,7 +459,19 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         ):
             with self.subTest(query=query):
                 service = self.annual_fixture(year="2026年", status="current", deadline=date(2026, 12, 3))
-                self.chunk = self.chunk.model_copy(update={"content": "提交申请表，截止日期为2026年12月3日。"})
+                if "实验室" in topic:
+                    self.chunk = self.chunk.model_copy(update={
+                        "title": "合成测试：2026年EDA实验室报名通知",
+                        "content": "EDA实验室报名须提交申请表，截止日期为2026年12月3日。",
+                    })
+                    metadata = self.retriever.get_document_metadata(self.chunk.version_id)
+                    self.retriever.get_document_metadata.return_value = metadata.model_copy(update={
+                        "title": self.chunk.title,
+                        "category_name": "实验室与科研团队",
+                        "business_direction_codes": ["COLLEGE_RESOURCES"],
+                    })
+                else:
+                    self.chunk = self.chunk.model_copy(update={"content": "提交申请表，截止日期为2026年12月3日。"})
                 self.retriever.retrieve.return_value = [self.chunk]
                 history = [ConversationTurn(role="user", content=topic)]
                 result = await service.run(self.request(query, history))

@@ -57,6 +57,17 @@ def _document_and_version_ids(record_code: str, version_no: str) -> tuple[UUID, 
     return document_id, _local_id("version", str(document_id), version_no)
 
 
+def _chunk_id(file_id: UUID, chunk_no: int) -> UUID:
+    return _local_id("chunk", str(file_id), str(chunk_no))
+
+
+def local_index_chunk_ids(metadata: DocumentMetadata, chunk: ParsedChunk) -> tuple[UUID, UUID, UUID, UUID]:
+    """Resolve document, version, file and chunk IDs for a local index entry."""
+    document_id, version_id = _document_and_version_ids(metadata.record_code, metadata.version_no)
+    file_id = _local_id("file", str(version_id), chunk.source_file_key)
+    return document_id, version_id, file_id, _chunk_id(file_id, chunk.chunk_no)
+
+
 def _check_storage_key(key: str) -> None:
     if any(part in {"", ".", ".."} for part in key.split("/")) or any(
         char in key for char in ("\\", ":", "\x00")
@@ -344,7 +355,7 @@ class LocalBM25Retriever:
             entries.append(_IndexedChunk(
                 parsed=chunk,
                 file_id=file_id,
-                chunk_id=_local_id("chunk", str(file_id), str(chunk.chunk_no)),
+                chunk_id=_chunk_id(file_id, chunk.chunk_no),
                 term_counts=Counter(content_terms),
                 length=len(content_terms),
             ))
