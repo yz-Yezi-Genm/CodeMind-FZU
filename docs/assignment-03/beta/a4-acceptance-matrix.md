@@ -17,18 +17,18 @@
 
 ---
 
-## 2. 场景矩阵（22 个）
+## 2. 场景矩阵（23 个）
 
 | 编号 | 学生问句 | 目标结果 | 当前可运行 | 前置 |
 | --- | --- | --- | --- | --- |
-| S4-01 | 学院有哪些实验室？ | `answered` / `historical` | `insufficient_evidence` | P1 + P2 |
+| S4-01 | 学院有哪些实验室？ | `answered` / `historical`，只用 R4 片段 | `insufficient_evidence` | P1 + P2 |
 | S4-02 | EDA 实验室研究什么？ | `answered` / `historical` | `insufficient_evidence` | P1 + P2 |
 | S4-03 | 我大二能进 EDA 实验室吗？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-04 | 学院有什么资源？ | `needs_clarification` | 同目标 | 无 |
 | S4-05 | EDA 实验室怎么样？ | `needs_clarification` | 同目标 | 无 |
 | S4-06 | 培养方案在哪看？ | `needs_clarification` | 同目标 | 无 |
 | S4-07 | EDA 实验室怎么报名？ | `answered` / `historical` | `insufficient_evidence` | P1 + P2 |
-| S4-08 | 这个实验室现在还招吗？ | `answered` / `historical` | `insufficient_evidence` | P1 + P2 |
+| S4-08 | 2026 年青禾计划报名截止了吗？ | `answered` / `historical`，说明 2026-10-31 已截止 | `insufficient_evidence` | P1 + P2 |
 | S4-09 | 这个实验室现在还招几个？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-10 | 某实验室（库内无资料）研究什么？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-11 | 学院办公室电话或办公地点在哪？ | `insufficient_evidence` / `insufficient_data` | 同目标 | P4 |
@@ -41,6 +41,7 @@
 | S4-18 | 2026 年青禾通知里写的联系人是谁？ | `answered` / `historical`，须标年度 | `insufficient_evidence` | P1 + P2 |
 | S4-19 | 现在该联系哪个实验室负责人？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-20 | 青禾计划现在还剩几个名额？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
+| S4-24 | 这个实验室现在还招吗？ | `insufficient_evidence` / `insufficient_data`（无已审核当前通知） | 同目标 | 无 |
 | S4-22 | 2026 年我大二能进 EDA 实验室吗？ | `answered` / `historical`，检查年级专业 | `insufficient_evidence` | P1 + P2 |
 | S4-23 | 现在能进 EDA 实验室吗？ | `insufficient_evidence` / `insufficient_data`（无当前通知） | 同目标 | 无 |
 
@@ -53,8 +54,8 @@
 | B1 | 只开放一个历史批次（如 2024），其余批次置为 blocked 或移除；问「学院有哪些实验室」 | `answered` / `historical`，声明该年度，不追问 | #59 集成后 |
 | B2 | 同时开放 2024、2025、2026 三个历史批次；无年度问名录或研究介绍 | `needs_clarification`，追问年度，不擅自选年 | #59 集成后 |
 | B3 | EDA 联系人在 2024 与 2025/2026 不同；无年度问联系人 | `needs_clarification`，追问年度 | #59 集成后 |
-| B4 | 数据智能实验室联系人 2025、2026 相同；无年度问联系人 | 不误追问；`answered` / `historical`，标明年度来源 | #59 集成后 |
-| B5 | 2026 同一 `record_code` 存在 `import-1`、`import-2` 两个版本 | 按同一批次归并，不触发多批次追问 | #59 集成后 |
+| B4 | 数据智能实验室联系人 2025、2026 相同；无年度问联系人 | 不误追问；`answered` / `historical`，列出所引用的 2025、2026 两个年度资料并逐条给 citation，标明历史属性，不得表述为当前联系人 | #59 集成后 |
+| B5 | 同一批次的两种情形：① 2026 同一 `record_code` 有 `import-1`、`import-2`；② 同一年度的 R3、R4 分属不同 `record_code` | 两种都归并为同一年度批次，不触发多批次追问；与 §3.7 口径一致，并与 #59 实现对齐 | #59 集成后 |
 | B6 | 2023 批次为 `review_only` / `blocked`，`human_approved` 不为 true | 不参与批次判断；结果等同未挂该批次 | #59 集成后 |
 | B7 | 用不带枚举方法的 stub 检索器；再用带方法但返回 `[]` 的 stub | 前者「无法判断」→ 证据不足；后者「没有资料」→ 无资料说明；两者可区分 | 现在（stub） |
 | B8 | 查询名称含空格、大小写、全半角差异（如 `ＥＤＡ 实验室`、`eda实验室`） | 归一化后命中，不漏批次 | #59 集成后 |
@@ -80,7 +81,7 @@ B1—B10 的合成数据由验收负责人按《A4测试数据设计》在本地
 对每个 `answered` 场景：
 
 1. `Citation` 显示标题、发布单位、发布日期、定位、原文摘录、来源链接，`source_url` 与 `excerpt` 非空。
-2. `answer` 每项以实验室名称开头，项间空行，末行写「共 N 个，本次展示 K 个，完整表见来源」。
+2. `answer` 每项以实验室名称开头，项间空行，末行写「共 24 条实验室记录，本次展示 K 条，完整表见来源」。
 3. `answer_mode=historical` 显示历史标签；正文含具体学年与「报名已截止」。
 4. `warnings` 去重：`HISTORICAL_POLICY` 与正文同句只展示一次，补充性警告保留。
 
