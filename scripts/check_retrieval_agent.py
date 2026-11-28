@@ -1,11 +1,13 @@
 """Replay the offline Retriever handoff against the checked-in Agent work."""
 
 import asyncio
+from datetime import date
 import json
 from uuid import uuid4
 
 from backend.contracts import (
     AgentRequest, AnswerStatus, DocumentPackage, IndexingStatus, LLMGenerateRequest, LLMResult,
+    RetrievalStatus,
 )
 from backend.retrieval import LocalBM25Retriever
 from backend.services.agent_workflow import AgentWorkflow
@@ -33,7 +35,18 @@ async def check() -> None:
         if result.status != IndexingStatus.INDEXED:
             raise AssertionError((stem, result.warnings))
     for item in json.loads(SYNTHETIC_PACKAGES.read_bytes()):
-        await synthetic.index_document(DocumentPackage.model_validate(item))
+        package = DocumentPackage.model_validate(item)
+        if package.metadata.retrieval_status == RetrievalStatus.ENABLED:
+            notes = dict(package.metadata.temporal_notes or {})
+            notes.setdefault("human_approved", True)
+            package.metadata.temporal_notes = notes
+            if package.metadata.policy_status == "待核验":
+                package.metadata.policy_status = "现行有效"
+            if package.metadata.published_on is None:
+                package.metadata.published_on = date(2026, 9, 1)
+            if not package.metadata.applicability_raw:
+                package.metadata.applicability_raw = {"适用对象": "本科生"}
+        await synthetic.index_document(package)
 
     print(f"Agent: {AgentWorkflow.__module__}.{AgentWorkflow.__qualname__} (current checkout)")
     print("LLM: offline test double. Clarification and applicability callbacks are test inputs.")

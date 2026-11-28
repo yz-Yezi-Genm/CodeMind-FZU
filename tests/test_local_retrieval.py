@@ -418,3 +418,62 @@ class LocalRetrievalTests(unittest.IsolatedAsyncioTestCase):
                 get_type_hints(protocol_method),
                 msg=f"{name} type hint mismatch",
             )
+
+    async def test_two_retriever_instances_isolate_independent_withdrawal(self):
+        package = sample("ISO-2026")
+        store_a = LocalBM25Retriever()
+        store_b = LocalBM25Retriever()
+
+        res_a = await store_a.index_document(package)
+        res_b = await store_b.index_document(package)
+        hits_a = await store_a.retrieve(RetrievalRequest(query="奖学金申请"))
+        hits_b = await store_b.retrieve(RetrievalRequest(query="奖学金申请"))
+        self.assertTrue(hits_a)
+        self.assertTrue(hits_b)
+        self.assertEqual(res_a.version_id, res_b.version_id)
+        self.assertEqual(hits_a[0].chunk_id, hits_b[0].chunk_id)
+
+        # Withdraw from store_a only; store_b must remain completely unaffected.
+        revoked = package.model_copy(deep=True)
+        revoked.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await store_a.index_document(revoked)
+
+        self.assertEqual(await store_a.retrieve(RetrievalRequest(query="奖学金申请")), [])
+        self.assertIsNone(store_a.get_document_metadata(res_a.version_id))
+        self.assertIsNone(store_a.get_parsed_chunk(hits_a[0].chunk_id))
+
+        self.assertTrue(await store_b.retrieve(RetrievalRequest(query="奖学金申请")))
+        self.assertIsNotNone(store_b.get_document_metadata(res_b.version_id))
+        self.assertIsNotNone(store_b.get_parsed_chunk(hits_b[0].chunk_id))
+
+    async def test_title_and_content_terms_both_contribute_to_bm25_retrieval(self):
+        package = sample(
+            "TITLE-2026",
+            title="2026年星火科创奖学金评选通知",
+        )
+        package.chunks.append(
+            ParsedChunk(
+                chunk_no=3,
+                content="——。！？",
+                source_file_key="text.md",
+            )
+        )
+        result = await self.indexer.index_document(package)
+        # A tokenless chunk must still be skipped even when metadata.title has terms.
+        self.assertEqual(result.status, IndexingStatus.PARTIAL)
+        self.assertEqual(result.indexed_count, 2)
+        self.assertTrue(any(w.code == "TOKENLESS_CHUNKS_SKIPPED" for w in result.warnings))
+
+        # Pure title-only query must match indexed chunks of that document.
+        title_only_hits = await self.retriever.retrieve(
+            RetrievalRequest(query="星火科创", top_k=5)
+        )
+        self.assertEqual(len(title_only_hits), 2)
+
+        # Query matching title ("星火科创") + specific chunk content ("申请表") ranks that chunk first.
+        hits = await self.retriever.retrieve(
+            RetrievalRequest(query="星火科创 申请表", top_k=2)
+        )
+        self.assertEqual(len(hits), 2)
+        self.assertIn("申请表", hits[0].content)
+        self.assertGreater(hits[0].score, hits[1].score)

@@ -250,6 +250,40 @@ class AlphaCorpusLoaderTests(unittest.IsolatedAsyncioTestCase):
                 await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
             (approved_dir / "dup.json").unlink()
 
+            # Non-object JSON manifest must raise ValueError cleanly.
+            (approved_dir / "manifest.json").write_text("[]", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "JSON 对象"):
+                await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
+
+            # Nested subdirectory package referenced by manifest.json must load cleanly,
+            # while a symlinked intermediate subdirectory must be rejected.
+            nested_dir = approved_dir / "qinghe-b8"
+            nested_dir.mkdir()
+            _write_approved_package(root, nested_dir, "nested.json", record_code="NESTED-1")
+            nested_manifest = {
+                "packages": [
+                    {"package": "approved/qinghe-b8/nested.json", "human_approved": True},
+                ]
+            }
+            (approved_dir / "manifest.json").write_text(json.dumps(nested_manifest), encoding="utf-8")
+            retriever, report = await load_approved_alpha_retriever(
+                corpus_dir=approved_dir, file_root=root
+            )
+            self.assertEqual(report.loaded_packages, ("approved/qinghe-b8/nested.json",))
+            self.assertEqual(report.total_indexed_chunks, 1)
+
+            orig_is_symlink = Path.is_symlink
+            nested_resolved = nested_dir.resolve()
+
+            def fake_nested_symlink(path_obj: Path) -> bool:
+                if Path(os.path.abspath(path_obj)) == nested_resolved:
+                    return True
+                return orig_is_symlink(path_obj)
+
+            with patch.object(Path, "is_symlink", fake_nested_symlink):
+                with self.assertRaisesRegex(ValueError, "符号链接"):
+                    await load_approved_alpha_retriever(corpus_dir=approved_dir, file_root=root)
+
             # Manifest pointing outside approved/ must be rejected.
             bad_manifest = {"packages": [{"package": "pending-review/leak.json", "human_approved": True}]}
             (approved_dir / "manifest.json").write_text(json.dumps(bad_manifest), encoding="utf-8")

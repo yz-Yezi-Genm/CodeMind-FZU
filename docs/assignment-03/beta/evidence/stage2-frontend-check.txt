@@ -1,0 +1,52 @@
+Beta Stage 2 frontend regression
+Date: 2026-11-25 (Asia/Shanghai)
+Command: npm run test:student
+Exit: 0
+
+> codemind-fzu-frontend@0.1.0 test:student
+> node --test tests/student-api.test.ts
+
+✔ 健康检查使用统一路径，并识别异常响应 (25.0314ms)
+✔ 问答发送契约字段并沿用首轮的会话 ID (1.1009ms)
+✔ 证据不足仍是正常响应，原因可由 warnings 提供 (0.4084ms)
+✔ 兼容 Alpha Mock 的空回答模式，同时拒绝缺少标记或混入引用的响应 (1.8298ms)
+✔ 拒绝缺失、null、空字符串或纯空白的引用来源 (1.2526ms)
+✔ 已回答可以使用公共契约中的四种回答模式 (0.8065ms)
+✔ 拒绝无效会话、错误的状态组合和畸形引用 (1.9505ms)
+✔ 按 Beta 口径处理 HTTP 400、429、500、503 和 504 (1.1526ms)
+✔ 断网和客户端超时有不同的错误码，超时也覆盖读取响应正文 (1.2209ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 245.4058
+
+Command: npm run build
+Exit: 0
+
+> codemind-fzu-frontend@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 23 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/admin/index.html                             0.81 kB │ gzip:  0.44 kB
+dist/index.html                                  18.73 kB │ gzip:  4.33 kB
+dist/assets/fzu-AItLrWvQ.png                    145.30 kB
+dist/assets/api-wLHvWk9j.css                      1.86 kB │ gzip:  0.76 kB
+dist/assets/main-OY7mY6xD.css                     6.99 kB │ gzip:  2.07 kB
+dist/assets/demo-entry-fQKILJHW.css              12.11 kB │ gzip:  3.67 kB
+dist/assets/admin-QNwx0xXU.css                   13.38 kB │ gzip:  3.10 kB
+dist/assets/dom-CQKMsd_M.js                       0.30 kB │ gzip:  0.26 kB │ map:  0.93 kB
+dist/assets/modulepreload-polyfill-BTn-X1SE.js    0.77 kB │ gzip:  0.44 kB │ map:  0.12 kB
+dist/assets/student-CNtATIuz.js                   1.52 kB │ gzip:  0.99 kB │ map:  0.54 kB
+dist/assets/main-Xm8bcGS5.js                      4.61 kB │ gzip:  2.68 kB │ map: 13.73 kB
+dist/assets/api-D5Kx8p7l.js                       4.77 kB │ gzip:  2.32 kB │ map: 16.25 kB
+dist/assets/demo-entry-BzHj1r8Q.js                6.25 kB │ gzip:  3.03 kB │ map: 20.12 kB
+dist/assets/admin-BSQGkBRH.js                    73.75 kB │ gzip: 21.20 kB │ map: 93.12 kB
+✓ built in 360ms
