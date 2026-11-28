@@ -99,6 +99,34 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(result.citations, [])
         self.llm.generate.assert_not_awaited()
 
+    def test_contact_followup_inherits_one_lab_and_uses_the_current_turn_time(self):
+        for prior, query, subject, current, periods in (
+            ("2024年 EDA 实验室研究什么？", "那联系人是谁？", "eda实验室", False, set()),
+            ("2024年 EDA 实验室研究什么？", "那现在该联系谁？", "eda实验室", True, set()),
+            ("ＥＤＡ 实验室目前研究什么？", "那2025年联系人是谁？", "eda实验室", False, {2025}),
+            ("人工智能自主创新实验室研究什么？", "这个实验室的邮箱呢？", "人工智能自主创新实验室", False, set()),
+        ):
+            with self.subTest(prior=prior, query=query):
+                request = contextual_request(self.request(query, [ConversationTurn(role="user", content=prior)]))
+                scope = PolicyScope.from_request(request, self.service.today())
+                self.assertIsNotNone(scope.lab_contact)
+                self.assertEqual(scope.lab_contact.subject, subject)
+                self.assertEqual(scope.current, current)
+                self.assertEqual({period.start for period in scope.periods}, periods)
+
+    def test_contact_followup_does_not_choose_between_labs_or_reuse_an_old_topic(self):
+        for later in ("EDA 实验室和数据智能实验室研究什么？", "学院有哪些实验室？",
+                      "奖学金怎么申请？", "今天食堂有什么菜？"):
+            with self.subTest(later=later):
+                request = contextual_request(self.request("那联系人是谁？", [
+                    ConversationTurn(role="user", content="EDA 实验室研究什么？"),
+                    ConversationTurn(role="user", content=later),
+                    ConversationTurn(role="assistant", content="你可以问人工智能实验室。"),
+                ]))
+                scope = PolicyScope.from_request(request, self.service.today())
+                self.assertIsNone(scope.lab_contact)
+                self.assertEqual(request.query, "那联系人是谁？")
+
     async def test_grade_is_not_academic_year(self):
         result = await self.service.run(self.request("我是2024级，奖学金怎么申请？"))
         self.assertIn("学年", result.clarifying_question)

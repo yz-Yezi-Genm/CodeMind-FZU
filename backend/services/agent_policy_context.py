@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import date
 from urllib.parse import urlsplit
 
-from backend.contracts.models import AgentRequest, AnswerMode, DocumentMetadata, LLMRole
+from backend.contracts.models import AgentRequest, AnswerMode, ConversationTurn, DocumentMetadata, LLMRole
 from backend.contracts.models import TimelinessVerificationStatus as Timeliness
 from backend.services.resource_team_names import r3_team_names, without_r3_team_names
 
@@ -139,6 +139,15 @@ _LAB_STATUS = re.compile(
 )
 _LAB_REFERENCE_STATUS = re.compile(rf"(?:这[个所]|该|那[个所])实验室\s*(?P<question>{_RECRUITMENT_SUFFIX})")
 _LAB_REFERENCE_TEXT = re.compile(r"(?:这[个所]|该|那[个所])实验室")
+_CONTACT_FOLLOW_UP = re.compile(
+    rf"(?:(?:那么|那|请问)[，,：:\s]*)?(?:{_LAB_REFERENCE_TEXT.pattern}\s*(?:的)?)?"
+    rf"(?P<question>(?:(?:{_PERIOD.pattern}|{_RELATIVE_PERIOD.pattern}|{_HISTORY.pattern}|"
+    r"现在|目前|当前|如今|当下|现阶段|当年的)\s*(?:度|的)?\s*)?"
+    r"(?:招募通知|报名通知|通知|资料)?(?:里|中)?(?:的)?\s*"
+    r"(?:(?:联系人|负责人|联系方式|联系电话|电话|邮箱)(?:是(?:谁|什么|多少)|有吗)?"
+    r"|(?:该|要|应该)?联系谁))[呢吗么？?。！!]*"
+)
+_LAB_LIST_SEPARATOR = re.compile(r"(?:(?<=实验室)|(?<=课题组)|(?<=团队))\s*(?:以及|和|与|及)|[、，,；;。！？?!]")
 
 
 def _is_college_resource(metadata: DocumentMetadata, category: str) -> bool:
@@ -260,13 +269,58 @@ def _year_reply(text: str) -> str | None:
     return reply if _PERIOD.fullmatch(reply) else None
 
 
+def _previous_lab_topic(turns: list[ConversationTurn]) -> str | None:
+    """Find the latest user topic, passing only short contact and time replies."""
+    for turn in reversed(turns):
+        if turn.role != LLMRole.USER:
+            continue
+        text = unicodedata.normalize("NFKC", turn.content).strip()
+        if (_CONTACT_FOLLOW_UP.fullmatch(text) or _year_reply(text)
+                or _PUBLIC_BATCH.fullmatch(text.rstrip("呢。.!？?").strip())):
+            continue
+        return text if _topics(text) == {3} else None
+    return None
+
+
+def _resolve_lab_contact(follow_up: re.Match[str], topic: str) -> str | None:
+    labs = {
+        _lab_key(match["name"]): match["name"]
+        for clause in _LAB_LIST_SEPARATOR.split(topic)
+        for match in _LAB_SUBJECT.finditer(clause.strip())
+        if _lab_key(match["name"]) not in _GENERIC_LAB_NAMES
+    }
+    if len(labs) == 1:
+        return f"{next(iter(labs.values()))} {follow_up['question']}？"
+    return None
+
+
 def contextual_request(request: AgentRequest) -> AgentRequest:
     """Keep one recent user topic and the latest values of recognized slots."""
     query = request.query.strip()
+    if (contact := _CONTACT_FOLLOW_UP.fullmatch(query)) and (topic := _previous_lab_topic(request.history)):
+        # Carry the lab name, and read time markers only from this contact turn.
+        # If the previous topic does not name a unique lab, leave the subject open.
+        return request.model_copy(update={"query": _resolve_lab_contact(contact, topic) or query, "history": []})
+
     batch_reply = _PUBLIC_BATCH.fullmatch(query.rstrip("呢。.!？?").strip())
+    turns = request.history
+    if batch_reply or _year_reply(query):
+        # The conversation stores the original, possibly subjectless user turn.
+        # Restore it so the existing year/batch clarification can select R3.
+        for index in range(len(turns) - 1, -1, -1):
+            turn = turns[index]
+            if turn.role != LLMRole.USER:
+                continue
+            text = turn.content.strip()
+            if batch_reply and (_year_reply(text) or _PUBLIC_BATCH.fullmatch(text.rstrip("呢。.!？?").strip())):
+                continue
+            if (contact := _CONTACT_FOLLOW_UP.fullmatch(text)) and (topic := _previous_lab_topic(turns[:index])):
+                if resolved_contact := _resolve_lab_contact(contact, topic):
+                    turns = [*turns[:index], turn.model_copy(update={"content": resolved_contact}), *turns[index + 1:]]
+            break
     if batch_reply:
         year = None
-        for turn in reversed(request.history):
+        for turn in reversed(turns):
             if turn.role != LLMRole.USER:
                 continue
             if PublicLabQuestion.parse(turn.content) or LabContactQuestion.parse(turn.content):
@@ -299,7 +353,7 @@ def contextual_request(request: AgentRequest) -> AgentRequest:
                                             or team_purpose_reply or _MISSING_TOPIC.search(query)))):
         return request.model_copy(update={"history": history})
 
-    for turn in reversed(request.history):
+    for turn in reversed(turns):
         if turn.role != LLMRole.USER:
             continue
         topics = _topics(turn.content)

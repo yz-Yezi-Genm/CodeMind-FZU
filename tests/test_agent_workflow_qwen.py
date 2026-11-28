@@ -1355,6 +1355,88 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([item.excerpt for item in result.citations], [current.chunks[0].content])
         self.assertEqual(self.observed, [])
 
+    async def test_beta_s4_contact_followups_use_the_full_r3_index_over_http(self):
+        intro = self.public_lab_package("intro", "EDA创新实验室", status=TimelinessVerificationStatus.CURRENT)
+        first = self.historical_contact_package(2025, "甲老师")
+        second = self.historical_contact_package(2026, "乙老师")
+        workflow = await self.workflow(intro)
+        await workflow.retriever.index_document(first)
+        retriever = workflow.retriever
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            async def ask(query, session=None):
+                payload = {"query": query}
+                if session:
+                    payload["conversation_id"] = session
+                response = await client.post("/api/v1/ask", json=payload)
+                self.assertEqual(response.status_code, 200)
+                return response.json()
+
+            research = await ask("EDA 实验室主要研究什么？")
+            self.assertEqual((research["status"], research["answer_mode"]), ("answered", "current_policy"))
+            session = research["conversation_id"]
+            with patch.object(retriever, "list_document_metadata", wraps=retriever.list_document_metadata) as metadata:
+                unique = await ask("联系人是谁？", session)
+                metadata.assert_called_once_with(
+                    business_direction_code="COLLEGE_RESOURCES", category_name="实验室与科研团队",
+                )
+            self.assertEqual((unique["status"], unique["answer_mode"]), ("answered", "historical"))
+            self.assertIn("2025年", unique["answer"])
+            self.assertEqual([item["excerpt"] for item in unique["citations"]], [first.chunks[0].content])
+
+            await retriever.index_document(second)
+            # The R3 comparison must still see both records when ranked retrieval returns none.
+            with patch.object(retriever, "retrieve", return_value=[]):
+                conflict = await ask("那联系人是谁？", session)
+            self.assertEqual(conflict["status"], "needs_clarification")
+            self.assertIn("年度", conflict["clarifying_question"])
+            self.assertEqual(conflict["citations"], [])
+            selected = await ask("2026年", session)
+            self.assertEqual((selected["status"], selected["answer_mode"]), ("answered", "historical"))
+            self.assertEqual([item["excerpt"] for item in selected["citations"]], [second.chunks[0].content])
+
+            second.chunks[0].content = second.chunks[0].content.replace("乙老师", "甲老师")
+            await retriever.index_document(second)
+            merged = await ask("那以前的联系人是谁？", session)
+            self.assertEqual((merged["status"], merged["answer_mode"]), ("answered", "historical"))
+            self.assertIn("2025年、2026年", merged["answer"])
+            self.assertEqual([item["excerpt"] for item in merged["citations"]],
+                             [first.chunks[0].content, second.chunks[0].content])
+            current = await ask("那现在该联系谁？", session)
+            self.assertEqual((current["status"], current["answer_mode"]),
+                             ("insufficient_evidence", "insufficient_data"))
+            self.assertIsNone(current["clarifying_question"])
+            self.assertEqual(current["citations"], [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_contact_followup_allows_same_year_batch_selection_over_http(self):
+        intro = self.public_lab_package("intro", "EDA创新实验室", year=2025)
+        first = self.historical_contact_package(2026, "甲老师", batch="第一批")
+        second = self.historical_contact_package(2026, "乙老师", batch="第二批")
+        workflow = await self.workflow(intro)
+        for package in (first, second):
+            await workflow.retriever.index_document(package)
+        service = ConversationAgentService(workflow, InMemoryConversationStore())
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=create_app(agent_service=service)),
+                                     base_url="http://test") as client:
+            research = (await client.post("/api/v1/ask", json={"query": "2025年EDA实验室研究什么？"})).json()
+            self.assertEqual((research["status"], research["answer_mode"]), ("answered", "historical"))
+            session = research["conversation_id"]
+            conflict = (await client.post("/api/v1/ask", json={
+                "query": "那2026年通知里的联系人是谁？", "conversation_id": session,
+            })).json()
+            self.assertEqual(conflict["status"], "needs_clarification")
+            self.assertIn("第几批", conflict["clarifying_question"])
+            self.assertEqual(conflict["citations"], [])
+            selected = (await client.post("/api/v1/ask", json={
+                "query": "第二批", "conversation_id": session,
+            })).json()
+            self.assertEqual((selected["status"], selected["answer_mode"]), ("answered", "historical"))
+            self.assertIn("2026年第2批", selected["answer"])
+            self.assertEqual([item["excerpt"] for item in selected["citations"]], [second.chunks[0].content])
+        self.assertEqual(len(self.observed), 1)
+
     async def test_beta_s4_r3_admission_gate_uses_production_rules_over_http(self):
         self.lab_recruitment_fixture(date(2026, 10, 31), TimelinessVerificationStatus.EXPIRED)
         self.package.metadata.applicability_raw.update({"适用年级": "大二", "适用专业": "软件工程"})
