@@ -55,7 +55,6 @@ def _enumerate_public_lab_index(
 class PublicLabBatch:
     period: str
     record_code: str
-    version_no: str
     source: str
     number: int | None
 
@@ -74,10 +73,38 @@ def public_lab_batch(item: Evidence) -> PublicLabBatch | None:
     return PublicLabBatch(
         period=item.period,
         record_code=item.metadata.record_code,
-        version_no=item.metadata.version_no,
         source=item.metadata.source_page_url or item.metadata.source_url,
         number=public_lab_batch_number(next(iter(declared), item.metadata.title)),
     )
+
+
+class PublicLabVersionConflict(ValueError):
+    """Eligible versions of one record disagree on the requested public information."""
+
+
+def coalesce_public_lab_versions(versions: list[list[Evidence]]) -> list[Evidence]:
+    """Keep one version only after checking the relevant evidence agrees."""
+    reference = versions[0]
+    if any(not version for version in versions):
+        raise PublicLabVersionConflict("The requested lab is missing from another eligible version")
+    if len(versions) == 1:
+        return reference
+
+    def signature(items: list[Evidence]) -> set[tuple[str, str | None]]:
+        return {(item.chunk.content, item.chunk.original_locator) for item in items}
+
+    first = reference[0]
+    expected = signature(reference)
+    for version in versions[1:]:
+        if (
+            public_lab_batch(first) != public_lab_batch(version[0])
+            or first.mode != version[0].mode
+            or first.metadata.source_url != version[0].metadata.source_url
+            or first.metadata.applicability_raw != version[0].metadata.applicability_raw
+            or signature(version) != expected
+        ):
+            raise PublicLabVersionConflict("Eligible versions of the same lab record disagree")
+    return reference
 
 
 _ROSTER_SEQUENCE = re.compile(

@@ -84,14 +84,19 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
                 scope = PolicyScope.from_request(self.request(query), self.service.today())
                 self.assertEqual(scope.infer_public_history, expected)
 
-    async def test_public_lab_history_clarifies_when_retriever_has_only_ranked_lookup(self):
+    async def test_public_lab_history_reports_insufficient_evidence_without_enumeration(self):
         service = AgentWorkflow(self.retriever, self.llm, evidence_check=lambda *_: True)
         self.retriever.retrieve.return_value = []
-        result = await service.run(self.request("EDA实验室研究什么？"))
-        self.assertEqual(result.status, "needs_clarification")
-        self.assertIn("年度", result.clarifying_question)
-        self.assertIsNone(result.answer)
-        self.assertEqual(result.citations, [])
+        for missing in ("list_document_metadata", "list_parsed_chunks"):
+            with self.subTest(missing=missing):
+                self.retriever.list_document_metadata = Mock(return_value=[])
+                self.retriever.list_parsed_chunks = Mock(return_value=[])
+                setattr(self.retriever, missing, None)
+                result = await service.run(self.request("EDA实验室研究什么？"))
+                self.assertEqual((result.status, result.answer_mode), ("insufficient_evidence", "insufficient_data"))
+                self.assertEqual(result.warnings[0].code, "PUBLIC_LAB_INDEX_UNAVAILABLE")
+                self.assertIsNone(result.clarifying_question)
+                self.assertEqual(result.citations, [])
         self.llm.generate.assert_not_awaited()
 
     async def test_grade_is_not_academic_year(self):

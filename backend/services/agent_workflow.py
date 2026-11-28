@@ -25,7 +25,8 @@ from backend.services.agent_policy_context import (
     PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
 from backend.services.agent_public_lab_history import (
-    PublicLabBatch, PublicLabDirectoryConflict, public_lab_batch, public_lab_directory, public_lab_index,
+    PublicLabBatch, PublicLabDirectoryConflict, PublicLabVersionConflict, coalesce_public_lab_versions,
+    public_lab_batch, public_lab_directory, public_lab_index,
 )
 from backend.services.alpha_business_rules import (
     VolunteerScoreKind, VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
@@ -240,7 +241,13 @@ class AgentWorkflow:
         if check_public_index:
             if self.evidence_check is None:
                 return _insufficient("APPLICABILITY_NOT_VERIFIED", "本次无法核验实验室资料的适用范围。")
-            public_evidence = self._public_lab_evidence(request, scope, seen, allow_history=allow_public_history)
+            try:
+                public_evidence = self._public_lab_evidence(request, scope, seen, allow_history=allow_public_history)
+            except PublicLabVersionConflict:
+                return _insufficient("POLICY_VERSION_CONFLICT", "同一份实验室资料的可用版本内容不一致，需核对版本后再回答。")
+            except Exception:
+                logger.warning("Public lab batch lookup failed; request_id=%s", request.request_id)
+                return _insufficient("PUBLIC_LAB_INDEX_UNAVAILABLE", "无法完整枚举已审核的实验室资料，暂无法核验可用批次。")
             if public_evidence is None:
                 return AgentResult(
                     status=AnswerStatus.NEEDS_CLARIFICATION,
@@ -298,7 +305,10 @@ class AgentWorkflow:
 
         # Recheck the same index and rule after the await. A review can be
         # withdrawn or a notice can close while the model is running.
-        if not self._evidence_unchanged(request, selected, public_batch=public_batch):
+        if not self._evidence_unchanged(
+            request, selected, public_batch=public_batch, check_public_index=check_public_index,
+            allow_history=allow_public_history,
+        ):
             return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
 
         mode = AnswerMode.CURRENT_POLICY
@@ -406,62 +416,65 @@ class AgentWorkflow:
         self, request: AgentRequest, scope: PolicyScope, ranked: dict[UUID, RetrievedChunk], *, allow_history: bool = True,
     ) -> list[Evidence] | None:
         """Return eligible evidence, or None when the related batch cannot be resolved."""
-        try:
-            indexed = public_lab_index(self.retriever)
-            if indexed is None or scope.public_lab is None:
-                return None
-            current, historical = [], []
-            unknown = False
-            versions = {}
-            for snapshot in indexed:
-                hit = ranked.get(snapshot.chunk_id)
-                chunk = snapshot.model_copy(update={"score": hit.score}) if hit else snapshot
-                item = self._eligible(
-                    request, chunk, scope,
-                    inspect_public_history=allow_history and (scope.infer_public_history or bool(scope.periods)),
-                )
-                if item is None:
-                    continue
-                related = scope.public_lab.includes(item.metadata, item.chunk.content)
-                if related is None:
-                    unknown |= item.mode == AnswerMode.HISTORICAL
-                    continue
-                if not related:
-                    continue
-                batch = public_lab_batch(item)
-                if scope.public_batch_number is not None:
-                    if batch is None or batch.number is None:
-                        unknown = True
-                        continue
-                    if batch.number != scope.public_batch_number:
-                        continue
-                if versions.setdefault(item.metadata.record_code, item.metadata.version_no) != item.metadata.version_no:
+        indexed = public_lab_index(self.retriever)
+        if indexed is None or scope.public_lab is None:
+            raise ValueError("Complete public lab enumeration is unavailable")
+        versions: dict[str, dict[str, list[Evidence]]] = {}
+        unknown = False
+        for snapshot in indexed:
+            hit = ranked.get(snapshot.chunk_id)
+            chunk = snapshot.model_copy(update={"score": hit.score}) if hit else snapshot
+            item = self._eligible(
+                request, chunk, scope,
+                inspect_public_history=allow_history and (scope.infer_public_history or bool(scope.periods)),
+            )
+            if item is None:
+                continue
+            version = versions.setdefault(item.metadata.record_code, {}).setdefault(item.metadata.version_no, [])
+            related = scope.public_lab.includes(item.metadata, item.chunk.content)
+            if related is None:
+                unknown |= item.mode == AnswerMode.HISTORICAL
+            elif related:
+                version.append(item)
+
+        relevant = [list(record.values()) for record in versions.values() if any(record.values())]
+        prefer_current = not (scope.periods or scope.public_batch_number) and any(
+            version and version[0].mode != AnswerMode.HISTORICAL for record in relevant for version in record
+        )
+        current, historical = [], []
+        for record in relevant:
+            if prefer_current and all(not version or version[0].mode == AnswerMode.HISTORICAL for version in record):
+                continue
+            if scope.public_batch_number is not None:
+                batches = [public_lab_batch(version[0]) for version in record if version]
+                if any(batch is None or batch.number is None for batch in batches):
                     unknown = True
-                (historical if item.mode == AnswerMode.HISTORICAL else current).append(item)
-            if current and not (scope.periods or scope.public_batch_number):
-                records = {(item.metadata.record_code, item.metadata.version_no) for item in current}
-                if len(records) != len({record_code for record_code, _ in records}):
-                    return None
-                if scope.public_lab.subject is None and len(records) > 1:
-                    return None
-                return sorted(current, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
+                if not any(batch and batch.number == scope.public_batch_number for batch in batches):
+                    continue
+            items = coalesce_public_lab_versions(record)
+            (historical if items[0].mode == AnswerMode.HISTORICAL else current).extend(items)
+        if prefer_current:
+            if scope.public_lab.subject is None and len({item.metadata.record_code for item in current}) > 1:
+                return None
+        else:
             batches = {public_lab_batch(item) for item in current + historical}
             if unknown or None in batches or len(batches) > 1:
                 return None
-            return sorted(current or historical, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
-        except Exception:
-            logger.warning("Public lab batch lookup failed; request_id=%s", request.request_id)
-            return None
+        return sorted(current or historical, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
 
     def _evidence_unchanged(
         self, request: AgentRequest, selected: list[Evidence], *, public_batch: PublicLabBatch | None = None,
+        check_public_index: bool = False, allow_history: bool = True,
     ) -> bool:
         fresh_scope = PolicyScope.from_request(request, self.today())
         try:
-            if public_batch is not None:
-                refreshed = self._public_lab_evidence(request, fresh_scope, {item.chunk.chunk_id: item.chunk for item in selected})
+            if check_public_index:
+                refreshed = self._public_lab_evidence(
+                    request, fresh_scope, {item.chunk.chunk_id: item.chunk for item in selected},
+                    allow_history=allow_history,
+                )
                 return bool(refreshed and refreshed[0].mode == selected[0].mode
-                            and public_lab_batch(refreshed[0]) == public_batch
+                            and (public_batch is None or public_lab_batch(refreshed[0]) == public_batch)
                             and all(item in refreshed for item in selected))
             return all(self._eligible(request, item.chunk, fresh_scope) == item for item in selected)
         except Exception:

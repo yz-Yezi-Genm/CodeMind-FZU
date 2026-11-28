@@ -1055,40 +1055,79 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 await workflow.retriever.index_document(package)
         self.assertEqual(self.observed, [])
 
-    async def test_beta_s4_enumeration_keeps_same_url_records_and_versions_distinct(self):
+    async def test_beta_s4_enumeration_keeps_distinct_records_even_with_the_same_batch_label_and_url(self):
         original = self.public_lab_package("original", "EDA实验室", year=2026, source="shared")
         original.metadata.temporal_notes["资料批次"] = "第一批"
         workflow = await self.workflow(original)
         workflow.top_k = 1
         retriever = workflow.retriever
         query = "2026年第一批 EDA实验室研究什么？"
-        for record_code, version_no in (
-            ("SYNTH-LAB-other", original.metadata.version_no),
-            (original.metadata.record_code, "second-version"),
-        ):
-            with self.subTest(record=record_code, version=version_no):
-                other = original.model_copy(deep=True)
-                other.metadata.record_code = record_code
-                other.metadata.version_no = version_no
-                other.chunks[0].content += "\n合成测试：另一份记录。"
-                await retriever.index_document(other)
-                with patch.object(retriever, "list_document_metadata", wraps=retriever.list_document_metadata) as metadata, \
-                     patch.object(retriever, "list_parsed_chunks", wraps=retriever.list_parsed_chunks) as chunks:
-                    result = await workflow.run(self.request(query))
-                    metadata.assert_called_once_with(
-                        business_direction_code="COLLEGE_RESOURCES", category_name="研究方向与公开介绍",
-                    )
-                    self.assertEqual(chunks.call_count, 2)
-                    chunks.assert_any_call(record_code=record_code, version_no=version_no)
-                self.assertEqual(result.status, "needs_clarification")
-                self.assertEqual(result.citations, [])
-                self.assertEqual(self.observed, [])
-                other.metadata.retrieval_status = RetrievalStatus.BLOCKED
-                await retriever.index_document(other)
-
+        other = original.model_copy(deep=True)
+        other.metadata.record_code = "SYNTH-LAB-other"
+        await retriever.index_document(other)
+        with patch.object(retriever, "list_document_metadata", wraps=retriever.list_document_metadata) as metadata, \
+             patch.object(retriever, "list_parsed_chunks", wraps=retriever.list_parsed_chunks) as chunks:
+            result = await workflow.run(self.request(query))
+            metadata.assert_called_once_with(
+                business_direction_code="COLLEGE_RESOURCES", category_name="研究方向与公开介绍",
+            )
+            self.assertEqual(chunks.call_count, 2)
+            chunks.assert_any_call(record_code=other.metadata.record_code, version_no=other.metadata.version_no)
+        self.assertEqual(result.status, "needs_clarification")
+        self.assertEqual(result.citations, [])
+        self.assertEqual(self.observed, [])
+        other.metadata.retrieval_status = RetrievalStatus.BLOCKED
+        await retriever.index_document(other)
         result = await workflow.run(self.request(query))
         self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
         self.assertEqual(retriever.get_parsed_chunk(result.citations[0].chunk_id), original.chunks[0])
+
+    async def test_beta_s4_same_record_versions_are_checked_as_one_business_batch(self):
+        original = self.public_lab_package("original", "EDA实验室", year=2026)
+        workflow = await self.workflow(original)
+        workflow.top_k = 1
+        alternative = original.model_copy(deep=True)
+        alternative.metadata.version_no = "second-version"
+        await workflow.retriever.index_document(alternative)
+        request = self.request("2026年EDA实验室研究什么？")
+        result = await workflow.run(request)
+        self.assertEqual((result.status, result.answer_mode), ("answered", "historical"))
+        self.assertEqual([citation.excerpt for citation in result.citations], [original.chunks[0].content])
+        self.assertEqual(workflow.retriever.get_parsed_chunk(result.citations[0].chunk_id), original.chunks[0])
+        self.assertEqual(len(self.observed[-1]), 1)
+
+        alternative.chunks[0].content += "\n合成测试：与原版本不一致的研究方向。"
+        await workflow.retriever.index_document(alternative)
+        result = await workflow.run(request)
+        self.assertEqual((result.status, result.answer_mode), ("insufficient_evidence", "insufficient_data"))
+        self.assertEqual(result.warnings[0].code, "POLICY_VERSION_CONFLICT")
+        self.assertIsNone(result.clarifying_question)
+        self.assertEqual(result.citations, [])
+        self.assertEqual(len(self.observed), 1)
+
+    async def test_beta_s4_unavailable_or_empty_enumeration_over_http(self):
+        archive = self.public_lab_package("archive", "EDA实验室", year=2026)
+        workflow = await self.workflow(archive)
+        app = create_app(agent_service=workflow)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            for method in ("list_document_metadata", "list_parsed_chunks"):
+                with self.subTest(method=method), patch.object(workflow.retriever, method, side_effect=RuntimeError):
+                    response = await client.post("/api/v1/ask", json={"query": "EDA实验室研究什么？"})
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response.json()["warnings"][0]["code"], "PUBLIC_LAB_INDEX_UNAVAILABLE")
+                    self.assertEqual(response.json()["status"], "insufficient_evidence")
+                    self.assertIsNone(response.json()["clarifying_question"])
+                    self.assertEqual(response.json()["citations"], [])
+
+            archive.metadata.temporal_notes["human_approved"] = False
+            await workflow.retriever.index_document(archive)
+            response = await client.post("/api/v1/ask", json={"query": "EDA实验室研究什么？"})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["warnings"][0]["code"], "NO_ELIGIBLE_EVIDENCE")
+            self.assertEqual(response.json()["status"], "insufficient_evidence")
+            self.assertIsNone(response.json()["clarifying_question"])
+            self.assertEqual(response.json()["citations"], [])
+        self.assertEqual(self.observed, [])
 
     async def test_beta_s4_directory_projects_and_deduplicates_original_rows_over_http(self):
         intro = self.public_lab_package("intro", "EDA实验室", year=2026)
@@ -1274,20 +1313,25 @@ class MergedRulesRetrieverIntegrationTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_beta_s4_public_history_rechecks_batch_after_generation(self):
         eda = self.public_lab_package("first", "EDA实验室", year=2025)
-        newer = self.public_lab_package("added", "EDA实验室", year=2025)
-        workflow = await self.workflow(eda)
-        generate = workflow.llm_client.generate
+        new_batch = self.public_lab_package("added", "EDA实验室", year=2025)
+        conflicting_version = eda.model_copy(deep=True)
+        conflicting_version.metadata.version_no = "second-version"
+        conflicting_version.chunks[0].content += "\n合成测试：与原版本不一致的研究方向。"
+        for added in (new_batch, conflicting_version):
+            with self.subTest(record=added.metadata.record_code, version=added.metadata.version_no):
+                workflow = await self.workflow(eda)
+                generate = workflow.llm_client.generate
 
-        async def add_batch(prompt):
-            result = await generate(prompt)
-            await workflow.retriever.index_document(newer)
-            return result
+                async def add_to_index(prompt):
+                    result = await generate(prompt)
+                    await workflow.retriever.index_document(added)
+                    return result
 
-        with patch.object(workflow.llm_client, "generate", side_effect=add_batch):
-            result = await workflow.run(self.request("2025年EDA实验室研究什么？"))
-        self.assertEqual(result.status, "insufficient_evidence")
-        self.assertEqual(result.warnings[0].code, "EVIDENCE_APPROVAL_CHANGED")
-        self.assertEqual(result.citations, [])
+                with patch.object(workflow.llm_client, "generate", side_effect=add_to_index):
+                    result = await workflow.run(self.request("2025年EDA实验室研究什么？"))
+                self.assertEqual(result.status, "insufficient_evidence")
+                self.assertEqual(result.warnings[0].code, "EVIDENCE_APPROVAL_CHANGED")
+                self.assertEqual(result.citations, [])
 
     async def test_beta_s4_public_contact_without_applicability_requires_direct_college_page(self):
         direction = alpha_business_rules.RESOURCE_DIRECTION_CODE
