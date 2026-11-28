@@ -25,11 +25,14 @@ async (page) => {
     request_id: '550e8400-e29b-41d4-a716-446655440000',
     conversation_id: conversationId,
     status: 'answered',
-    answer: '请查阅所附资料了解历史年度的办理要求。',
+    answer: '对应学年报名已截止。\n\n请查阅所附资料了解历史年度的办理要求。',
     answer_mode: 'historical',
     clarifying_question: null,
     citations: [citation, { ...citation, title: '仅用于联调的资料', source_url: 'https://example.invalid/policy' }],
-    warnings: [{ code: 'HISTORICAL_REFERENCE', message: '当前资料仅用于历史年度参考。' }],
+    warnings: [
+      { code: 'HISTORICAL_POLICY', message: '对应学年报名已截止。' },
+      { code: 'HISTORICAL_POLICY', message: '当前联系方式尚未核实。' },
+    ],
     created_at: timestamp,
   };
   const clarification = {
@@ -114,6 +117,10 @@ async (page) => {
   await page.getByRole('heading', { name: '已回答', exact: true }).waitFor();
   check(requests[1].conversation_id === conversationId, '补充问题没有沿用首轮 ID');
   await page.getByText(/历史资料参考/).waitFor();
+  const historyTurn = page.locator('.student-turn').last();
+  await historyTurn.getByText('当前联系方式尚未核实。', { exact: true }).waitFor();
+  check((await historyTurn.textContent()).split('对应学年报名已截止。').length === 2,
+    '截止提示应在正文显示一次');
   const sources = page.getByRole('region', { name: '引用来源' });
   const linkedCitation = sources.locator('details').filter({ hasText: citation.title });
   await linkedCitation.getByText(citation.title, { exact: true }).click();
@@ -166,6 +173,21 @@ async (page) => {
   await recovered.getByRole('heading', { name: '已回答', exact: true }).waitFor();
   await recovered.getByText('回答依据：证据不足', { exact: true }).waitFor();
   check(requests.at(-1).conversation_id === conversationId, '错误恢复丢失当前会话');
+
+  const thread = page.locator('#ask-result');
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 720 });
+    const before = await input.boundingBox();
+    const travel = await thread.evaluate(el => {
+      el.scrollTop = el.scrollHeight;
+      return el.scrollTop;
+    });
+    check(travel > 0, '长对话未在消息区滚动');
+    await thread.evaluate(el => { el.scrollTop = 0; });
+    const after = await input.boundingBox();
+    check(before.y === after.y && after.y > 0 && after.y + after.height < 720, '上翻消息时输入框离开原位');
+    check(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight), '消息区外出现额外滚动空间');
+  }
 
   await newChat.click();
   check(await page.locator('.student-turn').count() === 0, '新建对话没有清空记录');
