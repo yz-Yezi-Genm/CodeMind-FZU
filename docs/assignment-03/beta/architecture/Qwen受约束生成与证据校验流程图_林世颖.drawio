@@ -1,0 +1,88 @@
+<mxfile host="app.diagrams.net" modified="2026-11-23T10:00:00.000Z" agent="CodeMind-FZU" version="24.0.0">
+  <diagram name="Qwen受约束生成与证据校验流程图" id="beta-flow-qwen">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="1" />
+        <mxCell id="title" value="Qwen 受约束生成与证据校验流程图（Beta 新增）" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="1000" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="n0" value="证据门禁通过的合格片段集合（RetrievedChunk）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=12;fontStyle=1;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="56" width="480" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="Agent 分配临时 evidence_id（E1、E2…）&#10;保存 evidence_id → 真实 RetrievedChunk 映射；映射仅本次请求有效" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="132" width="480" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="组装 LLMGenerateRequest&#10;用户问题 + 带 evidence_id 的证据；未通过门禁资料不得进入模型上下文" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="218" width="480" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="Qwen 生成自然语言答案，返回严格 JSON（无代码围栏）&#10;{&quot;answer&quot;: &quot;...&quot;, &quot;used_evidence_ids&quot;: [&quot;E1&quot;, &quot;E2&quot;]}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f9ab00;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="296" width="480" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="Agent 校验&#10;JSON 可解析 · answer 非空 · used_evidence_ids 非空&#10;ID 存在且属于本次通过门禁的证据集合" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="380" width="480" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="校验通过：ID 映射回真实 RetrievedChunk&#10;Agent 构造 Citation；模型不填来源 URL、文件名或发布日期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="476" width="480" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="AgentResult → AskResponse 返回前端" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#34a853;fontColor=#333333;fontSize=12;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="560" width="480" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" value="安全回退 insufficient_evidence&#10;非法 JSON / 空答案 / 未知 ID&#10;跨请求 ID / 无可用证据 ID&#10;answer_mode=insufficient_data，citations 为空&#10;无法核验时不返回模型生成内容" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;fontColor=#757575;fontSize=11;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="380" width="330" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" value="边界说明" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;fontColor=#757575;fontSize=12;fontStyle=1;arcSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="650" width="1360" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" value="evidence_id 是 Agent 与 Qwen 之间的内部协议，不是数据库方向代码，也不是新增的学生端 HTTP 字段；不改变 LLMGenerateRequest、LLMResult 与 AskResponse 结构。&#10;ID 校验只证明引用指向真实片段，不单独证明回答中每项事实受原文支持；答案与原文一致性仍须测试核验。模型常识补充或无来源推断不得作为正式政策结论。" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9e9e9e;fontColor=#333333;fontSize=11;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="140" y="690" width="1320" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="106" as="sourcePoint" />
+            <mxPoint x="800" y="132" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="194" as="sourcePoint" />
+            <mxPoint x="800" y="218" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="274" as="sourcePoint" />
+            <mxPoint x="800" y="296" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f9ab00;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="358" as="sourcePoint" />
+            <mxPoint x="800" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="通过" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9c27b0;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="450" as="sourcePoint" />
+            <mxPoint x="800" y="476" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="失败" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9e9e9e;strokeWidth=2;endArrow=block;endFill=1;endSize=6;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="980" y="415" as="sourcePoint" />
+            <mxPoint x="1150" y="465" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#34a853;strokeWidth=2;endArrow=block;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="538" as="sourcePoint" />
+            <mxPoint x="800" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note" value="编制：林世颖 | 日期：2026-11-24 | evidence_id 请求内有效；Citation 由 Agent 根据真实检索片段构造" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#666666;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="770" width="1000" height="25" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
