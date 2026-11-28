@@ -1,0 +1,56 @@
+[
+  {
+    "query": "我参加的竞赛可以认定创新学分吗？",
+    "sent_conversation_id": null,
+    "conversation_id": "5216dc7c-74e1-47a2-9d36-5690ba71bdcf",
+    "request_id": "ce65bac5-deb0-4df9-9a6f-ba0b3523b17a",
+    "status": "needs_clarification",
+    "mode": null,
+    "citations": 0
+  },
+  {
+    "query": "我的作品名称是基于多源数据的城市交通流量预测。",
+    "sent_conversation_id": "5216dc7c-74e1-47a2-9d36-5690ba71bdcf",
+    "conversation_id": "5216dc7c-74e1-47a2-9d36-5690ba71bdcf",
+    "request_id": "3f38dff4-5e8b-4762-bd36-b4484b194af9",
+    "status": "needs_clarification",
+    "mode": null,
+    "citations": 0
+  },
+  {
+    "query": "2026年优秀学生综合奖学金申请需要提交什么材料？",
+    "sent_conversation_id": null,
+    "conversation_id": "ef6627c3-f938-4664-b0f9-611e6786e63f",
+    "request_id": "5db72898-e9db-4140-8a0a-3cdd4297e427",
+    "status": "answered",
+    "mode": "current_policy",
+    "citations": 1
+  },
+  {
+    "query": "2026年优秀学生综合奖学金金额是多少？",
+    "sent_conversation_id": "ef6627c3-f938-4664-b0f9-611e6786e63f",
+    "conversation_id": "ef6627c3-f938-4664-b0f9-611e6786e63f",
+    "request_id": "9cf670fd-726b-46e8-ae5e-ad005ab77841",
+    "status": "insufficient_evidence",
+    "mode": "insufficient_data",
+    "citations": 0
+  },
+  {
+    "query": "申请推免需要满足哪些基本条件？",
+    "sent_conversation_id": null,
+    "conversation_id": "a9ea31fb-0f29-4654-a5b2-786a7ff69e0b",
+    "request_id": "75fc35bb-7c00-4714-9ad8-c0d9172f9670",
+    "status": "insufficient_evidence",
+    "mode": "insufficient_data",
+    "citations": 0
+  },
+  {
+    "query": "学院有哪些可以参与科研实践的实验室？",
+    "sent_conversation_id": null,
+    "conversation_id": "acb695f9-1fdc-42a0-8283-ca219d2bd473",
+    "request_id": "74613d9b-5990-4f3e-8dbe-593fa5be3547",
+    "status": "insufficient_evidence",
+    "mode": "insufficient_data",
+    "citations": 0
+  }
+]

@@ -92,7 +92,10 @@ function renderResult(query: string, response: StudentAskResponse): void {
   const content = response.status === 'needs_clarification'
     ? response.clarifying_question
     : response.answer;
+  const answerLines = new Set(content?.split(/\r?\n/).map(line => line.trim()));
   const warnings = response.warnings
+    .filter(({ code, message }) => !(response.answer_mode === 'historical'
+      && code === 'HISTORICAL_POLICY' && answerLines.has(message.trim())))
     .map(({ message }) => `<li>${escapeHtml(message)}</li>`)
     .join('');
   const citations = response.citations.map(renderCitation).join('');
@@ -167,7 +170,7 @@ async function handleAsk(): Promise<void> {
   const query = input.value.trim();
   if (!query) {
     askStatus.textContent = '请输入问题后再发送。';
-    input.focus();
+    input.focus({ preventScroll: true });
     return;
   }
 
@@ -179,6 +182,7 @@ async function handleAsk(): Promise<void> {
 
   try {
     const response = await ask({ query, conversation_id: conversationId });
+    const followLatest = !welcome.hidden || result.scrollHeight - result.clientHeight - result.scrollTop < 32;
     renderResult(query, response);
     if (conversationId === null) title.textContent = query;
     conversationId = response.conversation_id;
@@ -186,6 +190,7 @@ async function handleAsk(): Promise<void> {
     input.value = '';
     input.placeholder = '继续提问，或补充当前问题的信息';
     askStatus.textContent = response.status === 'needs_clarification' ? '请补充信息后发送。' : '';
+    if (followLatest) result.scrollTop = result.scrollHeight;
   } catch (error) {
     askStatus.textContent = describeAskError(error);
   } finally {
@@ -193,7 +198,7 @@ async function handleAsk(): Promise<void> {
     newChat.disabled = false;
     input.readOnly = false;
     form.removeAttribute('aria-busy');
-    input.focus();
+    input.focus({ preventScroll: true });
   }
 }
 
@@ -213,7 +218,7 @@ for (const topic of document.querySelectorAll<HTMLButtonElement>('#student-topic
   topic.addEventListener('click', () => {
     if (send.disabled) return;
     input.value = topic.dataset.query ?? '';
-    input.focus();
+    input.focus({ preventScroll: true });
   });
 }
 
@@ -226,7 +231,7 @@ newChat.addEventListener('click', () => {
   input.value = '';
   input.placeholder = initialPlaceholder;
   askStatus.textContent = '';
-  input.focus();
+  input.focus({ preventScroll: true });
 });
 
 healthRetry.addEventListener('click', () => void refreshHealth());
