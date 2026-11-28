@@ -1,6 +1,6 @@
 # S4 学院资源导航设计
 
-> 负责人：林彦翔　｜　版本：v1.12（2026-11-28）　｜　分支：`docs/beta-resource-navigation`
+> 负责人：林彦翔　｜　版本：v1.13（2026-11-28）　｜　分支：`docs/beta-resource-navigation`
 > 依据：《Beta 冲刺任务书 V2.1》§三.6、《Beta 接口规范 V2.1-Final》§4.2 与 §7.4
 > 下游：雷葭雨《Beta 业务规则》§7（`docs/assignment-03/beta/business-rules.md`）
 
@@ -259,22 +259,22 @@ S4 判断「库内同一事项有几个历史批次」依赖检索层的两个�
 | S4-04 | 学院有什么资源？ | — | `needs_clarification` | `needs_clarification`（追问不依赖资料，当前即可运行） | 无 | 直接罗列六类 |
 | S4-05 | EDA 实验室怎么样？ | — | `needs_clarification` | `needs_clarification` | 无 | 自行猜成研究方向 |
 | S4-06 | 培养方案在哪看？ | — | `needs_clarification` | `needs_clarification` | 无 | 给出某一届方案 |
-| S4-07 | EDA 实验室怎么报名？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 说「正在报名」 |
-| S4-08 | 2026 年青禾计划报名截止了吗？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 不说明 2026 年度已截止，或表述为仍在招募 |
+| S4-07 | EDA 实验室怎么报名？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1；#59 单一批次流程放行 | 说「正在报名」 |
+| S4-08 | 2026 年青禾计划报名截止了吗？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1（显式 2026 年度） | 不说明 2026 年度已截止，或表述为仍在招募 |
 | S4-09 | 这个实验室现在还招几个？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无 | 把计划人数当当前剩余名额 |
 | S4-10 | 某实验室（库内无资料）研究什么？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无 | 编造方向或联系人 |
 | S4-11 | 学院办公室电话或办公地点在哪？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | P4 | 用实验室联系人、教师邮箱或实验室地点顶替 |
 | S4-12 | 只有历史介绍，问现在招人吗 | 仅 R4 片段 | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | P1 | 用 R4 介绍回答 R3 招募 |
-| S4-13 | 2026 年青禾计划怎么报名？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 与 2026 年度不一致 |
+| S4-13 | 2026 年青禾计划怎么报名？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1（显式 2026 年度） | 与 2026 年度不一致 |
 | S4-14 | 2025 年青禾计划怎么报名？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无 | 用 2026 通知回答 2025 年招募 |
 | S4-15 | 2027 年青禾计划招几人？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无 | 跨年度沿用 2026 计划人数 |
 | S4-16 | 公众号文章名称是学院号但 ID 是 `ifzu1958` | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无 | 靠昵称放行 |
 | S4-17 | 学院的通知在哪看？ | R1 栏目目录 | `answered` / `procedure_reference` | `insufficient_evidence` / `insufficient_data` | P3 | 给出具体某条过期通知 |
-| S4-18 | 2026 年青禾通知里写的联系人是谁？ | 青禾计划 R3 片段 | `answered` / `historical`，须标年度（见 4.4） | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 说成「这是实验室当前联系人」 |
+| S4-18 | 2026 年青禾通知里写的联系人是谁？ | 青禾计划 R3 片段 | `answered` / `historical`，须标年度（见 4.4） | `insufficient_evidence` / `insufficient_data` | P1；#59 联系人独立判断 | 说成「这是实验室当前联系人」 |
 | S4-19 | 现在该联系哪个实验室负责人？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无（无当年度资料） | 用 2026 通知里的联系人充当前联系人 |
 | S4-20 | 青禾计划现在还剩几个名额？ | — | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 无（即使通知仍为 `current` 也不答） | 把计划招收人数当作当前剩余名额 |
 | S4-24 | 这个实验室现在还招吗？ | —（历史 R3 不放行） | `insufficient_evidence` / `insufficient_data` | `insufficient_evidence` / `insufficient_data` | 存在 2026 已审核、已开放的历史 R3 且已截止；不存在已审核、已开放的当前 R3 | 引用历史通知、给出非空 citations，或据此表述是否还在招募 |
-| S4-22 | 2026 年我大二能进 EDA 实验室吗？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1 + P2 | 不检查适用年级与专业；判定「能被录取／不能被录取」；答成现行年度条件 |
+| S4-22 | 2026 年我大二能进 EDA 实验室吗？ | 青禾计划 R3 片段 | `answered` / `historical` | `insufficient_evidence` / `insufficient_data` | P1（显式 2026 年度） | 不检查适用年级与专业；判定「能被录取／不能被录取」；答成现行年度条件 |
 | S4-23 | 现在能进 EDA 实验室吗？ | 当前年度 R3 片段（暂无） | `insufficient_evidence` / `insufficient_data`（无已审核当前通知）；有则 `answered` / `current_policy` | `insufficient_evidence` / `insufficient_data` | 无（当前无已审核当前通知） | 用历史通知回答当前招募，或不走 current gate |
 
 S4-17 至 S4-20 的归属（2026-11-25 与规则侧确认）：S4-18、S4-19、S4-20 进入正式规则与 `business-rules.md` §7.5；S4-17 等 R1 栏目入库后再纳入测试；原 S4-21 并入 S4-11。
@@ -340,7 +340,7 @@ if status in _ARCHIVED or ended:
 **追问例外（只有两类，2026-11-27 组长确认，2026-11-28 补充同年度批次）**：
 
 1. 公开实验室名录、研究介绍存在多个相关历史批次且无法确定唯一批次时，追问年度或批次（同一年度原文明确标注第一批、第二批的，追问第几批）；
-2. 历史联系人存在多个不同年度批次且联系人不同时，追问年度。
+2. 历史联系人存在多个不同年度批次、或同一年度原文标注多个批次且联系人不同时，追问年度或批次（同年度多批时问第几批）。
 
 其他 S4 场景继续遵循不追问规则。**报名与接收条件不进入这两类例外**：报名按 4.3 的年度口径处理；接收条件按 S4-03、S4-22、S4-23 处理，未写年度且只有历史招募通知时直接证据不足。
 
@@ -365,22 +365,23 @@ if status in _ARCHIVED or ended:
 | # | 情形 | 处理 | 目标状态 |
 | --- | --- | --- | --- |
 | 1 | 问「现在／目前／当前该联系谁」 | 直接证据不足，**不追问年度**——补一个历史年度也回答不了当前问题 | `insufficient_evidence` |
-| 2 | 问历史联系人、未写年度，库内只有一份适用年度通知 | 不追问，按该年度回答并声明所属年度 | `historical` |
-| 3 | 问历史联系人、未写年度，库内有多份不同年度通知且联系人不同 | 追问年度，不能替用户选一份 | `needs_clarification` |
+| 2 | 问历史联系人、未写年度，库内只有一份适用年度通知（单一业务批次） | 不追问，按该年度回答并声明所属年度 | `historical` |
+| 3 | 问历史联系人、未写年度，库内有多份不同年度通知且联系人不同；或同一年度原文标注多个批次且联系人不同 | 追问年度或第几批，不能替用户选一份 | `needs_clarification` |
 | 4 | 没有已审核联系人资料，或 `timeliness` 为 `pending` / `uncertain` | 直接证据不足，不追问年度 | `insufficient_evidence` |
 
-判定口径（2026-11-27 与规则侧确认）：
+判定口径（2026-11-27 与规则侧确认，2026-11-28 补充同年度批次）：
 
-> 未写年度的联系人问题，若库内只有一份适用年度通知，按该年度 `historical` 回答并声明年度；存在多份不同年度且联系人不同则追问年度；问「现在／目前／当前」时直接证据不足，不进入年度追问；无已审核资料或时效待定、不确定时不展示联系人。
+> 未写年度的联系人问题，若库内只有一份适用年度通知，按该年度 `historical` 回答并声明年度；存在多份不同年度、或同一年度多个原文标注批次且联系人不同，则追问年度或第几批；问「现在／目前／当前」时直接证据不足，不进入年度追问；无已审核资料或时效待定、不确定时不展示联系人。
 
 补充约束：
 
-1. **禁止表述**：不得说「这是该实验室的联系人」，只能说是「<年度> 通知所载联系人」。
+1. **禁止表述**：不得说「这是该实验室的联系人」，只能说是「<年度>［第几批］通知所载联系人」。
 2. **R6 不受本条限制**：学院、系所层面的公开联系方式属于长期公开信息，按 `current` 管理。
 3. **在窗口内**：`timeliness=current` 且仍在招募窗口内时，可按 `current_policy` 回答，并标注资料来源与截止日期。
 4. **规则侧已覆盖**：`business-rules.md` §7.3 第 7 条限制联系人只能来自 R3 片段，§7.4 对 `HISTORICAL/EXPIRED` 的联系方式在「现在／目前」问句下一律拒绝，与本条一致。
-5. **前置条件**：本条受 P2 约束；P2 未满足时，第 2、3 类问题只能返回证据不足，而不是答一个历史联系人。
-6. **多年度联系人相同时**：可以合并回答，但必须列出所引用的年度资料（例如「2025、2026 两个年度的通知均为同一联系人」），标记为历史属性，**不得表述为当前联系人**；引用的每个年度都要有对应的 citation。
+5. **不套用 P2**：P2 只服务 S4-01、S4-02 的公开名录与研究介绍；历史联系人使用**独立的联系人判断机制**（单一业务批次可答、多批次且联系人不同则追问）。该机制所需的批次与联系人比对由 #59 实现；实现前按证据不足处理，但这是实现缺口，不属于 P2 的适用范围。
+6. **多年度或同年度多批次联系人相同时**：可以合并回答，但必须列出所引用的年度或批次资料（例如「2025、2026 两个年度」「2026 年第一批、第二批」），标记为历史属性，**不得表述为当前联系人**；引用的每个年度/批次都要有对应的 citation。
+7. **指定批次时**：只使用该批次的联系人与资料，不得混入其他批次；该批次联系人缺失或时效不明时证据不足。
 
 ---
 

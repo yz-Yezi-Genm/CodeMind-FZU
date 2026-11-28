@@ -1,7 +1,7 @@
 # A4 学院资源导航 · 验收矩阵
 
-> 负责人：林彦翔、雷葭雨　｜　版本：v1.2（2026-11-28）　｜　依据：`resource-navigation-design.md` §3.7、§4.1、`business-rules.md` §7
-> 状态：矩阵已定稿；**B1—B14 待 #59 完成接口集成、#60 已合并（`4713117`）后执行**。依赖未满足记 BLOCKED，不算失败。
+> 负责人：林彦翔、雷葭雨　｜　版本：v1.3（2026-11-28）　｜　依据：`resource-navigation-design.md` §3.7、§4.1、`business-rules.md` §7
+> 状态：矩阵已定稿；**B1—B16 待 #59 完成接口集成、#60 已合并（`4713117`）后执行**。依赖未满足记 BLOCKED，不算失败。
 
 ---
 
@@ -27,21 +27,21 @@
 | S4-04 | 学院有什么资源？ | `needs_clarification` | 同目标 | 无 |
 | S4-05 | EDA 实验室怎么样？ | `needs_clarification` | 同目标 | 无 |
 | S4-06 | 培养方案在哪看？ | `needs_clarification` | 同目标 | 无 |
-| S4-07 | EDA 实验室怎么报名？ | `answered` / `historical` | `insufficient_evidence` | P1 + P2 |
-| S4-08 | 2026 年青禾计划报名截止了吗？ | `answered` / `historical`，说明 2026-10-31 已截止 | `insufficient_evidence` | P1 + P2 |
+| S4-07 | EDA 实验室怎么报名？ | `answered` / `historical` | `insufficient_evidence` | P1；#59 单一批次流程放行 |
+| S4-08 | 2026 年青禾计划报名截止了吗？ | `answered` / `historical`，说明 2026-10-31 已截止 | `insufficient_evidence` | P1（显式 2026 年度） |
 | S4-09 | 这个实验室现在还招几个？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-10 | 某实验室（库内无资料）研究什么？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-11 | 学院办公室电话或办公地点在哪？ | `insufficient_evidence` / `insufficient_data` | 同目标 | P4 |
 | S4-12 | 只有历史介绍，问现在招人吗 | `insufficient_evidence` / `insufficient_data` | 同目标 | P1 |
-| S4-13 | 2026 年青禾计划怎么报名？ | `answered` / `historical` | `insufficient_evidence` | P1 + P2 |
+| S4-13 | 2026 年青禾计划怎么报名？ | `answered` / `historical` | `insufficient_evidence` | P1（显式 2026 年度） |
 | S4-14 | 2025 年青禾计划怎么报名？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-15 | 2027 年青禾计划招几人？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-16 | 公众号文章名称是学院号但 ID 是 `ifzu1958` | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-17 | 学院的通知在哪看？ | `answered` / `procedure_reference` | `insufficient_evidence` | P3 |
-| S4-18 | 2026 年青禾通知里写的联系人是谁？ | `answered` / `historical`，须标年度 | `insufficient_evidence` | P1 + P2 |
+| S4-18 | 2026 年青禾通知里写的联系人是谁？ | `answered` / `historical`，须标年度 | `insufficient_evidence` | P1；#59 联系人独立判断 |
 | S4-19 | 现在该联系哪个实验室负责人？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-20 | 青禾计划现在还剩几个名额？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
-| S4-22 | 2026 年我大二能进 EDA 实验室吗？ | `answered` / `historical`，检查年级专业 | `insufficient_evidence` | P1 + P2 |
+| S4-22 | 2026 年我大二能进 EDA 实验室吗？ | `answered` / `historical`，检查年级专业 | `insufficient_evidence` | P1（显式 2026 年度） |
 | S4-23 | 现在能进 EDA 实验室吗？ | `insufficient_evidence` / `insufficient_data`（无当前通知） | 同目标 | 无 |
 | S4-24 | 这个实验室现在还招吗？ | `insufficient_evidence` / `insufficient_data`，`citations` 为空 | 同目标 | 有已截止历史 R3、无当前 R3 |
 
@@ -49,7 +49,7 @@ S4-08 只回答「2026 年是否已截止」；S4-24 问「现在是否还招」
 
 ---
 
-## 3. 批次判定矩阵（B1—B14）
+## 3. 批次判定矩阵（B1—B16）
 
 | 编号 | 测试条件 | 预期结果 | 执行阶段 |
 | --- | --- | --- | --- |
@@ -67,8 +67,10 @@ S4-08 只回答「2026 年是否已截止」；S4-24 问「现在是否还招」
 | B12 | 同 B11，用户明确问「2026 年第二批」 | `answered` / `historical`，只答第二批并声明年度与批次 | #59 集成后 |
 | B13 | 同一年度存在多个 `record_code` 或多个 `version_no`，但原文没有任何批次标注 | 归并为同一年度批次，不追问；不得按包或版本数量拆分 | #59 集成后 |
 | B14 | 仅凭 `record_code`、`version_no` 或 R3/R4 包编号推断批次 | 负向断言：不得据此拆成多批；未标注即视为同一批次 | #59 集成后 |
+| B15 | 同一年度原文标注第一批、第二批，两批联系人不同；未指定批次问联系人 | `needs_clarification`，追问第几批，不擅自选批 | #59 集成后 |
+| B16 | 同 B15，用户明确问「2026 年第二批」的联系人 | `answered` / `historical`，只用第二批资料，声明年度与批次，不得表述为当前联系人 | #59 集成后 |
 
-B1—B14 的合成数据由验收负责人按《A4测试数据设计》在本地维护，不入库、不进入 `approved/`；测试时显式加载。B11、B12 需要合成「同年度第一批/第二批」两套标注数据；B13、B14 用同年度多包、多版本但无批次标注的数据。
+B1—B16 的合成数据由验收负责人按《A4测试数据设计》在本地维护，不入库、不进入 `approved/`；测试时显式加载。B11、B12、B15、B16 需要合成「同年度第一批/第二批」两套标注数据；B13、B14 用同年度多包、多版本但无批次标注的数据。
 
 ---
 
@@ -96,7 +98,7 @@ B1—B14 的合成数据由验收负责人按《A4测试数据设计》在本地
 ## 6. 执行顺序与记录
 
 1. **现在**：B7、B10、C1、C3，以及 S4-03/04/05/06/10/17/19/20/23/24。
-2. **#59 集成后**：B1—B6、B8、B9、B11—B14，S4-01/02/12/14/15。
+2. **#59 集成后**：B1—B6、B8、B9、B11—B16，S4-01/02/12/14/15。
 3. **P1 审核后**：S4-07/08/13/18/22 与真实资料版 S4-01/02。
 
 S4-24 的负向回归需要先构造「历史 R3 已审核已开放且已截止 + 无当前 R3」，断言 `insufficient_evidence` / `insufficient_data`、`citations` 为空、不引用历史通知。
