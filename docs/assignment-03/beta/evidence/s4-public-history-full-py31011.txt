@@ -1,18 +1,22 @@
-Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+Code: f07f5ba
+Baseline: main@588c4b2
+Python 3.10.11
+Command: python -m pytest -q -rs --tb=short
+Exit code: 1
+
 ................................ [  3%]
 ....................... [  6%]
 .....F..F............................ [ 11%]
-.............................................................. [ 19%]
-................................ [ 22%]
-.....................................................................s.... [ 32%]
-........................................................................ [ 40%]
-........................................................................ [ 49%]
-........................................................................ [ 58%]
-................................................s....................... [ 67%]
-................................................................... [ 75%]
-..................................................................... [ 84%]
-....................s........................................ [ 91%]
-.................................................................                                              [100%]
+............................................................................................ [ 22%]
+............................................................................s................................................................ [ 39%]
+........................................................................ [ 48%]
+........................................................................ [ 57%]
+............................................................s........... [ 66%]
+................................................................... [ 74%]
+........................................................................ [ 83%]
+.............................s............................ [ 90%]
+........................................................ [ 97%]
+.....................                                  [100%]
 ================================== FAILURES ===================================
 _ RawReextractionTests.test_failed_preflight_does_not_create_output_directory _
 knowledge_base\processing\test_beta_reextraction.py:141: in test_failed_preflight_does_not_create_output_directory
@@ -21,11 +25,11 @@ knowledge_base\processing\build_beta_policy_review.py:260: in build
     load_human_approval_registry()
 knowledge_base\processing\build_beta_policy_review.py:65: in load_human_approval_registry
     registry = read(APPROVAL_REGISTRY)
-<PYTHON_ENV>\lib\unittest\mock.py:1114: in __call__
+..\python-3.10.11\tools\lib\unittest\mock.py:1114: in __call__
     return self._mock_call(*args, **kwargs)
-<PYTHON_ENV>\lib\unittest\mock.py:1118: in _mock_call
+..\python-3.10.11\tools\lib\unittest\mock.py:1118: in _mock_call
     return self._execute_mock_call(*args, **kwargs)
-<PYTHON_ENV>\lib\unittest\mock.py:1179: in _execute_mock_call
+..\python-3.10.11\tools\lib\unittest\mock.py:1179: in _execute_mock_call
     result = effect(*args, **kwargs)
 knowledge_base\processing\test_beta_reextraction.py:137: in read_candidate
     raise AssertionError("Build read configuration after a failed source preflight")
@@ -39,19 +43,19 @@ knowledge_base\processing\build_beta_policy_review.py:65: in load_human_approval
     registry = read(APPROVAL_REGISTRY)
 knowledge_base\processing\build_beta_policy_review.py:55: in read
     return json.loads((ROOT / path).read_text(encoding="utf-8-sig"))
-<PYTHON_ENV>\lib\pathlib.py:1134: in read_text
+..\python-3.10.11\tools\lib\pathlib.py:1134: in read_text
     with self.open(mode='r', encoding=encoding, errors=errors) as f:
-<PYTHON_ENV>\lib\pathlib.py:1119: in open
+..\python-3.10.11\tools\lib\pathlib.py:1119: in open
     return self._accessor.open(self, mode, buffering, encoding, errors,
 E   FileNotFoundError: [Errno 2] No such file or directory: '<TEMP_TEST_DIR>\\docs\\assignment-03\\beta\\beta-human-approval-registry.json'
 ============================== warnings summary ===============================
-<PYTHON_ENV>\lib\site-packages\fastapi\testclient.py:1
+..\python-3.10.11\tools\lib\site-packages\fastapi\testclient.py:1
   <PYTHON_ENV>\lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
-SKIPPED [1] tests\test_agent_workflow_qwen.py:2218: Real Qwen acceptance requires explicit opt-in and approved packages
+SKIPPED [1] tests\test_agent_workflow_qwen.py:2395: Real Qwen acceptance requires explicit opt-in and approved packages
 SKIPPED [1] tests\test_alpha_e2e.py:493: 未启用 RUN_LIVE_QWEN_TESTS=1，跳过真实 Qwen 集成测试。
 SKIPPED [1] tests\test_document_processing.py:255: 当前操作系统账户不允许创建符号链接
-2 failed, 805 passed, 3 skipped, 1 warning, 441 subtests passed in 48.38s
+2 failed, 810 passed, 3 skipped, 1 warning, 448 subtests passed in 91.62s (0:01:31)

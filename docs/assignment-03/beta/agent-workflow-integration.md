@@ -49,9 +49,11 @@
 
 R3 联系人使用独立枚举。联系人不同则追问年度或批次，联系人相同则合并回答并逐批提供引用。当前查询使用仍在有效窗口内的已审核 R3；R6 学院公开联系方式走原有流程。B3—B5、B11—B17、S4-08、S4-24 及名录完整性使用合成资料、生产业务规则、BM25 和 HTTP 入口回归。涉及生成的场景使用 Mock Qwen。正式 A4 资料仍待人工签核。
 
-- [Python 3.10.11 专项回归原始输出](evidence/s4-public-history-agent-py31011.txt)
-- [Python 3.10.11 全量回归原始输出](evidence/s4-public-history-full-py31011.txt)
-- [main@588c4b2 的两项资料重提取基线失败](evidence/s4-public-history-main-588c4b2-reextraction.txt)
+Python 3.10.11 回归代码为 `f07f5ba`，同步提交为 `1810f32`。三份日志保留了命令、退出码和 pytest 输出，本机路径已脱敏。
+
+- 专项回归 435 通过，1 跳过，1 条警告，287 个子测试通过，退出码 0。[专项回归原始输出](evidence/s4-public-history-agent-py31011.txt)
+- 全量回归 810 通过，2 失败，3 跳过，1 条警告，448 个子测试通过，退出码 1。[全量回归原始输出](evidence/s4-public-history-full-py31011.txt)
+- 两项失败属于 `test_beta_reextraction.py`，已在独立导出的 `main@588c4b2` 上复现。[基线复现原始输出](evidence/s4-public-history-main-588c4b2-reextraction.txt)
 
 ## PR #46 验证记录
 
