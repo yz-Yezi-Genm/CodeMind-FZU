@@ -431,7 +431,19 @@ class AgentWorkflowTests(unittest.IsolatedAsyncioTestCase):
         ):
             with self.subTest(query=query):
                 service = self.annual_fixture(year="2026年", status="current", deadline=date(2026, 12, 3))
-                self.chunk = self.chunk.model_copy(update={"content": "提交申请表，截止日期为2026年12月3日。"})
+                if "实验室" in topic:
+                    self.chunk = self.chunk.model_copy(update={
+                        "title": "合成测试：2026年EDA实验室报名通知",
+                        "content": "EDA实验室报名须提交申请表，截止日期为2026年12月3日。",
+                    })
+                    metadata = self.retriever.get_document_metadata(self.chunk.version_id)
+                    self.retriever.get_document_metadata.return_value = metadata.model_copy(update={
+                        "title": self.chunk.title,
+                        "category_name": "实验室与科研团队",
+                        "business_direction_codes": ["COLLEGE_RESOURCES"],
+                    })
+                else:
+                    self.chunk = self.chunk.model_copy(update={"content": "提交申请表，截止日期为2026年12月3日。"})
                 self.retriever.retrieve.return_value = [self.chunk]
                 history = [ConversationTurn(role="user", content=topic)]
                 result = await service.run(self.request(query, history))
