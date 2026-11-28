@@ -41,11 +41,11 @@
 | S4-18 | 2026 年青禾通知里写的联系人是谁？ | `answered` / `historical`，须标年度 | `insufficient_evidence` | P1 + P2 |
 | S4-19 | 现在该联系哪个实验室负责人？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
 | S4-20 | 青禾计划现在还剩几个名额？ | `insufficient_evidence` / `insufficient_data` | 同目标 | 无 |
+| S4-22 | 2026 年我大二能进 EDA 实验室吗？ | `answered` / `historical`，检查年级专业 | `insufficient_evidence` | P1 + P2 |
+| S4-23 | 现在能进 EDA 实验室吗？ | `insufficient_evidence` / `insufficient_data`（无当前通知） | 同目标 | 无 |
 | S4-24 | 这个实验室现在还招吗？ | `insufficient_evidence` / `insufficient_data`，`citations` 为空 | 同目标 | 有已截止历史 R3、无当前 R3 |
 
 S4-08 只回答「2026 年是否已截止」；S4-24 问「现在是否还招」，必须构造「已截止历史 R3 存在、当前 R3 不存在」两个条件，预期证据不足、`citations` 为空、不引用历史通知。P2 只服务 S4-01、S4-02，不覆盖 S4-24。
-| S4-22 | 2026 年我大二能进 EDA 实验室吗？ | `answered` / `historical`，检查年级专业 | `insufficient_evidence` | P1 + P2 |
-| S4-23 | 现在能进 EDA 实验室吗？ | `insufficient_evidence` / `insufficient_data`（无当前通知） | 同目标 | 无 |
 
 ---
 
