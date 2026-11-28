@@ -22,11 +22,11 @@ from backend.contracts.models import (
 from backend.contracts.protocols import LLMClient, Retriever
 from backend.services.agent_generation import Evidence, generation_request, requested_facts, verify_answer
 from backend.services.agent_policy_context import (
-    PolicyScope, contextual_request, recruitment_rule_request, separate_live_lab_quota,
+    PolicyScope, _R3_CATEGORY, _R4_CATEGORY, contextual_request, recruitment_rule_request, separate_live_lab_quota,
 )
 from backend.services.agent_public_lab_history import (
     PublicLabBatch, PublicLabDirectoryConflict, PublicLabVersionConflict, coalesce_public_lab_versions,
-    public_lab_batch, public_lab_directory, public_lab_index,
+    has_lab_directory, lab_contact_values, public_lab_batch, public_lab_directory, public_lab_index,
 )
 from backend.services.alpha_business_rules import (
     VolunteerScoreKind, VolunteerScoringRequest, contextual_volunteer_request, volunteer_scoring_evidence,
@@ -76,6 +76,19 @@ def _insufficient(code: str, message: str) -> AgentResult:
         answer_mode=AnswerMode.INSUFFICIENT_DATA,
         warnings=[WarningItem(code=code, message=message)],
     )
+
+
+def _lab_batch_question(
+    scope: PolicyScope, batches: dict[PublicLabBatch, list[Evidence]],
+) -> AgentResult:
+    if len({batch.year for batch in batches}) == 1:
+        labels = "、".join(batch.name for batch in batches if batch.name)
+        question = f"你想查第几批实验室资料？可选批次为{labels}。"
+    else:
+        question = "你想查哪一年度的实验室资料？"
+        if scope.public_batch_name:
+            question = f"你想查哪一年度的{scope.public_batch_name}实验室资料？"
+    return AgentResult(status=AnswerStatus.NEEDS_CLARIFICATION, clarifying_question=question)
 
 
 class AgentWorkflow:
@@ -139,6 +152,9 @@ class AgentWorkflow:
         })
 
     async def _run(self, request: AgentRequest, *, allow_public_history: bool = True) -> AgentResult:
+        scope = PolicyScope.from_request(request, self.today())
+        if scope.unresolved_current_lab_contact:
+            return _insufficient("NO_ELIGIBLE_EVIDENCE", "没有能确认该实验室当前联系人的已审核招募通知。")
         try:
             question = self.clarification_rule(request.model_copy(deep=True))
             if question is not None and (not isinstance(question, str) or not question.strip()):
@@ -146,13 +162,11 @@ class AgentWorkflow:
         except Exception:
             logger.warning("Clarification rule failed; request_id=%s", request.request_id)
             return _insufficient("CLARIFICATION_RULE_FAILED", "必要信息检查暂时不可用，本次不生成政策答案。")
-        scope = PolicyScope.from_request(request, self.today())
         directory = scope.public_lab is not None and scope.public_lab.subject is None
-        check_public_index = bool(directory or (
-            allow_public_history and scope.public_lab is not None
-            and (scope.infer_public_history or scope.periods or scope.public_batch_number)
-        ))
-        if (not question and scope.historical and not scope.periods and not scope.current
+        check_public_index = bool(scope.lab_contact or directory or (allow_public_history and scope.public_lab and (
+            scope.infer_public_history or scope.periods or scope.public_batch_name
+        )))
+        if (not question and scope.historical and not scope.periods and not scope.current and not scope.lab_contact
                 and not is_lab_admission_question(scope.fact_question)):
             question = "请问你想查哪一年或哪一学年的历史资料？"
         if question:
@@ -242,22 +256,20 @@ class AgentWorkflow:
             if self.evidence_check is None:
                 return _insufficient("APPLICABILITY_NOT_VERIFIED", "本次无法核验实验室资料的适用范围。")
             try:
-                public_evidence = self._public_lab_evidence(request, scope, seen, allow_history=allow_public_history)
+                batches = self._public_lab_evidence(request, scope, seen, allow_history=allow_public_history)
             except PublicLabVersionConflict:
                 return _insufficient("POLICY_VERSION_CONFLICT", "同一份实验室资料的可用版本内容不一致，需核对版本后再回答。")
             except Exception:
                 logger.warning("Public lab batch lookup failed; request_id=%s", request.request_id)
                 return _insufficient("PUBLIC_LAB_INDEX_UNAVAILABLE", "无法完整枚举已审核的实验室资料，暂无法核验可用批次。")
-            if public_evidence is None:
-                return AgentResult(
-                    status=AnswerStatus.NEEDS_CLARIFICATION,
-                    clarifying_question="你想查哪一年度的实验室资料？同年度多批时，请补充资料标注的批次，例如「第一批」。",
-                )
-            if public_evidence:
+            if batches:
+                if scope.lab_contact:
+                    return self._answer_lab_contacts(scope, batches)
+                if len(batches) > 1:
+                    return _lab_batch_question(scope, batches)
+                public_batch, public_evidence = next(iter(batches.items()))
                 if directory:
-                    return self._answer_public_lab_directory(public_evidence)
-                if public_evidence[0].mode == AnswerMode.HISTORICAL or scope.periods or scope.public_batch_number:
-                    public_batch = public_lab_batch(public_evidence[0])
+                    return self._answer_public_lab_directory(public_batch, public_evidence)
                 for item in public_evidence[:self.top_k]:
                     if evidence_chars + len(item.chunk.content) > self.max_evidence_chars:
                         break
@@ -325,8 +337,8 @@ class AgentWorkflow:
                 note = "所引通知对应年度的报名已截止。"
             message = f"以下为{periods}历史资料。{note}请勿用于当前办理。"
             if scope.public_lab is not None:
-                if public_batch is not None and public_batch.number is not None:
-                    periods += f"第{public_batch.number}批"
+                if public_batch is not None:
+                    periods = public_batch.label(selected)
                 message = f"以下为{periods}历史资料所反映的实验室情况，不代表当前状态。"
             answer = f"{message}\n\n{answer}"
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message=message))
@@ -388,7 +400,7 @@ class AgentWorkflow:
             citations=[item.citation() for item in selected], warnings=warnings,
         )
 
-    def _answer_public_lab_directory(self, evidence: list[Evidence]) -> AgentResult:
+    def _answer_public_lab_directory(self, batch: PublicLabBatch, evidence: list[Evidence]) -> AgentResult:
         try:
             directory = public_lab_directory(evidence)
         except PublicLabDirectoryConflict:
@@ -399,12 +411,10 @@ class AgentWorkflow:
         for number, name, item in directory[:self.top_k]:
             names.append(f"- {name}" + (f"（原表序号 {number}）" if number else ""))
             citations.append(item.citation().model_copy(update={"excerpt": name}))
-        message = f"已核验 {len(directory)} 条实验室记录，以下列出 {len(names)} 条。"
+        message = f"已核验 {len(directory)} 条实验室记录，以下列出 {len(names)} 条，完整资料见来源。"
         warnings = []
         if evidence[0].mode == AnswerMode.HISTORICAL:
-            batch = public_lab_batch(evidence[0])
-            suffix = f"第{batch.number}批" if batch and batch.number is not None else ""
-            historical = f"以下为{evidence[0].period}{suffix}历史名录，不代表当前状态。"
+            historical = f"以下为{batch.label(evidence)}历史名录，不代表当前状态。"
             message = historical + message
             warnings.append(WarningItem(code="HISTORICAL_POLICY", message=historical))
         return AgentResult(
@@ -412,12 +422,52 @@ class AgentWorkflow:
             answer_mode=evidence[0].mode, citations=citations, warnings=warnings,
         )
 
+    def _answer_lab_contacts(
+        self, scope: PolicyScope, batches: dict[PublicLabBatch, list[Evidence]],
+    ) -> AgentResult:
+        assert scope.lab_contact is not None
+        contacts, citations = [], []
+        for batch, evidence in batches.items():
+            values = set()
+            for item in evidence:
+                fields = lab_contact_values(item.chunk.content, scope.lab_contact.fields)
+                if fields - values:
+                    citations.append(item.citation())
+                    values.update(fields)
+            if not values:
+                return _insufficient("LAB_CONTACT_NOT_VERIFIED", "相应通知未载明可核验的联系人或联系方式。")
+            contacts.append(values)
+        if any(values != contacts[0] for values in contacts[1:]):
+            if evidence[0].mode == AnswerMode.HISTORICAL:
+                return _lab_batch_question(scope, batches)
+            return _insufficient("LAB_CONTACT_CONFLICT", "可用的现行招募通知所载联系方式不一致。")
+        if len(citations) > self.top_k or sum(len(c.excerpt) for c in citations) > self.max_evidence_chars:
+            return _insufficient("EVIDENCE_BUDGET_EXCEEDED", "联系人资料超出证据预算，请缩小查询范围。")
+        labels = "、".join(label for batch, items in batches.items() if (label := batch.label(items)))
+        answer = "；".join(f"{field}：{'、'.join(sorted(value for key, value in contacts[0] if key == field))}"
+                          for field in ("联系人", "电话", "邮箱") if any(key == field for key, _ in contacts[0]))
+        warnings = []
+        if evidence[0].mode == AnswerMode.HISTORICAL:
+            message = f"以下为{labels}通知所载信息，均为历史资料，不代表当前联系人或联系方式。"
+            warnings.append(WarningItem(code="HISTORICAL_POLICY", message=message))
+        else:
+            deadlines = {item.metadata.deadline_on for items in batches.values() for item in items}
+            if len(deadlines) != 1 or None in deadlines:
+                return _insufficient("LAB_CONTACT_CONFLICT", "可用的现行招募通知所载截止日期不一致或缺失。")
+            deadline = next(iter(deadlines))
+            message = f"以下为{labels}已审核招募通知所载信息，报名截止日期为{deadline:%Y-%m-%d}。"
+        return AgentResult(
+            status=AnswerStatus.ANSWERED, answer=f"{message}\n\n{answer}。",
+            answer_mode=evidence[0].mode, citations=citations, warnings=warnings,
+        )
+
     def _public_lab_evidence(
         self, request: AgentRequest, scope: PolicyScope, ranked: dict[UUID, RetrievedChunk], *, allow_history: bool = True,
-    ) -> list[Evidence] | None:
-        """Return eligible evidence, or None when the related batch cannot be resolved."""
-        indexed = public_lab_index(self.retriever)
-        if indexed is None or scope.public_lab is None:
+    ) -> dict[PublicLabBatch, list[Evidence]]:
+        """Enumerate relevant records, check versions, then group by source batch."""
+        question = scope.lab_contact or scope.public_lab
+        indexed = public_lab_index(self.retriever, _R3_CATEGORY if scope.lab_contact else _R4_CATEGORY)
+        if indexed is None or question is None:
             raise ValueError("Complete public lab enumeration is unavailable")
         versions: dict[str, dict[str, list[Evidence]]] = {}
         unknown = False
@@ -431,36 +481,45 @@ class AgentWorkflow:
             if item is None:
                 continue
             version = versions.setdefault(item.metadata.record_code, {}).setdefault(item.metadata.version_no, [])
-            related = scope.public_lab.includes(item.metadata, item.chunk.content)
+            related = question.includes(item.metadata, item.chunk.content)
             if related is None:
                 unknown |= item.mode == AnswerMode.HISTORICAL
             elif related:
                 version.append(item)
 
-        relevant = [list(record.values()) for record in versions.values() if any(record.values())]
-        prefer_current = not (scope.periods or scope.public_batch_number) and any(
-            version and version[0].mode != AnswerMode.HISTORICAL for record in relevant for version in record
-        )
-        current, historical = [], []
-        for record in relevant:
-            if prefer_current and all(not version or version[0].mode == AnswerMode.HISTORICAL for version in record):
+        current: dict[PublicLabBatch, list[Evidence]] = {}
+        historical: dict[PublicLabBatch, list[Evidence]] = {}
+        directory = scope.public_lab is not None and scope.public_lab.subject is None
+        for record in versions.values():
+            if not any(record.values()):
                 continue
-            if scope.public_batch_number is not None:
-                batches = [public_lab_batch(version[0]) for version in record if version]
-                if any(batch is None or batch.number is None for batch in batches):
-                    unknown = True
-                if not any(batch and batch.number == scope.public_batch_number for batch in batches):
+            if scope.public_batch_name and not any(
+                public_lab_batch(item).name == scope.public_batch_name for version in record.values() for item in version
+            ):
+                continue
+            items = coalesce_public_lab_versions(list(record.values()))
+            for item in items:
+                batch = public_lab_batch(item)
+                if scope.public_batch_name and batch.name != scope.public_batch_name:
                     continue
-            items = coalesce_public_lab_versions(record)
-            (historical if items[0].mode == AnswerMode.HISTORICAL else current).extend(items)
-        if prefer_current:
-            if scope.public_lab.subject is None and len({item.metadata.record_code for item in current}) > 1:
-                return None
+                groups = historical if item.mode == AnswerMode.HISTORICAL else current
+                groups.setdefault(batch, []).append(item)
+        if directory and not (scope.periods or scope.public_batch_name):
+            current = {batch: items for batch, items in current.items() if has_lab_directory(items)}
+        if current and not (scope.periods or scope.public_batch_name):
+            groups = current
+        elif unknown or any(batch.year is None for batch in historical):
+            return {}
         else:
-            batches = {public_lab_batch(item) for item in current + historical}
-            if unknown or None in batches or len(batches) > 1:
-                return None
-        return sorted(current or historical, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
+            groups = current or historical
+        # An unlabelled source cannot prove another named batch or be attributed
+        # to one. Keep it as the year's batch only where no labelled source exists.
+        labelled_years = {batch.year for batch in groups if batch.name}
+        return {
+            batch: sorted(items, key=lambda item: (-item.chunk.score, item.chunk.chunk_id))
+            for batch, items in sorted(groups.items(), key=lambda entry: (entry[0].year or 0, entry[0].name or ""))
+            if batch.name or batch.year not in labelled_years
+        }
 
     def _evidence_unchanged(
         self, request: AgentRequest, selected: list[Evidence], *, public_batch: PublicLabBatch | None = None,
@@ -469,13 +528,14 @@ class AgentWorkflow:
         fresh_scope = PolicyScope.from_request(request, self.today())
         try:
             if check_public_index:
-                refreshed = self._public_lab_evidence(
+                batches = self._public_lab_evidence(
                     request, fresh_scope, {item.chunk.chunk_id: item.chunk for item in selected},
                     allow_history=allow_history,
                 )
-                return bool(refreshed and refreshed[0].mode == selected[0].mode
-                            and (public_batch is None or public_lab_batch(refreshed[0]) == public_batch)
-                            and all(item in refreshed for item in selected))
+                if len(batches) != 1:
+                    return False
+                refreshed = batches.get(public_batch, [])
+                return all(item in refreshed for item in selected)
             return all(self._eligible(request, item.chunk, fresh_scope) == item for item in selected)
         except Exception:
             return False
@@ -483,7 +543,9 @@ class AgentWorkflow:
     def _answer_closed_recruitment(
         self, request: AgentRequest, scope: PolicyScope, notices: list[Evidence],
     ) -> AgentResult:
-        notice = max(notices, key=lambda item: item.metadata.deadline_on or date.min)
+        notice = notices[0]
+        if len({(item.period, scope.recruitment_deadline(item.metadata, item.chunk.content)) for item in notices}) != 1:
+            return _insufficient("POLICY_VERSION_CONFLICT", "同年度招募资料所载的截止情况不一致。")
         if not self._evidence_unchanged(request, [notice]):
             return _insufficient("EVIDENCE_APPROVAL_CHANGED", "引用资料或适用状态已改变，本次不生成政策答案。")
         deadline = scope.recruitment_deadline(notice.metadata, notice.chunk.content)
@@ -491,7 +553,7 @@ class AgentWorkflow:
         period = notice.period or ""
         if period.endswith("年") and not period.endswith("学年"):
             period += "度"
-        message = "目前是否有新一轮招募，暂无法确认。"
+        message = "此处仅说明该年度通知的截止情况。"
         return AgentResult(
             status=AnswerStatus.ANSWERED,
             answer=f"{period}报名已{when}截止。{message}",
@@ -534,6 +596,8 @@ class AgentWorkflow:
             if (not matches_metadata or not matches_chunk or not _human_approved(metadata)
                     or parsed.index_status in {ChunkIndexStatus.DISABLED, ChunkIndexStatus.FAILED}
                     or not parsed.source_file_key.strip()):
+                return None
+            if not scope.current_recruitment_matches(metadata, chunk.content):
                 return None
             scope_result = scope.evidence_mode(metadata, inspect_public_history=inspect_public_history)
             closed_period = None

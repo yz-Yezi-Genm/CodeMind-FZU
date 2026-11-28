@@ -202,7 +202,8 @@ _LAB_ADMISSION = re.compile(
     r"|(?:接收|招募|招新|申请|报名|入组|加入)(?:对象|要求|条件|资格)|接收哪些|接收什么"
     r"|我[^？?，,。]{0,20}(?:能|可|是否)[^？?，,。]{0,8}报名"
 )
-_LAB_CONTACT = re.compile(r"联系方式|联系电话|电话|邮箱|联系人|地址|地点")
+_LAB_CONTACT_DETAILS = r"联系方式|联系电话|电话|邮箱|联系人|联系谁|联系哪个|负责人"
+_LAB_CONTACT = re.compile(rf"{_LAB_CONTACT_DETAILS}|地址|地点")
 _LAB_LIST = re.compile(r"有哪些实验室|实验室(?:名单|名录|一览|列表|目录)|学院.*实验室|哪些实验室")
 _COMPETITION_REGISTRATION = re.compile(r"报名|参赛")
 _STUDY_QUESTION = re.compile(r"培养方案|课程|选课|辅修|通识|学位要求|修多少")
@@ -1039,7 +1040,7 @@ def _clarify_resources(
     category = next(iter(categories))
     if category == RES_LAB:
         # 名录类问题直接答；问某个实验室但没说目的时才追问研究方向还是报名。
-        if _LAB_LIST.search(current) or _LAB_JOIN.search(current):
+        if _LAB_LIST.search(current) or _LAB_JOIN.search(current) or re.search(_LAB_CONTACT_DETAILS, current):
             return None
         if _LAB_INTRO.search(current):
             return None
